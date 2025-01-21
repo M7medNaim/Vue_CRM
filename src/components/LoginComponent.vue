@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { login } from "@/plugins/services/authService";
+import axios from "axios";
 
 export default {
   name: "LoginComponent",
@@ -92,10 +92,13 @@ export default {
       if (!this.validateInputs()) return;
 
       try {
-        const response = await login({
-          email: this.email,
-          password: this.password,
-        });
+        const response = await axios.post(
+          "https://test.crm.noktaclinic.com/api/v1/login",
+          {
+            email: this.email,
+            password: this.password,
+          }
+        );
 
         const token = response.data.token;
         this.storeToken(token);
