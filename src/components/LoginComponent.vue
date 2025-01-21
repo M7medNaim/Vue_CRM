@@ -2,7 +2,7 @@
   <div class="vh-100 w-100 overflow-hidden bg-light">
     <div class="row h-100">
       <div class="col-10 col-md-5 col-lg-4 m-auto">
-        <div class="card text-start">
+        <div class="card">
           <form class="card-body" @submit.prevent="handleLogin">
             <div class="mb-3 text-center">
               <img
@@ -11,15 +11,21 @@
                 alt="logo"
               />
             </div>
+            <p v-if="errors.message" class="text-danger text-center">
+              {{ errors.message }}
+            </p>
             <div class="mb-3">
               <label>Email <span class="text-danger">*</span></label>
               <input
-                type="text"
+                type="email"
                 class="form-control"
                 v-model="email"
                 placeholder="Enter Email"
                 required
               />
+              <p v-if="errors.email" class="text-danger fs-6">
+                {{ errors.email }}
+              </p>
             </div>
             <div class="mb-3">
               <div
@@ -33,17 +39,20 @@
                 class="form-control"
                 v-model="password"
                 placeholder="Enter Password"
-                required
               />
+              <p v-if="errors.password" class="text-danger fs-6">
+                {{ errors.password }}
+              </p>
             </div>
-            <div class="mb-3 text-start">
+
+            <div class="mb-3">
               <input
                 type="checkbox"
                 class="form-check-input shadow-none"
                 id="rememberMe"
                 v-model="rememberMe"
               />
-              <label class="form-check-label text-start ms-2" for="rememberMe">
+              <label class="form-check-label ms-2" for="rememberMe">
                 Remember Me
               </label>
             </div>
@@ -60,6 +69,8 @@
 </template>
 
 <script>
+import { login } from "@/plugins/services/authService";
+
 export default {
   name: "LoginComponent",
   data() {
@@ -67,17 +78,62 @@ export default {
       email: "",
       password: "",
       rememberMe: false,
+      errors: {
+        email: "",
+        password: "",
+        message: "",
+      },
     };
   },
   methods: {
-    handleLogin() {
-      if (this.email && this.password !== "") {
+    async handleLogin() {
+      this.resetErrors();
+
+      if (!this.validateInputs()) return;
+
+      try {
+        const response = await login({
+          email: this.email,
+          password: this.password,
+        });
+
+        const token = response.data.token;
+        this.storeToken(token);
+
         this.$router.push("/home");
-        if (this.rememberMe) {
-          this.rememberMe = true;
-        }
-      } else {
-        //errorMessage
+      } catch (error) {
+        this.errors.message =
+          error.response?.data?.message || "Login failed. Please try again.";
+      }
+    },
+
+    resetErrors() {
+      this.errors = {
+        email: "",
+        password: "",
+        message: "",
+      };
+    },
+
+    validateInputs() {
+      let valid = true;
+
+      if (!this.email) {
+        this.errors.email = "Email is required.";
+        valid = false;
+      }
+
+      if (!this.password) {
+        this.errors.password = "Password is required.";
+        valid = false;
+      }
+
+      return valid;
+    },
+    storeToken(token) {
+      localStorage.setItem("authToken", token);
+      if (this.rememberMe) {
+        localStorage.setItem("rememberMe", true);
       }
     },
   },
