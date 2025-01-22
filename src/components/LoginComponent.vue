@@ -94,7 +94,7 @@ export default {
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/login`,
+          `${process.env.VUE_APP_API_URL}/login`,
           {
             email: this.email,
             password: this.password,
