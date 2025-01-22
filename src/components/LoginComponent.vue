@@ -70,6 +70,7 @@
 
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default {
   name: "LoginComponent",
@@ -93,7 +94,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "https://test.crm.noktaclinic.com/api/v1/login",
+          `${import.meta.env.VITE_API_BASE_URL}/login`,
           {
             email: this.email,
             password: this.password,
@@ -102,11 +103,14 @@ export default {
 
         const token = response.data.token;
         this.storeToken(token);
-
+        this.email = "";
+        this.password = "";
         this.$router.push("/home");
       } catch (error) {
-        this.errors.message =
-          error.response?.data?.message || "Login failed. Please try again.";
+        this.errors.message = "Login failed. Please try again.";
+        // error.response?.data?.message ||
+        this.email = "";
+        this.password = "";
       }
     },
 
@@ -134,10 +138,12 @@ export default {
       return valid;
     },
     storeToken(token) {
-      localStorage.setItem("authToken", token);
-      if (this.rememberMe) {
-        localStorage.setItem("rememberMe", true);
-      }
+      Cookies.set("authToken", token, {
+        expires: this.rememberMe ? 7 : null,
+        secure: true,
+        sameSite: "Strict",
+        path: "/",
+      });
     },
   },
 };
