@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { login } from "@/plugins/services/authService";
 import Cookies from "js-cookie";
 
 export default {
@@ -91,15 +91,11 @@ export default {
       this.resetErrors();
 
       if (!this.validateInputs()) return;
-
       try {
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_URL}/login`,
-          {
-            email: this.email,
-            password: this.password,
-          }
-        );
+        const response = await login({
+          email: this.email,
+          password: this.password,
+        });
 
         const token = response.data.token;
         this.storeToken(token);
