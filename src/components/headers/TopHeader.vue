@@ -5,7 +5,7 @@
         <span class="">CRM Staging</span>
       </div>
       <div class="col-4 d-flex justify-content-center align-items-center g-3">
-        <span class="fs-2 text-body-secondary">5:47:20 PM</span>
+        <span class="fs-2 text-body-secondary">{{ currentTime }}</span>
         <button
           class="border-0 bg-transparent"
           ref="notifiButton"
@@ -70,9 +70,15 @@
 import ListLang from "@/components/headers/sub-menu/ListLang.vue";
 import MenuProfile from "@/components/headers/sub-menu/MenuProfile.vue";
 import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 export default {
   name: "HeaderComponent",
+  components: {
+    ListLang,
+    MenuProfile,
+    NotificationsHead,
+  },
   data() {
     return {
       activeMenu: null,
@@ -81,10 +87,40 @@ export default {
       listNotifiStyle: {},
     };
   },
-  components: {
-    ListLang,
-    MenuProfile,
-    NotificationsHead,
+  setup() {
+    const currentTime = ref("");
+
+    const updateTime = () => {
+      const now = new Date();
+
+      const utcHours = now.getUTCHours();
+      const utcMinutes = now.getUTCMinutes();
+      const utcSeconds = now.getUTCSeconds();
+
+      const turkeyHours = (utcHours + 3) % 24;
+      const ampm = turkeyHours >= 12 ? "PM" : "AM";
+      const formattedHours = turkeyHours % 12 || 12;
+
+      currentTime.value = `${formattedHours}:${String(utcMinutes).padStart(
+        2,
+        "0"
+      )}:${String(utcSeconds).padStart(2, "0")} ${ampm}`;
+    };
+
+    let interval;
+
+    onMounted(() => {
+      updateTime();
+      interval = setInterval(updateTime, 1000);
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(interval);
+    });
+
+    return {
+      currentTime,
+    };
   },
   methods: {
     toggleMenu(menu, buttonRef) {
@@ -135,7 +171,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .logo-img {
   height: 60px;

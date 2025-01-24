@@ -3,9 +3,7 @@
     class="sidebar vh-100 overflow-hidden bg-secondary text-white"
     :class="{ 'sidebar-collapsed': isCollapsed }"
   >
-    <div
-      class="sidebar-item d-flex justify-content-start align-items-center p-2"
-    >
+    <div class="d-flex justify-content-start align-items-center p-2">
       <div class="imgLogo me-2">
         <img
           src="@/assets/new-nokta-logo.png"
@@ -170,5 +168,18 @@ export default {
 .scale-enter-to,
 .scale-leave-from {
   opacity: 1;
+}
+/* scroll style */
+.sidebar .sidebar-items::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar .sidebar-items::-webkit-scrollbar-thumb {
+  background: #c2c0c0a7;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
 }
 </style>
