@@ -41,8 +41,10 @@
         <span v-if="!isCollapsed">Dashboard</span>
       </div>
       <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
-        <i class="fa-solid fa-user-shield fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Admins</span>
+        <router-link to="/admin" class="text-decoration-none text-white">
+          <i class="fa-solid fa-user-shield fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Admins</span>
+        </router-link>
       </div>
       <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
         <i class="fa-solid fa-hospital fs-5 me-2"></i>

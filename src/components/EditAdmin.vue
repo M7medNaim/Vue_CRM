@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4 p-3">
+  <div class="mt-4 pe-3">
     <!-- حقل البحث -->
     <div class="row">
       <div class="col-6">

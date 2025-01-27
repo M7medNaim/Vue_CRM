@@ -6,6 +6,7 @@
       </div>
       <div :class="headerClass">
         <TopHeader />
+        <EditAdmin />
       </div>
     </div>
   </div>
