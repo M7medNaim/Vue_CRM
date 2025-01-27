@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginComponent from "../components/LoginComponent.vue";
+import SuperAdmin from "@/views/SuperAdmin.vue";
 
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
     path: "/login",
     name: "LoginComponent",
     component: LoginComponent,
+  },
+  {
+    path: "/admin",
+    name: "SuperAdmin",
+    component: SuperAdmin,
   },
 ];
 

@@ -15,6 +15,7 @@
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
 export default {
+  name: "HomePage",
   data() {
     return {
       isSidebarCollapsed: true,
@@ -34,6 +35,5 @@ export default {
     },
   },
   components: { TopHeader, LeftSidebar },
-  name: "HomePage",
 };
 </script>
