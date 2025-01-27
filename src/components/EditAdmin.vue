@@ -100,12 +100,13 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import AdminModal from "@/components/modals/AdminForm.vue";
 import EditModal from "@/components/modals/EditAdminModal.vue";
 // import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { getUser } from "@/plugins/services/authService";
 
 export default {
   name: "EditAdmin",
@@ -121,33 +122,28 @@ export default {
       { text: "الحالة", value: "status" },
       { text: "عمل", value: "actions" },
     ];
-
-    const items = ref([
-      {
-        id: 1,
-        name: "Mohammed",
-        email: "test@example.com",
-        image: "/images/new-nokta-logo.png",
-        emailVerified: true,
-        status: "active",
-      },
-      {
-        id: 2,
-        name: "Ahmed",
-        email: "test@example.com",
-        image: "/images/new-nokta-logo.png",
-        emailVerified: false,
-        status: "inactive",
-      },
-    ]);
+    const items = ref([]);
 
     const search = ref("");
     const filteredItems = computed(() => {
-      return items.value.filter((item) => {
-        const name = item.name || "";
-        return name.toLowerCase().includes(search.value.toLowerCase());
-      });
+      if (Array.isArray(items.value)) {
+        return items.value.filter((item) => {
+          const name = item.name || "";
+          return name.toLowerCase().includes(search.value.toLowerCase());
+        });
+      }
+      return [];
     });
+
+    const fetchUsers = async () => {
+      try {
+        const response = await getUser();
+        console.log(items);
+        items.value = response.data.data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
     const toggleEmailVerified = (event, item) => {
       item.emailVerified = event.target.checked;
@@ -185,6 +181,9 @@ export default {
     //     items.value[index] = { ...updatedUser };
     //   }
     // };
+    onMounted(() => {
+      fetchUsers();
+    });
 
     return {
       headers,

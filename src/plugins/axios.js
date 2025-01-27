@@ -1,8 +1,11 @@
+import Cookies from "js-cookie";
+
 const axios = require("axios");
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
     "Content-Type": "application/json",
+    Authorization: "Bearer " + Cookies.get("authToken"),
   },
 });
 
