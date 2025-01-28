@@ -40,7 +40,7 @@
       <template #item-profile="item">
         <div class="d-flex align-items-center py-3">
           <img
-            :src="item.image"
+            :src="userImage || require('@/assets/default-user-image.jpg')"
             alt="User Image"
             class="rounded-circle me-3"
             style="width: 45px; height: 45px"
@@ -158,8 +158,7 @@ export default {
     const addNewUser = (newUser) => {
       const imageUrl = newUser.image
         ? URL.createObjectURL(newUser.image)
-        : "/images/default-user.png";
-
+        : require("@/assets/default-user-image.jpg");
       items.value.push({
         id: items.value.length + 1,
         name: newUser.username,
