@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isLoggedIn">
-    <LoginComponent @loginSuccess="handleLoginSuccess" />
+    <LoginView @loginSuccess="handleLoginSuccess" />
   </div>
   <div v-else class="app overflow-hidden">
     <div class="row">
@@ -21,19 +21,21 @@
 </template>
 
 <script>
-import LoginComponent from "@/components/LoginComponent.vue";
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
-import SuperAdmin from "@/components/EditAdmin.vue";
+// import SuperAdmin from "@/components/EditAdmin.vue";
+// import LoginComponent from "@/components/LoginComponent.vue";
 import HomePage from "@/views/HomeView.vue";
+import LoginView from "@/views/LoginView.vue";
+import UsersView from "@/views/UsersView.vue";
 
 export default {
   name: "HomePage",
-  components: { TopHeader, LeftSidebar, SuperAdmin, HomePage, LoginComponent },
+  components: { TopHeader, LeftSidebar, UsersView, HomePage, LoginView },
   data() {
     return {
       isLoggedIn: false,
-      currentComponent: "SuperAdmin",
+      currentComponent: "UsersView",
       isSidebarCollapsed: true,
     };
   },
@@ -58,7 +60,11 @@ export default {
     },
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.currentComponent = "SuperAdmin";
+      this.currentComponent = "UsersView";
+    },
+    handleLogout() {
+      this.isLoggedIn = false;
+      this.$router.push("/login");
     },
   },
 };

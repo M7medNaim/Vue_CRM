@@ -5,14 +5,15 @@
     >
       <div class="profileImage me-2 border border-2 rounded-5">
         <img
-          src="../../../assets/new-nokta-logo.png"
+          :src="userImage || require('@/assets/default-user-image.jpg')"
           class="img-fluid rounded-5"
           alt="profile image"
         />
       </div>
       <div class="data">
-        <span class="">Full Name</span><br />
-        <span class="text-secondary">Email</span>
+        <span class="">{{ name }}</span
+        ><br />
+        <span class="text-secondary">{{ userEmail }}</span>
       </div>
     </div>
     <hr />
@@ -65,7 +66,7 @@
           <span>Change Language</span>
         </button>
       </li>
-      <li>
+      <li @click="handleLogout">
         <a class="dropdown-item ps-3">
           <span class="dropdown-icon me-4 text-secondary">
             <i class="fa-solid fa-right-from-bracket ps-1"></i>
@@ -77,8 +78,35 @@
   </div>
 </template>
 <script>
+import Cookies from "js-cookie";
+import axiosInstance from "@/plugins/axios";
+
 export default {
   name: "MenuProfile",
+  data() {
+    return {
+      name: Cookies.get("name") || "User",
+      userEmail: Cookies.get("email") || "test@email",
+      userImage: Cookies.get("image") || "",
+    };
+  },
+  methods: {
+    async handleLogout() {
+      try {
+        Cookies.remove("authToken");
+        Cookies.remove("name");
+        Cookies.remove("image");
+        Cookies.remove("email");
+
+        delete axiosInstance.defaults.headers["Authorization"];
+
+        this.$emit("logout");
+        this.$router.push("/login");
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
+    },
+  },
 };
 </script>
 <style scoped>
@@ -88,5 +116,8 @@ export default {
 .profileImage img {
   width: 55px;
   height: 55px;
+}
+.dropdown-item {
+  cursor: pointer;
 }
 </style>

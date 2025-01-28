@@ -74,7 +74,8 @@ import Cookies from "js-cookie";
 import axiosInstance from "@/plugins/axios";
 
 export default {
-  name: "LoginComponent",
+  // name: "LoginComponent",
+  name: "LoginView",
   data() {
     return {
       email: "",
@@ -109,7 +110,7 @@ export default {
         this.loginSuccess = true;
         axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
         this.$emit("loginSuccess");
-        this.$router.push("/home");
+        this.$router.push("/UsersView");
       } catch (error) {
         this.errors.message = "Login failed. Please try again.";
         // error.response?.data?.message ||

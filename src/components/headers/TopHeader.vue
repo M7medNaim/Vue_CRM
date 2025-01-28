@@ -33,7 +33,7 @@
           >
             <div class="userImg">
               <img
-                :src="userImage || '/assets/default-user-image.png'"
+                :src="userImage || require('@/assets/default-user-image.jpg')"
                 class="img-fluid user-img rounded-5"
                 alt="user image"
               />
@@ -55,7 +55,11 @@
       <ListLang v-if="activeMenu === 'lang'" :style="listLangStyle" />
     </transition>
     <transition name="fade">
-      <MenuProfile v-if="activeMenu === 'profile'" :style="listProfileStyle" />
+      <MenuProfile
+        v-if="activeMenu === 'profile'"
+        :style="listProfileStyle"
+        @logout="handleLogout"
+      />
     </transition>
     <transition name="fade">
       <NotificationsHead
