@@ -33,7 +33,7 @@
           >
             <div class="userImg">
               <img
-                src="../../assets/new-nokta-logo.png"
+                :src="userImage || '/assets/default-user-image.png'"
                 class="img-fluid user-img rounded-5"
                 alt="user image"
               />
@@ -87,6 +87,7 @@ export default {
       listProfileStyle: {},
       listNotifiStyle: {},
       name: Cookies.get("name") || "User",
+      userImage: Cookies.get("image") || "",
     };
   },
   setup() {

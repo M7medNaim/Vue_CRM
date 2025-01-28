@@ -100,7 +100,8 @@ export default {
 
         const token = response.data.token;
         const name = response.data.user.name;
-        this.storeToken(token, name);
+        const image = response.data.user.image || "";
+        this.storeToken(token, name, image);
         this.email = "";
         this.password = "";
         this.loginSuccess = true;
@@ -137,7 +138,7 @@ export default {
 
       return valid;
     },
-    storeToken(token) {
+    storeToken(token, name, image) {
       Cookies.set("authToken", token, {
         expires: this.rememberMe ? 7 : null,
         secure: true,
@@ -145,6 +146,12 @@ export default {
         path: "/",
       });
       Cookies.set("name", name, {
+        expires: this.rememberMe ? 7 : null,
+        secure: true,
+        sameSite: "Strict",
+        path: "/",
+      });
+      Cookies.set("image", image, {
         expires: this.rememberMe ? 7 : null,
         secure: true,
         sameSite: "Strict",
