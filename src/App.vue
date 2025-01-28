@@ -27,15 +27,15 @@ import LeftSidebar from "@/components/LeftSidebar.vue";
 // import LoginComponent from "@/components/LoginComponent.vue";
 import HomePage from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
-import UsersView from "@/views/UsersView.vue";
+import users from "@/views/UsersView.vue";
 
 export default {
   name: "HomePage",
-  components: { TopHeader, LeftSidebar, UsersView, HomePage, LoginView },
+  components: { TopHeader, LeftSidebar, users, HomePage, LoginView },
   data() {
     return {
       isLoggedIn: false,
-      currentComponent: "UsersView",
+      currentComponent: "users",
       isSidebarCollapsed: true,
     };
   },
@@ -60,7 +60,7 @@ export default {
     },
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.currentComponent = "UsersView";
+      this.currentComponent = "users";
     },
     handleLogout() {
       this.isLoggedIn = false;

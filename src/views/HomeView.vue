@@ -1,7 +1,5 @@
 <template>
-  <div class="app overflow-hidden">
-    <h1>HomePage</h1>
-  </div>
+  <h1>HomePage</h1>
 </template>
 <script>
 export default {

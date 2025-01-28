@@ -110,7 +110,7 @@ export default {
         this.loginSuccess = true;
         axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
         this.$emit("loginSuccess");
-        this.$router.push("/UsersView");
+        this.$router.push("/users");
       } catch (error) {
         this.errors.message = "Login failed. Please try again.";
         // error.response?.data?.message ||

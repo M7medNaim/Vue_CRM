@@ -3,7 +3,7 @@
     <!-- حقل البحث -->
     <div class="row">
       <div class="col-6">
-        <div class="mb-3 position-relative">
+        <div class="mb-3 position-relative inputSearch">
           <input
             type="text"
             class="form-control w-50 ps-5"
@@ -200,4 +200,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.inputSearch input:focus {
+  box-shadow: none;
+  border: none;
+}
+</style>

@@ -36,16 +36,13 @@
         <i class="fa-solid fa-bell fs-5 me-2" title="Notifications"></i>
         <span v-if="!isCollapsed">Notifications</span>
       </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        @click="changePage('HomePage')"
-      >
+      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
         <i class="fa-solid fa-chart-line fs-5 me-2"></i>
         <span v-if="!isCollapsed">Dashboard</span>
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        @click="changePage('SuperAdmin')"
+        @click="changePage('users')"
       >
         <i class="fa-solid fa-user-shield fs-5 me-2"></i>
         <span v-if="!isCollapsed">Admins</span>
