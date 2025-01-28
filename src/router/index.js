@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginComponent from "../components/LoginComponent.vue";
-import SuperAdmin from "@/views/SuperAdmin.vue";
+import SuperAdmin from "@/components/EditAdmin.vue";
 
 const routes = [
   {

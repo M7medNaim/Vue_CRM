@@ -44,7 +44,7 @@
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >
-              <span class="me-1">Full Name</span>
+              <span class="me-1">{{ name }}</span>
               <i class="fa-solid fa-chevron-down"></i>
             </button>
           </div>
@@ -70,6 +70,7 @@
 import ListLang from "@/components/headers/sub-menu/ListLang.vue";
 import MenuProfile from "@/components/headers/sub-menu/MenuProfile.vue";
 import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.vue";
+import Cookies from "js-cookie";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
 export default {
@@ -85,6 +86,7 @@ export default {
       listLangStyle: {},
       listProfileStyle: {},
       listNotifiStyle: {},
+      name: Cookies.get("name") || "User",
     };
   },
   setup() {

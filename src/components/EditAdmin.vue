@@ -109,7 +109,7 @@ import EditModal from "@/components/modals/EditAdminModal.vue";
 import { getUser } from "@/plugins/services/authService";
 
 export default {
-  name: "EditAdmin",
+  name: "SuperAdmin",
   components: {
     EasyDataTable,
     AdminModal,

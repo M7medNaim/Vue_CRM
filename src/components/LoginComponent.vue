@@ -79,6 +79,7 @@ export default {
       email: "",
       password: "",
       rememberMe: false,
+      loginSuccess: false,
       errors: {
         email: "",
         password: "",
@@ -98,9 +99,12 @@ export default {
         });
 
         const token = response.data.token;
-        this.storeToken(token);
+        const name = response.data.user.name;
+        this.storeToken(token, name);
         this.email = "";
         this.password = "";
+        this.loginSuccess = true;
+        this.$emit("loginSuccess");
         this.$router.push("/home");
       } catch (error) {
         this.errors.message = "Login failed. Please try again.";
@@ -135,6 +139,12 @@ export default {
     },
     storeToken(token) {
       Cookies.set("authToken", token, {
+        expires: this.rememberMe ? 7 : null,
+        secure: true,
+        sameSite: "Strict",
+        path: "/",
+      });
+      Cookies.set("name", name, {
         expires: this.rememberMe ? 7 : null,
         secure: true,
         sameSite: "Strict",
