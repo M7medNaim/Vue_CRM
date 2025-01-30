@@ -35,7 +35,11 @@
         >
       </li>
       <li>
-        <button type="button" class="btn btn-primary dropdown-item">
+        <button
+          type="button"
+          class="btn btn-primary dropdown-item"
+          @click="changeBackground"
+        >
           <span class="dropdown-icon me-4 text-secondary">
             <i class="fa-solid fa-image"></i>
           </span>
@@ -88,6 +92,20 @@ export default {
       name: Cookies.get("name") || "User",
       userEmail: Cookies.get("email") || "test@email",
       userImage: Cookies.get("image") || "",
+      images: [
+        "/images/bg1.jpg",
+        "/images/bg2.jpg",
+        "/images/bg3.jpg",
+        "/images/bg4.jpg",
+        "/images/bg5.jpg",
+        "/images/bg6.jpg",
+        "/images/bg7.jpg",
+        "/images/bg8.jpg",
+        "/images/bg9.jpg",
+        "/images/bg10.jpg",
+        "/images/bg11.jpg",
+        "/images/bg12.jpg",
+      ],
     };
   },
   methods: {
@@ -105,6 +123,16 @@ export default {
       } catch (error) {
         console.error("Error logging out:", error);
       }
+    },
+    changeBackground() {
+      const randomImage =
+        this.images[Math.floor(Math.random() * this.images.length)];
+
+      document.body.style.backgroundImage = `url(${randomImage})`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+
+      localStorage.setItem("backgroundImage", randomImage);
     },
   },
 };

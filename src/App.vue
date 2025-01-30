@@ -5,15 +5,13 @@
   <div v-else class="app overflow-hidden">
     <div class="row">
       <div :class="sidebarClass">
-        <LeftSidebar
-          @toggle="handleSidebarToggle"
-          @changeComponent="changeComponent"
-        />
+        <LeftSidebar @toggle="handleSidebarToggle" />
       </div>
+
       <div :class="headerClass">
         <TopHeader />
         <div class="content">
-          <component :is="currentComponent" />
+          <router-view />
         </div>
       </div>
     </div>
@@ -23,19 +21,14 @@
 <script>
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
-// import SuperAdmin from "@/components/EditAdmin.vue";
-// import LoginComponent from "@/components/LoginComponent.vue";
-import HomePage from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
-import users from "@/views/UsersView.vue";
 
 export default {
   name: "HomePage",
-  components: { TopHeader, LeftSidebar, users, HomePage, LoginView },
+  components: { TopHeader, LeftSidebar, LoginView },
   data() {
     return {
       isLoggedIn: false,
-      currentComponent: "users",
       isSidebarCollapsed: true,
     };
   },
@@ -51,21 +44,25 @@ export default {
     handleSidebarToggle(isCollapsed) {
       this.isSidebarCollapsed = isCollapsed;
     },
-    changeComponent(componentName) {
-      if (this.$options.components[componentName]) {
-        this.currentComponent = componentName;
-      } else {
-        console.error(`Component "${componentName}" not found.`);
-      }
-    },
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.currentComponent = "users";
+      this.$router.push("/home");
     },
     handleLogout() {
       this.isLoggedIn = false;
       this.$router.push("/login");
     },
+    loadSavedBackground() {
+      const savedImage = localStorage.getItem("backgroundImage");
+      if (savedImage) {
+        document.body.style.backgroundImage = `url(${savedImage})`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+      }
+    },
+  },
+  mounted() {
+    this.loadSavedBackground();
   },
 };
 </script>

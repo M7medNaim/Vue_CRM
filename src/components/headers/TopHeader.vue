@@ -1,24 +1,24 @@
 <template>
   <div class="top-bar pe-1 position-relative">
     <div class="row">
-      <div class="col-4 d-flex align-items-center">
+      <div class="col-4 d-flex align-items-center text-white">
         <span class="">CRM Staging</span>
       </div>
       <div class="col-4 d-flex justify-content-center align-items-center g-3">
-        <span class="fs-2 text-body-secondary">{{ currentTime }}</span>
+        <span class="fs-2 text-white">{{ currentTime }}</span>
         <button
           class="border-0 bg-transparent"
           ref="notifiButton"
           @click="toggleMenu('notifications', $refs.notifiButton)"
         >
-          <i class="fa-solid fa-bell fs-4 ms-2 pt-1 text-secondary"></i>
+          <i class="fa-solid fa-bell fs-4 ms-2 pt-1 text-white"></i>
         </button>
       </div>
       <div class="col-4 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
-              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-1 text-body-secondary"
+              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-1 text-white"
               ref="langButton"
               @click="toggleMenu('lang', $refs.langButton)"
             >
@@ -31,7 +31,7 @@
           <div class="profile ps-2">
             <button
               type="button"
-              class="border-0 bg-transparent d-flex justify-content-end align-items-center"
+              class="border-0 bg-transparent d-flex justify-content-end align-items-center text-white"
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >

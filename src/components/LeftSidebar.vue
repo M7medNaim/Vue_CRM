@@ -34,74 +34,48 @@
     <div class="sidebar-items overflow-auto">
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Notifications"
-      >
-        <i class="fa-solid fa-bell fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Notifications</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="Dashboard"
       >
-        <i class="fa-solid fa-chart-line fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Dashboard</span>
+        <router-link to="/home" class="text-decoration-none text-white">
+          <i class="fa-solid fa-chart-line fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Dashboard</span>
+        </router-link>
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        @click="changePage('users')"
+        title="CRM Board"
+      >
+        <router-link to="/" class="text-decoration-none text-white">
+          <i class="fa-solid fa-chart-line fs-5 me-2"></i>
+          <span v-if="!isCollapsed">CRM Board </span>
+        </router-link>
+      </div>
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="CRM List"
+      >
+        <router-link to="/" class="text-decoration-none text-white">
+          <i class="fa-solid fa-table-list fs-5 me-2"></i>
+          <span v-if="!isCollapsed">CRM List </span>
+        </router-link>
+      </div>
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="Admins"
       >
-        <i class="fa-solid fa-user-shield fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Admins</span>
+        <router-link to="/users" class="text-decoration-none text-white">
+          <i class="fa-solid fa-users fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Users</span>
+        </router-link>
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Hospital Type"
+        title="Contacts"
       >
-        <i class="fa-solid fa-hospital fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Hospital Type</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 ms-1 my-2 ps-3"
-        title="Hospitals"
-      >
-        <i class="fa-solid fa-building fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Hospitals</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ms-1 ps-3"
-        title="Sales Supervisors"
-      >
-        <i class="fa-solid fa-user-tie fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Sales Supervisors</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Sales Representatives"
-      >
-        <i class="fa-solid fa-users fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Sales Representatives</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ms-1 ps-3"
-        title="Billings"
-      >
-        <i class="fa-solid fa-file-invoice fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Billings</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Subscribers"
-      >
-        <i class="fa-solid fa-users fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Subscribers</span>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Enquiries"
-      >
-        <i class="fa-solid fa-question-circle fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Enquiries</span>
+        <router-link to="/" class="text-decoration-none text-white">
+          <i class="fa-regular fa-address-book fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Contacts</span>
+        </router-link>
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
@@ -127,7 +101,7 @@ import { ref } from "vue";
 
 export default {
   name: "LeftSidebar",
-  emits: ["toggle", "changeComponent"],
+  emits: ["toggle"],
   setup(props, { emit }) {
     const isCollapsed = ref(true);
 
@@ -136,18 +110,9 @@ export default {
       emit("toggle", isCollapsed.value);
     };
 
-    const changePage = (componentName) => {
-      if (componentName) {
-        emit("changeComponent", componentName);
-      } else {
-        console.error("Invalid component name");
-      }
-    };
-
     return {
       isCollapsed,
       toggleSidebar,
-      changePage,
     };
   },
 };
