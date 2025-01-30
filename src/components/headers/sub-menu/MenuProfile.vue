@@ -37,7 +37,7 @@
       <li>
         <button
           type="button"
-          class="btn btn-primary dropdown-item"
+          class="btn dropdown-item"
           @click="changeBackground"
         >
           <span class="dropdown-icon me-4 text-secondary">
@@ -47,7 +47,7 @@
         </button>
       </li>
       <li>
-        <button type="button" class="btn btn-primary dropdown-item">
+        <button type="button" class="btn dropdown-item">
           <span class="dropdown-icon me-4 text-secondary">
             <i class="fa-solid fa-rotate"></i>
           </span>
@@ -55,7 +55,7 @@
         </button>
       </li>
       <li>
-        <button type="button" class="btn btn-primary dropdown-item">
+        <button type="button" class="btn dropdown-item">
           <span class="dropdown-icon me-4 text-secondary">
             <i class="fa-solid fa-lock"></i>
           </span>
@@ -63,7 +63,7 @@
         </button>
       </li>
       <li>
-        <button type="button" class="btn btn-primary dropdown-item">
+        <button type="button" class="btn dropdown-item">
           <span class="dropdown-icon me-4 text-secondary">
             <i class="fa-solid fa-globe"></i>
           </span>
