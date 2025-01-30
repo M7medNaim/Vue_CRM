@@ -13,7 +13,7 @@
       </div>
       <span class="fw-bold" v-if="!isCollapsed">CRM Staging</span>
     </div>
-    <transition name="scale">
+    <!-- <transition name="scale">
       <div
         v-if="!isCollapsed"
         class="searchInput d-flex justify-content-center align-items-center p-2"
@@ -30,7 +30,7 @@
           />
         </form>
       </div>
-    </transition>
+    </transition> -->
     <div class="sidebar-items overflow-auto">
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
@@ -46,7 +46,7 @@
         title="CRM Board"
       >
         <router-link to="/" class="text-decoration-none text-white">
-          <i class="fa-solid fa-chart-line fs-5 me-2"></i>
+          <i class="fa-solid fa-chart-column fs-5 me-2"></i>
           <span v-if="!isCollapsed">CRM Board </span>
         </router-link>
       </div>
@@ -61,7 +61,7 @@
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Admins"
+        title="Users"
       >
         <router-link to="/users" class="text-decoration-none text-white">
           <i class="fa-solid fa-users fs-5 me-2"></i>
@@ -153,16 +153,16 @@ export default {
   white-space: nowrap;
   font-size: 14px;
 }
-
+/*
 .searchInput form i {
   top: 32%;
   left: 2%;
   font-size: 14px;
 }
-
 .searchInput form input:focus {
   box-shadow: 10px 10px 10px #605e5e80;
 }
+  */
 
 .scale-enter-active {
   transition: all 0.4s ease;
