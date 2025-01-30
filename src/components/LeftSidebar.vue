@@ -32,56 +32,88 @@
       </div>
     </transition>
     <div class="sidebar-items overflow-auto">
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
-        <i class="fa-solid fa-bell fs-5 me-2" title="Notifications"></i>
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Notifications"
+      >
+        <i class="fa-solid fa-bell fs-5 me-2"></i>
         <span v-if="!isCollapsed">Notifications</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Dashboard"
+      >
         <i class="fa-solid fa-chart-line fs-5 me-2"></i>
         <span v-if="!isCollapsed">Dashboard</span>
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         @click="changePage('users')"
+        title="Admins"
       >
         <i class="fa-solid fa-user-shield fs-5 me-2"></i>
         <span v-if="!isCollapsed">Admins</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Hospital Type"
+      >
         <i class="fa-solid fa-hospital fs-5 me-2"></i>
         <span v-if="!isCollapsed">Hospital Type</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 ms-1 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 ms-1 my-2 ps-3"
+        title="Hospitals"
+      >
         <i class="fa-solid fa-building fs-5 me-2"></i>
         <span v-if="!isCollapsed">Hospitals</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ms-1 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ms-1 ps-3"
+        title="Sales Supervisors"
+      >
         <i class="fa-solid fa-user-tie fs-5 me-2"></i>
         <span v-if="!isCollapsed">Sales Supervisors</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Sales Representatives"
+      >
         <i class="fa-solid fa-users fs-5 me-2"></i>
         <span v-if="!isCollapsed">Sales Representatives</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ms-1 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ms-1 ps-3"
+        title="Billings"
+      >
         <i class="fa-solid fa-file-invoice fs-5 me-2"></i>
         <span v-if="!isCollapsed">Billings</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Subscribers"
+      >
         <i class="fa-solid fa-users fs-5 me-2"></i>
         <span v-if="!isCollapsed">Subscribers</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Enquiries"
+      >
         <i class="fa-solid fa-question-circle fs-5 me-2"></i>
         <span v-if="!isCollapsed">Enquiries</span>
       </div>
-      <div class="sidebar-item d-flex align-items-center p-2 my-2 ps-3">
+      <div
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        title="Settings"
+      >
         <i class="fa-solid fa-cog fs-5 me-2"></i>
         <span v-if="!isCollapsed">Settings</span>
       </div>
       <div
         class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"
         @click="toggleSidebar"
+        title="Toggle Menu"
       >
         <i class="fa-solid fa-bars fs-5 me-2"></i>
         <span v-if="!isCollapsed">Toggle Menu</span>

@@ -28,22 +28,20 @@
             </button>
           </div>
 
-          <div
-            class="profile d-flex justify-content-end align-items-center ps-3"
-          >
-            <div class="userImg">
-              <img
-                :src="userImage || require('@/assets/default-user-image.jpg')"
-                class="img-fluid user-img rounded-5"
-                alt="user image"
-              />
-            </div>
+          <div class="profile ps-2">
             <button
               type="button"
-              class="border-0 bg-transparent"
+              class="border-0 bg-transparent d-flex justify-content-end align-items-center"
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >
+              <div class="userImg">
+                <img
+                  :src="userImage || require('@/assets/default-user-image.jpg')"
+                  class="img-fluid user-img rounded-5 me-2"
+                  alt="user image"
+                />
+              </div>
               <span class="me-1">{{ name }}</span>
               <i class="fa-solid fa-chevron-down"></i>
             </button>
@@ -148,8 +146,8 @@ export default {
           };
         } else if (this.activeMenu === "profile") {
           this.listProfileStyle = {
-            top: `${rect.bottom + 10}px`,
-            left: `${rect.left - 285}px`,
+            top: `${rect.bottom + 5}px`,
+            left: `${rect.left - 235}px`,
           };
         } else if (this.activeMenu === "notifications") {
           this.listNotifiStyle = {

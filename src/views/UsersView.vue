@@ -16,16 +16,9 @@
         </div>
       </div>
       <div class="col-6 mb-3">
-        <!-- زر فتح المودال -->
         <div class="text-end">
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#adminModal"
-            @click="openModal"
-          >
-            New Sales Representative
+          <button type="button" class="btn btn-primary" @click="openModal">
+            إضافة مستخدم جديد
           </button>
         </div>
       </div>
@@ -83,19 +76,19 @@
       </template>
 
       <template #item-actions="item">
-        <button
-          @click="editItem(item)"
-          class="btn btn-link p-0"
-          data-bs-toggle="modal"
-          data-bs-target="#editModal"
-        >
+        <button @click="editItem(item)" class="btn btn-link p-0">
           <i class="fas fa-edit text-primary"></i>
+        </button>
+        <button
+          @click="removeUser(item.id)"
+          class="btn btn-link text-danger ps-2"
+        >
+          <i class="fas fa-trash"></i>
         </button>
       </template>
     </EasyDataTable>
 
-    <AdminModal @add-user="addNewUser" />
-    <EditModal ref="editModal" @update-user="updateUser" />
+    <AdminModal ref="adminModalRef" @user-updated="updateUserList" />
   </div>
 </template>
 
@@ -104,17 +97,17 @@ import { ref, computed, onMounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import AdminModal from "@/components/modals/AdminForm.vue";
-import EditModal from "@/components/modals/EditAdminModal.vue";
-// import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { getUser } from "@/plugins/services/authService";
+import {
+  getUser,
+  deleteUser,
+  updateUser,
+} from "@/plugins/services/authService";
 
 export default {
-  // name: "SuperAdmin",
   name: "UsersView",
   components: {
     EasyDataTable,
     AdminModal,
-    EditModal,
   },
   setup() {
     const headers = [
@@ -124,12 +117,12 @@ export default {
       { text: "عمل", value: "actions" },
     ];
     const items = ref([]);
-
     const search = ref("");
+
     const filteredItems = computed(() => {
       if (Array.isArray(items.value)) {
         return items.value.filter((item) => {
-          const name = item.name || "";
+          const name = item.username || "";
           return name.toLowerCase().includes(search.value.toLowerCase());
         });
       }
@@ -139,48 +132,61 @@ export default {
     const fetchUsers = async () => {
       try {
         const response = await getUser();
-        console.log(items);
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
 
-    const toggleEmailVerified = (event, item) => {
-      item.emailVerified = event.target.checked;
-    };
-
-    const toggleStatus = (event, item) => {
-      const newStatus = event.target.checked ? "active" : "inactive";
-      item.status = newStatus;
-    };
-
-    const addNewUser = (newUser) => {
-      const imageUrl = newUser.image
-        ? URL.createObjectURL(newUser.image)
-        : require("@/assets/default-user-image.jpg");
-      items.value.push({
-        id: items.value.length + 1,
-        name: newUser.username,
-        email: newUser.email,
-        image: imageUrl,
-        status: newUser.status,
-        emailVerified: newUser.emailVerified,
-      });
-    };
-    const editModal = ref(null);
-    const editItem = (item) => {
-      if (editModal.value) {
-        editModal.value.openModal(item);
+    const updateUserList = (updatedUser) => {
+      const index = items.value.findIndex((u) => u.id === updatedUser.id);
+      if (index !== -1) {
+        items.value[index] = updatedUser;
+      } else {
+        items.value.push(updatedUser);
       }
     };
 
-    // const updateUser = (updatedUser) => {
-    //   const index = items.value.findIndex((item) => item.id === updatedUser.id);
-    //   if (index !== -1) {
-    //     items.value[index] = { ...updatedUser };
-    //   }
-    // };
+    const toggleEmailVerified = async (event, item) => {
+      try {
+        const newValue = event.target.checked;
+        await updateUser(item.id, { emailVerified: newValue });
+        item.emailVerified = newValue;
+      } catch (error) {
+        console.error("Update Email Verification Is Failed:", error);
+      }
+    };
+
+    const toggleStatus = async (event, item) => {
+      try {
+        const newStatus = event.target.checked ? "active" : "inactive";
+        await updateUser(item.id, { status: newStatus });
+        item.status = newStatus;
+      } catch (error) {
+        console.error("Update Status Is Failed:", error);
+      }
+    };
+    const openModal = () => {
+      if (adminModalRef.value) {
+        adminModalRef.value.openModal();
+      }
+    };
+    const adminModalRef = ref(null);
+    const editItem = (item) => {
+      if (adminModalRef.value) {
+        adminModalRef.value.openModal(item);
+      }
+    };
+
+    const removeUser = async (id) => {
+      try {
+        await deleteUser(id);
+        items.value = items.value.filter((user) => user.id !== id);
+      } catch (error) {
+        console.error("Delete User Is Failed:", error);
+      }
+    };
+
     onMounted(() => {
       fetchUsers();
     });
@@ -190,11 +196,13 @@ export default {
       items,
       search,
       filteredItems,
+      adminModalRef,
+      updateUserList,
       toggleEmailVerified,
       toggleStatus,
-      addNewUser,
-      // updateUser,
       editItem,
+      removeUser,
+      openModal,
     };
   },
 };
