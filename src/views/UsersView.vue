@@ -29,9 +29,10 @@
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="10"
+      table-class-name="custom-table"
     >
       <template #item-profile="item">
-        <div class="d-flex align-items-center py-3">
+        <div class="d-flex align-items-center py-1">
           <img
             :src="userImage || require('@/assets/default-user-image.jpg')"
             alt="User Image"
@@ -39,14 +40,14 @@
             style="width: 45px; height: 45px"
           />
           <div>
-            <div class="fw-semibold fs-6">{{ item.name }}</div>
-            <div class="text-muted">{{ item.email }}</div>
+            <div class="fs-6">{{ item.name }}</div>
+            <div class="text-muted">{{ item.role }}</div>
           </div>
         </div>
       </template>
 
       <template #item-emailVerified="item">
-        <div class="form-check form-switch">
+        <!-- <div class="form-check form-switch">
           <input
             class="form-check-input shadow-none"
             type="checkbox"
@@ -59,32 +60,21 @@
             }"
             style="width: 2.5rem; height: 1.3rem"
           />
+        </div> -->
+        <div class="userEmail">
+          <p class="pt-3">{{ item.email }}</p>
         </div>
       </template>
 
       <template #item-status="item">
-        <div class="form-check form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            :checked="item.status === 'active'"
-            @change="toggleStatus($event, item)"
-            style="width: 2.5rem; height: 1.3rem"
-          />
-        </div>
+        <FormSwitch
+          v-model="item.status"
+          @update:modelValue="toggleStatus(item)"
+        />
       </template>
 
       <template #item-actions="item">
-        <button @click="editItem(item)" class="btn btn-link p-0">
-          <i class="fas fa-edit text-primary"></i>
-        </button>
-        <button
-          @click="removeUser(item.id)"
-          class="btn btn-link text-danger ps-2"
-        >
-          <i class="fas fa-trash"></i>
-        </button>
+        <ButtonsUser :item="item" @edit="editItem" @remove="removeUser" />
       </template>
     </EasyDataTable>
 
@@ -97,6 +87,9 @@ import { ref, computed, onMounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import AdminModal from "@/components/modals/AdminForm.vue";
+import ButtonsUser from "@/components/usersElements/ButtonsUser.vue";
+import FormSwitch from "@/components/usersElements/FormSwitch.vue";
+
 import {
   getUser,
   deleteUser,
@@ -108,11 +101,13 @@ export default {
   components: {
     EasyDataTable,
     AdminModal,
+    ButtonsUser,
+    FormSwitch,
   },
   setup() {
     const headers = [
       { text: "المستخدمون:", value: "profile" },
-      { text: "تم التحقق من البريد الإلكتروني", value: "emailVerified" },
+      { text: ":البريد الإلكتروني", value: "emailVerified" },
       { text: "الحالة", value: "status" },
       { text: "عمل", value: "actions" },
     ];
@@ -147,15 +142,15 @@ export default {
       }
     };
 
-    const toggleEmailVerified = async (event, item) => {
-      try {
-        const newValue = event.target.checked;
-        await updateUser(item.id, { emailVerified: newValue });
-        item.emailVerified = newValue;
-      } catch (error) {
-        console.error("Update Email Verification Is Failed:", error);
-      }
-    };
+    // const toggleEmailVerified = async (event, item) => {
+    //   try {
+    //     const newValue = event.target.checked;
+    //     await updateUser(item.id, { emailVerified: newValue });
+    //     item.emailVerified = newValue;
+    //   } catch (error) {
+    //     console.error("Update Email Verification Is Failed:", error);
+    //   }
+    // };
 
     const toggleStatus = async (event, item) => {
       try {
@@ -197,8 +192,8 @@ export default {
       search,
       filteredItems,
       adminModalRef,
+      // toggleEmailVerified,
       updateUserList,
-      toggleEmailVerified,
       toggleStatus,
       editItem,
       removeUser,
@@ -212,5 +207,12 @@ export default {
 .inputSearch input:focus {
   box-shadow: none;
   border: none;
+}
+.userEmail {
+  font-size: 14px;
+}
+:deep(.custom-table) {
+  border-radius: 10px;
+  overflow: hidden;
 }
 </style>

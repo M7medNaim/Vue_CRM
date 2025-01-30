@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import UsersView from "../views/UsersView.vue";
-// import LoginComponent from "../components/LoginComponent.vue";
-// import SuperAdmin from "@/components/EditAdmin.vue";
 
 const routes = [
   {
