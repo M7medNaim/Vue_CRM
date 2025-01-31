@@ -1,10 +1,12 @@
 <template>
   <div class="top-bar pe-1 position-relative">
     <div class="row">
-      <div class="col-4 d-flex align-items-center text-white">
+      <div class="col-2 col-md-4 d-flex align-items-center text-white">
         <span>{{ pageTitle }}</span>
       </div>
-      <div class="col-4 d-flex justify-content-center align-items-center g-3">
+      <div
+        class="col-4 col-md-4 d-flex justify-content-center align-items-center g-3"
+      >
         <span class="fs-2 text-white">{{ currentTime }}</span>
         <button
           class="border-0 bg-transparent position-relative"
@@ -20,7 +22,7 @@
           </transition>
         </button>
       </div>
-      <div class="col-4 d-flex justify-content-end align-items-center">
+      <div class="col-6 col-md-4 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
