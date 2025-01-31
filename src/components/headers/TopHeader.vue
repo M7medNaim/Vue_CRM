@@ -2,7 +2,7 @@
   <div class="top-bar pe-1 position-relative">
     <div class="row">
       <div class="col-4 d-flex align-items-center text-white">
-        <span class="">CRM Staging</span>
+        <span>{{ pageTitle }}</span>
       </div>
       <div class="col-4 d-flex justify-content-center align-items-center g-3">
         <span class="fs-2 text-white">{{ currentTime }}</span>
@@ -73,8 +73,8 @@ import ListLang from "@/components/headers/sub-menu/ListLang.vue";
 import MenuProfile from "@/components/headers/sub-menu/MenuProfile.vue";
 import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.vue";
 import Cookies from "js-cookie";
-import { ref, onMounted, onBeforeUnmount } from "vue";
-
+import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import { useRoute } from "vue-router";
 export default {
   name: "HeaderComponent",
   components: {
@@ -123,8 +123,18 @@ export default {
       clearInterval(interval);
     });
 
+    // view name page
+    const route = useRoute();
+
+    const pageTitle = computed(() => route.meta.title || "CRM Staging");
+
+    watch(route, () => {
+      document.title = pageTitle.value;
+    });
+
     return {
       currentTime,
+      pageTitle,
     };
   },
   methods: {

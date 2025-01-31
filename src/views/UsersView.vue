@@ -3,16 +3,24 @@
     <!-- حقل البحث -->
     <div class="row">
       <div class="col-6">
-        <div class="mb-3 position-relative inputSearch">
+        <div class="mb-3 position-relative inputSearch d-flex">
           <input
             type="text"
-            class="form-control w-50 ps-5"
+            class="form-control w-50 ps-5 rounded-end-0"
             placeholder="ابحث..."
             v-model="search"
           />
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
           ></i>
+          <button
+            title="Fillter"
+            type="button"
+            class="btn btn-primary me-2 rounded-start-0"
+            @click="openFilterModal"
+          >
+            <i class="fas fa-filter"></i>
+          </button>
         </div>
       </div>
       <div class="col-6 mb-3">
@@ -79,6 +87,7 @@
     </EasyDataTable>
 
     <AdminModal ref="adminModalRef" @user-updated="updateUserList" />
+    <FilterForm ref="filterModalRef" @apply-filters="applyFilters" />
   </div>
 </template>
 
@@ -89,6 +98,7 @@ import "vue3-easy-data-table/dist/style.css";
 import AdminModal from "@/components/modals/AdminForm.vue";
 import ButtonsUser from "@/components/usersElements/ButtonsUser.vue";
 import FormSwitch from "@/components/usersElements/FormSwitch.vue";
+import FilterForm from "@/components/modals/FilterForm.vue";
 
 import {
   getUser,
@@ -103,6 +113,7 @@ export default {
     AdminModal,
     ButtonsUser,
     FormSwitch,
+    FilterForm,
   },
   setup() {
     const headers = [
@@ -113,16 +124,27 @@ export default {
     ];
     const items = ref([]);
     const search = ref("");
+    const selectedRole = ref("");
+    const selectedStatus = ref("");
 
     const filteredItems = computed(() => {
-      if (Array.isArray(items.value)) {
-        return items.value.filter((item) => {
-          const name = item.username || "";
-          return name.toLowerCase().includes(search.value.toLowerCase());
-        });
-      }
-      return [];
+      return items.value.filter((item) => {
+        const matchesSearch = item.name
+          ?.toLowerCase()
+          .includes(search.value.toLowerCase());
+        const matchesRole = selectedRole.value
+          ? item.role === selectedRole.value
+          : true;
+        const matchesStatus = selectedStatus.value
+          ? item.status === selectedStatus.value
+          : true;
+        return matchesSearch && matchesRole && matchesStatus;
+      });
     });
+    const applyFilters = (filters) => {
+      selectedRole.value = filters.role;
+      selectedStatus.value = filters.status;
+    };
 
     const fetchUsers = async () => {
       try {
@@ -166,6 +188,13 @@ export default {
         adminModalRef.value.openModal();
       }
     };
+    const filterModalRef = ref(null);
+    const openFilterModal = () => {
+      if (filterModalRef.value) {
+        filterModalRef.value.openFilterModal();
+      }
+    };
+
     const adminModalRef = ref(null);
     const editItem = (item) => {
       if (adminModalRef.value) {
@@ -192,12 +221,15 @@ export default {
       search,
       filteredItems,
       adminModalRef,
+      filterModalRef,
       // toggleEmailVerified,
       updateUserList,
       toggleStatus,
       editItem,
       removeUser,
       openModal,
+      openFilterModal,
+      applyFilters,
     };
   },
 };

@@ -12,6 +12,7 @@ const routes = [
     path: "/home",
     name: "home",
     component: HomeView,
+    meta: { title: "الرئيسية" },
   },
   {
     path: "/login",
@@ -22,6 +23,7 @@ const routes = [
     path: "/users",
     name: "UsersView",
     component: UsersView,
+    meta: { title: "المستخدمين" },
   },
 ];
 

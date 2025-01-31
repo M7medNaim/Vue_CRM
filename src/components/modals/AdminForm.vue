@@ -21,8 +21,8 @@
             @click="closeModal"
           ></button>
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="submitForm">
+        <form @submit.prevent="submitForm">
+          <div class="modal-body">
             <div class="mb-3">
               <label for="username" class="form-label">اسم المستخدم</label>
               <input
@@ -69,13 +69,16 @@
 
             <div class="mb-3">
               <label for="role" class="form-label">الدور</label>
-              <input
-                type="text"
+              <select
                 class="form-control"
                 id="role"
                 v-model="formData.role"
                 required
-              />
+              >
+                <option value="" disabled selected>اختر الدور</option>
+                <option value="super-admin">مشرف</option>
+                <option value="sales">مبيعات</option>
+              </select>
             </div>
 
             <div class="mb-3">
@@ -95,29 +98,26 @@
             <div v-if="successMessage" class="alert alert-success">
               {{ successMessage }}
             </div>
-
-            <div class="btns d-flex justify-content-between align-items-center">
-              <button type="submit" class="btn btn-primary" :disabled="loading">
-                {{
-                  loading
-                    ? isEditMode
-                      ? "جاري التعديل..."
-                      : "جاري الحفظ..."
-                    : isEditMode
-                    ? "تعديل المستخدم"
-                    : "إنشاء مستخدم"
-                }}
-              </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                @click="closeModal"
-              >
-                إغلاق
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div
+            class="modal-footer btns d-flex justify-content-between align-items-center p-2"
+          >
+            <button type="submit" class="btn btn-primary" :disabled="loading">
+              {{
+                loading
+                  ? isEditMode
+                    ? "جاري التعديل..."
+                    : "جاري الحفظ..."
+                  : isEditMode
+                  ? "تعديل المستخدم"
+                  : "إنشاء مستخدم"
+              }}
+            </button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              إغلاق
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
