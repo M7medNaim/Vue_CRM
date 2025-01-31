@@ -27,7 +27,7 @@ export default {
 </script>
 <style scoped>
 .dropdown-menu {
-  top: 0;
+  top: 35px;
   left: 0;
   width: fit-content !important;
 }

@@ -139,6 +139,8 @@ export default {
 </script>
 <style scoped>
 .dropdown-menu {
+  top: 40px;
+  left: -105px;
   width: fit-content !important;
 }
 .profileImage img {

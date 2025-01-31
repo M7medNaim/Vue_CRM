@@ -1,6 +1,6 @@
 <template>
   <div
-    class="sidebar vh-100 overflow-hidden bg-secondary text-white"
+    class="sidebar vh-100 overflow-hidden text-white"
     :class="{ 'sidebar-collapsed': isCollapsed }"
   >
     <div class="d-flex justify-content-start align-items-center p-2">

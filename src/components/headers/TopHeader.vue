@@ -7,31 +7,40 @@
       <div class="col-4 d-flex justify-content-center align-items-center g-3">
         <span class="fs-2 text-white">{{ currentTime }}</span>
         <button
-          class="border-0 bg-transparent"
+          class="border-0 bg-transparent position-relative"
           ref="notifiButton"
           @click="toggleMenu('notifications', $refs.notifiButton)"
         >
           <i class="fa-solid fa-bell fs-4 ms-2 pt-1 text-white"></i>
+          <transition name="fade">
+            <NotificationsHead
+              v-if="activeMenu === 'notifications'"
+              :style="listNotifiStyle"
+            />
+          </transition>
         </button>
       </div>
       <div class="col-4 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
-              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-1 text-white"
+              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-1 text-white position-relative"
               ref="langButton"
               @click="toggleMenu('lang', $refs.langButton)"
             >
               <i class="fa-solid fa-globe"></i>
               <span class="fs-6">English</span>
               <i class="fa-solid fa-chevron-down"></i>
+              <transition name="fade">
+                <ListLang v-if="activeMenu === 'lang'" :style="listLangStyle" />
+              </transition>
             </button>
           </div>
 
           <div class="profile ps-2">
             <button
               type="button"
-              class="border-0 bg-transparent d-flex justify-content-end align-items-center text-white"
+              class="border-0 bg-transparent d-flex justify-content-end align-items-center text-white position-relative"
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >
@@ -44,27 +53,19 @@
               </div>
               <span class="me-1">{{ name }}</span>
               <i class="fa-solid fa-chevron-down"></i>
+
+              <transition name="fade">
+                <MenuProfile
+                  v-if="activeMenu === 'profile'"
+                  :style="listProfileStyle"
+                  @logout="handleLogout"
+                />
+              </transition>
             </button>
           </div>
         </div>
       </div>
     </div>
-    <transition name="fade">
-      <ListLang v-if="activeMenu === 'lang'" :style="listLangStyle" />
-    </transition>
-    <transition name="fade">
-      <MenuProfile
-        v-if="activeMenu === 'profile'"
-        :style="listProfileStyle"
-        @logout="handleLogout"
-      />
-    </transition>
-    <transition name="fade">
-      <NotificationsHead
-        v-if="activeMenu === 'notifications'"
-        :style="listNotifiStyle"
-      />
-    </transition>
   </div>
 </template>
 
@@ -138,35 +139,35 @@ export default {
     };
   },
   methods: {
-    toggleMenu(menu, buttonRef) {
+    toggleMenu(menu) {
       if (this.activeMenu === menu) {
         this.activeMenu = null;
       } else {
         this.activeMenu = menu;
-        this.calculatePosition(buttonRef);
+        // this.calculatePosition(buttonRef);
       }
     },
-    calculatePosition(buttonRef) {
-      if (buttonRef) {
-        const rect = buttonRef.getBoundingClientRect();
-        if (this.activeMenu === "lang") {
-          this.listLangStyle = {
-            top: `${rect.bottom + 10}px`,
-            left: `${rect.left - 130}px`,
-          };
-        } else if (this.activeMenu === "profile") {
-          this.listProfileStyle = {
-            top: `${rect.bottom + 5}px`,
-            left: `${rect.left - 235}px`,
-          };
-        } else if (this.activeMenu === "notifications") {
-          this.listNotifiStyle = {
-            top: `${rect.bottom + 10}px`,
-            left: `${rect.left}px`,
-          };
-        }
-      }
-    },
+    // calculatePosition(buttonRef) {
+    //   if (buttonRef) {
+    //     const rect = buttonRef.getBoundingClientRect();
+    //     if (this.activeMenu === "lang") {
+    //       this.listLangStyle = {
+    //         top: `${rect.bottom + 10}px`,
+    //         left: `${rect.left - 130}px`,
+    //       };
+    //     } else if (this.activeMenu === "profile") {
+    //       this.listProfileStyle = {
+    //         top: `${rect.bottom + 5}px`,
+    //         left: `${rect.left - 235}px`,
+    //       };
+    //     } else if (this.activeMenu === "notifications") {
+    //       this.listNotifiStyle = {
+    //         top: `${rect.bottom + 10}px`,
+    //         left: `${rect.left}px`,
+    //       };
+    //     }
+    //   }
+    // },
     handleClickOutside(event) {
       if (
         this.activeMenu &&
