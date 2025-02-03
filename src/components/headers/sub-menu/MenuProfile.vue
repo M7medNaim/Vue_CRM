@@ -18,75 +18,62 @@
     </div>
     <hr />
     <ul class="list-unstyled mb-0 lh-lg">
-      <li>
-        <a class="dropdown-item ps-3">
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-user"></i>
-          </span>
-          <span>Edit Profile</span>
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item ps-3">
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-calendar-days"></i>
-          </span>
-          <span>Calender</span></a
-        >
-      </li>
-      <li>
-        <button
-          type="button"
-          class="btn dropdown-item"
-          @click="changeBackground"
-        >
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-image"></i>
-          </span>
-          <span>Customize Background</span>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="btn dropdown-item">
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-rotate"></i>
-          </span>
-          <span>Reload</span>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="btn dropdown-item">
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-lock"></i>
-          </span>
-          <span>Change Password</span>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="btn dropdown-item">
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-globe"></i>
-          </span>
-          <span>Change Language</span>
-        </button>
-      </li>
-      <li @click="handleLogout">
-        <a class="dropdown-item ps-3">
-          <span class="dropdown-icon me-4 text-secondary">
-            <i class="fa-solid fa-right-from-bracket ps-1"></i>
-          </span>
-          <span>Logout</span></a
-        >
-      </li>
+      <ProfileMenuItem
+        icon="fa-user"
+        title="Edit Profile"
+        @click="openEditProfileModal"
+      />
+      <ProfileMenuItem
+        icon="fa-calendar-days"
+        title="Calender"
+        @click="openCalenderModal"
+      />
+      <ProfileMenuItem
+        icon="fa-image"
+        title="Customize Background"
+        @click="changeBackground"
+      />
+      <ProfileMenuItem icon="fa-rotate" title="Reload" @click="reloadPage" />
+      <ProfileMenuItem
+        icon="fa-lock"
+        title="Change Password"
+        @click="openChangePasswordModal"
+      />
+      <ProfileMenuItem
+        icon="fa-globe"
+        title="Change Language"
+        @click="openChangeLangModal"
+      />
+      <ProfileMenuItem
+        icon="fa-right-from-bracket"
+        title="Logout"
+        @click="handleLogout"
+      />
     </ul>
   </div>
+  <EditProfile ref="editProfileModal" />
+  <ChangePassword ref="changePasswordModal" />
+  <ChangeLang ref="changeLangModal" />
+  <CalenderModal ref="CalenderModal" />
 </template>
 <script>
 import Cookies from "js-cookie";
 import axiosInstance from "@/plugins/axios";
+import ProfileMenuItem from "@/components/headers/sub-menu/profileMenuItems/ProfileMenuItem.vue";
+import EditProfile from "@/components/modals/EditProfile.vue";
+import ChangePassword from "@/components/modals/ChangePassword.vue";
+import ChangeLang from "@/components/modals/ChangeLang.vue";
+import CalenderModal from "@/components/modals/CalenderModal.vue";
 
 export default {
   name: "MenuProfile",
+  components: {
+    ProfileMenuItem,
+    EditProfile,
+    ChangePassword,
+    ChangeLang,
+    CalenderModal,
+  },
   data() {
     return {
       name: Cookies.get("name") || "User",
@@ -133,6 +120,21 @@ export default {
       document.body.style.backgroundPosition = "center";
 
       localStorage.setItem("backgroundImage", randomImage);
+    },
+    openEditProfileModal() {
+      this.$refs.editProfileModal.openEditProfile();
+    },
+    openChangePasswordModal() {
+      this.$refs.changePasswordModal.openChangePassword();
+    },
+    openChangeLangModal() {
+      this.$refs.changeLangModal.openChangeLang();
+    },
+    openCalenderModal() {
+      this.$refs.CalenderModal.openCalenderModal();
+    },
+    reloadPage() {
+      location.reload();
     },
   },
 };

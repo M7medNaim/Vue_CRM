@@ -9,12 +9,31 @@
   </div>
 
   <div class="mb-3">
-    <label for="status" class="form-label">الحالة</label>
-    <select class="form-control" id="status" v-model="localStatus">
-      <option value="" disabled selected>اختر الحالة</option>
-      <option value="active">نشط</option>
-      <option value="inactive">غير نشط</option>
-    </select>
+    <label class="form-label">الحالة</label>
+    <div
+      class="radioStatus d-flex justify-content-start align-items-center gap-3"
+    >
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="radio"
+          id="status-active"
+          value="active"
+          v-model="localStatus"
+        />
+        <label class="form-check-label" for="status-active"> نشط </label>
+      </div>
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="radio"
+          id="status-inactive"
+          value="inactive"
+          v-model="localStatus"
+        />
+        <label class="form-check-label" for="status-inactive"> غير نشط </label>
+      </div>
+    </div>
   </div>
 
   <div v-if="errorMessage" class="alert alert-danger">
@@ -48,5 +67,21 @@ export default {
 select:focus {
   box-shadow: none;
   outline: none;
+}
+/* تغيير لون الراديو */
+input[type="radio"] {
+  accent-color: #292929;
+  box-shadow: none;
+  color: #292929;
+  cursor: pointer;
+}
+
+input[type="radio"]:focus,
+input[type="radio"]:active,
+input[type="radio"]:checked {
+  box-shadow: none;
+  border: #292929;
+  outline: none;
+  background-color: #292929;
 }
 </style>
