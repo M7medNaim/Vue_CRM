@@ -45,7 +45,7 @@
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="CRM Board"
       >
-        <router-link to="/" class="text-decoration-none text-white">
+        <router-link to="/users" class="text-decoration-none text-white">
           <i class="fa-solid fa-chart-column fs-5 me-2"></i>
           <span v-if="!isCollapsed">CRM Board </span>
         </router-link>
@@ -54,7 +54,7 @@
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="CRM List"
       >
-        <router-link to="/" class="text-decoration-none text-white">
+        <router-link to="/users" class="text-decoration-none text-white">
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
           <span v-if="!isCollapsed">CRM List </span>
         </router-link>
@@ -72,7 +72,7 @@
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="Contacts"
       >
-        <router-link to="/" class="text-decoration-none text-white">
+        <router-link to="/users" class="text-decoration-none text-white">
           <i class="fa-regular fa-address-book fs-5 me-2"></i>
           <span v-if="!isCollapsed">Contacts</span>
         </router-link>
