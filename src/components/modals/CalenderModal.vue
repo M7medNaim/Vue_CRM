@@ -49,7 +49,7 @@ export default {
       modalInstance.show();
     };
 
-    const closeCalender = () => {
+    const closeCalenderModal = () => {
       const modal = document.getElementById("calenderModal");
       const modalInstance = Modal.getInstance(modal);
       if (modalInstance) modalInstance.hide();
@@ -58,14 +58,14 @@ export default {
     };
 
     const submitForm = () => {
-      closeCalender();
+      closeCalenderModal();
     };
 
     return {
       calender,
       loading,
       openCalenderModal,
-      closeCalender,
+      closeCalenderModal,
       submitForm,
     };
   },

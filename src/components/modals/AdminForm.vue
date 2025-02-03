@@ -43,6 +43,15 @@
                 required
               />
             </div>
+            <div class="mb-3">
+              <label for="phoneNumber" class="form-label">رقم الهاتف</label>
+              <input
+                type="text"
+                class="form-control"
+                id="phoneNumber"
+                v-model="formData.phoneNumber"
+              />
+            </div>
 
             <div v-if="!isEditMode" class="mb-3">
               <label for="password" class="form-label">كلمة المرور</label>
@@ -69,18 +78,27 @@
 
             <div class="mb-3">
               <label for="role" class="form-label">الدور</label>
-              <select
-                class="form-control"
-                id="role"
-                v-model="formData.role"
-                required
-              >
-                <option value="" disabled selected>اختر الدور</option>
-                <option value="super-admin">مشرف</option>
-                <option value="sales">مبيعات</option>
+              <select class="form-control" id="role" v-model="formData.role">
+                <option v-if="!isEditMode" value="" disabled selected>
+                  اختر الدور
+                </option>
+                <option v-for="role in roles" :key="role.id" :value="role.id">
+                  {{ role.name }}
+                </option>
               </select>
             </div>
 
+            <div class="mb-3">
+              <label for="reportTo" class="form-label">من يتبع له</label>
+              <Multiselect
+                v-model="formData.reportTo"
+                :options="users"
+                label="name"
+                track-by="id"
+                placeholder="اختر المسؤول"
+                :searchable="true"
+              />
+            </div>
             <div class="mb-3">
               <label for="image" class="form-label">الصورة</label>
               <input
@@ -125,10 +143,19 @@
 
 <script>
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { createUser, updateUser } from "@/plugins/services/authService";
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.css";
+
+import {
+  createUser,
+  updateUser,
+  getUser,
+  getRoles,
+} from "@/plugins/services/authService";
 
 export default {
   name: "AdminModal",
+  components: { Multiselect },
   data() {
     return {
       isEditMode: false,
@@ -139,27 +166,52 @@ export default {
         password: "",
         password_confirmation: "",
         role: "",
+        reportTo: "",
+        phoneNumber: "",
         image: null,
       },
+      users: [],
+      roles: [],
       loading: false,
       successMessage: "",
       errorMessage: "",
     };
   },
   methods: {
+    async fetchUsers() {
+      try {
+        const response = await getUser();
+        this.users = response.data.data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    },
+    async fetchRoles() {
+      try {
+        const response = await getRoles();
+        this.roles = response.data.data;
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    },
     handleImageUpload(event) {
       const file = event.target.files[0];
       this.formData.image = file ? file : null;
     },
 
     openModal(user = null) {
+      this.fetchUsers();
+      this.fetchRoles();
+
       if (user) {
         this.isEditMode = true;
         this.formData = {
           id: user.id,
           username: user.name,
           email: user.email,
-          role: user.role,
+          role: user.role?.id || user.role,
+          reportTo: user.reportTo?.id || user.reportTo,
+          phoneNumber: user.phoneNumber,
           image: null,
         };
       } else {
@@ -171,9 +223,12 @@ export default {
           password: "",
           password_confirmation: "",
           role: "",
+          reportTo: "",
+          phoneNumber: "",
           image: null,
         };
       }
+
       const modal = new Modal(document.getElementById("adminModal"));
       modal.show();
     },
@@ -188,6 +243,8 @@ export default {
         formData.append("name", this.formData.username);
         formData.append("email", this.formData.email);
         formData.append("role", this.formData.role);
+        formData.append("reportTo", this.formData.reportTo);
+        formData.append("phoneNumber", this.formData.phoneNumber);
         if (!this.isEditMode) {
           formData.append("password", this.formData.password);
           formData.append(
@@ -232,6 +289,8 @@ export default {
         password: "",
         password_confirmation: "",
         role: "",
+        reportTo: "",
+        phoneNumber: "",
         image: null,
       };
     },

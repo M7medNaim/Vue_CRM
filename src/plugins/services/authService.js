@@ -13,6 +13,7 @@ export const getUser = () => {
     },
   });
 };
+export const getRoles = () => axios.get("/roles");
 
 export const createUser = (formData) => {
   return axios.post("/users", formData, {
