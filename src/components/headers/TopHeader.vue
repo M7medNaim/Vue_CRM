@@ -60,7 +60,7 @@
                 <MenuProfile
                   v-if="activeMenu === 'profile'"
                   :style="listProfileStyle"
-                  @logout="handleLogout"
+                  @logout="$emit('logout')"
                 />
               </transition>
             </button>

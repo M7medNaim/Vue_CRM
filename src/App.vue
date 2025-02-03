@@ -9,7 +9,7 @@
       </div>
 
       <div :class="headerClass">
-        <TopHeader />
+        <TopHeader @logout="handleLogout" />
         <div class="content">
           <router-view />
         </div>
@@ -22,7 +22,7 @@
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
-
+import Cookies from "js-cookie";
 export default {
   name: "HomePage",
   components: { TopHeader, LeftSidebar, LoginView },
@@ -46,9 +46,13 @@ export default {
     },
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.$router.push("/home");
+      this.$router.push("/users");
     },
     handleLogout() {
+      Cookies.remove("authToken");
+      Cookies.remove("name");
+      Cookies.remove("image");
+      Cookies.remove("email");
       this.isLoggedIn = false;
       this.$router.push("/login");
     },
@@ -60,9 +64,17 @@ export default {
         document.body.style.backgroundPosition = "center";
       }
     },
+    checkAuthStatus() {
+      const token = Cookies.get("authToken");
+      this.isLoggedIn = !!token;
+      if (!token) {
+        this.$router.push("/login");
+      }
+    },
   },
   mounted() {
     this.loadSavedBackground();
+    this.checkAuthStatus();
   },
 };
 </script>

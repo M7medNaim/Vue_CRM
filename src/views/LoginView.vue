@@ -105,15 +105,14 @@ export default {
         const email = response.data.user.email;
         const image = response.data.user.image || "";
         this.storeToken(token, name, image, email);
-        this.email = "";
-        this.password = "";
+        // this.email = "";
+        // this.password = "";
         this.loginSuccess = true;
         axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
         this.$emit("loginSuccess");
         this.$router.push("/users");
       } catch (error) {
         this.errors.message = "Login failed. Please try again.";
-        // error.response?.data?.message ||
         this.email = "";
         this.password = "";
       }

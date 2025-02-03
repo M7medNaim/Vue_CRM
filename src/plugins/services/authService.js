@@ -1,10 +1,18 @@
 import axios from "@/plugins/axios";
+import Cookies from "js-cookie";
 
 export const login = (credentials) => {
   return axios.post("/login", credentials);
 };
 export const logout = () => axios.post("/logout");
-export const getUser = () => axios.get("/users");
+export const getUser = () => {
+  const token = Cookies.get("authToken");
+  return axios.get("/users", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
 export const createUser = (formData) => {
   return axios.post("/users", formData, {
@@ -17,4 +25,11 @@ export const createUser = (formData) => {
 export const updateUser = (userId, userData) =>
   axios.put(`/users/${userId}`, userData);
 
-export const deleteUser = (userId) => axios.delete(`/users/${userId}`);
+export const deleteUser = (userId) => {
+  const token = Cookies.get("authToken");
+  return axios.delete(`/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
