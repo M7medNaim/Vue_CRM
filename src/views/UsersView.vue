@@ -36,7 +36,7 @@
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
-      :rows-per-page="10"
+      :rows-per-page="selectedPerPage"
       table-class-name="custom-table"
     >
       <template #item-profile="item">
@@ -55,20 +55,6 @@
       </template>
 
       <template #item-emailVerified="item">
-        <!-- <div class="form-check form-switch">
-          <input
-            class="form-check-input shadow-none"
-            type="checkbox"
-            role="switch"
-            :checked="item.emailVerified"
-            @change="toggleEmailVerified($event, item)"
-            :class="{
-              'red-switch': item.emailVerified,
-              'red-switch-inactive': !item.emailVerified,
-            }"
-            style="width: 2.5rem; height: 1.3rem"
-          />
-        </div> -->
         <div class="userEmail">
           <p class="pt-3">{{ item.email }}</p>
         </div>
@@ -127,24 +113,48 @@ export default {
     const search = ref("");
     const selectedRole = ref("");
     const selectedStatus = ref("");
+    const selectedCreatedAt = ref("");
+    const selectedPerPage = ref("10");
 
+    const isFiltered = computed(() => {
+      return (
+        selectedRole.value || selectedStatus.value || selectedCreatedAt.value
+      );
+    });
     const filteredItems = computed(() => {
       return items.value.filter((item) => {
-        const matchesSearch = item.name
-          ?.toLowerCase()
-          .includes(search.value.toLowerCase());
-        const matchesRole = selectedRole.value
-          ? item.role === selectedRole.value
-          : true;
-        const matchesStatus = selectedStatus.value
-          ? item.status === selectedStatus.value
-          : true;
-        return matchesSearch && matchesRole && matchesStatus;
+        return (
+          item.name.toLowerCase().includes(search.value.toLowerCase()) &&
+          (selectedRole.value ? item.role === selectedRole.value : true) &&
+          (selectedStatus.value
+            ? item.status === selectedStatus.value
+            : true) &&
+          (selectedCreatedAt.value
+            ? item.createdAt === selectedCreatedAt.value
+            : true)
+        );
       });
     });
-    const applyFilters = (filters) => {
+    const applyFilters = async (filters) => {
+      console.log(filters);
       selectedRole.value = filters.role;
       selectedStatus.value = filters.status;
+      selectedCreatedAt.value = filters.createdAt;
+      selectedPerPage.value = filters.rowsPerPage;
+
+      try {
+        const response = await getUser({
+          role: selectedRole.value,
+          status: selectedStatus.value,
+          createdAt: selectedCreatedAt.value,
+          perPage: selectedPerPage.value,
+        });
+
+        console.log("response.data.data");
+        items.value = response.data.data;
+      } catch (error) {
+        console.error("هناك مشكلة في فلترة المستخدمين :", error);
+      }
     };
 
     const fetchUsers = async () => {
@@ -164,16 +174,6 @@ export default {
         items.value.push(updatedUser);
       }
     };
-
-    // const toggleEmailVerified = async (event, item) => {
-    //   try {
-    //     const newValue = event.target.checked;
-    //     await updateUser(item.id, { emailVerified: newValue });
-    //     item.emailVerified = newValue;
-    //   } catch (error) {
-    //     console.error("Update Email Verification Is Failed:", error);
-    //   }
-    // };
 
     const toggleStatus = async (event, item) => {
       try {
@@ -223,7 +223,7 @@ export default {
       filteredItems,
       adminModalRef,
       filterModalRef,
-      // toggleEmailVerified,
+      isFiltered,
       updateUserList,
       toggleStatus,
       editItem,

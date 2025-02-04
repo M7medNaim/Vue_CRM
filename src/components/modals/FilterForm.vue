@@ -19,9 +19,15 @@
             @click="closeFilterModal"
           ></button>
         </div>
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="submitFilters">
           <div class="modal-body">
-            <FilterForm :role="role" :status="status" @submit="applyFilters" />
+            <FilterForm
+              v-model:role="role"
+              v-model:status="status"
+              v-model:createdAt="createdAt"
+              v-model:perPage="perPage"
+              @apply-filters="applyFilters"
+            />
           </div>
           <FilterButtons :loading="loading" @close="closeFilterModal" />
         </form>
@@ -34,6 +40,7 @@
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import FilterForm from "@/components/filterElements/FilterForm.vue";
 import FilterButtons from "@/components/filterElements/FilterButtons.vue";
+import { getRoles } from "@/plugins/services/authService";
 
 export default {
   name: "FilterModal",
@@ -42,6 +49,8 @@ export default {
     return {
       status: "",
       role: "",
+      createdAt: "",
+      perPage: "10",
       loading: false,
       modalInstance: null,
     };
@@ -51,9 +60,11 @@ export default {
   },
   methods: {
     openFilterModal() {
+      this.fetchRoles();
       this.modalInstance.show();
     },
     applyFilters(filters) {
+      console.log(filters);
       this.loading = true;
       this.$emit("apply-filters", filters);
       setTimeout(() => {
@@ -67,6 +78,14 @@ export default {
       if (modalInstance) modalInstance.hide();
       document.querySelector(".modal-backdrop")?.remove();
       document.body.classList.remove("modal-open");
+    },
+    async fetchRoles() {
+      try {
+        const response = await getRoles();
+        this.roles = response.data.data;
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
     },
   },
 };

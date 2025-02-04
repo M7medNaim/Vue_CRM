@@ -3,11 +3,39 @@
     <label for="role" class="form-label">الدور</label>
     <select class="form-control" id="role" v-model="localRole">
       <option value="" disabled selected>اختر الدور</option>
-      <option value="super-admin">مشرف</option>
-      <option value="sales">مبيعات</option>
+      <option v-for="role in roles" :key="role.id" :value="role.name">
+        {{ role.name }}
+      </option>
     </select>
   </div>
-
+  <div class="row">
+    <div class="col-6">
+      <div class="mb-3">
+        <label for="createdAt" class="form-label">تاريخ الاضافة</label>
+        <input
+          type="date"
+          class="form-control"
+          id="createdAt"
+          v-model="localCreatedAt"
+        />
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="mb-3">
+        <label for="rowsPerPage" class="form-label">عدد الصفوف في الصفحة</label>
+        <select
+          class="form-control"
+          id="rowsPerPage"
+          v-model="localRowsPerPage"
+        >
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+  </div>
   <div class="mb-3">
     <label class="form-label">الحالة</label>
     <div
@@ -35,7 +63,6 @@
       </div>
     </div>
   </div>
-
   <div v-if="errorMessage" class="alert alert-danger">
     {{ errorMessage }}
   </div>
@@ -45,43 +72,69 @@
 </template>
 
 <script>
+import { getRoles } from "@/plugins/services/authService";
+
 export default {
   name: "FilterForm",
-  props: ["role", "status"],
+  props: {
+    role: String,
+    status: String,
+    createdAt: String,
+    perPage: String,
+  },
+  emits: ["update:role", "update:status", "update:createdAt", "update:perPage"],
+
   data() {
     return {
+      roles: [],
       localRole: this.role,
       localStatus: this.status,
+      localCreatedAt: this.createdAt,
+      localRowsPerPage: this.perPage,
       errorMessage: "",
       successMessage: "",
     };
   },
+  watch: {
+    localRole(newVal) {
+      this.$emit("update:role", newVal);
+    },
+    localStatus(newVal) {
+      this.$emit("update:status", newVal);
+    },
+    localCreatedAt(newVal) {
+      this.$emit("update:createdAt", newVal);
+    },
+    localRowsPerPage(newVal) {
+      this.$emit("update:perPage", newVal);
+    },
+  },
+  mounted() {
+    this.fetchRoles();
+  },
   methods: {
-    submitForm() {
-      this.$emit("submit", { role: this.localRole, status: this.localStatus });
+    async fetchRoles() {
+      try {
+        const response = await getRoles();
+        this.roles = response.data.data;
+      } catch (error) {
+        this.errorMessage = "Error in Upload Roles ";
+      }
+    },
+    submitFilters() {
+      console.log({
+        role: this.localRole,
+        status: this.localStatus,
+        createdAt: this.localCreatedAt,
+        rowsPerPage: this.localRowsPerPage,
+      });
+      this.$emit("apply-filters", {
+        role: this.localRole,
+        status: this.localStatus,
+        createdAt: this.localCreatedAt,
+        rowsPerPage: this.localRowsPerPage,
+      });
     },
   },
 };
 </script>
-<style scoped>
-select:focus {
-  box-shadow: none;
-  outline: none;
-}
-/* تغيير لون الراديو */
-input[type="radio"] {
-  accent-color: #292929;
-  box-shadow: none;
-  color: #292929;
-  cursor: pointer;
-}
-
-input[type="radio"]:focus,
-input[type="radio"]:active,
-input[type="radio"]:checked {
-  box-shadow: none;
-  border: #292929;
-  outline: none;
-  background-color: #292929;
-}
-</style>
