@@ -242,7 +242,11 @@ export default {
         const formData = new FormData();
         formData.append("name", this.formData.username);
         formData.append("email", this.formData.email);
-        formData.append("role", this.formData.role);
+        const selectedRole = this.roles.find(
+          (role) => role.name === this.formData.role
+        );
+        formData.append("role", selectedRole ? selectedRole.id : "");
+
         formData.append("reportTo", this.formData.reportTo);
         formData.append("phoneNumber", this.formData.phoneNumber);
         if (!this.isEditMode) {
@@ -313,7 +317,7 @@ export default {
       if (!this.formData.role) return [];
 
       const selectedRole = this.roles.find(
-        (role) => role.id === this.formData.role
+        (role) => role.name === this.formData.role
       );
       if (!selectedRole || !selectedRole.parent_role) return [];
 
