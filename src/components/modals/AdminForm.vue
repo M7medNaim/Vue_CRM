@@ -82,7 +82,7 @@
                 <option v-if="!isEditMode" value="" disabled selected>
                   اختر الدور
                 </option>
-                <option v-for="role in roles" :key="role.id" :value="role.id">
+                <option v-for="role in roles" :key="role.id" :value="role.name">
                   {{ role.name }}
                 </option>
               </select>
