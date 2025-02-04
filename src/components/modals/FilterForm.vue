@@ -26,7 +26,6 @@
               v-model:status="status"
               v-model:createdAt="createdAt"
               v-model:perPage="perPage"
-              @apply-filters="applyFilters"
             />
           </div>
           <FilterButtons :loading="loading" @close="closeFilterModal" />
@@ -64,7 +63,7 @@ export default {
       this.modalInstance.show();
     },
     applyFilters(filters) {
-      console.log(filters);
+      // console.log(filters);
       this.loading = true;
       this.$emit("apply-filters", filters);
       setTimeout(() => {
@@ -78,6 +77,25 @@ export default {
       if (modalInstance) modalInstance.hide();
       document.querySelector(".modal-backdrop")?.remove();
       document.body.classList.remove("modal-open");
+    },
+    submitFilters() {
+      console.log("تم تطبيق الفلترة", {
+        role: this.role,
+        status: this.status,
+        createdAt: this.createdAt,
+        perPage: this.perPage,
+      });
+      this.loading = true;
+      this.$emit("apply-filters", {
+        role: this.role,
+        status: this.status,
+        createdAt: this.createdAt,
+        perPage: this.perPage,
+      });
+      setTimeout(() => {
+        this.loading = false;
+        this.closeFilterModal();
+      }, 1000);
     },
     async fetchRoles() {
       try {

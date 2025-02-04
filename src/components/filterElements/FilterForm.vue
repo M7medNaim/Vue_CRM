@@ -76,12 +76,7 @@ import { getRoles } from "@/plugins/services/authService";
 
 export default {
   name: "FilterForm",
-  props: {
-    role: String,
-    status: String,
-    createdAt: String,
-    perPage: String,
-  },
+  props: ["role", "status", "createdAt", "perPage"],
   emits: ["update:role", "update:status", "update:createdAt", "update:perPage"],
 
   data() {
@@ -120,20 +115,6 @@ export default {
       } catch (error) {
         this.errorMessage = "Error in Upload Roles ";
       }
-    },
-    submitFilters() {
-      console.log({
-        role: this.localRole,
-        status: this.localStatus,
-        createdAt: this.localCreatedAt,
-        rowsPerPage: this.localRowsPerPage,
-      });
-      this.$emit("apply-filters", {
-        role: this.localRole,
-        status: this.localStatus,
-        createdAt: this.localCreatedAt,
-        rowsPerPage: this.localRowsPerPage,
-      });
     },
   },
 };
