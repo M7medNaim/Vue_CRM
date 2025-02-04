@@ -92,7 +92,7 @@
               <label for="reportTo" class="form-label">من يتبع له</label>
               <Multiselect
                 v-model="formData.reportTo"
-                :options="users"
+                :options="filteredUsers"
                 label="name"
                 track-by="id"
                 placeholder="اختر المسؤول"
@@ -301,6 +301,25 @@ export default {
       if (modalInstance) modalInstance.hide();
       document.querySelector(".modal-backdrop")?.remove();
       document.body.classList.remove("modal-open");
+    },
+
+    isParentRole(parentRole, childRole) {
+      const childRoleData = this.roles.find((role) => role.name === childRole);
+      return childRoleData && childRoleData.parent_role === parentRole;
+    },
+  },
+  computed: {
+    filteredUsers() {
+      if (!this.formData.role) return [];
+
+      const selectedRole = this.roles.find(
+        (role) => role.id === this.formData.role
+      );
+      if (!selectedRole || !selectedRole.parent_role) return [];
+
+      return this.users.filter(
+        (user) => user.role === selectedRole.parent_role
+      );
     },
   },
 };
