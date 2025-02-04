@@ -1,17 +1,24 @@
 <template>
-  <div v-if="!isLoggedIn">
-    <LoginView @loginSuccess="handleLoginSuccess" />
-  </div>
-  <div v-else class="app overflow-hidden">
-    <div class="row">
-      <div :class="sidebarClass">
-        <LeftSidebar @toggle="handleSidebarToggle" />
-      </div>
+  <Loader
+    :isLoading="isLoading"
+    :loaderImage="loaderImage"
+    :loaderColor="loaderColor"
+  />
+  <div v-if="!isLoading">
+    <div v-if="!isLoggedIn">
+      <LoginView @loginSuccess="handleLoginSuccess" />
+    </div>
+    <div v-else class="app overflow-hidden">
+      <div class="row">
+        <div :class="sidebarClass">
+          <LeftSidebar @toggle="handleSidebarToggle" />
+        </div>
 
-      <div :class="headerClass">
-        <TopHeader @logout="handleLogout" />
-        <div class="content">
-          <router-view />
+        <div :class="headerClass">
+          <TopHeader @logout="handleLogout" />
+          <div class="content">
+            <router-view />
+          </div>
         </div>
       </div>
     </div>
@@ -23,11 +30,16 @@ import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
 import Cookies from "js-cookie";
+import Loader from "@/components/LoaderComponent.vue";
+
 export default {
   name: "HomePage",
-  components: { TopHeader, LeftSidebar, LoginView },
+  components: { TopHeader, LeftSidebar, LoginView, Loader },
   data() {
     return {
+      isLoading: true,
+      loaderImage: "/images/new-nokta-logo.png",
+      loaderColor: "#9e2929",
       isLoggedIn: false,
       isSidebarCollapsed: true,
     };
@@ -75,6 +87,9 @@ export default {
   mounted() {
     this.loadSavedBackground();
     this.checkAuthStatus();
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 2000);
   },
 };
 </script>
