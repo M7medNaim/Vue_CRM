@@ -140,25 +140,20 @@ export default {
       });
     });
     const applyFilters = async (filters) => {
-      selectedRole.value = filters.role;
-      selectedStatus.value = filters.status;
-      selectedCreatedAt.value = filters.createdAt;
-      selectedPerPage.value = filters.rowsPerPage;
+      const query = {
+        ...(filters.role && { role: filters.role }),
+        ...(filters.status && { status: filters.status }),
+        ...(filters.createdAt && { createdAt: filters.createdAt }),
+        perPage: filters.perPage || "10",
+      };
 
       try {
-        const response = await getUser({
-          role: selectedRole.value,
-          status: selectedStatus.value,
-          createdAt: selectedCreatedAt.value,
-          perPage: selectedPerPage.value,
-        });
-
+        const response = await getUser(query);
         items.value = response.data.data;
       } catch (error) {
-        console.error("هناك مشكلة في فلترة المستخدمين :", error);
+        console.error("هناك مشكلة في فلترة المستخدمين:", error);
       }
     };
-
     const fetchUsers = async () => {
       try {
         const response = await getUser();
