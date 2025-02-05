@@ -5,9 +5,10 @@ export const login = (credentials) => {
   return axios.post("/login", credentials);
 };
 export const logout = () => axios.post("/logout");
-export const getUser = () => {
+export const getUser = (filters) => {
   const token = Cookies.get("authToken");
   return axios.get("/users", {
+    params: filters,
     headers: {
       Authorization: `Bearer ${token}`,
     },

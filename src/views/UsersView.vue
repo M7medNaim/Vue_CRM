@@ -73,7 +73,11 @@
     </EasyDataTable>
 
     <AdminModal ref="adminModalRef" @user-updated="updateUserList" />
-    <FilterForm ref="filterModalRef" @apply-filters="applyFilters" />
+    <FilterForm
+      ref="filterModalRef"
+      @apply-filters="applyFilters"
+      @reset-filters="resetFilters"
+    />
   </div>
 </template>
 
@@ -136,7 +140,6 @@ export default {
       });
     });
     const applyFilters = async (filters) => {
-      console.log(filters);
       selectedRole.value = filters.role;
       selectedStatus.value = filters.status;
       selectedCreatedAt.value = filters.createdAt;
@@ -150,7 +153,6 @@ export default {
           perPage: selectedPerPage.value,
         });
 
-        console.log("response.data.data");
         items.value = response.data.data;
       } catch (error) {
         console.error("هناك مشكلة في فلترة المستخدمين :", error);
@@ -212,6 +214,20 @@ export default {
       }
     };
 
+    const resetFilters = async () => {
+      selectedRole.value = "";
+      selectedStatus.value = "";
+      selectedCreatedAt.value = "";
+      selectedPerPage.value = "10";
+
+      try {
+        const response = await getUser();
+        items.value = response.data.data;
+      } catch (error) {
+        console.error("فشل في إعادة تعيين الفلترة:", error);
+      }
+    };
+
     onMounted(() => {
       fetchUsers();
     });
@@ -231,6 +247,7 @@ export default {
       openModal,
       openFilterModal,
       applyFilters,
+      resetFilters,
     };
   },
 };
