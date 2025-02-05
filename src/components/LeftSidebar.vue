@@ -54,7 +54,7 @@
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="CRM List"
       >
-        <router-link to="/users" class="text-decoration-none text-white">
+        <router-link to="/crmlist" class="text-decoration-none text-white">
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
           <span v-if="!isCollapsed">CRM List </span>
         </router-link>

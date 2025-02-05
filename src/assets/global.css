@@ -1,6 +1,9 @@
 .text-primary {
   color: #292929 !important;
 }
+.bg-primary {
+  background-color: #292929 !important;
+}
 
 .btn-primary {
   background-color: #292929 !important;

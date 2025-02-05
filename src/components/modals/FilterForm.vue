@@ -100,8 +100,6 @@ export default {
       this.createdAt = "";
       this.perPage = "10";
 
-      console.log("تم إعادة تعيين الفلترة");
-
       this.$emit("reset-filters");
       this.closeFilterModal();
     },

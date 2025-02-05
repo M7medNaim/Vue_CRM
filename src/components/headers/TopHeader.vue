@@ -1,7 +1,9 @@
 <template>
   <div class="top-bar pe-1 position-relative">
     <div class="row">
-      <div class="col-2 col-md-4 d-flex align-items-center text-white">
+      <div
+        class="col-2 col-md-4 d-flex align-items-center text-white fs-5 pt-3"
+      >
         <span>{{ pageTitle }}</span>
       </div>
       <div

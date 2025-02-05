@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import UsersView from "../views/UsersView.vue";
+import CrmListView from "@/views/CrmListView.vue";
 
 const routes = [
   {
@@ -24,6 +25,12 @@ const routes = [
     name: "UsersView",
     component: UsersView,
     meta: { title: "المستخدمين" },
+  },
+  {
+    path: "/crmlist",
+    name: "CrmListView",
+    component: CrmListView,
+    meta: { title: "Crm List" },
   },
 ];
 
