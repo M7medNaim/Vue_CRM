@@ -37,7 +37,8 @@
         title="Dashboard"
       >
         <router-link to="/home" class="text-decoration-none text-white">
-          <i class="fa-solid fa-chart-line fs-5 me-2"></i>
+          <i class="fa-solid fa-house fs-5 me-2"></i>
+          <!-- <i class="fa-solid fa-chart-line"></i> -->
           <span v-if="!isCollapsed">Dashboard</span>
         </router-link>
       </div>

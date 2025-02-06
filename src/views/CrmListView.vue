@@ -1,12 +1,14 @@
 <template>
-  <div class="crm-container mt-3 me-2 bg-white rounded-3 p-3 pb-0">
+  <div class="crm-container mt-3 me-2 bg-white rounded-3 p-3">
     <div class="controls mb-3">
       <div class="row">
-        <div class="col-4">
-          <div class="selecedActions">
+        <div class="col-sm-6 col-lg-4">
+          <div
+            class="selecedActions d-flex justify-content-start align-items-center"
+          >
             <select
               v-model="selectedAction"
-              class="text-light-emphasis py-2 rounded-start-2"
+              class="text-secondary py-2 rounded-end-0"
             >
               <option value="" disabled>Select Action</option>
               <option
@@ -25,7 +27,7 @@
             </button>
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-sm-6 col-lg-4">
           <div class="d-flex justify-content-start align-items-center">
             <input
               type="text"
@@ -43,7 +45,10 @@
             </button>
           </div>
         </div>
-        <div class="col-4 text-end">
+        <div class="col-sm-6 col-lg-4 text-end">
+          <button class="btn btn-primary rounded-2 me-2" @click="openDealModal">
+            <span>Create Deal</span>
+          </button>
           <button class="btn btn-primary rounded-2">
             <i class="fa-solid fa-upload me-2"></i>
             <span>Import</span>
@@ -85,13 +90,16 @@
     @apply-filters="applyFilters"
     @reset-filter="resetFilter"
   />
+  <DealModal @add-deal="addNewDeal" />
 </template>
 <script setup>
 import { ref, computed } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
+import DealModal from "@/components/modals/CreateDeal.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
+// Items data
 const items = ref([
   {
     id: 1,
@@ -133,68 +141,9 @@ const items = ref([
     stage: "New Deal",
     responsible: "Unassigned",
   },
-  {
-    id: 5,
-    name: "??? ???? ????????",
-    phone: "+9647807344841",
-    notes: "??? ???? ????????",
-    lastUpdated: "03 فبراير 2025",
-    source: "None",
-    stage: "New Deal",
-    responsible: "Unassigned",
-  },
-  {
-    id: 6,
-    name: "??? ???? ????????",
-    phone: "+9647807344841",
-    notes: "??? ???? ????????",
-    lastUpdated: "03 فبراير 2025",
-    source: "None",
-    stage: "New Deal",
-    responsible: "Unassigned",
-  },
-  {
-    id: 7,
-    name: "??? ???? ????????",
-    phone: "+9647807344841",
-    notes: "??? ???? ????????",
-    lastUpdated: "03 فبراير 2025",
-    source: "None",
-    stage: "New Deal",
-    responsible: "Unassigned",
-  },
-  {
-    id: 8,
-    name: "??? ???? ????????",
-    phone: "+9647807344841",
-    notes: "??? ???? ????????",
-    lastUpdated: "03 فبراير 2025",
-    source: "None",
-    stage: "New Deal",
-    responsible: "Unassigned",
-  },
-  {
-    id: 9,
-    name: "??? ???? ????????",
-    phone: "+9647807344841",
-    notes: "??? ???? ????????",
-    lastUpdated: "03 فبراير 2025",
-    source: "None",
-    stage: "New Deal",
-    responsible: "Unassigned",
-  },
-  {
-    id: 10,
-    name: "??? ???? ????????",
-    phone: "+9647807344841",
-    notes: "??? ???? ????????",
-    lastUpdated: "03 فبراير 2025",
-    source: "None",
-    stage: "New Deal",
-    responsible: "Unassigned",
-  },
 ]);
 
+// Table headers
 const headers = [
   //   { text: "#", value: "id" },
   { text: "Name", value: "name" },
@@ -208,10 +157,12 @@ const headers = [
 ];
 
 const search = ref("");
-
-const itemsPerPage = ref(10);
-
 const selectedRows = ref([]);
+const itemsPerPage = ref(10);
+const selectedAction = ref("");
+const filters = ref({ name: "", stage: "", source: "" });
+
+// Actions operations
 const actions = ref([
   { value: "changeStage", label: "Change Stage" },
   { value: "assignSalesSupervisor", label: "Assign Sales Supervisor" },
@@ -223,8 +174,8 @@ const actions = ref([
 const deleteItem = (id) => {
   items.value = items.value.filter((item) => item.id !== id);
 };
-const selectedAction = ref("");
 
+// Action execution
 const executeAction = () => {
   if (!selectedAction.value || selectedRows.value.length === 0) {
     alert("Please select an action and at least one item.");
@@ -244,12 +195,7 @@ const executeAction = () => {
   );
 };
 
-const openFilterModal = () => {
-  const modalElement = document.getElementById("filterModal");
-  const modal = new Modal(modalElement);
-  modal.show();
-};
-// search input
+// Filtered items based on search and filters
 const filteredItems = computed(() => {
   return items.value.filter((item) => {
     const matchesSearch =
@@ -296,22 +242,42 @@ const filteredItems = computed(() => {
     return matchesSearch && matchesFilters;
   });
 });
-const filters = ref({ name: "", stage: "", source: "" });
+
+// Opening and closing modals
 const resetFilter = () => {
   filters.value = { name: "", stage: "", source: "" };
 };
 
+const openFilterModal = () => {
+  const modalElement = document.getElementById("filterModal");
+  const modal = new Modal(modalElement);
+  modal.show();
+};
+
+const openDealModal = () => {
+  const modalElement = document.getElementById("dealModal");
+  const modal = new Modal(modalElement);
+  modal.show();
+};
 const applyFilters = (appliedFilters) => {
   filters.value = appliedFilters;
 };
+
+const addNewDeal = (newDeal) => {
+  items.value = [...items.value, newDeal];
+};
 </script>
 <style scoped>
-.submitAction {
-  margin-bottom: 2px;
-}
 input:focus {
   box-shadow: none;
   border: 1px solid #333;
+}
+select {
+  border: 2px solid #eee;
+}
+select:focus {
+  box-shadow: none;
+  border: 2px solid #eee;
 }
 /* .custom-table :deep(.easy-table td),
 .custom-table :deep(.easy-table th) {
