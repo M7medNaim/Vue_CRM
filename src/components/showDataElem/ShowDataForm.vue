@@ -1,27 +1,19 @@
 <template>
   <div class="modal-body">
     <div class="row">
-      <div class="col-12">
+      <div class="col-6">
         <div class="mb-3">
-          <label for="user_id" class="form-label">اسم المستخدم</label>
-          <Multiselect
-            v-model="localFormData.user_id"
-            :options="users"
-            label="name"
-            track-by="id"
-            placeholder="اختر المستخدم"
-            :searchable="true"
-          />
-        </div>
-        <!-- <div class="mb-3">
           <label for="name" class="form-label">Name</label>
           <input
             type="text"
             class="form-control"
-            id="userName"
+            id="name"
             v-model="localFormData.name"
+            disabled
           />
-        </div> -->
+        </div>
+      </div>
+      <div class="col-6">
         <div class="mb-3">
           <label for="phone" class="form-label">Phone Number</label>
           <input
@@ -29,17 +21,23 @@
             class="form-control"
             id="phone"
             v-model="localFormData.phone"
+            disabled
           />
         </div>
+      </div>
+      <div class="col-6">
         <div class="mb-3">
           <label for="note" class="form-label">Notes</label>
           <input
             type="text"
             class="form-control"
             id="note"
-            v-model="localFormData.notes"
+            v-model="localFormData.note"
+            disabled
           />
         </div>
+      </div>
+      <div class="col-6">
         <div class="mb-3">
           <label for="lastUpdated" class="form-label">Last Updated</label>
           <input
@@ -47,8 +45,11 @@
             class="form-control"
             id="lastUpdated"
             v-model="localFormData.lastUpdated"
+            disabled
           />
         </div>
+      </div>
+      <div class="col-6">
         <div class="mb-3">
           <label for="source" class="form-label">Source</label>
           <input
@@ -56,8 +57,11 @@
             class="form-control"
             id="source"
             v-model="localFormData.source"
+            disabled
           />
         </div>
+      </div>
+      <div class="col-6">
         <div class="mb-3">
           <label for="stage" class="form-label">Stage</label>
           <input
@@ -65,8 +69,11 @@
             class="form-control"
             id="stage"
             v-model="localFormData.stage"
+            disabled
           />
         </div>
+      </div>
+      <div class="col-12">
         <div class="mb-3">
           <label for="responsablePerson" class="form-label"
             >Responsable Person</label
@@ -75,7 +82,8 @@
             type="text"
             class="form-control"
             id="responsablePerson"
-            v-model="localFormData.responsible"
+            v-model="localFormData.responsablePerson"
+            disabled
           />
         </div>
       </div>
@@ -84,49 +92,35 @@
 </template>
 
 <script>
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.css";
-import { ref, onMounted, watch } from "vue";
-import { getUser } from "@/plugins/services/authService";
 export default {
-  name: "DealForm",
-  components: { Multiselect },
-  props: {
-    formData: Object,
+  name: "ShowDataForm",
+  formData: {
+    type: Object,
+    required: true,
   },
-  setup(props, { emit }) {
-    const users = ref([]);
-    const localFormData = ref({ ...props.formData });
-
-    const fetchUsersData = async () => {
-      try {
-        const response = await getUser();
-        if (response.status === 200) {
-          users.value = response.data.data;
-          console.log("Fetched users:", users.value);
-        } else {
-          alert("Failed to fetch users");
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        alert("Failed to fetch users");
-      }
-    };
-
-    onMounted(() => {
-      fetchUsersData();
-    });
-    watch(
-      localFormData,
-      (newValue) => {
-        emit("update:formData", newValue);
-      },
-      { deep: true }
-    );
+  data() {
     return {
-      users,
-      localFormData,
+      localFormData: {
+        name: "",
+        phone: "",
+        note: "",
+        lastUpdated: "",
+        source: "",
+        stage: "",
+        responsablePerson: "",
+      },
     };
+  },
+  watch: {
+    formData: {
+      handler(newData) {
+        if (newData) {
+          this.localFormData = { ...newData };
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
   },
 };
 </script>

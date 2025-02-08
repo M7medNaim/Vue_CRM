@@ -19,9 +19,9 @@
             @click="closeDealModal"
           ></button>
         </div>
-        <form @submit.prevent="submitDeals">
-          <DealForm :formData="dealData" />
-          <DealButtons @close-modal="closeDealModal" @submit="submitDeals" />
+        <form @submit.prevent="submitForm">
+          <DealForm :formData="formData" />
+          <DealButtons @close-modal="closeDealModal" @submit="submitForm" />
         </form>
       </div>
     </div>
@@ -29,76 +29,87 @@
 </template>
 
 <script>
-import { ref } from "vue";
 import { Modal } from "bootstrap";
 import DealForm from "../CreateDealElements/DealForm.vue";
 import DealButtons from "../CreateDealElements/DealButtons.vue";
+import { createDeal, getUser } from "@/plugins/services/authService";
 
 export default {
   name: "DealModal",
   components: { DealForm, DealButtons },
   emits: ["add-deal"],
-
-  setup(_, { emit }) {
-    const dealModalRef = ref(null);
-    let modalInstance = null;
-
-    const dealData = ref({
-      name: "",
-      phone: "",
-      notes: "",
-      lastUpdated: new Date().toISOString().split("T")[0],
-      source: "",
-      stage: "",
-      responsible: "",
-    });
-
-    const openDealModal = () => {
-      if (dealModalRef.value) {
-        modalInstance = new Modal(dealModalRef.value);
-        modalInstance.show();
-      }
-    };
-
-    const closeDealModal = () => {
-      if (modalInstance) {
-        modalInstance.hide();
-      }
-    };
-
-    const submitDeals = () => {
-      if (
-        !dealData.value.name ||
-        !dealData.value.phone ||
-        !dealData.value.lastUpdated ||
-        !dealData.value.source ||
-        !dealData.value.responsible ||
-        !dealData.value.notes
-      ) {
-        alert("Input Is required");
-        return;
-      }
-      const newDeal = { ...dealData.value, id: Date.now() };
-      emit("add-deal", newDeal);
-      closeDealModal();
-      dealData.value = {
-        name: "",
+  data() {
+    return {
+      formData: {
+        id: null,
+        user_id: "",
         phone: "",
         notes: "",
-        lastUpdated: new Date().toISOString().split("T")[0],
+        lastUpdated: "",
+        source: "",
+        stage: "",
+        responsible: "",
+      },
+      users: [],
+      successMessage: "",
+      errorMessage: "",
+    };
+  },
+  methods: {
+    async fetchUsers() {
+      try {
+        const response = await getUser();
+        this.users = response.data.data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    },
+    openModal() {
+      this.fetchUsers();
+      const modal = new Modal(document.getElementById("dealModal"));
+      modal.show();
+    },
+    async submitForm() {
+      try {
+        this.successMessage = "";
+        this.errorMessage = "";
+
+        const formData = new FormData();
+        formData.append("user_id", this.formData.user_id.id); // Get ID from selected user object
+        formData.append("phone", this.formData.phone);
+        formData.append("notes", this.formData.notes);
+        formData.append("source", this.formData.source);
+        formData.append("lastUpdated", this.formData.lastUpdated);
+        formData.append("stage", this.formData.stage);
+        formData.append("responsible", this.formData.responsible);
+
+        const response = await createDeal(formData);
+
+        if (response.data) {
+          this.successMessage = "Created User Is Successfully";
+          this.$emit("add-deal", response.data.data);
+          setTimeout(() => {
+            this.clearForm();
+            this.closeDealModal();
+          }, 1500);
+        }
+      } catch (error) {
+        this.errorMessage = "An error occurred, try again";
+        console.error("Error:", error);
+      }
+    },
+    clearForm() {
+      this.formData = {
+        // id: null,
+        user_id: "",
+        phone: "",
+        notes: "",
+        lastUpdated: "",
         source: "",
         stage: "",
         responsible: "",
       };
-    };
-
-    return {
-      dealModalRef,
-      dealData,
-      openDealModal,
-      closeDealModal,
-      submitDeals,
-    };
+    },
   },
 };
 </script>

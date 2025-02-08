@@ -21,7 +21,9 @@
         <form @submit.prevent="submitFilters">
           <FilterCrmListFormVue
             :filters="filters"
+            :selectedStatuses="selectedStatuses"
             @update:filters="updateFilters"
+            @update:selectedStatuses="updateSelectedStatuses"
           />
           <FilterButtonCrmList
             @reset-filter="resetFilter"
@@ -49,7 +51,7 @@ export default {
 
   setup(props, { emit }) {
     const filters = ref({ ...props.modelValue });
-
+    const selectedStatuses = ref([]);
     watch(
       () => props.modelValue,
       (newFilters) => {
@@ -69,6 +71,7 @@ export default {
       document.body.classList.remove("modal-open");
     };
     const submitFilters = () => {
+      emit("update:modelValue", filters.value);
       emit("apply-filters", filters.value);
       closeFilterModal();
     };
@@ -82,15 +85,35 @@ export default {
       filters.value = appliedFilters;
     };
     const resetFilter = () => {
-      filters.value = { name: "", stage: "", source: "" };
-      emit("apply-filters", filters.value);
+      const emptyFilters = {
+        source: "",
+        stage: "",
+        supervisor: "",
+        representative: "",
+        package: "",
+        createdStart: "",
+        createdEnd: "",
+        modifiedStart: "",
+        modifiedEnd: "",
+        status: [],
+      };
+      filters.value = { ...emptyFilters };
+      selectedStatuses.value = [];
+      emit("update:modelValue", emptyFilters);
+      emit("apply-filters", emptyFilters);
+    };
+
+    const updateSelectedStatuses = (newStatuses) => {
+      selectedStatuses.value = newStatuses;
     };
     return {
       filters,
+      selectedStatuses,
       openFilterModal,
       closeFilterModal,
       submitFilters,
       updateFilters,
+      updateSelectedStatuses,
       applyFilters,
       resetFilter,
     };

@@ -12,7 +12,8 @@
               <button
                 v-for="status in statuses"
                 :key="status.value"
-                @click="toggleStatus(status.value)"
+                type="button"
+                @click.prevent="toggleStatus(status.value)"
                 :class="[
                   'btn',
                   selectedStatuses.includes(status.value)
@@ -195,7 +196,12 @@ export default {
   name: "FilterCrmListFormVue",
   props: {
     filters: { type: Object, required: true },
+    selectedStatuses: {
+      type: Array,
+      required: true,
+    },
   },
+  emits: ["update:filters", "update:selectedStatuses"],
   setup(props, { emit }) {
     const localFilters = ref({
       source: "facebook",
@@ -220,23 +226,34 @@ export default {
       { value: "reclaimed", label: "Reclaimed" },
     ]);
 
-    const selectedStatuses = ref([]);
-
     const toggleStatus = (status) => {
-      if (selectedStatuses.value.includes(status)) {
-        selectedStatuses.value = selectedStatuses.value.filter(
+      let newSelectedStatuses;
+      if (props.selectedStatuses.includes(status)) {
+        newSelectedStatuses = props.selectedStatuses.filter(
           (s) => s !== status
         );
       } else {
-        selectedStatuses.value.push(status);
+        newSelectedStatuses = [...props.selectedStatuses, status];
       }
-      localFilters.value.status = selectedStatuses.value;
-    };
+      emit("update:selectedStatuses", newSelectedStatuses);
 
+      localFilters.value = {
+        ...localFilters.value,
+        status: newSelectedStatuses,
+      };
+      emit("update:filters", localFilters.value);
+    };
     watch(
-      localFilters,
+      () => props.filters,
       (newFilters) => {
-        emit("update:filters", newFilters);
+        localFilters.value = { ...newFilters };
+      },
+      { deep: true }
+    );
+    watch(
+      () => props.selectedStatuses,
+      (newStatuses) => {
+        localFilters.value.status = newStatuses;
       },
       { deep: true }
     );
@@ -244,7 +261,6 @@ export default {
     return {
       localFilters,
       statuses,
-      selectedStatuses,
       toggleStatus,
       sources: [
         { value: "facebook", label: "Facebook" },
