@@ -3,25 +3,15 @@
     <div class="row">
       <div class="col-12">
         <div class="mb-3">
-          <label for="user_id" class="form-label">اسم المستخدم</label>
-          <Multiselect
-            v-model="localFormData.user_id"
-            :options="users"
-            label="name"
-            track-by="id"
-            placeholder="اختر المستخدم"
-            :searchable="true"
-          />
-        </div>
-        <!-- <div class="mb-3">
           <label for="name" class="form-label">Name</label>
           <input
             type="text"
             class="form-control"
             id="userName"
             v-model="localFormData.name"
+            placeholder="ادخل الاسم"
           />
-        </div> -->
+        </div>
         <div class="mb-3">
           <label for="phone" class="form-label">Phone Number</label>
           <input
@@ -29,6 +19,7 @@
             class="form-control"
             id="phone"
             v-model="localFormData.phone"
+            placeholder="ادخل رقم الهاتف"
           />
         </div>
         <div class="mb-3">
@@ -38,6 +29,7 @@
             class="form-control"
             id="note"
             v-model="localFormData.notes"
+            placeholder="ادخل الملاحظات"
           />
         </div>
         <div class="mb-3">
@@ -47,25 +39,38 @@
             class="form-control"
             id="lastUpdated"
             v-model="localFormData.lastUpdated"
+            placeholder="ادخل التاريخ"
           />
         </div>
         <div class="mb-3">
           <label for="source" class="form-label">Source</label>
-          <input
-            type="text"
-            class="form-control"
+          <select
+            class="form-select"
             id="source"
             v-model="localFormData.source"
-          />
+          >
+            <option value="" disabled selected>Select Source</option>
+            <option
+              v-for="source in sources"
+              :key="source.value"
+              :value="source.value"
+            >
+              {{ source.label }}
+            </option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="stage" class="form-label">Stage</label>
-          <input
-            type="text"
-            class="form-control"
-            id="stage"
-            v-model="localFormData.stage"
-          />
+          <select class="form-select" id="stage" v-model="localFormData.stage">
+            <option value="" disabled selected>Select Stage</option>
+            <option
+              v-for="stage in stages"
+              :key="stage.value"
+              :value="stage.value"
+            >
+              {{ stage.label }}
+            </option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="responsablePerson" class="form-label"
@@ -76,6 +81,7 @@
             class="form-control"
             id="responsablePerson"
             v-model="localFormData.responsible"
+            placeholder="ادخل المسؤول"
           />
         </div>
       </div>
@@ -84,37 +90,67 @@
 </template>
 
 <script>
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.css";
 import { ref, onMounted, watch } from "vue";
-import { getUser } from "@/plugins/services/authService";
+import { getSources, getStages } from "@/plugins/services/authService";
 export default {
   name: "DealForm",
-  components: { Multiselect },
   props: {
     formData: Object,
   },
   setup(props, { emit }) {
     const users = ref([]);
     const localFormData = ref({ ...props.formData });
+    const sources = ref([]);
+    const stages = ref([]);
+    // const fetchUsersData = async () => {
+    //   try {
+    //     const response = await getUser();
+    //     if (response.status === 200) {
+    //       users.value = response.data.data;
+    //       console.log("Fetched users:", users.value);
+    //     } else {
+    //       alert("Failed to fetch users");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching users:", error);
+    //     alert("Failed to fetch users");
+    //   }
+    // };
 
-    const fetchUsersData = async () => {
+    const fetchSources = async () => {
       try {
-        const response = await getUser();
+        const response = await getSources();
         if (response.status === 200) {
-          users.value = response.data.data;
-          console.log("Fetched users:", users.value);
+          sources.value = response.data.data;
         } else {
-          alert("Failed to fetch users");
+          alert("Failed to fetch sources");
         }
       } catch (error) {
-        console.error("Error fetching users:", error);
-        alert("Failed to fetch users");
+        console.error("Error fetching sources:", error);
+        alert("Failed to fetch sources");
+      }
+    };
+
+    const fetchStages = async () => {
+      try {
+        const response = await getStages();
+        if (response.status === 200) {
+          stages.value = response.data.data.map((stage) => ({
+            value: stage.id,
+            label: stage.name,
+          }));
+        } else {
+          alert("Failed to fetch stages");
+        }
+      } catch (error) {
+        console.error("Error fetching stages:", error);
+        alert("Failed to fetch stages");
       }
     };
 
     onMounted(() => {
-      fetchUsersData();
+      fetchSources();
+      fetchStages();
     });
     watch(
       localFormData,
@@ -126,6 +162,8 @@ export default {
     return {
       users,
       localFormData,
+      sources,
+      stages,
     };
   },
 };

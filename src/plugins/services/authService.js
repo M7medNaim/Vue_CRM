@@ -70,7 +70,7 @@ export const updateDealsSource = async (ids, source) => {
 export const deleteDeals = async (ids) => {
   try {
     const response = await axios.delete("/api/deals/delete", {
-      data: { ids }, // Send IDs in request body
+      data: { ids },
     });
     return response.data;
   } catch (error) {
@@ -78,3 +78,9 @@ export const deleteDeals = async (ids) => {
     throw error;
   }
 };
+
+// Get All Sources
+export const getSources = () => axios.get("/sources");
+
+// Get All Stages
+export const getStages = () => axios.get("/stages");
