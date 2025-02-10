@@ -39,12 +39,12 @@
       </div>
       <div class="col-6">
         <div class="mb-3">
-          <label for="lastUpdated" class="form-label">Last Updated</label>
+          <label for="created_at" class="form-label">Created At</label>
           <input
             type="date"
             class="form-control"
-            id="lastUpdated"
-            v-model="localFormData.lastUpdated"
+            id="created_at"
+            v-model="localFormData.created_at"
             disabled
           />
         </div>
@@ -104,7 +104,7 @@ export default {
         name: "",
         phone: "",
         note: "",
-        lastUpdated: "",
+        created_at: "",
         source: "",
         stage: "",
         responsablePerson: "",

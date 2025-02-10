@@ -33,12 +33,12 @@
           />
         </div>
         <div class="mb-3">
-          <label for="lastUpdated" class="form-label">Last Updated</label>
+          <label for="created_at" class="form-label">Created At</label>
           <input
             type="date"
             class="form-control"
-            id="lastUpdated"
-            v-model="localFormData.lastUpdated"
+            id="created_at"
+            v-model="localFormData.created_at"
             placeholder="ادخل التاريخ"
           />
         </div>
@@ -80,7 +80,7 @@
             type="text"
             class="form-control"
             id="responsablePerson"
-            v-model="localFormData.responsible"
+            :value="localFormData.responsible"
             placeholder="ادخل المسؤول"
           />
         </div>
@@ -98,7 +98,7 @@ export default {
     formData: Object,
   },
   setup(props, { emit }) {
-    const users = ref([]);
+    // const users = ref([]);
     const localFormData = ref({ ...props.formData });
     const sources = ref([]);
     const stages = ref([]);
@@ -123,11 +123,11 @@ export default {
         if (response.status === 200) {
           sources.value = response.data.data;
         } else {
-          alert("Failed to fetch sources");
+          // alert("Failed to fetch sources");
         }
       } catch (error) {
         console.error("Error fetching sources:", error);
-        alert("Failed to fetch sources");
+        // alert("Failed to fetch sources");
       }
     };
 
@@ -140,11 +140,11 @@ export default {
             label: stage.name,
           }));
         } else {
-          alert("Failed to fetch stages");
+          // alert("Failed to fetch stages");
         }
       } catch (error) {
         console.error("Error fetching stages:", error);
-        alert("Failed to fetch stages");
+        // alert("Failed to fetch stages");
       }
     };
 
@@ -160,7 +160,7 @@ export default {
       { deep: true }
     );
     return {
-      users,
+      // users,
       localFormData,
       sources,
       stages,

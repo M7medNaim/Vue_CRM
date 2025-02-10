@@ -65,9 +65,11 @@
       alternating
       show-index
       show-select
+      selection-type="multiple"
       :row-height="60"
       :header-height="50"
       class="custom-table"
+      @click-row="handleRowClick"
     >
       <template #item-actions="item">
         <div class="btns d-flex justify-content-start align-items-center gap-3">
@@ -122,36 +124,23 @@ import {
   updateDealsRepresentative,
   updateDealsSource,
   deleteDeals,
+  // getSources,
+  getStages,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 
 // Items data
-const items = ref([
-  {
-    id: 1,
-    user: {
-      id: 1,
-      name: "John Doe",
-    },
-    phone: "+1234567890",
-    notes: "Test",
-    lastUpdated: "2024-03-20",
-    source: "Website",
-    stage: "New Lead",
-    responsible: "Sales Team A",
-  },
-]);
+const items = ref([]);
 
 // Table headers
 const headers = [
-  // { text: "#", value: "id" },
-  { text: "Name", value: "user.name" },
+  { text: "Name", value: "name" },
   { text: "Phone Number", value: "phone" },
-  { text: "Notes", value: "notes" },
-  { text: "Last Updated", value: "lastUpdated" },
+  { text: "Notes", value: "description" },
+  { text: "Created At", value: "created_at" },
   { text: "Source", value: "source" },
   { text: "Stage", value: "stage" },
-  { text: "Responsable Person", value: "responsible" },
+  { text: "Responsible Person", value: "responsible" },
   { text: "Action", value: "actions", sortable: false },
 ];
 
@@ -185,6 +174,8 @@ const actions = ref([
 const deleteItem = (id) => {
   items.value = items.value.filter((item) => item.id !== id);
 };
+// const sources = ref([]);
+const stages = ref([]);
 
 // Action execution
 const executeAction = () => {
@@ -259,38 +250,50 @@ const executeAction = () => {
 
 const fetchData = async () => {
   try {
-    const dealsResponse = await getDeals();
-    // Assuming the API returns deals with user data included
-    items.value = dealsResponse.data.data.map((deal) => ({
-      id: deal.id,
-      name: deal.user?.name, // Access user name directly from the nested user object
-      phone: deal.phone,
-      notes: deal.notes,
-      lastUpdated: deal.lastUpdated,
-      source: deal.source,
-      stage: deal.stage,
-      responsible: deal.responsible,
-    }));
+    const stagesRes = await getStages();
+    stages.value = stagesRes.data.data;
+    // const sourcesRes = await getSources();
+    // stages.value = sourcesRes.data.data;
+
+    const dealsRes = await getDeals();
+
+    items.value = dealsRes.data.data.map((deal) => {
+      const matchedStage = stages.value.find(
+        (stage) => stage.id === deal.stage_id
+      );
+      // const matchedSource = sources.value.find(
+      //   (source) => source.id === deal.source_id
+      // );
+      return {
+        id: deal.id,
+        name: deal.contact?.name || "unassigned",
+        phone: deal.contact?.phones?.[0]?.phone || "unassigned",
+        description: deal.description || "unassigned",
+        created_at: deal.created_at.split("T")[0],
+        stage: matchedStage ? matchedStage.name : "unassigned",
+        responsible: "unassigned",
+        source: "null",
+        // source: matchedSource ? matchedSource.name : "unassigned",
+      };
+    });
   } catch (error) {
-    console.error("Error fetching deals:", error);
+    console.error("Error in fetchData:", error);
   }
 };
+
 // Filtered items search and filters
 const filteredItems = computed(() => {
   return items.value.filter((item) => {
-    // Search filter
+    const searchLower = search.value.toLowerCase();
+
     const matchesSearch =
       !search.value ||
-      (item.user?.name || "")
-        .toLowerCase()
-        .includes(search.value.toLowerCase()) ||
-      (item.phone || "").toString().includes(search.value) ||
-      (item.notes || "").toLowerCase().includes(search.value.toLowerCase()) ||
-      (item.source || "").toLowerCase().includes(search.value.toLowerCase()) ||
-      (item.stage || "").toLowerCase().includes(search.value.toLowerCase()) ||
-      (item.responsible || "")
-        .toLowerCase()
-        .includes(search.value.toLowerCase());
+      item.contact?.name?.toLowerCase().includes(searchLower) ||
+      item.phone?.includes(search.value) ||
+      item.description?.toLowerCase().includes(searchLower) ||
+      item.source?.toLowerCase().includes(searchLower) ||
+      item.stage?.toLowerCase().includes(searchLower) ||
+      item.responsible?.toLowerCase().includes(searchLower);
 
     // Filters
     const matchesSource =
@@ -308,15 +311,15 @@ const filteredItems = computed(() => {
     // Date filters
     const matchesCreatedDate =
       (!filters.value.createdStart ||
-        new Date(item.createdAt) >= new Date(filters.value.createdStart)) &&
+        new Date(item.created_at) >= new Date(filters.value.createdStart)) &&
       (!filters.value.createdEnd ||
-        new Date(item.createdAt) <= new Date(filters.value.createdEnd));
+        new Date(item.created_at) <= new Date(filters.value.createdEnd));
 
     const matchesModifiedDate =
       (!filters.value.modifiedStart ||
-        new Date(item.modifiedAt) >= new Date(filters.value.modifiedStart)) &&
+        new Date(item.updated_at) >= new Date(filters.value.modifiedStart)) &&
       (!filters.value.modifiedEnd ||
-        new Date(item.modifiedAt) <= new Date(filters.value.modifiedEnd));
+        new Date(item.updated_at) <= new Date(filters.value.modifiedEnd));
 
     // Status filter
     const matchesStatus =
@@ -383,8 +386,8 @@ const openShowData = async (item) => {
     selectedUser.value = {
       name: deal.user?.name,
       phone: deal.phone,
-      note: deal.notes,
-      lastUpdated: deal.lastUpdated,
+      description: deal.description,
+      createdAt: deal.createdAt,
       source: deal.source,
       stage: deal.stage,
       responsablePerson: deal.responsible,
@@ -412,8 +415,8 @@ const addNewDeal = async (newDeal) => {
       id: newDeal.id,
       name: newDeal.user_id.name,
       phone: newDeal.phone,
-      notes: newDeal.notes,
-      lastUpdated: newDeal.lastUpdated,
+      description: newDeal.description,
+      createdAt: newDeal.createdAt,
       source: newDeal.source,
       stage: newDeal.stage,
       responsible: newDeal.responsible,
@@ -548,6 +551,23 @@ const handleDelete = async () => {
   }
 };
 
+const handleRowClick = (item) => {
+  const checkbox = event.currentTarget.querySelector('input[type="checkbox"]');
+  const isSelected = selectedRows.value.some((row) => row.id === item.id);
+
+  if (isSelected) {
+    selectedRows.value = selectedRows.value.filter((row) => row.id !== item.id);
+    if (checkbox) {
+      checkbox.checked = false;
+    }
+  } else {
+    selectedRows.value = [...selectedRows.value, item];
+    if (checkbox) {
+      checkbox.checked = true;
+    }
+  }
+};
+
 // upload data
 onMounted(() => {
   fetchData();
@@ -584,5 +604,18 @@ select:focus {
 :deep(.custom-table .btns) {
   padding: 5px 0;
   font-size: 12px;
+}
+
+:deep(.custom-table tbody tr) {
+  cursor: pointer;
+  user-select: none;
+}
+
+:deep(.custom-table tbody tr:hover) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:deep(.custom-table td) {
+  pointer-events: auto;
 }
 </style>

@@ -47,7 +47,7 @@ export default {
       name: "",
       phone: "",
       note: "",
-      lastUpdated: "",
+      created_at: "",
       source: "",
       stage: "",
       responsablePerson: "",

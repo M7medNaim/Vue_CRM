@@ -45,7 +45,7 @@ export default {
         user_id: "",
         phone: "",
         notes: "",
-        lastUpdated: "",
+        created_at: "",
         source: "",
         stage: "",
         responsible: "",
@@ -79,7 +79,7 @@ export default {
         formData.append("phone", this.formData.phone);
         formData.append("notes", this.formData.notes);
         formData.append("source", this.formData.source);
-        formData.append("lastUpdated", this.formData.lastUpdated);
+        formData.append("created_at", this.formData.created_at);
         formData.append("stage", this.formData.stage);
         formData.append("responsible", this.formData.responsible);
 
@@ -104,7 +104,7 @@ export default {
         user_id: "",
         phone: "",
         notes: "",
-        lastUpdated: "",
+        created_at: "",
         source: "",
         stage: "",
         responsible: "",
