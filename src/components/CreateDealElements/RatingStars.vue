@@ -1,5 +1,5 @@
 <template>
-  <div class="rating-container">
+  <div class="rating-container d-flex align-items-center gap-1">
     <div class="stars d-flex justify-content-center align-items-center">
       <span class="fs-5 me-2">Rating:</span>
       <span
@@ -58,14 +58,7 @@ export default {
 </script>
 
 <style scoped>
-.rating-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .stars {
-  display: flex;
   gap: 0.25rem;
 }
 
