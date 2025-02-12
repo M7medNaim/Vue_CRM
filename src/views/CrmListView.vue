@@ -166,8 +166,8 @@ const dealData = ref(null);
 // Actions operations
 const actions = ref([
   { value: "changeStage", label: "Change Stage" },
-  { value: "assignSalesSupervisor", label: "Assign Sales Supervisor" },
-  { value: "assignSalesRepresentative", label: "Assign Sales Representative" },
+  // { value: "assignSalesSupervisor", label: "Assign Sales Supervisor" },
+  { value: "assignUser", label: "Assign User" },
   { value: "changeSource", label: "Change Source" },
   { value: "delete", label: "Delete" },
 ]);
@@ -212,8 +212,8 @@ const executeAction = () => {
       }
       break;
 
-    case "assignSalesRepresentative":
-      modalElement = document.getElementById("assignRepresentativeModal");
+    case "assignUser":
+      modalElement = document.getElementById("assignUser");
       if (modalElement) {
         modal = new Modal(modalElement, {
           backdrop: true,

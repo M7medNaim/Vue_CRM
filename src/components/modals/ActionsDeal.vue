@@ -51,7 +51,7 @@
   </div>
 
   <!-- Assign Supervisor Modal -->
-  <div class="modal fade" id="assignSupervisorModal" tabindex="-1">
+  <!-- <div class="modal fade" id="assignSupervisorModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -99,15 +99,15 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Assign Representative Modal -->
-  <div class="modal fade" id="assignRepresentativeModal" tabindex="-1">
+  <div class="modal fade" id="assignUser" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            Assign Representative ({{ selectedRows.length }} items)
+            Assign User ({{ selectedRows.length }} items)
           </h5>
           <button
             type="button"
@@ -116,10 +116,10 @@
           ></button>
         </div>
         <div class="modal-body">
-          <select v-model="newRepresentative" class="form-select">
-            <option value="">Select Representative</option>
+          <select v-model="newUser" class="form-select">
+            <option value="">Select User</option>
             <option
-              v-for="option in representativeOptions"
+              v-for="option in userOptions"
               :key="option.value"
               :value="option.value"
             >
@@ -138,8 +138,8 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="confirmAssignRepresentative"
-            :disabled="isLoading || !newRepresentative"
+            @click="confirmAssignUser"
+            :disabled="isLoading || !newUser"
           >
             <span
               v-if="isLoading"
@@ -207,7 +207,7 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { Modal } from "bootstrap";
-import { getStages, getSources } from "@/plugins/services/authService"; // تأكد من استيراد الدوال الصحيحة
+import { getStages, getSources } from "@/plugins/services/authService";
 
 const props = defineProps({
   selectedRows: {
@@ -227,8 +227,8 @@ const emits = defineEmits([
 // State
 const isLoading = ref(false);
 const newStage = ref("");
-const newSupervisor = ref("");
-const newRepresentative = ref("");
+// const newSupervisor = ref("");
+const newUser = ref("");
 const newSource = ref("");
 const stageOptions = ref([]);
 const sourceOptions = ref([]);
@@ -247,17 +247,17 @@ const fetchStages = async () => {
   }
 };
 
-const supervisorOptions = [
-  { value: "supervisor1", label: "Supervisor 1" },
-  { value: "supervisor2", label: "Supervisor 2" },
-  { value: "eurasia", label: "Eurasia Admin" },
-  { value: "sup", label: "Sup Sup" },
-];
+// const supervisorOptions = [
+//   { value: "supervisor1", label: "Supervisor 1" },
+//   { value: "supervisor2", label: "Supervisor 2" },
+//   { value: "eurasia", label: "Eurasia Admin" },
+//   { value: "sup", label: "Sup Sup" },
+// ];
 
-const representativeOptions = [
-  { value: "rep1", label: "Representative 1" },
-  { value: "rep2", label: "Representative 2" },
-  { value: "rep3", label: "Representative 3" },
+const userOptions = [
+  { value: "rep1", label: "user 1" },
+  { value: "rep2", label: "user 2" },
+  { value: "rep3", label: "user 3" },
 ];
 
 const fetchSources = async () => {
@@ -300,25 +300,25 @@ const confirmChangeStage = async () => {
   }
 };
 
-const confirmAssignSupervisor = async () => {
-  try {
-    isLoading.value = true;
-    await emits("update-supervisor", newSupervisor.value);
-    closeModal("assignSupervisorModal");
-    newSupervisor.value = "";
-  } catch (error) {
-    console.error("Error assigning supervisor:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
+// const confirmAssignSupervisor = async () => {
+//   try {
+//     isLoading.value = true;
+//     await emits("update-supervisor", newSupervisor.value);
+//     closeModal("assignSupervisorModal");
+//     newSupervisor.value = "";
+//   } catch (error) {
+//     console.error("Error assigning supervisor:", error);
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
 
-const confirmAssignRepresentative = async () => {
+const confirmAssignUser = async () => {
   try {
     isLoading.value = true;
-    await emits("update-representative", newRepresentative.value);
-    closeModal("assignRepresentativeModal");
-    newRepresentative.value = "";
+    await emits("update-user", newUser.value);
+    closeModal("assignUser");
+    newUser.value = "";
   } catch (error) {
     console.error("Error assigning representative:", error);
   } finally {
