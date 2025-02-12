@@ -1,0 +1,92 @@
+<template>
+  <div class="rating-container">
+    <div class="stars">
+      <span
+        v-for="index in 7"
+        :key="index"
+        class="star"
+        :class="{ filled: index <= modelValue, hovered: index <= hoveredStar }"
+        @mouseover="handleHover(index)"
+        @mouseleave="handleLeave"
+        @click="handleClick(index)"
+        :title="calculateAmount(index)"
+      >
+        <i class="fa-star" :class="[index <= modelValue ? 'fas' : 'far']"></i>
+      </span>
+    </div>
+    <div v-if="hoveredStar" class="rating-amount">
+      {{ calculateAmount(hoveredStar) }}
+    </div>
+    <div v-else-if="modelValue" class="rating-amount">
+      {{ calculateAmount(modelValue) }}
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "RatingStars",
+  props: {
+    modelValue: {
+      type: Number,
+      default: 0,
+    },
+  },
+  emits: ["update:modelValue"],
+  data() {
+    return {
+      hoveredStar: 0,
+    };
+  },
+  methods: {
+    handleHover(index) {
+      this.hoveredStar = index;
+    },
+    handleLeave() {
+      this.hoveredStar = 0;
+    },
+    handleClick(index) {
+      this.$emit("update:modelValue", index);
+    },
+    calculateAmount(stars) {
+      const baseAmount = 1500;
+      return `${baseAmount * stars}$`;
+    },
+  },
+};
+</script>
+
+<style scoped>
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.star {
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #ddd;
+  transition: all 0.2s ease;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.star.hovered {
+  color: #ffd700;
+  transform: scale(1.1);
+}
+
+.rating-amount {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #666;
+}
+</style>

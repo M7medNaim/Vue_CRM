@@ -59,7 +59,7 @@
             </option>
           </select>
         </div>
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label for="stage" class="form-label">Stage</label>
           <select
             class="form-select"
@@ -75,18 +75,25 @@
               {{ stage.label }}
             </option>
           </select>
+        </div> -->
+        <div class="mb-3">
+          <label for="responsible" class="form-label">Responsible Person</label>
+          <select
+            class="form-select"
+            id="responsible"
+            v-model="localFormData.responsible_id"
+          >
+            <option value="" disabled selected>
+              Select Responsible Person
+            </option>
+            <option v-for="user in users" :key="user.id" :value="user.id">
+              {{ user.name }}
+            </option>
+          </select>
         </div>
         <div class="mb-3">
-          <label for="responsablePerson" class="form-label"
-            >Responsable Person</label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="responsablePerson"
-            :value="localFormData.responsible"
-            placeholder="ادخل المسؤول"
-          />
+          <label for="rating" class="form-label">Rating</label>
+          <RatingStars v-model="localFormData.rating" />
         </div>
       </div>
     </div>
@@ -96,8 +103,13 @@
 <script>
 import { ref, onMounted, watch } from "vue";
 import { getSources, getStages } from "@/plugins/services/authService";
+import RatingStars from "@/components/CreateDealElements/RatingStars.vue";
+
 export default {
   name: "DealForm",
+  components: {
+    RatingStars,
+  },
   props: {
     formData: {
       type: Object,
@@ -106,7 +118,10 @@ export default {
   },
   setup(props, { emit }) {
     // const users = ref([]);
-    const localFormData = ref({ ...props.formData });
+    const localFormData = ref({
+      ...props.formData,
+      rating: props.formData.rating || 0,
+    });
     const sources = ref([]);
     const stages = ref([]);
     const fetchSources = async () => {
