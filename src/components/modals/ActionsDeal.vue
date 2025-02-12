@@ -205,8 +205,9 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { Modal } from "bootstrap";
+import { getStages, getSources } from "@/plugins/services/authService"; // تأكد من استيراد الدوال الصحيحة
 
 const props = defineProps({
   selectedRows: {
@@ -229,14 +230,22 @@ const newStage = ref("");
 const newSupervisor = ref("");
 const newRepresentative = ref("");
 const newSource = ref("");
-
+const stageOptions = ref([]);
+const sourceOptions = ref([]);
 // Options for dropdowns
-const stageOptions = [
-  { value: "newDeal", label: "New Deal" },
-  { value: "inProgress", label: "In Progress" },
-  { value: "qualified", label: "Qualified" },
-  { value: "closed", label: "Closed" },
-];
+const fetchStages = async () => {
+  try {
+    const response = await getStages();
+    if (response.status === 200) {
+      stageOptions.value = response.data.data.map((stage) => ({
+        value: stage.id,
+        label: stage.name,
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching stages:", error);
+  }
+};
 
 const supervisorOptions = [
   { value: "supervisor1", label: "Supervisor 1" },
@@ -251,12 +260,22 @@ const representativeOptions = [
   { value: "rep3", label: "Representative 3" },
 ];
 
-const sourceOptions = [
-  { value: "facebook", label: "Facebook" },
-  { value: "twitter", label: "Twitter" },
-  { value: "linkedin", label: "LinkedIn" },
-  { value: "referral", label: "Referral" },
-];
+const fetchSources = async () => {
+  try {
+    const response = await getSources();
+    if (response.status === 200) {
+      sourceOptions.value = response.data.data.map((source) => ({
+        value: source.id,
+        label: source.name,
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching sources:", error);
+  }
+};
+onMounted(async () => {
+  await Promise.all([fetchStages(), fetchSources()]);
+});
 
 // Methods
 const closeModal = (modalId) => {

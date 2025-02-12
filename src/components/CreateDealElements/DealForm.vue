@@ -8,8 +8,18 @@
             type="text"
             class="form-control"
             id="userName"
-            v-model="localFormData.name"
+            v-model="localFormData.contact.name"
             placeholder="ادخل الاسم"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            v-model="localFormData.contact.email"
+            placeholder="Enter email"
           />
         </div>
         <div class="mb-3">
@@ -18,28 +28,18 @@
             type="text"
             class="form-control"
             id="phone"
-            v-model="localFormData.phone"
+            v-model="localFormData.contact.phones[0].phone"
             placeholder="ادخل رقم الهاتف"
           />
         </div>
         <div class="mb-3">
-          <label for="note" class="form-label">Notes</label>
+          <label for="description" class="form-label">Notes</label>
           <input
             type="text"
             class="form-control"
-            id="note"
-            v-model="localFormData.notes"
+            id="description"
+            v-model="localFormData.description"
             placeholder="ادخل الملاحظات"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="created_at" class="form-label">Created At</label>
-          <input
-            type="date"
-            class="form-control"
-            id="created_at"
-            v-model="localFormData.created_at"
-            placeholder="ادخل التاريخ"
           />
         </div>
         <div class="mb-3">
@@ -61,7 +61,11 @@
         </div>
         <div class="mb-3">
           <label for="stage" class="form-label">Stage</label>
-          <select class="form-select" id="stage" v-model="localFormData.stage">
+          <select
+            class="form-select"
+            id="stage"
+            v-model="localFormData.stage_id"
+          >
             <option value="" disabled selected>Select Stage</option>
             <option
               v-for="stage in stages"
@@ -95,28 +99,16 @@ import { getSources, getStages } from "@/plugins/services/authService";
 export default {
   name: "DealForm",
   props: {
-    formData: Object,
+    formData: {
+      type: Object,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     // const users = ref([]);
     const localFormData = ref({ ...props.formData });
     const sources = ref([]);
     const stages = ref([]);
-    // const fetchUsersData = async () => {
-    //   try {
-    //     const response = await getUser();
-    //     if (response.status === 200) {
-    //       users.value = response.data.data;
-    //       console.log("Fetched users:", users.value);
-    //     } else {
-    //       alert("Failed to fetch users");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching users:", error);
-    //     alert("Failed to fetch users");
-    //   }
-    // };
-
     const fetchSources = async () => {
       try {
         const response = await getSources();
@@ -139,12 +131,9 @@ export default {
             value: stage.id,
             label: stage.name,
           }));
-        } else {
-          // alert("Failed to fetch stages");
         }
       } catch (error) {
         console.error("Error fetching stages:", error);
-        // alert("Failed to fetch stages");
       }
     };
 

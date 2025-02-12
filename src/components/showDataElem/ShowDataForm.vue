@@ -94,9 +94,11 @@
 <script>
 export default {
   name: "ShowDataForm",
-  formData: {
-    type: Object,
-    required: true,
+  props: {
+    formData: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {

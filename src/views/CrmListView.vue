@@ -74,7 +74,7 @@
       <template #item-actions="item">
         <div class="btns d-flex justify-content-start align-items-center gap-3">
           <button
-            @click="openShowData(item)"
+            @click="handleShowDeal(item.id)"
             class="text-white bg-primary px-2 py-1 rounded-2 border-0"
           >
             <i class="fa-regular fa-eye"></i>
@@ -106,7 +106,7 @@
   />
   <DealModal @add-deal="addNewDeal" />
   <ImportModal />
-  <ShowData :formData="selectedUser" ref="showDataModalRef" />
+  <ShowData :formData="dealData" ref="showDataModal" />
 </template>
 <script setup>
 import { ref, computed, onMounted } from "vue";
@@ -124,7 +124,7 @@ import {
   updateDealsRepresentative,
   updateDealsSource,
   deleteDeals,
-  // getSources,
+  getSources,
   getStages,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
@@ -161,8 +161,8 @@ const filters = ref({
   modifiedEnd: "",
   status: [],
 });
-const selectedUser = ref(null);
-const showDataModalRef = ref(null);
+const showDataModal = ref(null);
+const dealData = ref(null);
 // Actions operations
 const actions = ref([
   { value: "changeStage", label: "Change Stage" },
@@ -174,7 +174,7 @@ const actions = ref([
 const deleteItem = (id) => {
   items.value = items.value.filter((item) => item.id !== id);
 };
-// const sources = ref([]);
+const sources = ref([]);
 const stages = ref([]);
 
 // Action execution
@@ -373,35 +373,54 @@ const openImportModal = () => {
   const modal = new Modal(modalElement);
   modal.show();
 };
-const openShowData = async (item) => {
-  if (!item || !item.id) {
-    console.error("Invalid item data:", item);
-    return;
-  }
-
+const fetchStagesAndSources = async () => {
   try {
-    const response = await showDeal(item.id);
-    const deal = response.data.data;
-
-    selectedUser.value = {
-      name: deal.user?.name,
-      phone: deal.phone,
-      description: deal.description,
-      createdAt: deal.createdAt,
-      source: deal.source,
-      stage: deal.stage,
-      responsablePerson: deal.responsible,
-    };
-
-    const modalElement = document.getElementById("showDataModal");
-    if (modalElement) {
-      const modal = new Modal(modalElement);
-      modal.show();
-    }
+    const [stagesRes, sourcesRes] = await Promise.all([
+      getStages(),
+      getSources(),
+    ]);
+    stages.value = stagesRes.data.data;
+    sources.value = sourcesRes.data.data;
   } catch (error) {
-    console.error("Error fetching deal:", error);
+    console.error("Error fetching stages and sources:", error);
   }
 };
+const handleShowDeal = async (dealId) => {
+  try {
+    const response = await showDeal(dealId);
+    const deal = response.data.data;
+    const matchedStage = stages.value.find(
+      (stage) => stage.id === deal.stage_id
+    );
+    const matchedSource = sources.value.find(
+      (source) => source.id === deal.source_id
+    );
+    dealData.value = {
+      name: deal.contact?.name || "unassigned",
+      nickname: deal.contact?.nickname || "unassigned",
+      address: deal.contact?.address || "unassigned",
+      country: deal.contact?.country || "unassigned",
+      email: deal.contact?.email || "unassigned",
+      phone: deal.contact?.phones?.[0]?.phone || "unassigned",
+      description: deal.description || "unassigned",
+      rating: deal.rating || "unassigned",
+      created_at: deal.created_at
+        ? new Date(deal.created_at).toISOString().split("T")[0]
+        : "",
+      updated_at: deal.updated_at
+        ? new Date(deal.updated_at).toISOString().split("T")[0]
+        : "",
+      stage_name: matchedStage?.name || "Unassigned",
+      source_name: matchedSource?.name || "Unassigned",
+      responsablePerson: deal.user || "unassigned",
+    };
+
+    showDataModal.value?.openShowData();
+  } catch (error) {
+    console.error("Error fetching deal data:", error);
+  }
+};
+
 const applyFilters = (newFilters) => {
   filters.value = { ...newFilters };
 };
@@ -551,7 +570,11 @@ const handleDelete = async () => {
   }
 };
 
-const handleRowClick = (item) => {
+const handleRowClick = (item, event) => {
+  if (event?.target?.closest("button")) {
+    return;
+  }
+
   const checkbox = event.currentTarget.querySelector('input[type="checkbox"]');
   const isSelected = selectedRows.value.some((row) => row.id === item.id);
 
@@ -571,6 +594,7 @@ const handleRowClick = (item) => {
 // upload data
 onMounted(() => {
   fetchData();
+  fetchStagesAndSources();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {

@@ -32,7 +32,7 @@
 import { Modal } from "bootstrap";
 import DealForm from "../CreateDealElements/DealForm.vue";
 import DealButtons from "../CreateDealElements/DealButtons.vue";
-import { createDeal, getUser } from "@/plugins/services/authService";
+import { createDeal } from "@/plugins/services/authService";
 
 export default {
   name: "DealModal",
@@ -41,31 +41,25 @@ export default {
   data() {
     return {
       formData: {
-        id: null,
-        user_id: "",
-        phone: "",
-        notes: "",
-        created_at: "",
-        source: "",
-        stage: "",
-        responsible: "",
+        description: null,
+        stage_id: "",
+        source_id: null,
+        contact: {
+          name: "",
+          email: "",
+          phones: [
+            {
+              phone: "",
+            },
+          ],
+        },
       },
-      users: [],
       successMessage: "",
       errorMessage: "",
     };
   },
   methods: {
-    async fetchUsers() {
-      try {
-        const response = await getUser();
-        this.users = response.data.data;
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    },
     openModal() {
-      this.fetchUsers();
       const modal = new Modal(document.getElementById("dealModal"));
       modal.show();
     },
@@ -74,19 +68,25 @@ export default {
         this.successMessage = "";
         this.errorMessage = "";
 
-        const formData = new FormData();
-        formData.append("user_id", this.formData.user_id.id); // Get ID from selected user object
-        formData.append("phone", this.formData.phone);
-        formData.append("notes", this.formData.notes);
-        formData.append("source", this.formData.source);
-        formData.append("created_at", this.formData.created_at);
-        formData.append("stage", this.formData.stage);
-        formData.append("responsible", this.formData.responsible);
+        const dealData = {
+          description: this.formData.description,
+          stage_id: this.formData.stage_id,
+          source_id: this.formData.source_id,
+          contact: {
+            name: this.formData.contact.name,
+            email: this.formData.contact.email,
+            phones: [
+              {
+                phone: this.formData.contact.phones[0].phone,
+              },
+            ],
+          },
+        };
 
-        const response = await createDeal(formData);
+        const response = await createDeal(dealData);
 
         if (response.data) {
-          this.successMessage = "Created User Is Successfully";
+          this.successMessage = "Deal Created Successfully";
           this.$emit("add-deal", response.data.data);
           setTimeout(() => {
             this.clearForm();
@@ -100,15 +100,23 @@ export default {
     },
     clearForm() {
       this.formData = {
-        // id: null,
-        user_id: "",
-        phone: "",
-        notes: "",
-        created_at: "",
-        source: "",
-        stage: "",
-        responsible: "",
+        description: null,
+        stage_id: "",
+        source_id: null,
+        contact: {
+          name: "",
+          email: "",
+          phones: [
+            {
+              phone: "",
+            },
+          ],
+        },
       };
+    },
+    closeDealModal() {
+      const modal = Modal.getInstance(this.$refs.dealModal);
+      modal.hide();
     },
   },
 };
