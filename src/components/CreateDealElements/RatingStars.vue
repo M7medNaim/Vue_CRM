@@ -1,6 +1,7 @@
 <template>
   <div class="rating-container">
-    <div class="stars">
+    <div class="stars d-flex justify-content-center align-items-center">
+      <span class="fs-5 me-2">Rating:</span>
       <span
         v-for="index in 7"
         :key="index"

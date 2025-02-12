@@ -92,7 +92,6 @@
           </select>
         </div>
         <div class="mb-3">
-          <label for="rating" class="form-label">Rating</label>
           <RatingStars v-model="localFormData.rating" />
         </div>
       </div>
