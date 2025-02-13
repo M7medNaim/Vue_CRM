@@ -74,7 +74,6 @@ import Cookies from "js-cookie";
 import axiosInstance from "@/plugins/axios";
 
 export default {
-  // name: "LoginComponent",
   name: "LoginView",
   data() {
     return {
@@ -100,6 +99,10 @@ export default {
           password: this.password,
         });
 
+        if (response.data.token) {
+          Cookies.set("authToken", response.data.token);
+          this.$emit("loginSuccess");
+        }
         const token = response.data.token;
         const name = response.data.user.name;
         const email = response.data.user.email;

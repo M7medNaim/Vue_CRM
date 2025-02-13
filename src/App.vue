@@ -1,24 +1,24 @@
 <template>
   <Loader
-    :isLoading="isLoading"
-    :loaderImage="loaderImage"
-    :loaderColor="loaderColor"
+    :is-loading="loadingStore.isLoading"
+    :loader-image="loaderImage"
+    :loader-color="loaderColor"
   />
-  <div v-if="!isLoading">
-    <div v-if="!isLoggedIn">
-      <LoginView @loginSuccess="handleLoginSuccess" />
-    </div>
-    <div v-else class="app overflow-hidden">
-      <div class="row">
-        <div :class="sidebarClass">
-          <LeftSidebar @toggle="handleSidebarToggle" />
-        </div>
 
-        <div :class="headerClass">
-          <TopHeader @logout="handleLogout" />
-          <div class="content">
-            <router-view />
-          </div>
+  <div v-if="!isLoggedIn">
+    <LoginView @loginSuccess="handleLoginSuccess" />
+  </div>
+
+  <div v-else-if="!$route.meta.hideNavigation" class="app overflow-hidden">
+    <div class="row">
+      <div :class="sidebarClass">
+        <LeftSidebar @toggle="handleSidebarToggle" />
+      </div>
+
+      <div :class="headerClass">
+        <TopHeader @logout="handleLogout" />
+        <div class="content">
+          <router-view />
         </div>
       </div>
     </div>
@@ -26,24 +26,34 @@
 </template>
 
 <script>
+// import { ref, onMounted } from "vue";
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
 import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
+import { useLoadingStore } from "@/plugins/loadingStore";
 
 export default {
-  name: "HomePage",
+  name: "App",
   components: { TopHeader, LeftSidebar, LoginView, Loader },
+
+  setup() {
+    const loadingStore = useLoadingStore();
+    return {
+      loadingStore,
+    };
+  },
+
   data() {
     return {
-      isLoading: true,
       loaderImage: "/images/new-nokta-logo.png",
       loaderColor: "#9e2929",
       isLoggedIn: false,
       isSidebarCollapsed: true,
     };
   },
+
   computed: {
     sidebarClass() {
       return this.isSidebarCollapsed ? "col-1" : "col-2";
@@ -52,14 +62,17 @@ export default {
       return this.isSidebarCollapsed ? "col-11" : "col-10";
     },
   },
+
   methods: {
     handleSidebarToggle(isCollapsed) {
       this.isSidebarCollapsed = isCollapsed;
     },
+
     handleLoginSuccess() {
       this.isLoggedIn = true;
       this.$router.push("/users");
     },
+
     handleLogout() {
       Cookies.remove("authToken");
       Cookies.remove("name");
@@ -68,6 +81,7 @@ export default {
       this.isLoggedIn = false;
       this.$router.push("/login");
     },
+
     loadSavedBackground() {
       const savedImage = localStorage.getItem("backgroundImage");
       if (savedImage) {
@@ -76,20 +90,21 @@ export default {
         document.body.style.backgroundPosition = "center";
       }
     },
+
     checkAuthStatus() {
       const token = Cookies.get("authToken");
       this.isLoggedIn = !!token;
-      if (!token) {
+
+      if (!token && this.$route.path !== "/login") {
         this.$router.push("/login");
+      } else if (token && this.$route.path === "/login") {
+        this.$router.push("/home");
       }
     },
   },
   mounted() {
     this.loadSavedBackground();
     this.checkAuthStatus();
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 2000);
   },
 };
 </script>

@@ -11,39 +11,68 @@ const routes = [
     redirect: "/login",
   },
   {
-    path: "/home",
-    name: "home",
-    component: HomeView,
-    meta: { title: "الرئيسية" },
-  },
-  {
     path: "/login",
     name: "LoginView",
     component: LoginView,
+    meta: {
+      requiresAuth: false,
+      hideNavigation: true,
+    },
+  },
+  {
+    path: "/home",
+    name: "home",
+    component: HomeView,
+    meta: {
+      requiresAuth: true,
+      title: "الرئيسية",
+    },
   },
   {
     path: "/users",
     name: "UsersView",
     component: UsersView,
-    meta: { title: "المستخدمين" },
+    meta: {
+      requiresAuth: true,
+      title: "المستخدمين",
+    },
   },
   {
     path: "/crmlist",
     name: "CrmListView",
     component: CrmListView,
-    meta: { title: "Crm List" },
+    meta: {
+      requiresAuth: true,
+      title: "Crm List",
+    },
   },
   {
     path: "/contacts",
     name: "ContactsView",
     component: ContactsView,
-    meta: { title: "Contact Us" },
+    meta: {
+      requiresAuth: true,
+      title: "Contact Us",
+    },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+// Navigation Guard
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("authToken");
+
+  if (to.meta.requiresAuth && !token) {
+    next("/login");
+  } else if (to.path === "/login" && token) {
+    next("/home");
+  } else {
+    next();
+  }
 });
 
 export default router;

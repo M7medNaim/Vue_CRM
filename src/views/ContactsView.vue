@@ -87,7 +87,7 @@ import "vue3-easy-data-table/dist/style.css";
 import { getContacts, deleteContact } from "@/plugins/services/authService";
 import CreateContact from "@/components/ContactModals/CreateContact.vue";
 import FilterContact from "@/components/ContactModals/FilterContact.vue";
-
+import { useLoadingStore } from "@/plugins/loadingStore";
 export default {
   name: "ContactsView",
   components: {
@@ -102,15 +102,8 @@ export default {
       { text: "رقم الهاتف", value: "phone" },
       { text: "عمل", value: "actions" },
     ];
-
-    const items = ref([
-      {
-        name: "mohammed naim",
-        email: "mohamed@gmail.com",
-        phone: "01234567890",
-        actions: "actions",
-      },
-    ]);
+    const loadingStore = useLoadingStore();
+    const items = ref([]);
     const search = ref("");
     const selectedPerPage = ref("10");
     const contactCreateModalRef = ref(null);
@@ -118,22 +111,26 @@ export default {
 
     // Filtered Items
     const filteredItems = computed(() => {
-      return items.value.filter((item) => {
+      const result = items.value.filter((item) => {
         return (
           item.name.toLowerCase().includes(search.value.toLowerCase()) ||
           item.email.toLowerCase().includes(search.value.toLowerCase()) ||
           item.phone.includes(search.value)
         );
       });
+      return result;
     });
 
     // Fetch Contacts
     const fetchContacts = async () => {
       try {
+        loadingStore.startLoading();
         const response = await getContacts();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching contacts:", error);
+      } finally {
+        loadingStore.stopLoading();
       }
     };
 
@@ -179,6 +176,7 @@ export default {
     // Filter Functions
     const applyFilters = async (filters) => {
       try {
+        loadingStore.startLoading();
         const formattedFilters = {
           ...filters,
           startDate: filters.startDate
@@ -194,18 +192,23 @@ export default {
         }
       } catch (error) {
         console.error("Filter application failed:", error);
+      } finally {
+        loadingStore.stopLoading();
       }
     };
 
     // Reset Filters
     const resetFilters = async () => {
       try {
+        loadingStore.startLoading();
         const response = await getContacts();
         if (response.data.success) {
           items.value = response.data.data;
         }
       } catch (error) {
         console.error("Reset filters failed:", error);
+      } finally {
+        loadingStore.stopLoading();
       }
     };
 

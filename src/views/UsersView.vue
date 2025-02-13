@@ -89,6 +89,7 @@ import AdminModal from "@/components/modals/AdminForm.vue";
 import ButtonsUser from "@/components/usersElements/ButtonsUser.vue";
 import FormSwitch from "@/components/usersElements/FormSwitch.vue";
 import FilterForm from "@/components/modals/FilterForm.vue";
+import { useLoadingStore } from "@/plugins/loadingStore";
 // import Cookies from "js-cookie"
 
 import {
@@ -113,6 +114,7 @@ export default {
       { text: "الحالة", value: "status" },
       { text: "عمل", value: "actions" },
     ];
+    const loadingStore = useLoadingStore();
     const items = ref([]);
     const search = ref("");
     const selectedRole = ref("");
@@ -148,18 +150,24 @@ export default {
       };
 
       try {
+        loadingStore.startLoading();
         const response = await getUser(query);
         items.value = response.data.data;
       } catch (error) {
         console.error("هناك مشكلة في فلترة المستخدمين:", error);
+      } finally {
+        loadingStore.stopLoading();
       }
     };
     const fetchUsers = async () => {
       try {
+        loadingStore.startLoading();
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        loadingStore.stopLoading();
       }
     };
 
@@ -216,10 +224,13 @@ export default {
       selectedPerPage.value = "10";
 
       try {
+        loadingStore.startLoading();
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("فشل في إعادة تعيين الفلترة:", error);
+      } finally {
+        loadingStore.stopLoading();
       }
     };
 

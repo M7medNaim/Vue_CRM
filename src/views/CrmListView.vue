@@ -116,6 +116,8 @@ import DealModal from "@/components/modals/CreateDeal.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useLoadingStore } from "@/plugins/loadingStore";
+
 import {
   getDeals,
   showDeal,
@@ -131,6 +133,7 @@ import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 
 // Items data
 const items = ref([]);
+const loadingStore = useLoadingStore();
 
 // Table headers
 const headers = [
@@ -250,6 +253,7 @@ const executeAction = () => {
 
 const fetchData = async () => {
   try {
+    loadingStore.startLoading();
     const stagesRes = await getStages();
     stages.value = stagesRes.data.data;
     // const sourcesRes = await getSources();
@@ -278,6 +282,8 @@ const fetchData = async () => {
     });
   } catch (error) {
     console.error("Error in fetchData:", error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -375,6 +381,7 @@ const openImportModal = () => {
 };
 const fetchStagesAndSources = async () => {
   try {
+    loadingStore.startLoading();
     const [stagesRes, sourcesRes] = await Promise.all([
       getStages(),
       getSources(),
@@ -383,10 +390,13 @@ const fetchStagesAndSources = async () => {
     sources.value = sourcesRes.data.data;
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 const handleShowDeal = async (dealId) => {
   try {
+    loadingStore.startLoading();
     const response = await showDeal(dealId);
     const deal = response.data.data;
     const matchedStage = stages.value.find(
@@ -418,11 +428,23 @@ const handleShowDeal = async (dealId) => {
     showDataModal.value?.openShowData();
   } catch (error) {
     console.error("Error fetching deal data:", error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
-const applyFilters = (newFilters) => {
-  filters.value = { ...newFilters };
+const applyFilters = async (newFilters) => {
+  try {
+    loadingStore.startLoading();
+    filters.value = { ...newFilters };
+
+    const response = await getDeals(filters.value);
+    items.value = response.data.data;
+  } catch (error) {
+    console.error("Filter Error:", error);
+  } finally {
+    loadingStore.stopLoading();
+  }
 };
 
 const addNewDeal = async (newDeal) => {
