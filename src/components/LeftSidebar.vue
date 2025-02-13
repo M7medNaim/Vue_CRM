@@ -73,7 +73,7 @@
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="Contacts"
       >
-        <router-link to="/users" class="text-decoration-none text-white">
+        <router-link to="/contacts" class="text-decoration-none text-white">
           <i class="fa-regular fa-address-book fs-5 me-2"></i>
           <span v-if="!isCollapsed">Contacts</span>
         </router-link>

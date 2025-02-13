@@ -67,21 +67,6 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="date_of_birth" class="form-label">Date of Birth</label>
-            <select v-model="dateOfBirth" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
-              <!-- <option
-                v-for="option in options"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </option> -->
-            </select>
-          </div>
-        </div>
-        <div class="col-12">
-          <div class="mb-3">
             <label for="phone" class="form-label">Phone</label>
             <select v-model="phone" class="text-secondary form-select">
               <option value="" disabled selected>Select a header</option>
@@ -148,6 +133,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { getSources } from "@/plugins/services/authService";
+import * as XLSX from "xlsx";
 
 export default {
   name: "ImportForm",
@@ -163,16 +149,8 @@ export default {
     const comment = ref("");
     const address = ref("");
     const email = ref("");
-    const options = [
-      { value: "date", label: "التاريخ" },
-      { value: "product", label: "المنتج" },
-      { value: "quantity", label: "الكمية" },
-      { value: "unit_price", label: "سعر الوحدة" },
-      { value: "total_price", label: "التكلفة" },
-      { value: "total_sales", label: "إجمالي المبيعات" },
-      { value: "total_cost", label: "إجمالي التكلفة" },
-      { value: "net_profit", label: "صافي الربح" },
-    ];
+    const options = ref([]);
+    // get sources api
     const fetchSources = async () => {
       try {
         const response = await getSources();
@@ -184,7 +162,8 @@ export default {
       }
     };
 
-    const handleFileChange = (event) => {
+    // handle file change
+    const handleFileChange = async (event) => {
       const file = event.target.files[0];
       if (file) {
         const allowedTypes = [
@@ -212,9 +191,54 @@ export default {
           return;
         }
 
-        fileError.value = "";
-        isFileValid.value = true;
+        try {
+          const headers = await getFileHeaders(file);
+          options.value = headers;
+          fileError.value = "";
+          isFileValid.value = true;
+        } catch (error) {
+          console.error("Error reading file headers:", error);
+          fileError.value = "Error reading file headers";
+          isFileValid.value = false;
+        }
       }
+    };
+
+    // get file headers
+    const getFileHeaders = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          try {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: "binary" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+
+            const headers = XLSX.utils.sheet_to_json(worksheet, {
+              header: 1,
+            })[0];
+
+            const headerOptions = headers.map((header) => ({
+              value: header,
+              label: header,
+            }));
+
+            resolve(headerOptions);
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        reader.onerror = (error) => reject(error);
+
+        if (file.type === "text/csv") {
+          reader.readAsText(file);
+        } else {
+          reader.readAsBinaryString(file);
+        }
+      });
     };
 
     onMounted(() => {

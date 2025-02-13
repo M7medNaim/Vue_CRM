@@ -84,3 +84,26 @@ export const getSources = () => axios.get("/sources");
 
 // Get All Stages
 export const getStages = () => axios.get("/stages");
+// ------------------------------------------------------------
+// Contacts
+// get all contacts
+// export const getContacts = () => axios.get("/contacts");
+export const getContacts = (filters) => {
+  const token = Cookies.get("authToken");
+  return axios.get("/contacts", {
+    params: filters,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+// create new contact
+export const createContact = (formData) => {
+  return axios.post("/contacts", formData);
+};
+// update contact
+export const updateContact = (contactId, formData) =>
+  axios.put(`/contacts/${contactId}`, formData);
+// delete contact
+export const deleteContact = (contactId) =>
+  axios.delete(`/contacts/${contactId}`);

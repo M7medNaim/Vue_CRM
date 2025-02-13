@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import UsersView from "../views/UsersView.vue";
 import CrmListView from "@/views/CrmListView.vue";
+import ContactsView from "@/views/ContactsView.vue";
 
 const routes = [
   {
@@ -31,6 +32,12 @@ const routes = [
     name: "CrmListView",
     component: CrmListView,
     meta: { title: "Crm List" },
+  },
+  {
+    path: "/contacts",
+    name: "ContactsView",
+    component: ContactsView,
+    meta: { title: "Contact Us" },
   },
 ];
 
