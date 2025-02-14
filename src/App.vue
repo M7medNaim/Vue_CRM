@@ -106,6 +106,11 @@ export default {
     this.loadSavedBackground();
     this.checkAuthStatus();
   },
+  watch: {
+    $route() {
+      this.checkAuthStatus();
+    },
+  },
 };
 </script>
 

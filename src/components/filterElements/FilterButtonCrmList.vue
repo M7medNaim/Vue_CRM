@@ -6,7 +6,7 @@
         إزالة الفلتر
       </button>
     </div>
-    <button type="button" class="btn btn-secondary" @click="closeFilterModal">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
       إغلاق
     </button>
   </div>

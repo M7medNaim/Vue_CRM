@@ -29,6 +29,10 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       Cookies.remove("authToken");
       window.location.href = "/login";
+      Cookies.remove("authToken");
+      Cookies.remove("name");
+      Cookies.remove("image");
+      Cookies.remove("email");
     }
     return Promise.reject(error);
   }

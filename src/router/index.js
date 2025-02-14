@@ -4,7 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import UsersView from "../views/UsersView.vue";
 import CrmListView from "@/views/CrmListView.vue";
 import ContactsView from "@/views/ContactsView.vue";
-
+import Cookies from "js-cookie";
 const routes = [
   {
     path: "/",
@@ -64,7 +64,7 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("authToken");
+  const token = Cookies.get("authToken");
 
   if (to.meta.requiresAuth && !token) {
     next("/login");

@@ -3,7 +3,7 @@
     <div class="btns d-flex justify-content-end align-items-center gap-3">
       <button type="submit" class="btn btn-primary">Create Deal</button>
     </div>
-    <button type="button" class="btn btn-secondary" @click="closeDealModal">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
       إغلاق
     </button>
   </div>
