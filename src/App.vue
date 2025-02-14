@@ -70,7 +70,7 @@ export default {
 
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.$router.push("/users");
+      this.$router.push("/home");
     },
 
     handleLogout() {

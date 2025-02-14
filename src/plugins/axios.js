@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
-
+import router from "@/router";
 const axios = require("axios");
+
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
@@ -22,17 +23,14 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      Cookies.remove("authToken");
-      window.location.href = "/login";
+    if (error.response?.status === 401) {
       Cookies.remove("authToken");
       Cookies.remove("name");
-      Cookies.remove("image");
       Cookies.remove("email");
+      Cookies.remove("image");
+      router.push("/login");
     }
     return Promise.reject(error);
   }

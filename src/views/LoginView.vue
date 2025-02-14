@@ -71,7 +71,7 @@
 <script>
 import { login } from "@/plugins/services/authService";
 import Cookies from "js-cookie";
-import axiosInstance from "@/plugins/axios";
+// import axiosInstance from "@/plugins/axios";
 
 export default {
   name: "LoginView",
@@ -90,30 +90,33 @@ export default {
   },
   methods: {
     async handleLogin() {
-      this.resetErrors();
-
-      if (!this.validateInputs()) return;
       try {
+        this.resetErrors();
+        if (!this.validateInputs()) {
+          return;
+        }
         const response = await login({
           email: this.email,
           password: this.password,
         });
 
         if (response.data.token) {
-          Cookies.set("authToken", response.data.token);
+          const cookieOptions = {
+            secure: true,
+            sameSite: "Strict",
+            path: "/",
+            expires: 7,
+          };
+          Cookies.set("authToken", response.data.token, cookieOptions);
+          Cookies.set("name", response.data.user.name, cookieOptions);
+          Cookies.set("email", response.data.user.email, cookieOptions);
+          Cookies.set("image", response.data.user.image || "", cookieOptions);
+          this.email = "";
+          this.password = "";
+          this.loginSuccess = true;
           this.$emit("loginSuccess");
+          this.$router.push("/home");
         }
-        const token = response.data.token;
-        const name = response.data.user.name;
-        const email = response.data.user.email;
-        const image = response.data.user.image || "";
-        this.storeToken(token, name, image, email);
-        // this.email = "";
-        // this.password = "";
-        this.loginSuccess = true;
-        axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
-        this.$emit("loginSuccess");
-        this.$router.push("/users");
       } catch (error) {
         this.errors.message = "Login failed. Please try again.";
         this.email = "";
@@ -144,31 +147,10 @@ export default {
 
       return valid;
     },
-    storeToken(token, name, image, email) {
-      Cookies.set("authToken", token, {
-        expires: this.rememberMe ? 7 : null,
-        secure: true,
-        sameSite: "Strict",
-        path: "/",
-      });
-      Cookies.set("name", name, {
-        expires: this.rememberMe ? 7 : null,
-        secure: true,
-        sameSite: "Strict",
-        path: "/",
-      });
-      Cookies.set("image", image, {
-        expires: this.rememberMe ? 7 : null,
-        secure: true,
-        sameSite: "Strict",
-        path: "/",
-      });
-      Cookies.set("email", email, {
-        expires: this.rememberMe ? 7 : null,
-        secure: true,
-        sameSite: "Strict",
-        path: "/",
-      });
+    mounted() {
+      if (Cookies.get("authToken")) {
+        this.$router.push("/home");
+      }
     },
   },
 };

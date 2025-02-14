@@ -65,11 +65,11 @@ const router = createRouter({
 // Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = Cookies.get("authToken");
-
-  if (to.meta.requiresAuth && !token) {
-    next("/login");
+  const isAuthRoute = to.matched.some((record) => record.meta.requiresAuth);
+  if (isAuthRoute && !token) {
+    next({ path: "/login" });
   } else if (to.path === "/login" && token) {
-    next("/home");
+    next({ path: "/home" });
   } else {
     next();
   }
