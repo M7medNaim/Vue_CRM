@@ -5,6 +5,7 @@ import UsersView from "../views/UsersView.vue";
 import CrmListView from "@/views/CrmListView.vue";
 import ContactsView from "@/views/ContactsView.vue";
 import GeneralSetting from "@/views/GeneralSetting.vue";
+import RoleSettings from "@/views/RoleSettings.vue";
 import Cookies from "js-cookie";
 const routes = [
   {
@@ -63,6 +64,24 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "General Setting",
+    },
+  },
+  {
+    path: "/role-settings",
+    name: "RoleSettings",
+    component: RoleSettings,
+    meta: {
+      requiresAuth: true,
+      title: "Role Settings",
+    },
+  },
+  {
+    path: "/role-settings",
+    name: "RoleSettings",
+    component: RoleSettings,
+    meta: {
+      requiresAuth: true,
+      title: "Role Settings",
     },
   },
 ];

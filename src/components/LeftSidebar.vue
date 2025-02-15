@@ -90,6 +90,16 @@
           <span v-if="!isCollapsed">Settings</span>
         </div>
       </router-link>
+      <router-link to="/role-settings" class="text-decoration-none text-white">
+        <div
+          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          title="Role Settings"
+        >
+          <i class="fa-solid fa-cogs fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Role Settings</span>
+        </div>
+      </router-link>
+
       <div
         class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"
         @click="toggleSidebar"
