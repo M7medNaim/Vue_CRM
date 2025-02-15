@@ -51,40 +51,45 @@
           <span v-if="!isCollapsed">CRM Board </span>
         </router-link>
       </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="CRM List"
-      >
-        <router-link to="/crmlist" class="text-decoration-none text-white">
+      <router-link to="/crmlist" class="text-decoration-none text-white">
+        <div
+          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          title="CRM List"
+        >
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
           <span v-if="!isCollapsed">CRM List </span>
-        </router-link>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Users"
-      >
-        <router-link to="/users" class="text-decoration-none text-white">
+        </div>
+      </router-link>
+      <router-link to="/users" class="text-decoration-none text-white">
+        <div
+          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          title="Users"
+        >
           <i class="fa-solid fa-users fs-5 me-2"></i>
           <span v-if="!isCollapsed">Users</span>
-        </router-link>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Contacts"
-      >
-        <router-link to="/contacts" class="text-decoration-none text-white">
+        </div>
+      </router-link>
+      <router-link to="/contacts" class="text-decoration-none text-white">
+        <div
+          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          title="Contacts"
+        >
           <i class="fa-regular fa-address-book fs-5 me-2"></i>
           <span v-if="!isCollapsed">Contacts</span>
-        </router-link>
-      </div>
-      <div
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Settings"
+        </div>
+      </router-link>
+      <router-link
+        to="/general-setting"
+        class="text-decoration-none text-white"
       >
-        <i class="fa-solid fa-cog fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Settings</span>
-      </div>
+        <div
+          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          title="Settings"
+        >
+          <i class="fa-solid fa-cog fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Settings</span>
+        </div>
+      </router-link>
       <div
         class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"
         @click="toggleSidebar"

@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import UsersView from "../views/UsersView.vue";
 import CrmListView from "@/views/CrmListView.vue";
 import ContactsView from "@/views/ContactsView.vue";
+import GeneralSetting from "@/views/GeneralSetting.vue";
 import Cookies from "js-cookie";
 const routes = [
   {
@@ -53,6 +54,15 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Contact Us",
+    },
+  },
+  {
+    path: "/general-setting",
+    name: "GeneralSetting",
+    component: GeneralSetting,
+    meta: {
+      requiresAuth: true,
+      title: "General Setting",
     },
   },
 ];
