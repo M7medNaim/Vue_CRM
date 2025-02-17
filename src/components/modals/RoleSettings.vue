@@ -9,17 +9,42 @@
           <button
             type="button"
             class="btn-close"
-            data-bs-dismiss="modal"
+            @click="$emit('close')"
           ></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label">اسم الدور</label>
-            <input type="text" class="form-control" v-model="role.name" />
+            <label class="form-label required">اسم الدور</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="role.name"
+              required
+            />
           </div>
           <div class="mb-3">
             <label class="form-label">تم الإنشاء في</label>
             <input type="date" class="form-control" v-model="role.create_at" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">الصلاحيات</label>
+            <div class="row">
+              <div
+                class="col-md-4 mb-2"
+                v-for="perm in availablePermissions"
+                :key="perm"
+              >
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    :value="perm"
+                    v-model="role.permissions"
+                  />
+                  <label class="form-check-label">{{ perm }}</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -59,8 +84,21 @@ export default {
       type: Object,
       default: () => ({
         name: "",
+        permissions: [],
         create_at: new Date().toISOString().split("T")[0],
       }),
+    },
+    availablePermissions: {
+      type: Array,
+      required: true,
+      default: () => [
+        "إدارة المستخدمين",
+        "إدارة الأدوار",
+        "إدارة المحتوى",
+        "إدارة الإعدادات",
+        "عرض التقارير",
+        "عرض المحتوى",
+      ],
     },
   },
   emits: ["save", "close"],
@@ -71,7 +109,10 @@ export default {
     watch(
       () => props.currentRole,
       (newValue) => {
-        role.value = { ...newValue };
+        role.value = {
+          ...newValue,
+          permissions: newValue.permissions || [],
+        };
       },
       { deep: true }
     );
@@ -101,3 +142,5 @@ export default {
   },
 };
 </script>
+
+<style scoped></style>

@@ -69,6 +69,7 @@
       ref="roleModal"
       :is-editing="isEditing"
       :current-role="currentRole"
+      :available-permissions="availablePermissions"
       @save="saveRole"
       @close="closeModal"
     />
@@ -103,16 +104,26 @@ export default {
       {
         id: 1,
         name: "Admin",
+        permissions: [
+          "إدارة المستخدمين",
+          "إدارة الأدوار",
+          "إدارة المحتوى",
+          "إدارة الإعدادات",
+          "عرض التقارير",
+          "عرض المحتوى",
+        ],
         create_at: "2024-03-20",
       },
       {
         id: 2,
         name: "User",
+        permissions: ["إدارة المستخدمين"],
         create_at: "2024-03-20",
       },
       {
         id: 3,
         name: "Sales",
+        permissions: ["عرض المحتوى"],
         create_at: "2024-03-20",
       },
     ];
@@ -123,6 +134,21 @@ export default {
       { text: "تم الإنشاء في", value: "create_at" },
       { text: "الإجراءات", value: "actions" },
     ];
+
+    const availablePermissions = [
+      "إدارة المستخدمين",
+      "إدارة الأدوار",
+      "إدارة المحتوى",
+      "إدارة الإعدادات",
+      "عرض التقارير",
+      "عرض المحتوى",
+    ];
+
+    const currentRole = ref({
+      name: "",
+      permissions: [],
+      create_at: new Date().toISOString().split("T")[0],
+    });
 
     const loadData = async () => {
       isLoading.value = true;
@@ -147,11 +173,6 @@ export default {
 
     const isEditing = ref(false);
     const roleModal = ref(null);
-    const currentRole = ref({
-      name: "",
-      create_at: new Date().toISOString().split("T")[0],
-    });
-
     const modal = ref(null);
 
     onMounted(() => {
@@ -161,10 +182,17 @@ export default {
 
     const openModal = (role = null) => {
       if (role) {
-        currentRole.value = { ...role };
+        currentRole.value = {
+          ...role,
+          permissions: [...role.permissions],
+        };
         isEditing.value = true;
       } else {
-        currentRole.value = { name: "", create_at: "" };
+        currentRole.value = {
+          name: "",
+          permissions: [],
+          create_at: new Date().toISOString().split("T")[0],
+        };
         isEditing.value = false;
       }
       modal.value?.show();
@@ -174,15 +202,21 @@ export default {
       if (isEditing.value) {
         const index = items.value.findIndex((r) => r.id === role.id);
         if (index !== -1) {
-          items.value[index] = { ...role };
+          items.value[index] = {
+            ...items.value[index],
+            ...role,
+            permissions: [...role.permissions],
+          };
         }
       } else {
         const newId = Math.max(...items.value.map((r) => r.id), 0) + 1;
         items.value.push({
           id: newId,
           ...role,
+          permissions: [...role.permissions],
         });
       }
+      modal.value?.hide();
     };
 
     const deleteRole = async (id) => {
@@ -221,6 +255,7 @@ export default {
       editRole,
       roleModal,
       closeModal,
+      availablePermissions,
     };
   },
 };
