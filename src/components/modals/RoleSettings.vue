@@ -18,24 +18,8 @@
             <input type="text" class="form-control" v-model="role.name" />
           </div>
           <div class="mb-3">
-            <label class="form-label">الصلاحيات</label>
-            <div class="row">
-              <div
-                class="col-md-4 mb-2"
-                v-for="perm in availablePermissions"
-                :key="perm"
-              >
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    :value="perm"
-                    v-model="role.permissions"
-                  />
-                  <label class="form-check-label">{{ perm }}</label>
-                </div>
-              </div>
-            </div>
+            <label class="form-label">تم الإنشاء في</label>
+            <input type="date" class="form-control" v-model="role.create_at" />
           </div>
         </div>
         <div class="modal-footer">
@@ -46,7 +30,12 @@
           >
             إلغاء
           </button>
-          <button type="button" class="btn btn-primary" @click="save">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="save"
+            :disabled="!role.name"
+          >
             حفظ
           </button>
         </div>
@@ -70,12 +59,8 @@ export default {
       type: Object,
       default: () => ({
         name: "",
-        permissions: [],
+        create_at: new Date().toISOString().split("T")[0],
       }),
-    },
-    availablePermissions: {
-      type: Array,
-      default: () => [],
     },
   },
   emits: ["save", "close"],
@@ -91,11 +76,13 @@ export default {
       { deep: true }
     );
 
-    const show = () => {
-      modal.value?.show();
-    };
-
     const save = () => {
+      if (!role.value.name.trim()) return;
+
+      if (!role.value.create_at) {
+        role.value.create_at = new Date().toISOString().split("T")[0];
+      }
+
       emit("save", { ...role.value });
       emit("close");
     };
@@ -109,7 +96,6 @@ export default {
 
     return {
       role,
-      show,
       save,
     };
   },

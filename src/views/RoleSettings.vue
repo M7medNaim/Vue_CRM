@@ -32,6 +32,7 @@
       :loading="isLoading"
       table-class-name="custom-table"
     >
+      <!-- Id Column -->
       <template #item-id="item">
         <div class="text-muted fs-6">{{ item.id }}</div>
       </template>
@@ -40,16 +41,10 @@
         <div class="fs-6">{{ item.name }}</div>
       </template>
 
-      <!-- Permissions Column -->
-      <template #item-permissions="item">
-        <div class="d-flex flex-wrap gap-2">
-          <span
-            v-for="permission in item.permissions"
-            :key="permission"
-            class="badge bg-primary"
-          >
-            {{ permission }}
-          </span>
+      <!--  Create At Column -->
+      <template #item-create_at="item">
+        <div class="">
+          <div class="fs-6">{{ item.create_at }}</div>
         </div>
       </template>
 
@@ -59,7 +54,11 @@
           <button class="btn btn-sm btn-primary" @click="editRole(item)">
             <i class="fas fa-edit"></i>
           </button>
-          <button class="btn btn-sm btn-danger" @click="deleteRole(item.id)">
+          <button
+            class="btn btn-sm btn-danger"
+            @click="deleteRole(item.id)"
+            :disabled="item.name === 'Admin'"
+          >
             <i class="fas fa-trash"></i>
           </button>
         </div>
@@ -70,7 +69,6 @@
       ref="roleModal"
       :is-editing="isEditing"
       :current-role="currentRole"
-      :available-permissions="availablePermissions"
       @save="saveRole"
       @close="closeModal"
     />
@@ -105,31 +103,24 @@ export default {
       {
         id: 1,
         name: "Admin",
-        permissions: [
-          "إدارة المستخدمين",
-          "إدارة الأدوار",
-          "إدارة المحتوى",
-          "إدارة الإعدادات",
-          "إدارة المالية",
-          "عرض التقارير",
-        ],
+        create_at: "2024-03-20",
       },
       {
         id: 2,
         name: "User",
-        permissions: ["عرض المحتوى"],
+        create_at: "2024-03-20",
       },
       {
         id: 3,
         name: "Sales",
-        permissions: ["إدارة المالية", "عرض التقارير"],
+        create_at: "2024-03-20",
       },
     ];
 
     const headers = [
       { text: "#", value: "id" },
       { text: "الدور", value: "name" },
-      { text: "الصلاحيات", value: "permissions" },
+      { text: "تم الإنشاء في", value: "create_at" },
       { text: "الإجراءات", value: "actions" },
     ];
 
@@ -158,17 +149,8 @@ export default {
     const roleModal = ref(null);
     const currentRole = ref({
       name: "",
-      permissions: [],
+      create_at: new Date().toISOString().split("T")[0],
     });
-
-    const availablePermissions = [
-      "إدارة المستخدمين",
-      "إدارة الأدوار",
-      "إدارة الإعدادات",
-      "إدارة المالية",
-      "عرض المحتوى",
-      "عرض التقارير",
-    ];
 
     const modal = ref(null);
 
@@ -182,7 +164,7 @@ export default {
         currentRole.value = { ...role };
         isEditing.value = true;
       } else {
-        currentRole.value = { name: "", permissions: [] };
+        currentRole.value = { name: "", create_at: "" };
         isEditing.value = false;
       }
       modal.value?.show();
@@ -233,7 +215,6 @@ export default {
       isLoading,
       currentRole,
       isEditing,
-      availablePermissions,
       openModal,
       saveRole,
       deleteRole,

@@ -13,24 +13,6 @@
       </div>
       <span class="fw-bold" v-if="!isCollapsed">CRM Staging</span>
     </div>
-    <!-- <transition name="scale">
-      <div
-        v-if="!isCollapsed"
-        class="searchInput d-flex justify-content-center align-items-center p-2"
-      >
-        <form action="" class="position-relative">
-          <i
-            class="fa-solid fa-search me-2 position-absolute text-secondary"
-          ></i>
-          <input
-            type="text"
-            placeholder="Search"
-            class="rounded-1 border-0 p-2 ps-4 fs-6"
-            style="width: 230px; height: 40px; outline: none"
-          />
-        </form>
-      </div>
-    </transition> -->
     <div class="sidebar-items overflow-auto">
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
@@ -90,7 +72,7 @@
           <span v-if="!isCollapsed">Settings</span>
         </div>
       </router-link>
-      <router-link to="/role-settings" class="text-decoration-none text-white">
+      <!-- <router-link to="/role-settings" class="text-decoration-none text-white">
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
           title="Role Settings"
@@ -98,7 +80,7 @@
           <i class="fa-solid fa-cogs fs-5 me-2"></i>
           <span v-if="!isCollapsed">Role Settings</span>
         </div>
-      </router-link>
+      </router-link> -->
 
       <div
         class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"

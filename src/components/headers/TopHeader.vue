@@ -5,6 +5,20 @@
         class="col-2 col-md-4 d-flex align-items-center text-white fs-5 pt-3"
       >
         <span>{{ pageTitle }}</span>
+        <router-link
+          v-if="$route.path === '/general-setting'"
+          to="/role-settings"
+          class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
+        >
+          <span class="text-white px-3">Role Settings</span>
+        </router-link>
+        <router-link
+          v-if="$route.path === '/role-settings'"
+          to="/general-setting"
+          class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
+        >
+          <span class="text-white px-3">General Settings</span>
+        </router-link>
       </div>
       <div
         class="col-4 col-md-4 d-flex justify-content-center align-items-center g-3"
@@ -99,7 +113,6 @@ export default {
   },
   setup() {
     const currentTime = ref("");
-
     const updateTime = () => {
       const now = new Date();
 
@@ -136,10 +149,18 @@ export default {
     watch(route, () => {
       document.title = pageTitle.value;
     });
+    const showRoleSettings = computed(() => {
+      return route.path === "/general-settings";
+    });
+    const showGeneralSettings = computed(() => {
+      return route.path === "/role-settings";
+    });
 
     return {
       currentTime,
       pageTitle,
+      showRoleSettings,
+      showGeneralSettings,
     };
   },
   methods: {
