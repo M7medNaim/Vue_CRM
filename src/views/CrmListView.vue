@@ -68,6 +68,7 @@
       selection-type="multiple"
       :row-height="60"
       :header-height="50"
+      :loading="tableLoading"
       class="custom-table"
       @click-row="handleRowClick"
     >
@@ -85,6 +86,18 @@
           >
             <i class="fa-solid fa-trash"></i>
           </button>
+        </div>
+      </template>
+      <template #loading>
+        <div class="text-center loading-container">
+          <div class="position-relative d-inline-block">
+            <img
+              src="../assets/new-nokta-logo.png"
+              class="loading-logo"
+              style="width: 50px; height: 50px"
+            />
+          </div>
+          <div class="mt-2 text-primary">جاري التحميل...</div>
         </div>
       </template>
     </EasyDataTable>
@@ -116,7 +129,7 @@ import DealModal from "@/components/modals/CreateDeal.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { useLoadingStore } from "@/plugins/loadingStore";
+// import { useLoadingStore } from "@/plugins/loadingStore";
 
 import {
   getDeals,
@@ -133,8 +146,8 @@ import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 
 // Items data
 const items = ref([]);
-const loadingStore = useLoadingStore();
-
+// const loadingStore = useLoadingStore();
+const tableLoading = ref(false);
 // Table headers
 const headers = [
   { text: "Name", value: "name" },
@@ -253,7 +266,7 @@ const executeAction = () => {
 
 const fetchData = async () => {
   try {
-    loadingStore.startLoading();
+    tableLoading.value = true;
     const stagesRes = await getStages();
     stages.value = stagesRes.data.data;
     // const sourcesRes = await getSources();
@@ -283,7 +296,7 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error in fetchData:", error);
   } finally {
-    loadingStore.stopLoading();
+    tableLoading.value = false;
   }
 };
 
@@ -381,7 +394,7 @@ const openImportModal = () => {
 };
 const fetchStagesAndSources = async () => {
   try {
-    loadingStore.startLoading();
+    tableLoading.value = true;
     const [stagesRes, sourcesRes] = await Promise.all([
       getStages(),
       getSources(),
@@ -391,12 +404,12 @@ const fetchStagesAndSources = async () => {
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
   } finally {
-    loadingStore.stopLoading();
+    tableLoading.value = false;
   }
 };
 const handleShowDeal = async (dealId) => {
   try {
-    loadingStore.startLoading();
+    tableLoading.value = true;
     const response = await showDeal(dealId);
     const deal = response.data.data;
     const matchedStage = stages.value.find(
@@ -429,13 +442,13 @@ const handleShowDeal = async (dealId) => {
   } catch (error) {
     console.error("Error fetching deal data:", error);
   } finally {
-    loadingStore.stopLoading();
+    tableLoading.value = false;
   }
 };
 
 const applyFilters = async (newFilters) => {
   try {
-    loadingStore.startLoading();
+    tableLoading.value = true;
     filters.value = { ...newFilters };
 
     const response = await getDeals(filters.value);
@@ -443,7 +456,7 @@ const applyFilters = async (newFilters) => {
   } catch (error) {
     console.error("Filter Error:", error);
   } finally {
-    loadingStore.stopLoading();
+    tableLoading.value = false;
   }
 };
 
@@ -614,9 +627,11 @@ const handleRowClick = (item, event) => {
 };
 
 // upload data
-onMounted(() => {
-  fetchData();
-  fetchStagesAndSources();
+onMounted(async () => {
+  // loadingStore.startLoading();
+  await fetchData();
+  await fetchStagesAndSources();
+  // loadingStore.stopLoading();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {
@@ -663,5 +678,19 @@ select:focus {
 
 :deep(.custom-table td) {
   pointer-events: auto;
+}
+
+.loading-logo {
+  animation: pulse-and-spin 2s infinite linear;
+  z-index: 2;
+}
+
+@keyframes pulse-and-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

@@ -29,7 +29,7 @@
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="10"
-      :loading="isLoading"
+      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <!-- Id Column -->
@@ -63,6 +63,19 @@
           </button>
         </div>
       </template>
+      <!-- Loading -->
+      <template #loading>
+        <div class="text-center loading-container">
+          <div class="position-relative d-inline-block">
+            <img
+              src="../assets/new-nokta-logo.png"
+              class="loading-logo"
+              style="width: 50px; height: 50px"
+            />
+          </div>
+          <div class="mt-2 text-primary">جاري التحميل...</div>
+        </div>
+      </template>
     </EasyDataTable>
 
     <RoleModal
@@ -82,6 +95,7 @@ import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import { Modal } from "bootstrap";
 import RoleModal from "@/components/modals/RoleSettings.vue";
+import { useLoadingStore } from "@/plugins/loadingStore";
 // import {
 //   updateRole,
 //   createRole,
@@ -97,9 +111,9 @@ export default {
   },
   setup() {
     const search = ref("");
-    const isLoading = ref(true);
+    const tableLoading = ref(false);
     const items = ref([]);
-
+    const loadingStore = useLoadingStore();
     const staticRoles = [
       {
         id: 1,
@@ -151,7 +165,7 @@ export default {
     });
 
     const loadData = async () => {
-      isLoading.value = true;
+      tableLoading.value = true;
       try {
         // const response = await getRoles()
         // items.value = response.data
@@ -161,7 +175,7 @@ export default {
         console.error("Error loading roles:", error);
         items.value = [];
       } finally {
-        isLoading.value = false;
+        tableLoading.value = false;
       }
     };
 
@@ -175,9 +189,11 @@ export default {
     const roleModal = ref(null);
     const modal = ref(null);
 
-    onMounted(() => {
-      loadData();
+    onMounted(async () => {
+      loadingStore.startLoading();
+      await loadData();
       modal.value = new Modal(document.getElementById("roleModal"));
+      loadingStore.stopLoading();
     });
 
     const openModal = (role = null) => {
@@ -198,25 +214,32 @@ export default {
       modal.value?.show();
     };
 
-    const saveRole = (role) => {
-      if (isEditing.value) {
-        const index = items.value.findIndex((r) => r.id === role.id);
-        if (index !== -1) {
-          items.value[index] = {
-            ...items.value[index],
+    const saveRole = async (role) => {
+      tableLoading.value = true;
+      try {
+        if (isEditing.value) {
+          // await updateRole(role.id, role);
+          const index = items.value.findIndex((r) => r.id === role.id);
+          if (index !== -1) {
+            items.value[index] = {
+              ...items.value[index],
+              ...role,
+              permissions: [...role.permissions],
+            };
+          }
+        } else {
+          // const response = await createRole(role);
+          const newId = Math.max(...items.value.map((r) => r.id), 0) + 1;
+          items.value.push({
+            id: newId,
             ...role,
             permissions: [...role.permissions],
-          };
+          });
         }
-      } else {
-        const newId = Math.max(...items.value.map((r) => r.id), 0) + 1;
-        items.value.push({
-          id: newId,
-          ...role,
-          permissions: [...role.permissions],
-        });
+        modal.value?.hide();
+      } finally {
+        tableLoading.value = false;
       }
-      modal.value?.hide();
     };
 
     const deleteRole = async (id) => {
@@ -246,7 +269,7 @@ export default {
       search,
       headers,
       filteredItems,
-      isLoading,
+      tableLoading,
       currentRole,
       isEditing,
       openModal,
@@ -256,6 +279,7 @@ export default {
       roleModal,
       closeModal,
       availablePermissions,
+      loadData,
     };
   },
 };
@@ -282,5 +306,18 @@ export default {
 
 .cursor-pointer {
   cursor: pointer;
+}
+.loading-logo {
+  animation: pulse-and-spin 2s infinite linear;
+  z-index: 2;
+}
+
+@keyframes pulse-and-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

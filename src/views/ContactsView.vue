@@ -37,6 +37,7 @@
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="selectedPerPage"
+      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <!-- Contact Info Column -->
@@ -63,6 +64,19 @@
           <button class="btn btn-sm btn-danger" @click="removeContact(item.id)">
             <i class="fas fa-trash"></i>
           </button>
+        </div>
+      </template>
+      <!-- Loading -->
+      <template #loading>
+        <div class="text-center loading-container">
+          <div class="position-relative d-inline-block">
+            <img
+              src="../assets/new-nokta-logo.png"
+              class="loading-logo"
+              style="width: 50px; height: 50px"
+            />
+          </div>
+          <div class="mt-2 text-primary">جاري التحميل...</div>
         </div>
       </template>
     </EasyDataTable>
@@ -103,6 +117,7 @@ export default {
       { text: "عمل", value: "actions" },
     ];
     const loadingStore = useLoadingStore();
+    const tableLoading = ref(false);
     const items = ref([]);
     const search = ref("");
     const selectedPerPage = ref("10");
@@ -124,13 +139,13 @@ export default {
     // Fetch Contacts
     const fetchContacts = async () => {
       try {
-        loadingStore.startLoading();
+        tableLoading.value = true;
         const response = await getContacts();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching contacts:", error);
       } finally {
-        loadingStore.stopLoading();
+        tableLoading.value = false;
       }
     };
 
@@ -176,7 +191,7 @@ export default {
     // Filter Functions
     const applyFilters = async (filters) => {
       try {
-        loadingStore.startLoading();
+        tableLoading.value = true;
         const formattedFilters = {
           ...filters,
           startDate: filters.startDate
@@ -193,14 +208,14 @@ export default {
       } catch (error) {
         console.error("Filter application failed:", error);
       } finally {
-        loadingStore.stopLoading();
+        tableLoading.value = false;
       }
     };
 
     // Reset Filters
     const resetFilters = async () => {
       try {
-        loadingStore.startLoading();
+        tableLoading.value = true;
         const response = await getContacts();
         if (response.data.success) {
           items.value = response.data.data;
@@ -208,13 +223,15 @@ export default {
       } catch (error) {
         console.error("Reset filters failed:", error);
       } finally {
-        loadingStore.stopLoading();
+        tableLoading.value = false;
       }
     };
 
     // Mounting
-    onMounted(() => {
-      fetchContacts();
+    onMounted(async () => {
+      loadingStore.startLoading();
+      await fetchContacts();
+      loadingStore.stopLoading();
     });
 
     return {
@@ -232,6 +249,7 @@ export default {
       updateContactList,
       applyFilters,
       resetFilters,
+      tableLoading,
     };
   },
 };
@@ -248,5 +266,18 @@ export default {
 :deep(.custom-table) {
   border-radius: 10px;
   overflow: hidden;
+}
+.loading-logo {
+  animation: pulse-and-spin 2s infinite linear;
+  z-index: 2;
+}
+
+@keyframes pulse-and-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

@@ -19,6 +19,7 @@
               type="text"
               class="form-control"
               v-model="role.name"
+              placeholder="اسم الدور"
               required
             />
           </div>

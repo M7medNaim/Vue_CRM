@@ -37,6 +37,7 @@
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="selectedPerPage"
+      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <template #item-profile="item">
@@ -69,6 +70,19 @@
 
       <template #item-actions="item">
         <ButtonsUser :item="item" @edit="editItem" @remove="removeUser" />
+      </template>
+      <!-- Loading -->
+      <template #loading>
+        <div class="text-center loading-container">
+          <div class="position-relative d-inline-block">
+            <img
+              src="../assets/new-nokta-logo.png"
+              class="loading-logo"
+              style="width: 50px; height: 50px"
+            />
+          </div>
+          <div class="mt-2 text-primary">جاري التحميل...</div>
+        </div>
       </template>
     </EasyDataTable>
 
@@ -121,7 +135,7 @@ export default {
     const selectedStatus = ref("");
     const selectedCreatedAt = ref("");
     const selectedPerPage = ref("10");
-
+    const tableLoading = ref(false);
     const isFiltered = computed(() => {
       return (
         selectedRole.value || selectedStatus.value || selectedCreatedAt.value
@@ -150,24 +164,24 @@ export default {
       };
 
       try {
-        loadingStore.startLoading();
+        tableLoading.value = true;
         const response = await getUser(query);
         items.value = response.data.data;
       } catch (error) {
         console.error("هناك مشكلة في فلترة المستخدمين:", error);
       } finally {
-        loadingStore.stopLoading();
+        tableLoading.value = false;
       }
     };
     const fetchUsers = async () => {
       try {
-        loadingStore.startLoading();
+        tableLoading.value = true;
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
-        loadingStore.stopLoading();
+        tableLoading.value = false;
       }
     };
 
@@ -224,18 +238,20 @@ export default {
       selectedPerPage.value = "10";
 
       try {
-        loadingStore.startLoading();
+        tableLoading.value = true;
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("فشل في إعادة تعيين الفلترة:", error);
       } finally {
-        loadingStore.stopLoading();
+        tableLoading.value = false;
       }
     };
 
-    onMounted(() => {
-      fetchUsers();
+    onMounted(async () => {
+      loadingStore.startLoading();
+      await fetchUsers();
+      loadingStore.stopLoading();
     });
 
     return {
@@ -254,6 +270,7 @@ export default {
       openFilterModal,
       applyFilters,
       resetFilters,
+      tableLoading,
     };
   },
 };
@@ -270,5 +287,18 @@ export default {
 :deep(.custom-table) {
   border-radius: 10px;
   overflow: hidden;
+}
+.loading-logo {
+  animation: pulse-and-spin 2s infinite linear;
+  z-index: 2;
+}
+
+@keyframes pulse-and-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
