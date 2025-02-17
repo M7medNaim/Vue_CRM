@@ -32,6 +32,9 @@
       :loading="isLoading"
       table-class-name="custom-table"
     >
+      <template #item-id="item">
+        <div class="text-muted fs-6">{{ item.id }}</div>
+      </template>
       <!-- Role Name Column -->
       <template #item-name="item">
         <div class="fs-6">{{ item.name }}</div>
@@ -63,13 +66,13 @@
       </template>
     </EasyDataTable>
 
-    <!-- استخدام كومبوننت المودال -->
     <RoleModal
       ref="roleModal"
       :is-editing="isEditing"
       :current-role="currentRole"
       :available-permissions="availablePermissions"
       @save="saveRole"
+      @close="closeModal"
     />
   </div>
 </template>
@@ -112,18 +115,19 @@ export default {
         ],
       },
       {
-        id: 4,
+        id: 2,
         name: "User",
         permissions: ["عرض المحتوى"],
       },
       {
-        id: 5,
+        id: 3,
         name: "Sales",
         permissions: ["إدارة المالية", "عرض التقارير"],
       },
     ];
 
     const headers = [
+      { text: "#", value: "id" },
       { text: "الدور", value: "name" },
       { text: "الصلاحيات", value: "permissions" },
       { text: "الإجراءات", value: "actions" },
@@ -166,12 +170,11 @@ export default {
       "عرض التقارير",
     ];
 
+    const modal = ref(null);
+
     onMounted(() => {
       loadData();
-      const modalElement = document.getElementById("roleModal");
-      if (modalElement) {
-        roleModal.value = new Modal(modalElement);
-      }
+      modal.value = new Modal(document.getElementById("roleModal"));
     });
 
     const openModal = (role = null) => {
@@ -182,7 +185,7 @@ export default {
         currentRole.value = { name: "", permissions: [] };
         isEditing.value = false;
       }
-      roleModal.value?.show();
+      modal.value?.show();
     };
 
     const saveRole = (role) => {
@@ -219,6 +222,10 @@ export default {
       openModal(role);
     };
 
+    const closeModal = () => {
+      modal.value?.hide();
+    };
+
     return {
       search,
       headers,
@@ -232,6 +239,7 @@ export default {
       deleteRole,
       editRole,
       roleModal,
+      closeModal,
     };
   },
 };

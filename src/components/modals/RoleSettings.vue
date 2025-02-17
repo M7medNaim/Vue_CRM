@@ -42,7 +42,7 @@
           <button
             type="button"
             class="btn btn-secondary"
-            data-bs-dismiss="modal"
+            @click="$emit('close')"
           >
             إلغاء
           </button>
@@ -78,12 +78,11 @@ export default {
       default: () => [],
     },
   },
-  emits: ["save"],
+  emits: ["save", "close"],
   setup(props, { emit }) {
     const modal = ref(null);
     const role = ref({ ...props.currentRole });
 
-    // مراقبة التغييرات في currentRole
     watch(
       () => props.currentRole,
       (newValue) => {
@@ -96,13 +95,9 @@ export default {
       modal.value?.show();
     };
 
-    const hide = () => {
-      modal.value?.hide();
-    };
-
     const save = () => {
       emit("save", { ...role.value });
-      hide();
+      emit("close");
     };
 
     onMounted(() => {
@@ -115,7 +110,6 @@ export default {
     return {
       role,
       show,
-      hide,
       save,
     };
   },
