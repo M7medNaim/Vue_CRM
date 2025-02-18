@@ -155,6 +155,7 @@ export default {
         );
       });
     });
+    // apply Filters
     const applyFilters = async (filters) => {
       const query = {
         ...(filters.role && { role: filters.role }),
@@ -222,6 +223,7 @@ export default {
       }
     };
 
+    // Remove User
     const removeUser = async (id) => {
       try {
         await deleteUser(id);
@@ -231,6 +233,7 @@ export default {
       }
     };
 
+    // reset Filter
     const resetFilters = async () => {
       selectedRole.value = "";
       selectedStatus.value = "";
@@ -262,6 +265,7 @@ export default {
       adminModalRef,
       filterModalRef,
       isFiltered,
+      tableLoading,
       updateUserList,
       toggleStatus,
       editItem,
@@ -270,7 +274,6 @@ export default {
       openFilterModal,
       applyFilters,
       resetFilters,
-      tableLoading,
     };
   },
 };

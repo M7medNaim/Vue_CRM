@@ -129,7 +129,7 @@ import DealModal from "@/components/modals/CreateDeal.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-// import { useLoadingStore } from "@/plugins/loadingStore";
+import { useLoadingStore } from "@/plugins/loadingStore";
 
 import {
   getDeals,
@@ -146,7 +146,7 @@ import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 
 // Items data
 const items = ref([]);
-// const loadingStore = useLoadingStore();
+const loadingStore = useLoadingStore();
 const tableLoading = ref(false);
 // Table headers
 const headers = [
@@ -165,6 +165,8 @@ const selectedRows = ref([]);
 const itemsPerPage = ref(10);
 const selectedAction = ref("");
 const selectedStatuses = ref([]);
+const showDataModal = ref(null);
+const dealData = ref(null);
 const filters = ref({
   source: "",
   stage: "",
@@ -177,8 +179,6 @@ const filters = ref({
   modifiedEnd: "",
   status: [],
 });
-const showDataModal = ref(null);
-const dealData = ref(null);
 // Actions operations
 const actions = ref([
   { value: "changeStage", label: "Change Stage" },
@@ -628,10 +628,10 @@ const handleRowClick = (item, event) => {
 
 // upload data
 onMounted(async () => {
-  // loadingStore.startLoading();
+  loadingStore.startLoading();
   await fetchData();
   await fetchStagesAndSources();
-  // loadingStore.stopLoading();
+  loadingStore.stopLoading();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {

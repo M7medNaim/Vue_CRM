@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4 bg-white p-4 rounded-3">
+  <div class="mt-4 me-2 bg-white p-4 rounded-3">
     <form>
       <div class="row g-4">
         <!-- App Name -->

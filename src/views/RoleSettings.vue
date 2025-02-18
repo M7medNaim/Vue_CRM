@@ -272,13 +272,13 @@ export default {
       tableLoading,
       currentRole,
       isEditing,
+      availablePermissions,
+      roleModal,
       openModal,
       saveRole,
       deleteRole,
       editRole,
-      roleModal,
       closeModal,
-      availablePermissions,
       loadData,
     };
   },
@@ -291,22 +291,6 @@ export default {
   overflow: hidden;
 }
 
-.badge {
-  font-size: 12px;
-  padding: 5px 10px;
-}
-
-.hover-opacity-100:hover {
-  opacity: 1 !important;
-}
-
-.transition {
-  transition: opacity 0.3s;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
 .loading-logo {
   animation: pulse-and-spin 2s infinite linear;
   z-index: 2;
