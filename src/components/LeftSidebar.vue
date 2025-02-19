@@ -61,6 +61,18 @@
         </div>
       </router-link>
       <router-link
+        to="/documents-folders"
+        class="text-decoration-none text-white"
+      >
+        <div
+          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          title="Documents Folders"
+        >
+          <i class="fa-regular fa-folder-open fs-5 me-2"></i>
+          <span v-if="!isCollapsed">Documents Folders</span>
+        </div>
+      </router-link>
+      <router-link
         to="/general-setting"
         class="text-decoration-none text-white"
       >

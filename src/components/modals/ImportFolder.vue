@@ -1,0 +1,141 @@
+<template>
+  <div class="modal fade" id="importFolderModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">استيراد مجلد</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="upload-area p-4 text-center">
+            <div
+              class="dropzone"
+              @dragover.prevent
+              @drop.prevent="handleDrop"
+              @click="$refs.fileInput.click()"
+            >
+              <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
+              <p class="text-muted mb-3">
+                اسحب وأفلت المجلد هنا أو انقر للاختيار
+              </p>
+              <input
+                type="file"
+                webkitdirectory
+                directory
+                multiple
+                class="d-none"
+                ref="fileInput"
+                @change="handleFileSelect"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            إلغاء
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="handleImport"
+            :disabled="!hasFiles"
+          >
+            استيراد
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, computed } from "vue";
+
+export default {
+  name: "ImportFolderModal",
+  emits: ["import"],
+  setup(props, { emit }) {
+    const fileInput = ref(null);
+    const selectedFiles = ref([]);
+
+    const hasFiles = computed(() => selectedFiles.value.length > 0);
+
+    const handleDrop = (event) => {
+      const items = Array.from(event.dataTransfer.items);
+      processItems(items);
+    };
+
+    const handleFileSelect = (event) => {
+      selectedFiles.value = Array.from(event.target.files);
+    };
+
+    const handleImport = () => {
+      if (!hasFiles.value) return;
+      emit("import", selectedFiles.value);
+      selectedFiles.value = [];
+    };
+
+    const processItems = async (items) => {
+      selectedFiles.value = [];
+      for (const item of items) {
+        if (item.webkitGetAsEntry) {
+          const entry = item.webkitGetAsEntry();
+          if (entry.isDirectory) {
+            await readDirectory(entry);
+          }
+        }
+      }
+    };
+
+    const readDirectory = async (dirEntry) => {
+      const reader = dirEntry.createReader();
+      const entries = await new Promise((resolve) => {
+        reader.readEntries(resolve);
+      });
+
+      for (const entry of entries) {
+        if (entry.isFile) {
+          const file = await new Promise((resolve) => {
+            entry.file(resolve);
+          });
+          selectedFiles.value.push(file);
+        } else if (entry.isDirectory) {
+          await readDirectory(entry);
+        }
+      }
+    };
+
+    return {
+      fileInput,
+      hasFiles,
+      handleDrop,
+      handleFileSelect,
+      handleImport,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.dropzone {
+  border: 2px dashed #ccc;
+  padding: 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dropzone:hover {
+  border-color: #0d6efd;
+  background: #f1f8ff;
+}
+</style>

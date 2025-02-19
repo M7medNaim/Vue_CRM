@@ -6,6 +6,8 @@ import CrmListView from "@/views/CrmListView.vue";
 import ContactsView from "@/views/ContactsView.vue";
 import GeneralSetting from "@/views/GeneralSetting.vue";
 import RoleSettings from "@/views/RoleSettings.vue";
+import DocumentsFolder from "@/views/DocumentsFolderView.vue";
+import DocumentsFiles from "@/views/FolderFilesView.vue";
 import Cookies from "js-cookie";
 const routes = [
   {
@@ -82,6 +84,24 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Role Settings",
+    },
+  },
+  {
+    path: "/documents-folders",
+    name: "DocumentsFolder",
+    component: DocumentsFolder,
+    meta: {
+      requiresAuth: true,
+      title: "Documents Folder",
+    },
+  },
+  {
+    path: "/folders/:folderId/files",
+    name: "FolderFiles",
+    component: DocumentsFiles,
+    meta: {
+      requiresAuth: true,
+      title: "Documents Files",
     },
   },
 ];
