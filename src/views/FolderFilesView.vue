@@ -1,22 +1,23 @@
 <template>
   <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <p class="fs-5 pt-1">{{ folderName }}</p>
-      <div>
+      <div class="d-flex align-items-center">
+        <i class="fas fa-folder text-warning me-2"></i>
+        <p class="fs-5 pt-1 mb-0">{{ folderName }}</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" @click="openNewFolderModal">
+          <i class="fas fa-folder-plus me-1"></i>
+          مجلد جديد
+        </button>
         <button
           class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
           @click="$router.back()"
         >
           <i class="fas fa-arrow-right pt-1"></i>
-          <span> رجوع</span>
+          <span>رجوع</span>
         </button>
       </div>
-      <!-- <div>
-        <button class="btn btn-primary" @click="openUploadModal">
-          <i class="fas fa-upload me-1"></i>
-          رفع ملفات
-        </button>
-      </div> -->
     </div>
 
     <!-- Upload Area -->
@@ -44,8 +45,49 @@
       </div>
     </div>
 
-    <!-- Files List -->
+    <!-- Files and Folders List -->
     <div class="files-list">
+      <!-- Folders Section -->
+      <div
+        v-for="folder in folders"
+        :key="folder.id"
+        class="file-item p-3 border-bottom"
+      >
+        <div
+          class="d-flex justify-content-between align-items-center cursor-pointer"
+          @click="navigateToFolder(folder.id)"
+        >
+          <div class="d-flex align-items-center">
+            <i class="fas fa-folder text-warning me-2"></i>
+            <span>{{ folder.name }}</span>
+          </div>
+          <div class="actions">
+            <button
+              class="btn btn-sm btn-primary me-2"
+              @click.stop="editFolder(folder)"
+              title="تعديل"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-success me-2"
+              @click="downloadFolder(folder.id)"
+              title="تحميل"
+            >
+              <i class="fas fa-download"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              @click="deleteFolder(folder.id)"
+              title="حذف"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Files Section -->
       <div
         v-for="file in files"
         :key="file.id"
@@ -55,9 +97,6 @@
           <div class="d-flex align-items-center">
             <i :class="getFileIcon(file.type)" class="me-2"></i>
             <span>{{ file.name }}</span>
-            <!-- <small class="text-muted"
-              >{{ file.size }} • {{ file.created_at }}</small
-            > -->
           </div>
           <div class="actions">
             <button
@@ -84,64 +123,42 @@
           </div>
         </div>
       </div>
-      <div v-if="files.length === 0" class="text-center py-5 text-muted">
-        <i class="fas fa-file mb-3" style="font-size: 48px"></i>
-        <p>لا توجد ملفات في هذا المجلد</p>
+
+      <!-- Empty State -->
+      <div
+        v-if="folders.length === 0 && files.length === 0"
+        class="text-center py-5 text-muted"
+      >
+        <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
+        <p>لا توجد ملفات أو مجلدات</p>
       </div>
     </div>
   </div>
+  <FolderForm :folder="selectedFolder" @submit="handleFolderSubmit" />
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import FolderForm from "@/components/modals/FolderForm.vue";
+import Modal from "bootstrap/js/dist/modal";
 
 export default {
   name: "FolderFilesView",
+  components: {
+    FolderForm,
+  },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const loadingStore = useLoadingStore();
     const files = ref([]);
+    const folders = ref([]);
     const folderName = ref("");
     const fileInput = ref(null);
-
-    const mockFoldersData = {
-      1: {
-        name: "صور المنتجات",
-        files: [
-          {
-            id: 1,
-            name: "شرح حقنة البلازما.pdf",
-            type: "pdf",
-            size: "2.5 MB",
-            created_at: "2024-03-20",
-            url: "/path/to/file1.pdf",
-          },
-          {
-            id: 2,
-            name: "صورة حقنة البلازما.jpg",
-            type: "image",
-            size: "1.8 MB",
-            created_at: "2024-03-20",
-            url: "/path/to/file2.jpg",
-          },
-        ],
-      },
-      2: {
-        name: "فيديوهات المنتجات",
-        files: [
-          {
-            id: 3,
-            name: " تقرير مريض.xlsx",
-            type: "excel",
-            size: "500 KB",
-            created_at: "2024-03-19",
-            url: "/path/to/file3.xlsx",
-          },
-        ],
-      },
-    };
+    const selectedFolder = ref(null);
+    const folderFormModal = ref(null);
 
     const getFileIcon = (type) => {
       const icons = {
@@ -216,44 +233,175 @@ export default {
         loadingStore.stopLoading();
       }
     };
-
+    const editFolder = (folder) => {
+      selectedFolder.value = { ...folder };
+      folderFormModal.value = new Modal(
+        document.getElementById("folderFormModal")
+      );
+      folderFormModal.value.show();
+    };
     const deleteFile = async (fileId) => {
       if (confirm("هل أنت متأكد من حذف هذا الملف؟")) {
         files.value = files.value.filter((file) => file.id !== fileId);
       }
     };
 
-    const fetchFolderFiles = async () => {
-      const folderId = route.params.folderId;
+    const handleFolderSubmit = async (folderData) => {
+      if (!folderData.name?.trim()) {
+        alert("الرجاء إدخال اسم المجلد");
+        return;
+      }
       try {
         loadingStore.startLoading();
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const currentFolderId = route.params.folderId;
 
-        const folderData = mockFoldersData[folderId];
-        if (folderData) {
-          folderName.value = folderData.name;
-          files.value = folderData.files;
+        if (selectedFolder.value) {
+          const folderIndex = folders.value.findIndex(
+            (f) => f.id === selectedFolder.value.id
+          );
+          if (folderIndex !== -1) {
+            folders.value[folderIndex] = {
+              ...folders.value[folderIndex],
+              name: folderData.name,
+              updated_at: new Date().toLocaleDateString("ar-EG"),
+            };
+          }
+        } else {
+          const newFolder = {
+            id: Date.now(),
+            name: folderData.name,
+            parentId: currentFolderId,
+            created_at: new Date().toLocaleDateString("ar-EG"),
+            files: [],
+          };
+          folders.value.unshift(newFolder);
         }
+
+        folderFormModal.value.hide();
+        selectedFolder.value = null;
+      } catch (error) {
+        console.error("Error handling folder:", error);
+        alert("حدث خطأ أثناء معالجة المجلد");
       } finally {
         loadingStore.stopLoading();
       }
     };
 
-    onMounted(() => {
-      fetchFolderFiles();
-    });
+    const fetchFolderContents = async () => {
+      try {
+        loadingStore.startLoading();
+        const currentFolderId = route.params.folderId;
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const mockFoldersData = {
+          1: {
+            id: 1,
+            name: "المجلد الأول",
+            files: [
+              { id: 1, name: "ملف 1.pdf", type: "pdf" },
+              { id: 2, name: "ملف 2.jpg", type: "image" },
+            ],
+            subFolders: [
+              { id: 11, name: "مجلد فرعي 1", parentId: 1 },
+              { id: 12, name: "مجلد فرعي 2", parentId: 1 },
+            ],
+          },
+          11: {
+            id: 11,
+            name: "مجلد فرعي 1-1",
+            files: [{ id: 3, name: "ملف 3.pdf", type: "pdf" }],
+            subFolders: [{ id: 13, name: "مجلد فرعي 1-1", parentId: 11 }],
+          },
+        };
+
+        const currentFolder = mockFoldersData[currentFolderId] || {
+          id: currentFolderId,
+          name: "مجلد جديد",
+          files: [],
+          subFolders: [],
+        };
+
+        folderName.value = currentFolder.name;
+        files.value = currentFolder.files || [];
+        folders.value = currentFolder.subFolders || [];
+
+        console.log("Loaded folder:", currentFolder.name);
+        console.log("Files:", files.value.length);
+        console.log("Subfolders:", folders.value.length);
+      } catch (error) {
+        console.error("Error fetching folder contents:", error);
+        alert("حدث خطأ أثناء تحميل محتويات المجلد");
+      } finally {
+        loadingStore.stopLoading();
+      }
+    };
+
+    const openNewFolderModal = () => {
+      selectedFolder.value = null;
+      folderFormModal.value = new Modal(
+        document.getElementById("folderFormModal")
+      );
+      folderFormModal.value.show();
+    };
+    const downloadFolder = async (folderId) => {
+      try {
+        loadingStore.startLoading();
+        console.log("Downloading folder:", folderId);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        alert("تم بدء تحميل المجلد");
+      } catch (error) {
+        console.error("Error downloading folder:", error);
+        alert("حدث خطأ أثناء تحميل المجلد");
+      } finally {
+        loadingStore.stopLoading();
+      }
+    };
+    const deleteFolder = async (folderId) => {
+      if (confirm("هل أنت متأكد من حذف هذا المجلد؟")) {
+        folders.value = folders.value.filter((f) => f.id !== folderId);
+      }
+    };
+
+    const navigateToFolder = (folderId, event) => {
+      if (event?.target?.closest("button")) {
+        return;
+      }
+      router.push({
+        name: "FolderFiles",
+        params: { folderId: folderId.toString() },
+      });
+    };
+
+    watch(
+      () => route.params.folderId,
+      (newFolderId) => {
+        if (newFolderId) {
+          fetchFolderContents();
+        }
+      },
+      { immediate: true }
+    );
 
     return {
       files,
+      folders,
       folderName,
       fileInput,
-      handleClick,
-      handleDrop,
-      handleFileSelect,
+      selectedFolder,
+      openNewFolderModal,
+      handleFolderSubmit,
+      deleteFolder,
       getFileIcon,
       viewFile,
       downloadFile,
+      handleFileSelect,
+      handleDrop,
+      handleClick,
       deleteFile,
+      editFolder,
+      navigateToFolder,
+      downloadFolder,
     };
   },
 };
@@ -298,5 +446,13 @@ export default {
 
 .actions button:hover {
   opacity: 1;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  text-decoration: underline;
 }
 </style>

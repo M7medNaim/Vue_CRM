@@ -51,6 +51,13 @@
             <i class="fas fa-edit"></i>
           </button>
           <button
+            class="btn btn-sm btn-success"
+            @click="downloadFolder(item.id)"
+            title="تحميل"
+          >
+            <i class="fas fa-download"></i>
+          </button>
+          <button
             class="btn btn-sm btn-danger"
             @click="deleteFolder(item.id)"
             title="حذف"
@@ -126,13 +133,13 @@ export default {
         id: 1,
         name: "صور المنتجات",
         created_at: "2024-03-20",
-        files_count: 2,
+        files_count: 4,
       },
       {
         id: 2,
         name: "فيديوهات المنتجات",
         created_at: "2024-03-19",
-        files_count: 1,
+        files_count: 0,
       },
       {
         id: 3,
@@ -205,6 +212,20 @@ export default {
       }
     };
 
+    const downloadFolder = async (folderId) => {
+      try {
+        tableLoading.value = true;
+        console.log("Downloading folder:", folderId);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        alert("تم بدء تحميل المجلد");
+      } catch (error) {
+        console.error("Error downloading folder:", error);
+        alert("حدث خطأ أثناء تحميل المجلد");
+      } finally {
+        tableLoading.value = false;
+      }
+    };
+
     const fetchFolders = async () => {
       try {
         tableLoading.value = true;
@@ -251,6 +272,7 @@ export default {
       handleFolderSubmit,
       handleFolderImport,
       handleRowClick,
+      downloadFolder,
     };
   },
 };
