@@ -1,7 +1,7 @@
 <template>
   <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4>{{ folderName }}</h4>
+      <p class="fs-5 pt-1">{{ folderName }}</p>
       <div>
         <button
           class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
