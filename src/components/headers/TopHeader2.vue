@@ -1,118 +1,195 @@
 <template>
-  <div class="app">
-    <header>
-      <nav class="nav-bar px-3 py-2 text-white">
-        <div class="row">
+  <header>
+    <nav class="container-fluid p-0 pe-2">
+      <div class="row">
+        <div class="col-12">
           <div
-            class="col-12 d-flex justify-content-start align-items-center flex-wrap"
+            class="d-flex flex-wrap align-items-center justify-content-between"
           >
-            <!-- buttons -->
-            <div class="btns">
-              <button class="btn btn-light me-2 px-4 py-2 fs-5 fw-bolder">
-                إضافة
-              </button>
-              <button class="btn btn-light me-2 px-4 py-2 fs-5 fw-bolder">
+            <!-- Buttons Group -->
+            <div class="btn-group col-12 col-md-4 col-xl-auto mb-3 mb-xl-0">
+              <button class="btn btn-light px-4 py-2 fw-semibold">إضافة</button>
+              <button class="btn btn-light px-4 py-2 fw-semibold">
                 الرئيسية
               </button>
-              <button class="btn btn-light me-2 px-4 py-2 fs-5 fw-bolder">
+              <button class="btn btn-light px-4 py-2 fw-semibold">
                 المهام
               </button>
             </div>
-            <!-- search input -->
-            <div class="searchInput">
-              <form
-                action=""
-                class="d-flex align-items-center justify-content-start"
-              >
-                <button
-                  class="btn btn-light border-0 py-2 px-3 fs-5 fw-bolder rounded-start-2 rounded-end-0"
-                >
+
+            <!-- Search Form -->
+            <div
+              class="col-12 col-md-4 col-xl-auto flex-xl-grow-1 mx-xl-3 mb-3 mb-xl-0"
+            >
+              <div class="input-group">
+                <button class="btn btn-primary">
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
                 <input
                   type="text"
-                  class="form-control w-auto border-0 py-2 fs-5 rounded-0"
+                  class="form-control bg-light border-light py-2"
                   placeholder="اكتب لبدء عملية البحث ...."
                 />
                 <button
-                  class="btn btn-light border-0 py-2 px-3 fs-5 fw-bolder rounded-end-2 rounded-start-0"
+                  class="btn btn-primary"
                   title="تطبيق فلترة"
+                  @click="openFilterModal"
                 >
                   <i class="fa-solid fa-filter"></i>
                 </button>
-              </form>
-            </div>
-            <!-- taskes -->
-            <div
-              class="task text-black d-flex justify-content-center align-items-center bg-light mx-4 py-2 px-2 fs-5 rounded-3"
-            >
-              <div class="box me-2">
-                <span
-                  class="bg-secondary-subtle p-1 rounded-3 fs-6 text-danger fw-bold"
-                  >99+</span
-                >
-                <span>متأخر</span>
-              </div>
-              <div class="box me-2">
-                <span
-                  class="bg-secondary-subtle p-1 rounded-3 fs-6 text-warning fw-bold"
-                  >15</span
-                >
-                <span>اليوم</span>
-              </div>
-              <div class="box me-2">
-                <span
-                  class="bg-secondary-subtle p-1 rounded-3 fs-6 text-info fw-bold"
-                  >4</span
-                >
-                <span>غداً</span>
-              </div>
-              <div class="box me-2">
-                <span
-                  class="bg-secondary-subtle p-1 rounded-3 fs-6 text-secondary fw-bold"
-                  >99+</span
-                >
-                <span>بدون مهام</span>
               </div>
             </div>
-            <div
-              class="btnExIm d-flex justify-content-center align-items-center"
-            >
+
+            <!-- Tasks Status -->
+            <div class="col-12 col-md-7 col-lg-auto mb-3 mb-md-0 mb-lg-0 me-3">
+              <div class="btn-group w-100">
+                <div class="btn btn-light px-1">
+                  <span
+                    class="badge bg-secondary-subtle text-danger fw-bold fs-6"
+                    >99+</span
+                  >
+                  <span class="ms-1">متأخر</span>
+                </div>
+                <div class="btn btn-light px-1">
+                  <span
+                    class="badge bg-secondary-subtle text-warning fw-bold fs-6"
+                    >15</span
+                  >
+                  <span class="ms-1">اليوم</span>
+                </div>
+                <div class="btn btn-light px-1">
+                  <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
+                    >4</span
+                  >
+                  <span class="ms-1">غداً</span>
+                </div>
+                <div class="btn btn-light px-1">
+                  <span
+                    class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
+                    >99+</span
+                  >
+                  <span class="ms-1">بدون مهام</span>
+                </div>
+              </div>
+            </div>
+            <!-- Import/Export Buttons -->
+            <div class="col-12 col-md-5 col-xl-auto d-flex gap-2 ms-1">
               <button
-                class="btn btn-light border-0 py-2 px-3 fs-5 fw-bolder rounded-start-2 rounded-3 me-2"
+                class="btn btn-light flex-fill py-2"
+                @click="openImportModal"
               >
                 <span>استيراد</span>
-                <i class="fa-solid fa-upload"></i>
+                <i class="fa-solid fa-upload ms-1"></i>
               </button>
               <button
-                class="btn btn-light border-0 py-2 px-3 fs-5 fw-bolder rounded-start-2 rounded-3"
+                class="btn btn-light flex-fill py-2"
+                @click="openExportModal"
               >
                 <span>تصدير</span>
-                <i class="fa-solid fa-download"></i>
+                <i class="fa-solid fa-download ms-1"></i>
               </button>
             </div>
           </div>
         </div>
-      </nav>
-    </header>
-  </div>
+      </div>
+    </nav>
+    <FilterCrmList
+      v-model="filterData"
+      @apply-filters="handleFilters"
+      @reset-filter="handleResetFilter"
+    />
+    <ImportModal ref="importModalRef" />
+    <ExportModal ref="exportModalRef" />
+  </header>
 </template>
 
 <script>
+import { ref, watch } from "vue";
+import FilterCrmList from "@/components/modals/FilterCrmList.vue";
+import ImportModal from "@/components/modals/ImportModal.vue";
+import ExportModal from "@/components/modals/ExportModal.vue";
+import { Modal } from "bootstrap";
+
 export default {
-  name: "HeaderComponent",
+  name: "TopHeader2",
+  components: {
+    FilterCrmList,
+    ImportModal,
+    ExportModal,
+  },
+  props: {
+    initialFilters: {
+      type: Object,
+      default: () => ({
+        source: "",
+        stage: "",
+        supervisor: "",
+        representative: "",
+        package: "",
+        createdStart: "",
+        createdEnd: "",
+        modifiedStart: "",
+        modifiedEnd: "",
+        status: [],
+      }),
+    },
+  },
+  emits: ["filter-applied", "reset-filter"],
+  setup(props, { emit }) {
+    const filterData = ref({ ...props.initialFilters });
+
+    watch(
+      () => props.initialFilters,
+      (newFilters) => {
+        filterData.value = { ...newFilters };
+      },
+      { deep: true }
+    );
+
+    const openFilterModal = () => {
+      const modal = new Modal(document.getElementById("filterModal"));
+      modal.show();
+    };
+    // Import Modal
+    const openImportModal = () => {
+      const modal = new Modal(document.getElementById("importModal"));
+      modal.show();
+    };
+    const openExportModal = () => {
+      const modal = new Modal(document.getElementById("exportModal"));
+      modal.show();
+    };
+    const handleFilters = (filters) => {
+      emit("filter-applied", filters);
+    };
+
+    const handleResetFilter = () => {
+      emit("reset-filter");
+    };
+
+    return {
+      filterData,
+      openFilterModal,
+      handleFilters,
+      handleResetFilter,
+      openImportModal,
+      openExportModal,
+    };
+  },
 };
 </script>
 
 <style scoped>
-.logo-img {
-  height: 30px;
-}
-input {
-  outline: none;
-}
 input:focus {
-  border: none;
   box-shadow: none;
+}
+
+@media (max-width: 1200px) {
+  .btn-group {
+    display: flex !important;
+  }
+}
+.btn {
+  font-size: 14px;
 }
 </style>

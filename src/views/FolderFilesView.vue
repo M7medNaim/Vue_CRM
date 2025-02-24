@@ -8,14 +8,14 @@
       <div class="d-flex gap-2">
         <button class="btn btn-primary" @click="openNewFolderModal">
           <i class="fas fa-folder-plus me-1"></i>
-          مجلد جديد
+          New Folder
         </button>
         <button
           class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
           @click="$router.back()"
         >
           <i class="fas fa-arrow-right pt-1"></i>
-          <span>رجوع</span>
+          <span>Back</span>
         </button>
       </div>
     </div>
@@ -33,7 +33,7 @@
           style="font-size: 48px"
         ></i>
         <p class="text-muted mb-3">
-          اسحب وأفلت الملفات هنا أو انقر في أي مكان للتحميل
+          Drag and drop files here or click anywhere to upload
         </p>
         <input
           type="file"
@@ -65,21 +65,21 @@
             <button
               class="btn btn-sm btn-primary me-2"
               @click.stop="editFolder(folder)"
-              title="تعديل"
+              title="Edit"
             >
               <i class="fas fa-edit"></i>
             </button>
             <button
               class="btn btn-sm btn-success me-2"
               @click="downloadFolder(folder.id)"
-              title="تحميل"
+              title="Download"
             >
               <i class="fas fa-download"></i>
             </button>
             <button
               class="btn btn-sm btn-danger"
               @click="deleteFolder(folder.id)"
-              title="حذف"
+              title="Delete"
             >
               <i class="fas fa-trash"></i>
             </button>
@@ -102,21 +102,21 @@
             <button
               class="btn btn-sm text-bg-primary me-2"
               @click="viewFile(file)"
-              title="عرض"
+              title="View"
             >
               <i class="fas fa-eye"></i>
             </button>
             <button
               class="btn btn-sm btn-success me-2"
               @click="downloadFile(file)"
-              title="تحميل"
+              title="Download"
             >
               <i class="fas fa-download"></i>
             </button>
             <button
               class="btn btn-sm btn-danger"
               @click="deleteFile(file.id)"
-              title="حذف"
+              title="Delete"
             >
               <i class="fas fa-trash"></i>
             </button>
@@ -130,7 +130,7 @@
         class="text-center py-5 text-muted"
       >
         <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-        <p>لا توجد ملفات أو مجلدات</p>
+        <p>No files or folders</p>
       </div>
     </div>
   </div>
@@ -241,14 +241,14 @@ export default {
       folderFormModal.value.show();
     };
     const deleteFile = async (fileId) => {
-      if (confirm("هل أنت متأكد من حذف هذا الملف؟")) {
+      if (confirm("Are you sure you want to delete this file?")) {
         files.value = files.value.filter((file) => file.id !== fileId);
       }
     };
 
     const handleFolderSubmit = async (folderData) => {
       if (!folderData.name?.trim()) {
-        alert("الرجاء إدخال اسم المجلد");
+        alert("Please enter a folder name");
         return;
       }
       try {
@@ -281,7 +281,7 @@ export default {
         selectedFolder.value = null;
       } catch (error) {
         console.error("Error handling folder:", error);
-        alert("حدث خطأ أثناء معالجة المجلد");
+        alert("An error occurred while processing the folder");
       } finally {
         loadingStore.stopLoading();
       }
@@ -297,27 +297,27 @@ export default {
         const mockFoldersData = {
           1: {
             id: 1,
-            name: "المجلد الأول",
+            name: "First Folder",
             files: [
-              { id: 1, name: "ملف 1.pdf", type: "pdf" },
-              { id: 2, name: "ملف 2.jpg", type: "image" },
+              { id: 1, name: "File 1.pdf", type: "pdf" },
+              { id: 2, name: "File 2.jpg", type: "image" },
             ],
             subFolders: [
-              { id: 11, name: "مجلد فرعي 1", parentId: 1 },
-              { id: 12, name: "مجلد فرعي 2", parentId: 1 },
+              { id: 11, name: "Sub Folder 1", parentId: 1 },
+              { id: 12, name: "Sub Folder 2", parentId: 1 },
             ],
           },
           11: {
             id: 11,
-            name: "مجلد فرعي 1-1",
-            files: [{ id: 3, name: "ملف 3.pdf", type: "pdf" }],
-            subFolders: [{ id: 13, name: "مجلد فرعي 1-1", parentId: 11 }],
+            name: "Sub Folder 1-1",
+            files: [{ id: 3, name: "File 3.pdf", type: "pdf" }],
+            subFolders: [{ id: 13, name: "Sub Folder 1-1", parentId: 11 }],
           },
         };
 
         const currentFolder = mockFoldersData[currentFolderId] || {
           id: currentFolderId,
-          name: "مجلد جديد",
+          name: "New Folder",
           files: [],
           subFolders: [],
         };
@@ -331,7 +331,7 @@ export default {
         console.log("Subfolders:", folders.value.length);
       } catch (error) {
         console.error("Error fetching folder contents:", error);
-        alert("حدث خطأ أثناء تحميل محتويات المجلد");
+        alert("An error occurred while loading folder contents");
       } finally {
         loadingStore.stopLoading();
       }
@@ -349,16 +349,16 @@ export default {
         loadingStore.startLoading();
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert("تم بدء تحميل المجلد");
+        alert("Folder download started");
       } catch (error) {
         console.error("Error downloading folder:", error);
-        alert("حدث خطأ أثناء تحميل المجلد");
+        alert("An error occurred while downloading the folder");
       } finally {
         loadingStore.stopLoading();
       }
     };
     const deleteFolder = async (folderId) => {
-      if (confirm("هل أنت متأكد من حذف هذا المجلد؟")) {
+      if (confirm("Are you sure you want to delete this folder?")) {
         folders.value = folders.value.filter((f) => f.id !== folderId);
       }
     };

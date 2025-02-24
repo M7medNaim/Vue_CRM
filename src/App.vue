@@ -23,6 +23,8 @@
       </div>
     </div>
   </div>
+  <!-- شريط الإعلانات -->
+  <NewsBar v-if="showNewsBar" />
 </template>
 
 <script>
@@ -32,11 +34,12 @@ import LeftSidebar from "@/components/LeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
 import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
+import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 
 export default {
   name: "App",
-  components: { TopHeader, LeftSidebar, LoginView, Loader },
+  components: { TopHeader, LeftSidebar, LoginView, Loader, NewsBar },
 
   setup() {
     const loadingStore = useLoadingStore();
@@ -60,6 +63,9 @@ export default {
     },
     headerClass() {
       return this.isSidebarCollapsed ? "col-11" : "col-10";
+    },
+    showNewsBar() {
+      return this.$route.path === "/crm-kanban";
     },
   },
 

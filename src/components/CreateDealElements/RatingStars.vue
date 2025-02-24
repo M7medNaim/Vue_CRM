@@ -1,7 +1,7 @@
 <template>
   <div class="rating-container d-flex align-items-center gap-1">
     <div class="stars d-flex justify-content-center align-items-center">
-      <span class="fs-5 me-2">Rating:</span>
+      <span class="fs-6 me-2">Rating:</span>
       <span
         v-for="index in 7"
         :key="index"
@@ -18,8 +18,8 @@
     <div v-if="hoveredStar" class="rating-amount">
       {{ calculateAmount(hoveredStar) }}
     </div>
-    <div v-else-if="modelValue" class="rating-amount">
-      {{ calculateAmount(modelValue) }}
+    <div v-else class="rating-amount">
+      {{ calculateAmount(modelValue || 0) }}
     </div>
   </div>
 </template>
@@ -51,7 +51,7 @@ export default {
     },
     calculateAmount(stars) {
       const baseAmount = 1500;
-      return `${baseAmount * stars}$`;
+      return `${baseAmount * (stars || 0)}$`;
     },
   },
 };
@@ -59,12 +59,12 @@ export default {
 
 <style scoped>
 .stars {
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .star {
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: #ddd;
   transition: all 0.2s ease;
 }
@@ -82,5 +82,6 @@ export default {
   font-size: 1rem;
   font-weight: bold;
   color: #666;
+  min-width: 60px; /* لضمان ثبات العرض */
 }
 </style>

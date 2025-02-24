@@ -4,11 +4,11 @@
     <div class="row mb-3">
       <div class="col-12 text-end">
         <button class="btn btn-primary me-2" @click="openImportModal">
-          استيراد مجلد
+          Import Folder
           <i class="fas fa-file-import me-1"></i>
         </button>
         <button class="btn btn-primary" @click="openNewFolderModal">
-          مجلد جديد
+          New Folder
           <i class="fas fa-folder-plus me-1"></i>
         </button>
       </div>
@@ -21,6 +21,7 @@
       :loading="tableLoading"
       @click-row="handleRowClick"
       table-class-name="custom-table"
+      :per-page="10"
     >
       <!-- Folder Name Column -->
       <template #item-name="item">
@@ -46,21 +47,21 @@
           <button
             class="btn btn-sm btn-primary"
             @click="editFolder(item)"
-            title="تعديل"
+            title="Edit"
           >
             <i class="fas fa-edit"></i>
           </button>
           <button
             class="btn btn-sm btn-success"
             @click="downloadFolder(item.id)"
-            title="تحميل"
+            title="Download"
           >
             <i class="fas fa-download"></i>
           </button>
           <button
             class="btn btn-sm btn-danger"
             @click="deleteFolder(item.id)"
-            title="حذف"
+            title="Delete"
           >
             <i class="fas fa-trash"></i>
           </button>
@@ -77,7 +78,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">جاري التحميل...</div>
+          <div class="mt-2 text-primary">Loading...</div>
         </div>
       </template>
 
@@ -85,7 +86,7 @@
       <template #empty>
         <div class="text-center py-5 text-muted">
           <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-          <p>لا توجد مجلدات</p>
+          <p>No folders</p>
         </div>
       </template>
     </EasyDataTable>
@@ -199,7 +200,7 @@ export default {
     };
 
     const deleteFolder = async (id) => {
-      if (confirm("هل أنت متأكد من حذف هذا المجلد؟")) {
+      if (confirm("Are you sure you want to delete this folder?")) {
         try {
           tableLoading.value = true;
           await new Promise((resolve) => setTimeout(resolve, 500));
@@ -217,10 +218,10 @@ export default {
         tableLoading.value = true;
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert("تم بدء تحميل المجلد");
+        alert("Folder download started");
       } catch (error) {
         console.error("Error downloading folder:", error);
-        alert("حدث خطأ أثناء تحميل المجلد");
+        alert("An error occurred while downloading the folder");
       } finally {
         tableLoading.value = false;
       }

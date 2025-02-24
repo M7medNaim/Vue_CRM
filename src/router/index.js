@@ -8,6 +8,7 @@ import GeneralSetting from "@/views/GeneralSetting.vue";
 import RoleSettings from "@/views/RoleSettings.vue";
 import DocumentsFolder from "@/views/DocumentsFolderView.vue";
 import DocumentsFiles from "@/views/FolderFilesView.vue";
+import CrmKanban from "@/views/CrmKanban.vue";
 import Cookies from "js-cookie";
 const routes = [
   {
@@ -30,6 +31,15 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "الرئيسية",
+    },
+  },
+  {
+    path: "/crm-kanban",
+    name: "CrmKanban",
+    component: CrmKanban,
+    meta: {
+      requiresAuth: true,
+      title: "CRM Kanban",
     },
   },
   {

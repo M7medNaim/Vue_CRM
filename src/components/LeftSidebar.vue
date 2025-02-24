@@ -26,11 +26,11 @@
       </div>
       <div
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="CRM Board"
+        title="CRM Kanban"
       >
-        <router-link to="/users" class="text-decoration-none text-white">
+        <router-link to="/crm-kanban" class="text-decoration-none text-white">
           <i class="fa-solid fa-chart-column fs-5 me-2"></i>
-          <span v-if="!isCollapsed">CRM Board </span>
+          <span v-if="!isCollapsed">CRM Kanban </span>
         </router-link>
       </div>
       <router-link to="/crmlist" class="text-decoration-none text-white">
