@@ -101,7 +101,6 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import EasyDataTable from "vue3-easy-data-table";
-import { useLoadingStore } from "@/plugins/loadingStore";
 import FolderForm from "@/components/modals/FolderForm.vue";
 import ImportFolder from "@/components/modals/ImportFolder.vue";
 import Modal from "bootstrap/js/dist/modal";
@@ -115,7 +114,6 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const loadingStore = useLoadingStore();
     const tableLoading = ref(false);
     const items = ref([]);
     const folderFormModal = ref(null);
@@ -249,10 +247,7 @@ export default {
     };
 
     onMounted(async () => {
-      loadingStore.startLoading();
       await fetchFolders();
-      loadingStore.stopLoading();
-
       folderFormModal.value = new Modal(
         document.getElementById("folderFormModal")
       );

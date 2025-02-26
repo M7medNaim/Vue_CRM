@@ -8,7 +8,12 @@
           >
             <!-- Buttons Group -->
             <div class="btn-group col-12 col-md-4 col-xl-auto mb-3 mb-xl-0">
-              <button class="btn btn-light px-4 py-2 fw-semibold">إضافة</button>
+              <button
+                class="btn btn-light px-4 py-2 fw-semibold"
+                @click="openCreateDealModal"
+              >
+                إضافة
+              </button>
               <button class="btn btn-light px-4 py-2 fw-semibold">
                 الرئيسية
               </button>
@@ -100,6 +105,7 @@
     />
     <ImportModal ref="importModalRef" />
     <ExportModal ref="exportModalRef" />
+    <CreateDealModal ref="createDealModalRef" />
   </header>
 </template>
 
@@ -109,6 +115,7 @@ import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 import { Modal } from "bootstrap";
+import CreateDealModal from "../kanban/CreateDealModal.vue";
 
 export default {
   name: "TopHeader2",
@@ -116,6 +123,7 @@ export default {
     FilterCrmList,
     ImportModal,
     ExportModal,
+    CreateDealModal,
   },
   props: {
     initialFilters: {
@@ -159,6 +167,10 @@ export default {
       const modal = new Modal(document.getElementById("exportModal"));
       modal.show();
     };
+    const openCreateDealModal = () => {
+      const modal = new Modal(document.getElementById("createDealModal"));
+      modal.show();
+    };
     const handleFilters = (filters) => {
       emit("filter-applied", filters);
     };
@@ -174,6 +186,7 @@ export default {
       handleResetFilter,
       openImportModal,
       openExportModal,
+      openCreateDealModal,
     };
   },
 };

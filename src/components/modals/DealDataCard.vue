@@ -12,7 +12,17 @@
           class="modal-header py-0 d-flex justify-content-between align-items-center"
         >
           <div class="d-flex align-items-center gap-4">
-            <h5 class="modal-title" id="dealDataCardLabel">Edit Deal</h5>
+            <h5 class="modal-title" id="dealDataCardLabel">
+              Edit Deal
+              <button
+                type="button"
+                @click="toggleEditMode"
+                class="border-0 p-0 bg-transparent"
+                v-if="!isEditMode"
+              >
+                <i class="fa-solid fa-pencil"></i>
+              </button>
+            </h5>
           </div>
           <div class="rating">
             <RatingStars v-model="rating" />
@@ -42,7 +52,7 @@
         </div>
         <div class="modal-body">
           <!-- Stages -->
-          <div class="stages-container mb-4">
+          <div class="stages-container mb-4" @dblclick="handleDoubleClick">
             <div class="d-flex stages-wrapper">
               <button
                 v-for="stage in stages"
@@ -53,6 +63,7 @@
                 @mouseleave="handleStageLeave"
                 @click="changeStage(stage.id)"
                 :title="stage.name"
+                :disabled="!isEditMode"
                 :style="{
                   backgroundColor: getStageClasses(stage.id).backgroundColor,
                 }"
@@ -66,7 +77,7 @@
           <div class="row">
             <div class="col-12 col-md-6 border-end">
               <!-- Full Name -->
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-a"></i> Full Name<span
@@ -82,6 +93,7 @@
                       class="form-control bg-light text-secondary py-2"
                       v-model="customerData.fullName"
                       placeholder="Full Name"
+                      :readonly="!isEditMode"
                     />
                     <button
                       class="btn btn-primary px-3 fs-5"
@@ -93,7 +105,11 @@
                 </div>
               </div>
               <!-- Nick Name -->
-              <div class="row mb-3" v-if="showNickName">
+              <div
+                class="row mb-3"
+                @dblclick="handleDoubleClick"
+                v-if="showNickName"
+              >
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-a"></i> Nick Name<span
@@ -108,12 +124,13 @@
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.nickName"
                     placeholder="Nick Name"
+                    :readonly="!isEditMode"
                   />
                 </div>
               </div>
 
               <!-- Phone -->
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-phone-volume"></i> Phone<span
@@ -129,6 +146,7 @@
                       class="form-control bg-light text-secondary py-2"
                       v-model="customerData.phone"
                       placeholder="Full Name"
+                      :readonly="!isEditMode"
                     />
                     <button
                       class="btn btn-primary px-3 fs-5"
@@ -140,7 +158,11 @@
                 </div>
               </div>
               <!-- phone2 -->
-              <div class="row mb-3" v-if="showPhone2">
+              <div
+                class="row mb-3"
+                @dblclick="handleDoubleClick"
+                v-if="showPhone2"
+              >
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-phone-volume"></i> Phone 2<span
@@ -155,12 +177,13 @@
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.phone2"
                     placeholder="Phone 2"
+                    :readonly="!isEditMode"
                   />
                 </div>
               </div>
 
               <!-- Email -->
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-envelope"></i> Email<span
@@ -175,11 +198,12 @@
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.email"
                     placeholder="Email"
+                    :readonly="!isEditMode"
                   />
                 </div>
               </div>
               <!-- Notes -->
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-note-sticky"></i> Notes</label
@@ -190,6 +214,7 @@
                     class="form-control bg-light"
                     rows="4"
                     v-model="customerData.notes"
+                    :readonly="!isEditMode"
                   ></textarea>
                 </div>
               </div>
@@ -202,12 +227,17 @@
                   >
                 </div>
                 <div class="col-10">
-                  <button class="btn btn-primary w-100">View Report</button>
+                  <button
+                    class="btn btn-primary w-100"
+                    @click="openQuestionsModal"
+                  >
+                    View Report
+                  </button>
                 </div>
               </div>
 
               <!-- Company and Representative -->
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-user"></i> Assign Company</label
@@ -217,6 +247,7 @@
                   <select
                     class="form-select bg-light text-secondary py-2"
                     v-model="customerData.company"
+                    :readonly="!isEditMode"
                   >
                     <option value="Eurasia Admin">Eurasia Admin</option>
                     <option value="none">none</option>
@@ -224,7 +255,7 @@
                 </div>
               </div>
 
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-users"></i> Assign
@@ -235,6 +266,7 @@
                   <select
                     class="form-select bg-light text-secondary py-2"
                     v-model="customerData.representative"
+                    :readonly="!isEditMode"
                   >
                     <option value="">Select Representative</option>
                   </select>
@@ -242,7 +274,7 @@
               </div>
 
               <!-- Packages -->
-              <div class="row mb-3">
+              <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i> Packages</label
@@ -278,6 +310,7 @@
                   <button
                     class="btn btn-primary mt-2 fs-5 px-3"
                     @click="addNewPackage"
+                    :disabled="!isEditMode"
                   >
                     +
                   </button>
@@ -395,8 +428,12 @@
                     </button>
                   </div>
                 </div>
-                <div class="col-12 mt-3 bg-light showComments pt-2 rounded-3">
-                  <div class="row mt-2">
+                <div class="col-12 mt-2 bg-light showComments py-2 rounded-3">
+                  <div
+                    v-for="(comment, index) in comments"
+                    :key="index"
+                    class="row mt-2"
+                  >
                     <div class="col-3">
                       <img
                         src="../../assets/default-user-image.jpg"
@@ -404,75 +441,21 @@
                         width="45"
                         height="45"
                       />
-                      <span class="ms-2">Sales Name</span>
+                      <span class="ms-2">{{ comment.user }}</span>
                     </div>
                     <div class="col-9">
                       <div
-                        class="bg-primary text-white rounded-3 p-2"
+                        :class="[
+                          'rounded-3 p-2',
+                          comment.isAdmin
+                            ? 'adminComment'
+                            : 'bg-primary text-white',
+                        ]"
                         style="width: fit-content"
                       >
-                        <span>اتصال + فويس</span><br />
-                        <span>19/2/2025 11:44 ص</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mt-2">
-                    <div class="col-3">
-                      <img
-                        src="../../assets/default-user-image.jpg"
-                        alt="Seals Image"
-                        width="45"
-                        height="45"
-                      />
-                      <span class="ms-2">Sales Name</span>
-                    </div>
-                    <div class="col-9">
-                      <div
-                        class="bg-primary text-white rounded-3 p-2"
-                        style="width: fit-content"
-                      >
-                        <span>اتصال + فويس</span><br />
-                        <span>19/2/2025 11:44 ص</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mt-2">
-                    <div class="col-3">
-                      <img
-                        src="../../assets/default-user-image.jpg"
-                        alt="Seals Image"
-                        width="45"
-                        height="45"
-                      />
-                      <span class="ms-2">Sales Name</span>
-                    </div>
-                    <div class="col-9">
-                      <div
-                        class="bg-primary text-white rounded-3 p-2"
-                        style="width: fit-content"
-                      >
-                        <span>اتصال + فويس</span><br />
-                        <span>19/2/2025 11:44 ص</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mt-2">
-                    <div class="col-3">
-                      <img
-                        src="../../assets/default-user-image.jpg"
-                        alt="Seals Image"
-                        width="45"
-                        height="45"
-                      />
-                      <span class="ms-2">Sales Name</span>
-                    </div>
-                    <div class="col-9">
-                      <div
-                        class="bg-primary text-white rounded-3 p-2"
-                        style="width: fit-content"
-                      >
-                        <span>اتصال + فويس</span><br />
-                        <span>19/2/2025 11:44 ص</span>
+                        <span>{{ comment.text }}</span
+                        ><br />
+                        <span>{{ comment.date }}</span>
                       </div>
                     </div>
                   </div>
@@ -492,7 +475,7 @@
                       type="text"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.task"
-                      placeholder="Add a New Comment"
+                      placeholder="Add a New Task"
                     />
                     <input
                       type="date"
@@ -517,7 +500,7 @@
                   <div
                     v-for="(task, index) in tasks"
                     :key="task.id"
-                    class="row text-secondary mt-2 align-items-center"
+                    class="row text-secondary mt-2 align-items-center border-light-subtle pb-2 border-bottom"
                     :class="{ 'delete-animation': task.toDelete }"
                   >
                     <div class="col-5">{{ task.description }}</div>
@@ -541,7 +524,7 @@
                 </div>
               </div>
               <!-- watsapp Chat -->
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-6 m-auto my-4">
                   <button class="btn btn-success px-4 py-3">
                     <i class="fa-brands fa-whatsapp me-2 fs-5"></i>
@@ -577,7 +560,7 @@
                     </button>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -589,14 +572,18 @@
       </div>
     </div>
   </div>
+  <ViewReport ref="questionsModalRef" />
 </template>
 
 <script>
 import { ref, reactive } from "vue";
 import RatingStars from "../CreateDealElements/RatingStars.vue";
+import ViewReport from "../kanban/ViewReport.vue";
+import { Modal } from "bootstrap";
+
 export default {
   name: "DealDataCard",
-  components: { RatingStars },
+  components: { RatingStars, ViewReport },
   setup() {
     const stages = [
       { id: "new", name: "New Deal", color: "#4CAF50" },
@@ -616,7 +603,7 @@ export default {
       { id: "trash", name: "Trash", color: "#f00" },
       { id: "reContact", name: "Re-Contact", color: "#607D8B" },
     ];
-
+    const isEditMode = ref(false);
     const currentStage = ref("notResponding3");
     const hoveredStage = ref(null);
     const stageColors = reactive({});
@@ -633,6 +620,54 @@ export default {
     const newTask = ref("");
     const taskDate = ref("");
     const tasks = ref([
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
+      {
+        id: 1,
+        description: "Description",
+        date: "2025-02-22",
+        status: "Pending",
+      },
       {
         id: 1,
         description: "Description",
@@ -747,7 +782,57 @@ export default {
         }, 500);
       }
     };
+    const openQuestionsModal = () => {
+      const modal = new Modal(document.getElementById("questionsModal"));
+      modal.show();
+    };
 
+    const comments = ref([
+      {
+        user: "Admin",
+        text: "اتصال + فويس",
+        date: "19/2/2025 11:44 ص",
+        isAdmin: true,
+      },
+      {
+        user: "Sales Name",
+        text: "اتصال + فويس",
+        date: "19/2/2025 11:44 ص",
+        isAdmin: false,
+      },
+      {
+        user: "Sales Name",
+        text: "اتصال + فويس",
+        date: "19/2/2025 11:44 ص",
+        isAdmin: false,
+      },
+      {
+        user: "Sales Name",
+        text: "اتصال + فويس",
+        date: "19/2/2025 11:44 ص",
+        isAdmin: false,
+      },
+      {
+        user: "Admin",
+        text: "اتصال + فويس",
+        date: "19/2/2025 11:44 ص",
+        isAdmin: true,
+      },
+      {
+        user: "Admin",
+        text: "اتصال + فويس",
+        date: "19/2/2025 11:44 ص",
+        isAdmin: true,
+      },
+    ]);
+
+    const toggleEditMode = () => {
+      isEditMode.value = !isEditMode.value;
+    };
+
+    const handleDoubleClick = () => {
+      isEditMode.value = true;
+    };
     return {
       stages,
       currentStage,
@@ -775,6 +860,11 @@ export default {
       handleStageHover,
       handleStageLeave,
       getStageClasses,
+      openQuestionsModal,
+      comments,
+      toggleEditMode,
+      handleDoubleClick,
+      isEditMode,
     };
   },
 };
@@ -788,9 +878,6 @@ input {
 input:focus {
   border: none !important;
   box-shadow: none;
-}
-input::placeholder {
-  color: eee;
 }
 select {
   border: none;
@@ -895,13 +982,15 @@ textarea:focus {
   display: none;
 }
 .showComments {
-  height: 200px;
+  min-height: 200px;
+  max-height: 365px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 14px;
 }
 .showTasks {
-  height: 200px;
+  min-height: 200px;
+  max-height: 365px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 14px;
@@ -1008,5 +1097,23 @@ label {
   right: 2%;
   bottom: 3%;
   z-index: 9999;
+}
+.adminComment {
+  background: linear-gradient(45deg, #e5c086, #f1d65e, #e5c086, #f1d65e);
+  color: #000;
+  width: fit-content;
+  background-size: 400% 400%;
+  animation: adminComment 4s ease infinite;
+}
+@keyframes adminComment {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 </style>

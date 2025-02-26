@@ -19,7 +19,24 @@
         </button>
       </div>
     </div>
-
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li
+          class="breadcrumb-item"
+          v-for="(crumb, index) in breadcrumbs"
+          :key="index"
+        >
+          <a
+            v-if="index < breadcrumbs.length - 1"
+            @click="navigateToCrumb(crumb.path)"
+          >
+            {{ crumb.name }}
+          </a>
+          <span v-else>{{ crumb.name }}</span>
+        </li>
+      </ol>
+    </nav>
     <!-- Upload Area -->
     <div class="upload-area mb-4 border rounded-3 p-4 text-center">
       <div
@@ -138,9 +155,8 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useLoadingStore } from "@/plugins/loadingStore";
 import FolderForm from "@/components/modals/FolderForm.vue";
 import Modal from "bootstrap/js/dist/modal";
 
@@ -152,7 +168,6 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const loadingStore = useLoadingStore();
     const files = ref([]);
     const folders = ref([]);
     const folderName = ref("");
@@ -189,7 +204,6 @@ export default {
 
     const uploadFiles = async (newFiles) => {
       try {
-        loadingStore.startLoading();
         const uploadedFiles = newFiles.map((file, index) => ({
           id: Date.now() + index,
           name: file.name,
@@ -200,8 +214,8 @@ export default {
         }));
 
         files.value = [...files.value, ...uploadedFiles];
-      } finally {
-        loadingStore.stopLoading();
+      } catch {
+        console.log("error Find Files");
       }
     };
 
@@ -211,8 +225,6 @@ export default {
 
     const downloadFile = async (file) => {
       try {
-        loadingStore.startLoading();
-
         const response = await fetch(file.url);
         const blob = await response.blob();
 
@@ -229,8 +241,6 @@ export default {
       } catch (error) {
         console.error("Error downloading file:", error);
         alert("حدث خطأ أثناء تحميل الملف");
-      } finally {
-        loadingStore.stopLoading();
       }
     };
     const editFolder = (folder) => {
@@ -252,7 +262,6 @@ export default {
         return;
       }
       try {
-        loadingStore.startLoading();
         const currentFolderId = route.params.folderId;
 
         if (selectedFolder.value) {
@@ -282,14 +291,11 @@ export default {
       } catch (error) {
         console.error("Error handling folder:", error);
         alert("An error occurred while processing the folder");
-      } finally {
-        loadingStore.stopLoading();
       }
     };
 
     const fetchFolderContents = async () => {
       try {
-        loadingStore.startLoading();
         const currentFolderId = route.params.folderId;
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -332,8 +338,6 @@ export default {
       } catch (error) {
         console.error("Error fetching folder contents:", error);
         alert("An error occurred while loading folder contents");
-      } finally {
-        loadingStore.stopLoading();
       }
     };
 
@@ -346,15 +350,12 @@ export default {
     };
     const downloadFolder = async (folderId) => {
       try {
-        loadingStore.startLoading();
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         alert("Folder download started");
       } catch (error) {
         console.error("Error downloading folder:", error);
         alert("An error occurred while downloading the folder");
-      } finally {
-        loadingStore.stopLoading();
       }
     };
     const deleteFolder = async (folderId) => {
@@ -371,6 +372,18 @@ export default {
         name: "FolderFiles",
         params: { folderId: folderId.toString() },
       });
+    };
+
+    const breadcrumbs = computed(() => {
+      const paths = route.path.split("/").filter(Boolean);
+      return paths.map((path, index) => ({
+        name: path.charAt(0).toUpperCase() + path.slice(1),
+        path: "/" + paths.slice(0, index + 1).join("/"),
+      }));
+    });
+
+    const navigateToCrumb = (path) => {
+      router.push(path);
     };
 
     watch(
@@ -402,6 +415,8 @@ export default {
       editFolder,
       navigateToFolder,
       downloadFolder,
+      breadcrumbs,
+      navigateToCrumb,
     };
   },
 };
