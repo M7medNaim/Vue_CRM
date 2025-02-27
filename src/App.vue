@@ -1,30 +1,32 @@
 <template>
-  <Loader
-    :is-loading="loadingStore.isLoading"
-    :loader-image="loaderImage"
-    :loader-color="loaderColor"
-  />
+  <div class="" @contextmenu.prevent="closeAllModals">
+    <Loader
+      :is-loading="loadingStore.isLoading"
+      :loader-image="loaderImage"
+      :loader-color="loaderColor"
+    />
 
-  <div v-if="!isLoggedIn">
-    <LoginView @loginSuccess="handleLoginSuccess" />
-  </div>
+    <div v-if="!isLoggedIn">
+      <LoginView @loginSuccess="handleLoginSuccess" />
+    </div>
 
-  <div v-else-if="!$route.meta.hideNavigation" class="app overflow-hidden">
-    <div class="row">
-      <div :class="sidebarClass">
-        <LeftSidebar @toggle="handleSidebarToggle" />
-      </div>
+    <div v-else-if="!$route.meta.hideNavigation" class="app overflow-hidden">
+      <div class="row">
+        <div :class="sidebarClass">
+          <LeftSidebar @toggle="handleSidebarToggle" />
+        </div>
 
-      <div :class="headerClass">
-        <TopHeader @logout="handleLogout" />
-        <div class="content">
-          <router-view />
+        <div :class="headerClass">
+          <TopHeader @logout="handleLogout" />
+          <div class="content">
+            <router-view />
+          </div>
         </div>
       </div>
     </div>
+    <!-- شريط الإعلانات -->
+    <NewsBar v-if="showNewsBar" />
   </div>
-  <!-- شريط الإعلانات -->
-  <NewsBar v-if="showNewsBar" />
 </template>
 
 <script>
@@ -65,7 +67,9 @@ export default {
       return this.isSidebarCollapsed ? "col-11" : "col-10";
     },
     showNewsBar() {
-      return this.$route.path === "/crm-kanban";
+      return (
+        this.$route.path === "/crm-kanban" || this.$route.path === "/crm-tasks"
+      );
     },
   },
 
@@ -106,6 +110,9 @@ export default {
       } else if (token && this.$route.path === "/login") {
         this.$router.push("/home");
       }
+    },
+    closeAllModals() {
+      this.$root.$emit("close-all-modals");
     },
   },
   mounted() {

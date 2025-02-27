@@ -19,7 +19,7 @@
 import { ref } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
-import { kanbanStages } from "@/plugins/stages";
+import { tasksStages } from "@/plugins/stages";
 
 export default {
   name: "CrmKanban",
@@ -28,8 +28,7 @@ export default {
     KanbanBoard,
   },
   setup() {
-    const stages = ref(kanbanStages);
-
+    const stages = ref(tasksStages);
     const filters = ref({
       source: "",
       stage: "",

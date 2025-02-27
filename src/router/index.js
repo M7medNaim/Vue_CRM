@@ -10,6 +10,7 @@ import DocumentsFolder from "@/views/DocumentsFolderView.vue";
 import DocumentsFiles from "@/views/FolderFilesView.vue";
 import CrmKanban from "@/views/CrmKanban.vue";
 import Cookies from "js-cookie";
+import CrmTasks from "@/views/CrmTasks.vue";
 const routes = [
   {
     path: "/",
@@ -40,6 +41,15 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "CRM Kanban",
+    },
+  },
+  {
+    path: "/crm-tasks",
+    name: "CrmTasks",
+    component: CrmTasks,
+    meta: {
+      requiresAuth: true,
+      title: "CRM Tasks",
     },
   },
   {

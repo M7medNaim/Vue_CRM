@@ -8,11 +8,11 @@
             v-for="stage in stages"
             :key="stage.id"
             class="stage-header position-relative"
-            @click="openUpdateStage"
+            @click="openUpdateStage(stage)"
           >
             <div
               class="stageName py-1 p-0 text-white"
-              :class="getStageHeaderClass(stage.id)"
+              :style="{ backgroundColor: stage.color || defaultColor }"
             >
               {{ stage.name }}
             </div>
@@ -68,18 +68,20 @@
     </div>
   </div>
   <DealDataCard :deal="selectedDeal" />
-  <UpdateStage />
+  <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import draggable from "vuedraggable";
 import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
+import { useRoute } from "vue-router";
 
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";
+
 export default {
   name: "KanbanBoard",
   components: {
@@ -88,435 +90,26 @@ export default {
     DealDataCard,
     UpdateStage,
   },
-  setup() {
+  props: {
+    stages: {
+      type: Array,
+      required: true,
+    },
+    defaultColor: {
+      type: String,
+      default: "#333",
+    },
+  },
+  setup(props) {
+    const route = useRoute();
     const dealsContainer = ref(null);
     let scrollInterval = null;
     const drag = ref(false);
     const showLeft = ref(false);
     const showRight = ref(true);
+    const selectedStage = ref(null);
 
-    const stages = ref([
-      {
-        id: 1,
-        name: "New Deal (262)",
-        deals: [
-          {
-            id: 1,
-            name: "عباس",
-            phone: "+96477095427796",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2025-02-05 01:17 PM",
-            last_updated: "2025-02-18 04:37 PM",
-          },
-          {
-            id: 2,
-            name: "Mohammad",
-            phone: "+17087126678",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2025-02-14 02:50 PM",
-            last_updated: "2025-02-18 04:52 PM",
-            attention: true,
-          },
-          {
-            id: 3,
-            name: "+1 (416) 858-5258",
-            phone: "+1416858122",
-            country: "USA",
-            representative: "Iman Rep",
-            created_at: "2025-02-05 01:17 PM",
-            last_updated: "2025-02-19 12:04 PM",
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: "Not Responding 1 (150)",
-        deals: [
-          {
-            id: 4,
-            name: "ali",
-            phone: "+33634785780",
-            country: "France",
-            representative: "Iman Rep",
-            created_at: "2024-12-11 11:43 AM",
-            last_updated: "2025-02-19 12:06 PM",
-          },
-          {
-            id: 5,
-            name: "saaed",
-            phone: "+96479012672246",
-            country: "Iraq",
-            representative: "Bader Rep",
-            created_at: "2025-02-05 01:17 PM",
-            last_updated: "2025-02-19 12:04 PM",
-          },
-        ],
-      },
-      {
-        id: 3,
-        name: "Not Responding 2 (143)",
-        deals: [
-          {
-            id: 6,
-            name: "ibraheem",
-            phone: "+218925536769",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-26 03:46 PM",
-            last_updated: "2025-02-19 11:44 AM",
-            attention: true,
-          },
-          {
-            id: 7,
-            name: "libya",
-            phone: "+31062856505",
-            country: "Netherlands",
-            representative: "Iman Rep",
-            created_at: "2024-12-12 11:12 AM",
-            last_updated: "2025-02-19 11:24 AM",
-          },
-        ],
-      },
-      {
-        id: 4,
-        name: "Not Responding 3 (191)",
-        deals: [
-          {
-            id: 8,
-            name: "حمزة العلي",
-            phone: "+96477002881133",
-            country: "Iraq",
-            representative: "Reem Rep",
-            created_at: "2025-02-10 02:37 PM",
-            last_updated: "2025-02-19 10:14 AM",
-          },
-          {
-            id: 9,
-            name: "خالد محمود",
-            phone: "+96477647784677",
-            country: "Iraq",
-            representative: "Reem Rep",
-            created_at: "2025-02-11 12:52 PM",
-            last_updated: "2025-02-19 10:10 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 5,
-        name: "Not Responding 4 (761)",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 6,
-        name: "Negotiation (761)",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 7,
-        name: "Contact",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 8,
-        name: "Will Send",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 9,
-        name: "Ticket Sent",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 10,
-        name: "Processing",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 11,
-        name: "Done",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 12,
-        name: "Medicine",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 13,
-        name: "Old Data",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 14,
-        name: "No Respone",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 15,
-        name: "Trash",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-      {
-        id: 16,
-        name: "Re-Contact",
-        deals: [
-          {
-            id: 10,
-            name: "محمد خالد",
-            phone: "+33767803392",
-            country: "France",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:42 AM",
-            attention: true,
-          },
-          {
-            id: 11,
-            name: "علي الاحمد",
-            phone: "+218925525626",
-            country: "Libya",
-            representative: "Bader Rep",
-            created_at: "2024-12-27 03:50 PM",
-            last_updated: "2025-02-19 11:37 AM",
-            attention: true,
-          },
-        ],
-      },
-    ]);
+    const isTasksView = computed(() => route.path === "/crm-tasks");
 
     const moveSound = new Audio(moveCardSound);
 
@@ -533,7 +126,8 @@ export default {
       const modal = new Modal(document.getElementById("dealDataCard"));
       modal.show();
     };
-    const openUpdateStage = () => {
+    const openUpdateStage = (stage) => {
+      selectedStage.value = stage;
       const modal = new Modal(document.getElementById("updateStage"));
       modal.show();
     };
@@ -557,6 +151,17 @@ export default {
     const stopScrolling = () => {
       clearInterval(scrollInterval);
     };
+    const stages = ref(props.stages);
+    // update Stage Color and Name
+    const handleStageUpdate = (updatedStage) => {
+      const stageIndex = stages.value.findIndex(
+        (stage) => stage.id === updatedStage.id
+      );
+      if (stageIndex !== -1) {
+        stages.value[stageIndex].name = updatedStage.name;
+        stages.value[stageIndex].color = updatedStage.color;
+      }
+    };
     onMounted(() => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -575,7 +180,7 @@ export default {
       document.removeEventListener("mouseleave", stopScrolling);
     });
     return {
-      stages,
+      // stages,
       drag,
       handleDragEnd,
       getStageHeaderClass,
@@ -586,6 +191,9 @@ export default {
       showRight,
       openDealDataCard,
       openUpdateStage,
+      isTasksView,
+      selectedStage,
+      handleStageUpdate,
     };
   },
 };
@@ -704,53 +312,5 @@ export default {
   border-bottom-right-radius: 50%;
   left: 0%;
   z-index: 9999;
-}
-.stage-color-1 {
-  background-color: #1b6dd9;
-}
-.stage-color-2 {
-  background-color: rgb(153, 153, 153);
-}
-.stage-color-3 {
-  background-color: rgb(119, 119, 119);
-}
-.stage-color-4 {
-  background-color: rgb(86, 86, 86);
-}
-.stage-color-5 {
-  background-color: rgb(51, 51, 51);
-}
-.stage-color-6 {
-  background-color: rgb(167, 244, 50);
-}
-.stage-color-7 {
-  background-color: rgb(124, 252, 0);
-}
-.stage-color-8 {
-  background-color: rgb(41, 150, 23);
-}
-.stage-color-9 {
-  background-color: rgb(4, 110, 81);
-}
-.stage-color-10 {
-  background-color: rgb(240, 208, 48);
-}
-.stage-color-11 {
-  background-color: rgb(233, 7, 7);
-}
-.stage-color-12 {
-  background-color: rgb(214, 235, 30);
-}
-.stage-color-13 {
-  background-color: rgb(235, 143, 30);
-}
-.stage-color-14 {
-  background-color: rgb(48, 7, 7);
-}
-.stage-color-15 {
-  background-color: rgb(181, 181, 181);
-}
-.stage-color-16 {
-  background-color: rgb(255, 210, 168);
 }
 </style>

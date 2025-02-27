@@ -7,17 +7,25 @@
             class="d-flex flex-wrap align-items-center justify-content-between"
           >
             <!-- Buttons Group -->
-            <div class="btn-group col-12 col-md-4 col-xl-auto mb-3 mb-xl-0">
+            <div class="col-12 col-md-4 col-xl-auto mb-3 mb-xl-0">
               <button
-                class="btn btn-light px-4 py-2 fw-semibold"
+                class="btn btn-light px-4 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
                 إضافة
               </button>
-              <button class="btn btn-light px-4 py-2 fw-semibold">
+              <button
+                class="btn btn-light px-4 py-2 fw-semibold"
+                @click="openCrmKanban"
+                v-if="$route.name !== 'CrmKanban'"
+              >
                 الرئيسية
               </button>
-              <button class="btn btn-light px-4 py-2 fw-semibold">
+              <button
+                class="btn btn-light px-4 py-2 fw-semibold"
+                @click="openCrmTasks"
+                v-if="$route.name !== 'CrmTasks'"
+              >
                 المهام
               </button>
             </div>
@@ -111,6 +119,7 @@
 
 <script>
 import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
@@ -178,7 +187,13 @@ export default {
     const handleResetFilter = () => {
       emit("reset-filter");
     };
-
+    const router = useRouter();
+    const openCrmTasks = () => {
+      router.push({ name: "CrmTasks" });
+    };
+    const openCrmKanban = () => {
+      router.push({ name: "CrmKanban" });
+    };
     return {
       filterData,
       openFilterModal,
@@ -187,6 +202,8 @@ export default {
       openImportModal,
       openExportModal,
       openCreateDealModal,
+      openCrmTasks,
+      openCrmKanban,
     };
   },
 };

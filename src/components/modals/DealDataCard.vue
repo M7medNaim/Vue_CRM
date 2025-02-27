@@ -335,6 +335,7 @@
                 </div>
                 <div
                   class="col-6 d-flex justify-content-end align-items-center gap-2"
+                  v-if="isEditMode"
                 >
                   <button class="btn btn-primary px-4 py-2" @click="confirm">
                     Confirm
