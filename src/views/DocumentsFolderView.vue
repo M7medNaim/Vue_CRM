@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import EasyDataTable from "vue3-easy-data-table";
 import FolderForm from "@/components/modals/FolderForm.vue";
@@ -246,6 +246,23 @@ export default {
       });
     };
 
+    const handleRightClick = (event) => {
+      event.preventDefault();
+      const modalElements = document.querySelectorAll(".modal");
+      modalElements.forEach((modal) => {
+        if (modal.classList.contains("show")) {
+          const closeButton = modal.querySelector('[data-bs-dismiss="modal"]');
+          if (closeButton) {
+            closeButton.click();
+          }
+        }
+      });
+    };
+
+    onUnmounted(() => {
+      window.removeEventListener("contextmenu", handleRightClick);
+    });
+
     onMounted(async () => {
       await fetchFolders();
       folderFormModal.value = new Modal(
@@ -254,6 +271,7 @@ export default {
       importFolderModal.value = new Modal(
         document.getElementById("importFolderModal")
       );
+      window.addEventListener("contextmenu", handleRightClick);
     });
 
     return {

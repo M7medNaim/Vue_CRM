@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
 import { tasksStages } from "@/plugins/stages";
@@ -64,6 +64,26 @@ export default {
         status: [],
       };
     };
+    const handleRightClick = (event) => {
+      event.preventDefault();
+      const modalElements = document.querySelectorAll(".modal");
+      modalElements.forEach((modal) => {
+        if (modal.classList.contains("show")) {
+          const closeButton = modal.querySelector('[data-bs-dismiss="modal"]');
+          if (closeButton) {
+            closeButton.click();
+          }
+        }
+      });
+    };
+
+    // upload data
+    onMounted(async () => {
+      window.addEventListener("contextmenu", handleRightClick);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("contextmenu", handleRightClick);
+    });
 
     return {
       stages,

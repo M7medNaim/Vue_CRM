@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import { getContacts, deleteContact } from "@/plugins/services/authService";
@@ -227,11 +227,29 @@ export default {
       }
     };
 
-    // Mounting
+    const handleRightClick = (event) => {
+      event.preventDefault();
+      const modalElements = document.querySelectorAll(".modal");
+      modalElements.forEach((modal) => {
+        if (modal.classList.contains("show")) {
+          const closeButton = modal.querySelector('[data-bs-dismiss="modal"]');
+          if (closeButton) {
+            closeButton.click();
+          }
+        }
+      });
+    };
+
     onMounted(async () => {
       loadingStore.startLoading();
       await fetchContacts();
       loadingStore.stopLoading();
+
+      window.addEventListener("contextmenu", handleRightClick);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("contextmenu", handleRightClick);
     });
 
     return {

@@ -122,7 +122,7 @@
   <ShowData :formData="dealData" ref="showDataModal" />
 </template>
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import DealModal from "@/components/modals/CreateDeal.vue";
@@ -625,6 +625,18 @@ const handleRowClick = (item, event) => {
     }
   }
 };
+const handleRightClick = (event) => {
+  event.preventDefault();
+  const modalElements = document.querySelectorAll(".modal");
+  modalElements.forEach((modal) => {
+    if (modal.classList.contains("show")) {
+      const closeButton = modal.querySelector('[data-bs-dismiss="modal"]');
+      if (closeButton) {
+        closeButton.click();
+      }
+    }
+  });
+};
 
 // upload data
 onMounted(async () => {
@@ -640,6 +652,10 @@ onMounted(async () => {
       focus: true,
     });
   });
+  window.addEventListener("contextmenu", handleRightClick);
+});
+onUnmounted(() => {
+  window.removeEventListener("contextmenu", handleRightClick);
 });
 </script>
 <style scoped>

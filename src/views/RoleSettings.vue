@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import { Modal } from "bootstrap";
@@ -189,11 +189,22 @@ export default {
     const roleModal = ref(null);
     const modal = ref(null);
 
+    const handleRightClick = (event) => {
+      event.preventDefault();
+      modal.value?.hide();
+    };
+
     onMounted(async () => {
       loadingStore.startLoading();
       await loadData();
       modal.value = new Modal(document.getElementById("roleModal"));
       loadingStore.stopLoading();
+
+      window.addEventListener("contextmenu", handleRightClick);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("contextmenu", handleRightClick);
     });
 
     const openModal = (role = null) => {

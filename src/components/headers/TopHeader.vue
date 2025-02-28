@@ -92,7 +92,14 @@ import ListLang from "@/components/headers/sub-menu/ListLang.vue";
 import MenuProfile from "@/components/headers/sub-menu/MenuProfile.vue";
 import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.vue";
 import Cookies from "js-cookie";
-import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  onBeforeUnmount,
+  computed,
+  watch,
+} from "vue";
 import { useRoute } from "vue-router";
 export default {
   name: "HeaderComponent",
@@ -132,6 +139,26 @@ export default {
 
     let interval;
 
+    const handleRightClick = (event) => {
+      event.preventDefault();
+      const modalElements = document.querySelectorAll(".modal");
+      modalElements.forEach((modal) => {
+        if (modal.classList.contains("show")) {
+          const closeButton = modal.querySelector('[data-bs-dismiss="modal"]');
+          if (closeButton) {
+            closeButton.click();
+          }
+        }
+      });
+    };
+
+    // upload data
+    onMounted(async () => {
+      window.addEventListener("contextmenu", handleRightClick);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("contextmenu", handleRightClick);
+    });
     onMounted(() => {
       updateTime();
       interval = setInterval(updateTime, 1000);

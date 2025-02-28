@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import FolderForm from "@/components/modals/FolderForm.vue";
 import Modal from "bootstrap/js/dist/modal";
@@ -385,6 +385,26 @@ export default {
     const navigateToCrumb = (path) => {
       router.push(path);
     };
+    const handleRightClick = (event) => {
+      event.preventDefault();
+      const modalElements = document.querySelectorAll(".modal");
+      modalElements.forEach((modal) => {
+        if (modal.classList.contains("show")) {
+          const closeButton = modal.querySelector('[data-bs-dismiss="modal"]');
+          if (closeButton) {
+            closeButton.click();
+          }
+        }
+      });
+    };
+
+    // upload data
+    onMounted(async () => {
+      window.addEventListener("contextmenu", handleRightClick);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("contextmenu", handleRightClick);
+    });
 
     watch(
       () => route.params.folderId,
