@@ -55,7 +55,6 @@
         </div>
       </div>
     </div>
-    <!-- :loading="tableLoading" -->
 
     <EasyDataTable
       v-model:items-selected="selectedRows"
@@ -66,6 +65,7 @@
       alternating
       show-index
       show-select
+      :loading="tableLoading"
       selection-type="multiple"
       :row-height="60"
       :header-height="50"
@@ -147,7 +147,7 @@ import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 // Items data
 const items = ref([]);
 // const loadingStore = useLoadingStore();
-// const tableLoading = ref(false);
+const tableLoading = ref(false);
 // Table headers
 const headers = [
   { text: "Name", value: "name" },
@@ -266,7 +266,7 @@ const executeAction = () => {
 
 const fetchData = async () => {
   try {
-    // tableLoading.value = true;
+    tableLoading.value = true;
     const stagesRes = await getStages();
     stages.value = stagesRes.data.data;
     // const sourcesRes = await getSources();
@@ -296,7 +296,7 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error in fetchData:", error);
   } finally {
-    // tableLoading.value = false;
+    tableLoading.value = false;
   }
 };
 

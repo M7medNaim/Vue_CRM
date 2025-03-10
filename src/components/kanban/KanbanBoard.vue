@@ -137,9 +137,21 @@ export default {
     const scrollDeals = (direction) => {
       if (!dealsContainer.value) return;
       stopScrolling();
-      scrollInterval = setInterval(() => {
-        dealsContainer.value.scrollLeft += direction * 20;
-      }, 50);
+
+      let lastTimestamp = null;
+      const speed = 1.2;
+
+      const animate = (timestamp) => {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const elapsed = timestamp - lastTimestamp;
+
+        dealsContainer.value.scrollLeft += direction * speed * elapsed;
+        lastTimestamp = timestamp;
+
+        scrollInterval = requestAnimationFrame(animate);
+      };
+
+      scrollInterval = requestAnimationFrame(animate);
     };
 
     const updateArrowVisibility = () => {
@@ -149,7 +161,10 @@ export default {
       showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
     };
     const stopScrolling = () => {
-      clearInterval(scrollInterval);
+      if (scrollInterval) {
+        cancelAnimationFrame(scrollInterval);
+        scrollInterval = null;
+      }
     };
     const stages = ref(props.stages);
     // update Stage Color and Name
