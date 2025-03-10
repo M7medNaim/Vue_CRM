@@ -7,12 +7,13 @@
     />
   </div>
   <div class="watsappIcon position-absolute z-3">
-    <button class="position-relative fs-5 rounded-2">
+    <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
       <p class="position-absolute">Watsapp</p>
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
   </div>
   <KanbanBoard :stages="stages" defaultColor="#333" />
+  <WhatsappModal ref="whatsappModalRef" />
 </template>
 
 <script>
@@ -20,12 +21,15 @@ import { ref, onMounted, onUnmounted } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
 import { tasksStages } from "@/plugins/stages";
+import { Modal } from "bootstrap";
+import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 
 export default {
   name: "CrmKanban",
   components: {
     TopHeader2,
     KanbanBoard,
+    WhatsappModal,
   },
   setup() {
     const stages = ref(tasksStages);
@@ -76,6 +80,10 @@ export default {
         }
       });
     };
+    const openWhatsappModal = () => {
+      const modal = new Modal(document.getElementById("whatsappModal"));
+      modal.show();
+    };
 
     // upload data
     onMounted(async () => {
@@ -90,6 +98,7 @@ export default {
       filters,
       applyFilters,
       resetFilter,
+      openWhatsappModal,
     };
   },
 };

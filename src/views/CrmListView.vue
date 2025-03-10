@@ -576,7 +576,7 @@ const handleUpdateSource = async (newSource) => {
 const handleDelete = async () => {
   try {
     const selectedIds = selectedRows.value.map((row) => row.id);
-    console.log("Deleting IDs:", selectedIds); // Debug log
+    console.log("Deleting IDs:", selectedIds);
 
     // Call the API
     const response = await deleteDeals(selectedIds);

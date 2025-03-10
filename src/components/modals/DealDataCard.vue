@@ -35,7 +35,10 @@
             <button class="btn border-none text-primary" @click="startCall">
               <i class="fa-solid fa-phone-volume fs-5"></i> Start a Call
             </button>
-            <button class="btn border-none text-primary" @click="startWhatsapp">
+            <button
+              class="btn border-none text-primary"
+              @click="openWhatsappModal"
+            >
               <i class="fab fa-whatsapp border-none text-primary fs-5"></i> Chat
               via Whatsapp
             </button>
@@ -574,6 +577,7 @@
     </div>
   </div>
   <ViewReport ref="questionsModalRef" />
+  <WhatsappModal ref="whatsappModalRef" />
 </template>
 
 <script>
@@ -581,10 +585,11 @@ import { ref, reactive } from "vue";
 import RatingStars from "../CreateDealElements/RatingStars.vue";
 import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
+import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 
 export default {
   name: "DealDataCard",
-  components: { RatingStars, ViewReport },
+  components: { RatingStars, ViewReport, WhatsappModal },
   setup() {
     const stages = [
       { id: "new", name: "New Deal", color: "#4CAF50" },
@@ -834,6 +839,10 @@ export default {
     const handleDoubleClick = () => {
       isEditMode.value = true;
     };
+    const openWhatsappModal = () => {
+      const modal = new Modal(document.getElementById("whatsappModal"));
+      modal.show();
+    };
     return {
       stages,
       currentStage,
@@ -866,6 +875,7 @@ export default {
       toggleEditMode,
       handleDoubleClick,
       isEditMode,
+      openWhatsappModal,
     };
   },
 };
