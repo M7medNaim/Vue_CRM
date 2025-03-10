@@ -57,6 +57,14 @@
                 style="color: #5a5757"
               ></i>
             </button>
+            <button
+              class="bg-transparent border-0"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <i class="fa fa-window-restore fs-5 pt-2 ps-1 text-black-50"></i>
+            </button>
           </div>
         </div>
       </div>

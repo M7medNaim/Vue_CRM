@@ -6,22 +6,22 @@
       >
         <div class="row d-flex justify-content-start align-items-center w-100">
           <div class="col-2 col-lg-1">
-            <button
+            <!-- <button
               class="bg-transparent border-0"
               type="button"
               data-bs-dismiss="modal"
               aria-label="Close"
             >
               <i class="fa fa-window-restore fs-5 pt-2 ps-1 text-black-50"></i>
-            </button>
+            </button> -->
           </div>
-          <div class="col-10 col-lg-11 ps-4">
+          <div class="col-12">
             <input
               type="text"
               placeholder="Search Conversation ..."
               v-model="searchQuery"
               style="outline: none"
-              class="border border-1 border-white py-2 pe-5 ps-4 rounded-2 bg-body text-secondary w-100"
+              class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
             />
             <i
               class="fa-solid fa-magnifying-glass searchIcon fs-6 text-secondary position-absolute"
@@ -415,7 +415,7 @@ export default {
   height: 8vh;
 }
 .left-side .inputSearch .searchIcon {
-  left: 14%;
+  left: 5%;
   top: 50%;
   transform: translate(0%, -50%);
 }

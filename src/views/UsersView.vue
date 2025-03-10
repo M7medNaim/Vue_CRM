@@ -33,11 +33,12 @@
     </div>
 
     <!-- الجدول -->
+    <!-- :loading="tableLoading" -->
+
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="selectedPerPage"
-      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <template #item-profile="item">
@@ -103,7 +104,7 @@ import AdminModal from "@/components/modals/AdminForm.vue";
 import ButtonsUser from "@/components/usersElements/ButtonsUser.vue";
 import FormSwitch from "@/components/usersElements/FormSwitch.vue";
 import FilterForm from "@/components/modals/FilterForm.vue";
-import { useLoadingStore } from "@/plugins/loadingStore";
+// import { useLoadingStore } from "@/plugins/loadingStore";
 // import Cookies from "js-cookie"
 
 import {
@@ -128,14 +129,14 @@ export default {
       { text: "الحالة", value: "status" },
       { text: "عمل", value: "actions" },
     ];
-    const loadingStore = useLoadingStore();
+    // const loadingStore = useLoadingStore();
     const items = ref([]);
     const search = ref("");
     const selectedRole = ref("");
     const selectedStatus = ref("");
     const selectedCreatedAt = ref("");
     const selectedPerPage = ref("10");
-    const tableLoading = ref(false);
+    // const tableLoading = ref(false);
     const isFiltered = computed(() => {
       return (
         selectedRole.value || selectedStatus.value || selectedCreatedAt.value
@@ -165,24 +166,24 @@ export default {
       };
 
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         const response = await getUser(query);
         items.value = response.data.data;
       } catch (error) {
         console.error("هناك مشكلة في فلترة المستخدمين:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
     const fetchUsers = async () => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
@@ -241,13 +242,13 @@ export default {
       selectedPerPage.value = "10";
 
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("فشل في إعادة تعيين الفلترة:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
     const handleRightClick = (event) => {
@@ -264,9 +265,9 @@ export default {
     };
 
     onMounted(async () => {
-      loadingStore.startLoading();
+      // loadingStore.startLoading();
       await fetchUsers();
-      loadingStore.stopLoading();
+      // loadingStore.stopLoading();
       window.addEventListener("contextmenu", handleRightClick);
     });
     onUnmounted(() => {
@@ -281,7 +282,7 @@ export default {
       adminModalRef,
       filterModalRef,
       isFiltered,
-      tableLoading,
+      // tableLoading,
       updateUserList,
       toggleStatus,
       editItem,

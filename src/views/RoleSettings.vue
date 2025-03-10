@@ -25,11 +25,12 @@
     </div>
 
     <!-- Roles Table -->
+    <!-- :loading="tableLoading" -->
+
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="10"
-      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <!-- Id Column -->
@@ -95,7 +96,7 @@ import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import { Modal } from "bootstrap";
 import RoleModal from "@/components/modals/RoleSettings.vue";
-import { useLoadingStore } from "@/plugins/loadingStore";
+// import { useLoadingStore } from "@/plugins/loadingStore";
 // import {
 //   updateRole,
 //   createRole,
@@ -111,9 +112,9 @@ export default {
   },
   setup() {
     const search = ref("");
-    const tableLoading = ref(false);
+    // const tableLoading = ref(false);
     const items = ref([]);
-    const loadingStore = useLoadingStore();
+    // const loadingStore = useLoadingStore();
     const staticRoles = [
       {
         id: 1,
@@ -165,7 +166,7 @@ export default {
     });
 
     const loadData = async () => {
-      tableLoading.value = true;
+      // tableLoading.value = true;
       try {
         // const response = await getRoles()
         // items.value = response.data
@@ -175,7 +176,7 @@ export default {
         console.error("Error loading roles:", error);
         items.value = [];
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
@@ -195,10 +196,10 @@ export default {
     };
 
     onMounted(async () => {
-      loadingStore.startLoading();
+      // loadingStore.startLoading();
       await loadData();
       modal.value = new Modal(document.getElementById("roleModal"));
-      loadingStore.stopLoading();
+      // loadingStore.stopLoading();
 
       window.addEventListener("contextmenu", handleRightClick);
     });
@@ -226,7 +227,7 @@ export default {
     };
 
     const saveRole = async (role) => {
-      tableLoading.value = true;
+      // tableLoading.value = true;
       try {
         if (isEditing.value) {
           // await updateRole(role.id, role);
@@ -249,7 +250,7 @@ export default {
         }
         modal.value?.hide();
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
@@ -280,7 +281,7 @@ export default {
       search,
       headers,
       filteredItems,
-      tableLoading,
+      // tableLoading,
       currentRole,
       isEditing,
       availablePermissions,

@@ -15,10 +15,11 @@
     </div>
 
     <!-- Folders Table -->
+    <!-- :loading="tableLoading" -->
+
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
-      :loading="tableLoading"
       @click-row="handleRowClick"
       table-class-name="custom-table"
       :per-page="10"
@@ -114,7 +115,7 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const tableLoading = ref(false);
+    // const tableLoading = ref(false);
     const items = ref([]);
     const folderFormModal = ref(null);
     const importFolderModal = ref(null);
@@ -166,7 +167,7 @@ export default {
 
     const handleFolderSubmit = async (folderData) => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         if (folderData.id) {
           const index = items.value.findIndex((f) => f.id === folderData.id);
           if (index !== -1) {
@@ -183,37 +184,37 @@ export default {
         }
         folderFormModal.value.hide();
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
     const handleFolderImport = async (files) => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         console.log("Importing files:", files);
         importFolderModal.value.hide();
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
     const deleteFolder = async (id) => {
       if (confirm("Are you sure you want to delete this folder?")) {
         try {
-          tableLoading.value = true;
+          // tableLoading.value = true;
           await new Promise((resolve) => setTimeout(resolve, 500));
           items.value = items.value.filter((folder) => folder.id !== id);
         } catch (error) {
           console.error("Error deleting folder:", error);
         } finally {
-          tableLoading.value = false;
+          // tableLoading.value = false;
         }
       }
     };
 
     const downloadFolder = async (folderId) => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         alert("Folder download started");
@@ -221,19 +222,19 @@ export default {
         console.error("Error downloading folder:", error);
         alert("An error occurred while downloading the folder");
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
     const fetchFolders = async () => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
         items.value = mockFolders;
       } catch (error) {
         console.error("Error fetching folders:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
     const handleRowClick = (item, event) => {
@@ -277,7 +278,7 @@ export default {
     return {
       headers,
       filteredItems,
-      tableLoading,
+      // tableLoading,
       selectedFolder,
       openNewFolderModal,
       openImportModal,

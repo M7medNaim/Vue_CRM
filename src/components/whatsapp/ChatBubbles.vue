@@ -156,7 +156,7 @@ export default {
 }
 
 .right-side .chatBx .msg-me {
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 /* icon menu */
 .right-side .chatBx .msg-me .buttonMenu {
@@ -186,7 +186,7 @@ export default {
 }
 
 .right-side .chatBx .msg-frnd {
-  justify-content: flex-start;
+  justify-content: flex-end;
 }
 
 .right-side .chatBx .msg-frnd .textMessage {

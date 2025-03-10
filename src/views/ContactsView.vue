@@ -33,11 +33,12 @@
     </div>
 
     <!-- Contacts Table -->
+    <!-- :loading="tableLoading" -->
+
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="selectedPerPage"
-      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <!-- Contact Info Column -->
@@ -101,7 +102,7 @@ import "vue3-easy-data-table/dist/style.css";
 import { getContacts, deleteContact } from "@/plugins/services/authService";
 import CreateContact from "@/components/ContactModals/CreateContact.vue";
 import FilterContact from "@/components/ContactModals/FilterContact.vue";
-import { useLoadingStore } from "@/plugins/loadingStore";
+// import { useLoadingStore } from "@/plugins/loadingStore";
 export default {
   name: "ContactsView",
   components: {
@@ -116,8 +117,8 @@ export default {
       { text: "رقم الهاتف", value: "phone" },
       { text: "عمل", value: "actions" },
     ];
-    const loadingStore = useLoadingStore();
-    const tableLoading = ref(false);
+    // const loadingStore = useLoadingStore();
+    // const tableLoading = ref(false);
     const items = ref([]);
     const search = ref("");
     const selectedPerPage = ref("10");
@@ -139,13 +140,13 @@ export default {
     // Fetch Contacts
     const fetchContacts = async () => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         const response = await getContacts();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching contacts:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
@@ -191,7 +192,7 @@ export default {
     // Filter Functions
     const applyFilters = async (filters) => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         const formattedFilters = {
           ...filters,
           startDate: filters.startDate
@@ -208,14 +209,14 @@ export default {
       } catch (error) {
         console.error("Filter application failed:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
     // Reset Filters
     const resetFilters = async () => {
       try {
-        tableLoading.value = true;
+        // tableLoading.value = true;
         const response = await getContacts();
         if (response.data.success) {
           items.value = response.data.data;
@@ -223,7 +224,7 @@ export default {
       } catch (error) {
         console.error("Reset filters failed:", error);
       } finally {
-        tableLoading.value = false;
+        // tableLoading.value = false;
       }
     };
 
@@ -241,9 +242,9 @@ export default {
     };
 
     onMounted(async () => {
-      loadingStore.startLoading();
+      // loadingStore.startLoading();
       await fetchContacts();
-      loadingStore.stopLoading();
+      // loadingStore.stopLoading();
 
       window.addEventListener("contextmenu", handleRightClick);
     });
@@ -267,7 +268,7 @@ export default {
       updateContactList,
       applyFilters,
       resetFilters,
-      tableLoading,
+      // tableLoading,
     };
   },
 };

@@ -55,6 +55,7 @@
         </div>
       </div>
     </div>
+    <!-- :loading="tableLoading" -->
 
     <EasyDataTable
       v-model:items-selected="selectedRows"
@@ -68,7 +69,6 @@
       selection-type="multiple"
       :row-height="60"
       :header-height="50"
-      :loading="tableLoading"
       class="custom-table"
       @click-row="handleRowClick"
     >
@@ -129,7 +129,7 @@ import DealModal from "@/components/modals/CreateDeal.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { useLoadingStore } from "@/plugins/loadingStore";
+// import { useLoadingStore } from "@/plugins/loadingStore";
 
 import {
   getDeals,
@@ -146,8 +146,8 @@ import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 
 // Items data
 const items = ref([]);
-const loadingStore = useLoadingStore();
-const tableLoading = ref(false);
+// const loadingStore = useLoadingStore();
+// const tableLoading = ref(false);
 // Table headers
 const headers = [
   { text: "Name", value: "name" },
@@ -266,7 +266,7 @@ const executeAction = () => {
 
 const fetchData = async () => {
   try {
-    tableLoading.value = true;
+    // tableLoading.value = true;
     const stagesRes = await getStages();
     stages.value = stagesRes.data.data;
     // const sourcesRes = await getSources();
@@ -296,7 +296,7 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error in fetchData:", error);
   } finally {
-    tableLoading.value = false;
+    // tableLoading.value = false;
   }
 };
 
@@ -394,7 +394,7 @@ const openImportModal = () => {
 };
 const fetchStagesAndSources = async () => {
   try {
-    tableLoading.value = true;
+    // tableLoading.value = true;
     const [stagesRes, sourcesRes] = await Promise.all([
       getStages(),
       getSources(),
@@ -404,12 +404,12 @@ const fetchStagesAndSources = async () => {
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
   } finally {
-    tableLoading.value = false;
+    // tableLoading.value = false;
   }
 };
 const handleShowDeal = async (dealId) => {
   try {
-    tableLoading.value = true;
+    // tableLoading.value = true;
     const response = await showDeal(dealId);
     const deal = response.data.data;
     const matchedStage = stages.value.find(
@@ -442,13 +442,13 @@ const handleShowDeal = async (dealId) => {
   } catch (error) {
     console.error("Error fetching deal data:", error);
   } finally {
-    tableLoading.value = false;
+    // tableLoading.value = false;
   }
 };
 
 const applyFilters = async (newFilters) => {
   try {
-    tableLoading.value = true;
+    // tableLoading.value = true;
     filters.value = { ...newFilters };
 
     const response = await getDeals(filters.value);
@@ -456,7 +456,7 @@ const applyFilters = async (newFilters) => {
   } catch (error) {
     console.error("Filter Error:", error);
   } finally {
-    tableLoading.value = false;
+    // tableLoading.value = false;
   }
 };
 
@@ -640,10 +640,10 @@ const handleRightClick = (event) => {
 
 // upload data
 onMounted(async () => {
-  loadingStore.startLoading();
+  // loadingStore.startLoading();
   await fetchData();
   await fetchStagesAndSources();
-  loadingStore.stopLoading();
+  // loadingStore.stopLoading();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {
