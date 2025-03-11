@@ -10,8 +10,8 @@
       <LoginView @loginSuccess="handleLoginSuccess" />
     </div>
 
-    <div v-else-if="!$route.meta.hideNavigation" class="app overflow-hidden">
-      <div class="row">
+    <div v-else class="app overflow-hidden">
+      <div v-if="!$route.meta.hideNavigation" class="row">
         <div :class="sidebarClass">
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
@@ -23,9 +23,14 @@
           </div>
         </div>
       </div>
+
+      <div v-else>
+        <router-view />
+      </div>
+
+      <!-- شريط الإعلانات -->
+      <NewsBar v-if="showNewsBar" />
     </div>
-    <!-- شريط الإعلانات -->
-    <NewsBar v-if="showNewsBar" />
   </div>
 </template>
 
@@ -80,7 +85,7 @@ export default {
 
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.$router.push("/home");
+      this.$router.push("/dashboard");
     },
 
     handleLogout() {
@@ -108,7 +113,7 @@ export default {
       if (!token && this.$route.path !== "/login") {
         this.$router.push("/login");
       } else if (token && this.$route.path === "/login") {
-        this.$router.push("/home");
+        this.$router.push("/dashboard");
       }
     },
     closeAllModals() {

@@ -24,7 +24,10 @@
               <button
                 class="btn btn-light px-4 py-2 fw-semibold"
                 @click="openCrmTasks"
-                v-if="$route.name !== 'CrmTasks'"
+                v-if="
+                  $route.name !== 'CrmTasks' &&
+                  permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
+                "
               >
                 المهام
               </button>
@@ -125,6 +128,7 @@ import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 import { Modal } from "bootstrap";
 import CreateDealModal from "../kanban/CreateDealModal.vue";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "TopHeader2",
@@ -154,6 +158,7 @@ export default {
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
     const filterData = ref({ ...props.initialFilters });
+    const permissionStore = usePermissionStore();
 
     watch(
       () => props.initialFilters,
@@ -204,6 +209,8 @@ export default {
       openCreateDealModal,
       openCrmTasks,
       openCrmKanban,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };

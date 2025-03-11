@@ -6,7 +6,10 @@
       >
         <span>{{ pageTitle }}</span>
         <router-link
-          v-if="$route.path === '/general-setting'"
+          v-if="
+            $route.path === '/general-setting' &&
+            permissionStore.hasPermission(PERMISSIONS.ROLES_SETTINGS)
+          "
           to="/role-settings"
           class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
         >
@@ -101,6 +104,8 @@ import {
   watch,
 } from "vue";
 import { useRoute } from "vue-router";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+
 export default {
   name: "HeaderComponent",
   components: {
@@ -183,11 +188,15 @@ export default {
       return route.path === "/role-settings";
     });
 
+    const permissionStore = usePermissionStore();
+
     return {
       currentTime,
       pageTitle,
       showRoleSettings,
       showGeneralSettings,
+      permissionStore,
+      PERMISSIONS,
     };
   },
   methods: {

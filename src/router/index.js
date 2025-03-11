@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { requirePermission } from "./guards";
+import { PERMISSIONS } from "@/stores/permissionStore";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import UsersView from "../views/UsersView.vue";
-import CrmListView from "@/views/CrmListView.vue";
 import ContactsView from "@/views/ContactsView.vue";
 import GeneralSetting from "@/views/GeneralSetting.vue";
 import RoleSettings from "@/views/RoleSettings.vue";
@@ -11,6 +12,9 @@ import DocumentsFiles from "@/views/FolderFilesView.vue";
 import CrmKanban from "@/views/CrmKanban.vue";
 import Cookies from "js-cookie";
 import CrmTasks from "@/views/CrmTasks.vue";
+import CrmList from "@/views/CrmListView.vue";
+import TasksKanban from "@/views/CrmTasks.vue";
+
 const routes = [
   {
     path: "/",
@@ -25,14 +29,25 @@ const routes = [
       hideNavigation: true,
     },
   },
+  // {
+  //   path: "/unauthorized",
+  //   name: "Unauthorized",
+  //   component: Unauthorized,
+  //   meta: {
+  //     requiresAuth: false,
+  //     hideNavigation: true,
+  //     title: "غير مصرح",
+  //   },
+  // },
   {
-    path: "/home",
-    name: "home",
+    path: "/dashboard",
+    name: "Dashboard",
     component: HomeView,
     meta: {
       requiresAuth: true,
-      title: "الرئيسية",
+      title: "Dashboard",
     },
+    beforeEnter: requirePermission(PERMISSIONS.DASHBOARD),
   },
   {
     path: "/crm-kanban",
@@ -42,6 +57,7 @@ const routes = [
       requiresAuth: true,
       title: "CRM Kanban",
     },
+    beforeEnter: requirePermission(PERMISSIONS.DEALS_KANBAN),
   },
   {
     path: "/crm-tasks",
@@ -51,42 +67,47 @@ const routes = [
       requiresAuth: true,
       title: "CRM Tasks",
     },
+    beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
   },
   {
     path: "/users",
-    name: "UsersView",
+    name: "Users",
     component: UsersView,
     meta: {
       requiresAuth: true,
-      title: "المستخدمين",
+      title: "Users",
     },
+    beforeEnter: requirePermission(PERMISSIONS.USERS),
   },
   {
     path: "/crmlist",
-    name: "CrmListView",
-    component: CrmListView,
+    name: "CrmList",
+    component: CrmList,
     meta: {
       requiresAuth: true,
-      title: "Crm List",
+      title: "CRM List",
     },
+    beforeEnter: requirePermission(PERMISSIONS.DEALS_LIST),
   },
   {
     path: "/contacts",
-    name: "ContactsView",
+    name: "Contacts",
     component: ContactsView,
     meta: {
       requiresAuth: true,
-      title: "Contact Us",
+      title: "Contacts",
     },
+    beforeEnter: requirePermission(PERMISSIONS.CONTACTS),
   },
   {
     path: "/general-setting",
-    name: "GeneralSetting",
+    name: "Settings",
     component: GeneralSetting,
     meta: {
       requiresAuth: true,
       title: "General Setting",
     },
+    beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
   },
   {
     path: "/role-settings",
@@ -96,24 +117,17 @@ const routes = [
       requiresAuth: true,
       title: "Role Settings",
     },
-  },
-  {
-    path: "/role-settings",
-    name: "RoleSettings",
-    component: RoleSettings,
-    meta: {
-      requiresAuth: true,
-      title: "Role Settings",
-    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },
   {
     path: "/documents-folders",
-    name: "DocumentsFolder",
+    name: "Documents",
     component: DocumentsFolder,
     meta: {
       requiresAuth: true,
-      title: "Documents Folder",
+      title: "Documents Folders",
     },
+    beforeEnter: requirePermission(PERMISSIONS.DOCUMENTS),
   },
   {
     path: "/folders/:folderId/files",
@@ -123,7 +137,23 @@ const routes = [
       requiresAuth: true,
       title: "Documents Files",
     },
+    beforeEnter: requirePermission(PERMISSIONS.DOCUMENTS),
   },
+  {
+    path: "/tasks-kanban",
+    component: TasksKanban,
+    beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
+  },
+  // {
+  //   path: "/:pathMatch(.*)*",
+  //   name: "NotFound",
+  //   component: Unauthorized,
+  //   meta: {
+  //     requiresAuth: false,
+  //     hideNavigation: true,
+  //     title: "غير موجود",
+  //   },
+  // },
 ];
 
 const router = createRouter({
@@ -132,16 +162,28 @@ const router = createRouter({
 });
 
 // Navigation Guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const token = Cookies.get("authToken");
-  const isAuthRoute = to.matched.some((record) => record.meta.requiresAuth);
+  const isAuthRoute = to.matched.some(
+    (record) => record.meta.requiresAuth !== false
+  );
+
   if (isAuthRoute && !token) {
-    next({ path: "/login" });
-  } else if (to.path === "/login" && token) {
-    next({ path: "/home" });
-  } else {
-    next();
+    const redirectPath = to.fullPath;
+    next({
+      path: "/login",
+      query: { redirect: redirectPath },
+      replace: true,
+    });
+    return;
   }
+
+  if (to.path === "/login" && token) {
+    next({ path: "/dashboard", replace: true });
+    return;
+  }
+
+  next();
 });
 
 export default router;

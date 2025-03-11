@@ -15,34 +15,44 @@
     </div>
     <div class="sidebar-items overflow-auto">
       <div
+        v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="Dashboard"
       >
-        <router-link to="/home" class="text-decoration-none text-white">
+        <router-link to="/dashboard" class="text-decoration-none text-white">
           <i class="fa-solid fa-house fs-5 me-2"></i>
           <!-- <i class="fa-solid fa-chart-line"></i> -->
           <span v-if="!isCollapsed">Dashboard</span>
         </router-link>
       </div>
       <div
+        v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         title="CRM Kanban"
       >
         <router-link to="/crm-kanban" class="text-decoration-none text-white">
           <i class="fa-solid fa-chart-column fs-5 me-2"></i>
-          <span v-if="!isCollapsed">CRM Kanban </span>
+          <span v-if="!isCollapsed">CRM Kanban</span>
         </router-link>
       </div>
-      <router-link to="/crmlist" class="text-decoration-none text-white">
+      <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+        to="/crmlist"
+        class="text-decoration-none text-white"
+      >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
           title="CRM List"
         >
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
-          <span v-if="!isCollapsed">CRM List </span>
+          <span v-if="!isCollapsed">CRM List</span>
         </div>
       </router-link>
-      <router-link to="/users" class="text-decoration-none text-white">
+      <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.USERS)"
+        to="/users"
+        class="text-decoration-none text-white"
+      >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
           title="Users"
@@ -51,7 +61,11 @@
           <span v-if="!isCollapsed">Users</span>
         </div>
       </router-link>
-      <router-link to="/contacts" class="text-decoration-none text-white">
+      <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.CONTACTS)"
+        to="/contacts"
+        class="text-decoration-none text-white"
+      >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
           title="Contacts"
@@ -61,18 +75,20 @@
         </div>
       </router-link>
       <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)"
         to="/documents-folders"
         class="text-decoration-none text-white"
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          title="Documents Folders"
+          title="Documents"
         >
           <i class="fa-regular fa-folder-open fs-5 me-2"></i>
-          <span v-if="!isCollapsed">Documents Folders</span>
+          <span v-if="!isCollapsed">Documents</span>
         </div>
       </router-link>
       <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)"
         to="/general-setting"
         class="text-decoration-none text-white"
       >
@@ -84,7 +100,11 @@
           <span v-if="!isCollapsed">Settings</span>
         </div>
       </router-link>
-      <!-- <router-link to="/role-settings" class="text-decoration-none text-white">
+      <!-- <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.ROLES_SETTINGS)"
+        to="/role-settings"
+        class="text-decoration-none text-white"
+      >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
           title="Role Settings"
@@ -108,12 +128,25 @@
 
 <script>
 import { ref } from "vue";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "LeftSidebar",
   emits: ["toggle"],
   setup(props, { emit }) {
     const isCollapsed = ref(true);
+    const permissionStore = usePermissionStore();
+    permissionStore.setPermissions([
+      "dashboard",
+      "deals-kanban",
+      "deals-list",
+      "users",
+      // "contacts",
+      "tasks-kanban",
+      // "documents",
+      "general-settings",
+      "roles-settings",
+    ]);
 
     const toggleSidebar = () => {
       isCollapsed.value = !isCollapsed.value;
@@ -123,6 +156,8 @@ export default {
     return {
       isCollapsed,
       toggleSidebar,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };

@@ -71,10 +71,21 @@
 <script>
 import { login } from "@/plugins/services/authService";
 import Cookies from "js-cookie";
+import { usePermissionStore } from "@/stores/permissionStore";
+import { useRouter } from "vue-router";
 // import axiosInstance from "@/plugins/axios";
 
 export default {
   name: "LoginView",
+  setup() {
+    const permissionStore = usePermissionStore();
+    const router = useRouter();
+
+    return {
+      permissionStore,
+      router,
+    };
+  },
   data() {
     return {
       email: "",
@@ -114,10 +125,15 @@ export default {
           this.email = "";
           this.password = "";
           this.loginSuccess = true;
+          const redirect = this.$route.query.redirect || "/dashboard";
+          this.$router.replace(redirect);
           this.$emit("loginSuccess");
-          this.$router.push("/home");
+          if (response.data.permissions) {
+            this.permissionStore.setPermissions(response.data.permissions);
+          }
         }
       } catch (error) {
+        console.error("Login failed:", error);
         this.errors.message = "Login failed. Please try again.";
         this.email = "";
         this.password = "";
@@ -149,7 +165,7 @@ export default {
     },
     mounted() {
       if (Cookies.get("authToken")) {
-        this.$router.push("/home");
+        this.$router.push("/dashboard");
       }
     },
   },
