@@ -141,9 +141,9 @@ export default {
       "deals-kanban",
       "deals-list",
       "users",
-      // "contacts",
+      "contacts",
       "tasks-kanban",
-      // "documents",
+      "documents",
       "general-settings",
       "roles-settings",
     ]);
