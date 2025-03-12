@@ -104,6 +104,8 @@ import AdminModal from "@/components/modals/AdminForm.vue";
 import ButtonsUser from "@/components/usersElements/ButtonsUser.vue";
 import FormSwitch from "@/components/usersElements/FormSwitch.vue";
 import FilterForm from "@/components/modals/FilterForm.vue";
+import { useToast } from "vue-toastification";
+import Swal from "sweetalert2";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 // import Cookies from "js-cookie"
 
@@ -123,6 +125,7 @@ export default {
     FilterForm,
   },
   setup() {
+    const toast = useToast();
     const headers = [
       { text: "المستخدمون:", value: "profile" },
       { text: ":البريد الإلكتروني", value: "emailVerified" },
@@ -201,7 +204,13 @@ export default {
         const newStatus = event.target.checked ? "active" : "inactive";
         await updateUser(item.id, { status: newStatus });
         item.status = newStatus;
+        toast.success("تم تحديث حالة المستخدم بنجاح", {
+          timeout: 3000,
+        });
       } catch (error) {
+        toast.error("فشل تحديث حالة المستخدم", {
+          timeout: 3000,
+        });
         console.error("Update Status Is Failed:", error);
       }
     };
@@ -227,9 +236,29 @@ export default {
     // Remove User
     const removeUser = async (id) => {
       try {
-        await deleteUser(id);
-        items.value = items.value.filter((user) => user.id !== id);
+        const result = await Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "لن تتمكن من التراجع عن هذا الإجراء!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "نعم، قم بالحذف!",
+          cancelButtonText: "إلغاء",
+          reverseButtons: true,
+        });
+
+        if (result.isConfirmed) {
+          await deleteUser(id);
+          items.value = items.value.filter((user) => user.id !== id);
+          toast.success("تم حذف المستخدم بنجاح", {
+            timeout: 3000,
+          });
+        }
       } catch (error) {
+        toast.error("فشل حذف المستخدم", {
+          timeout: 3000,
+        });
         console.error("Delete User Is Failed:", error);
       }
     };

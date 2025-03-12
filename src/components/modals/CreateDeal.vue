@@ -33,11 +33,16 @@ import { Modal } from "bootstrap";
 import DealForm from "../CreateDealElements/DealForm.vue";
 import DealButtons from "../CreateDealElements/DealButtons.vue";
 import { createDeal } from "@/plugins/services/authService";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "DealModal",
   components: { DealForm, DealButtons },
   emits: ["add-deal"],
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       formData: {
@@ -54,8 +59,6 @@ export default {
           ],
         },
       },
-      successMessage: "",
-      errorMessage: "",
     };
   },
   methods: {
@@ -65,9 +68,6 @@ export default {
     },
     async submitForm() {
       try {
-        this.successMessage = "";
-        this.errorMessage = "";
-
         const dealData = {
           description: this.formData.description,
           stage_id: this.formData.stage_id,
@@ -86,15 +86,22 @@ export default {
         const response = await createDeal(dealData);
 
         if (response.data) {
-          this.successMessage = "Deal Created Successfully";
+          this.toast.success("تم إنشاء الصفقة بنجاح", {
+            timeout: 3000,
+          });
           this.$emit("add-deal", response.data.data);
           setTimeout(() => {
             this.clearForm();
             this.closeDealModal();
-          }, 1500);
+          }, 1000);
         }
       } catch (error) {
-        this.errorMessage = "An error occurred, try again";
+        this.toast.error(
+          error.response?.data?.message || "حدث خطأ، يرجى المحاولة مرة أخرى",
+          {
+            timeout: 3000,
+          }
+        );
         console.error("Error:", error);
       }
     },

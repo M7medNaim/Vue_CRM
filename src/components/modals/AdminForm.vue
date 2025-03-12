@@ -145,6 +145,7 @@
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
+import { useToast } from "vue-toastification";
 
 import {
   createUser,
@@ -156,6 +157,10 @@ import {
 export default {
   name: "AdminModal",
   components: { Multiselect },
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       isEditMode: false,
@@ -236,8 +241,6 @@ export default {
     async submitForm() {
       try {
         this.loading = true;
-        this.successMessage = "";
-        this.errorMessage = "";
 
         const formData = new FormData();
         formData.append("name", this.formData.username);
@@ -263,22 +266,30 @@ export default {
         let response;
         if (this.isEditMode) {
           response = await updateUser(this.formData.id, formData);
+          this.toast.success("تم تحديث المستخدم بنجاح", {
+            timeout: 3000,
+          });
         } else {
           response = await createUser(formData);
+          this.toast.success("تم إنشاء المستخدم بنجاح", {
+            timeout: 3000,
+          });
         }
 
         if (response.data) {
-          this.successMessage = this.isEditMode
-            ? "Update User Is Successfully"
-            : "Created User Is Successfully";
           this.$emit("user-updated", response.data.data || response.data);
           setTimeout(() => {
             this.clearForm();
             this.closeModal();
-          }, 1500);
+          }, 1000);
         }
       } catch (error) {
-        this.errorMessage = "An error occurred, try again";
+        this.toast.error(
+          error.response?.data?.message || "حدث خطأ، يرجى المحاولة مرة أخرى",
+          {
+            timeout: 3000,
+          }
+        );
         console.error("Error:", error);
       } finally {
         this.loading = false;

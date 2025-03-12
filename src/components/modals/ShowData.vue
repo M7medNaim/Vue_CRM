@@ -146,6 +146,7 @@
 <script>
 import { ref, watch } from "vue";
 import { Modal } from "bootstrap";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "showDataModal",
@@ -156,6 +157,7 @@ export default {
     },
   },
   setup(props) {
+    const toast = useToast();
     const showDataModalRef = ref(null);
     const dealData = ref(null);
 
@@ -164,6 +166,9 @@ export default {
       (newData) => {
         if (newData) {
           dealData.value = newData;
+          toast.success("تم جلب بيانات الصفقة بنجاح", {
+            timeout: 3000,
+          });
         }
       },
       { deep: true, immediate: true }
@@ -175,16 +180,30 @@ export default {
     };
 
     const openShowData = () => {
-      const modalElement = document.getElementById("showDataModal");
-      const modal = new Modal(modalElement);
-      modal.show();
+      try {
+        const modalElement = document.getElementById("showDataModal");
+        const modal = new Modal(modalElement);
+        modal.show();
+      } catch (error) {
+        toast.error("حدث خطأ في عرض البيانات", {
+          timeout: 3000,
+        });
+        console.error("Error opening modal:", error);
+      }
     };
 
     const closeShowDataModal = () => {
-      const modalElement = document.getElementById("showDataModal");
-      const modal = Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
+      try {
+        const modalElement = document.getElementById("showDataModal");
+        const modal = Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+      } catch (error) {
+        toast.error("حدث خطأ في إغلاق النافذة", {
+          timeout: 3000,
+        });
+        console.error("Error closing modal:", error);
       }
     };
 

@@ -44,10 +44,15 @@ import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import FilterForm from "@/components/filterElements/FilterForm.vue";
 import FilterButtons from "@/components/filterElements/FilterButtons.vue";
 import { getRoles } from "@/plugins/services/authService";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "FilterModal",
   components: { FilterForm, FilterButtons },
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       status: "",
@@ -68,11 +73,21 @@ export default {
     },
     applyFilters(filters) {
       this.loading = true;
-      this.$emit("apply-filters", filters);
-      setTimeout(() => {
+      try {
+        this.$emit("apply-filters", filters);
+        this.toast.success("تم تطبيق الفلتر بنجاح", {
+          timeout: 3000,
+        });
+        setTimeout(() => {
+          this.loading = false;
+          this.closeFilterModal();
+        }, 1000);
+      } catch (error) {
+        this.toast.error("فشل في تطبيق الفلتر", {
+          timeout: 3000,
+        });
         this.loading = false;
-        this.closeFilterModal();
-      }, 1000);
+      }
     },
     closeFilterModal() {
       const modal = this.$refs.filterModal;
@@ -83,31 +98,53 @@ export default {
     },
     submitFilters() {
       this.loading = true;
-      this.$emit("apply-filters", {
-        role: this.role,
-        status: this.status,
-        createdAt: this.createdAt,
-        perPage: this.perPage,
-      });
-      setTimeout(() => {
+      try {
+        this.$emit("apply-filters", {
+          role: this.role,
+          status: this.status,
+          createdAt: this.createdAt,
+          perPage: this.perPage,
+        });
+        this.toast.success("تم تطبيق الفلتر بنجاح", {
+          timeout: 3000,
+        });
+        setTimeout(() => {
+          this.loading = false;
+          this.closeFilterModal();
+        }, 1000);
+      } catch (error) {
+        this.toast.error("فشل في تطبيق الفلتر", {
+          timeout: 3000,
+        });
         this.loading = false;
-        this.closeFilterModal();
-      }, 1000);
+      }
     },
     resetFilters() {
-      this.role = "";
-      this.status = "";
-      this.createdAt = "";
-      this.perPage = "10";
+      try {
+        this.role = "";
+        this.status = "";
+        this.createdAt = "";
+        this.perPage = "10";
 
-      this.$emit("reset-filters");
-      this.closeFilterModal();
+        this.$emit("reset-filters");
+        this.toast.success("تم إعادة تعيين الفلتر بنجاح", {
+          timeout: 3000,
+        });
+        this.closeFilterModal();
+      } catch (error) {
+        this.toast.error("فشل في إعادة تعيين الفلتر", {
+          timeout: 3000,
+        });
+      }
     },
     async fetchRoles() {
       try {
         const response = await getRoles();
         this.roles = response.data.data;
       } catch (error) {
+        this.toast.error("فشل في جلب الأدوار", {
+          timeout: 3000,
+        });
         console.error("Error fetching roles:", error);
       }
     },

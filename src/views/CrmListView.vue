@@ -129,6 +129,8 @@ import DealModal from "@/components/modals/CreateDeal.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useToast } from "vue-toastification";
+import Swal from "sweetalert2";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 
 import {
@@ -187,8 +189,35 @@ const actions = ref([
   { value: "changeSource", label: "Change Source" },
   { value: "delete", label: "Delete" },
 ]);
-const deleteItem = (id) => {
-  items.value = items.value.filter((item) => item.id !== id);
+const toast = useToast();
+
+const deleteItem = async (id) => {
+  try {
+    const result = await Swal.fire({
+      title: "هل أنت متأكد؟",
+      text: "لن تتمكن من التراجع عن هذا الإجراء!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "نعم، قم بالحذف!",
+      cancelButtonText: "إلغاء",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      await deleteDeals([id]);
+      items.value = items.value.filter((item) => item.id !== id);
+      toast.success("تم حذف العنصر بنجاح", {
+        timeout: 3000,
+      });
+    }
+  } catch (error) {
+    toast.error("فشل في حذف العنصر", {
+      timeout: 3000,
+    });
+    console.error("Delete Error:", error);
+  }
 };
 const sources = ref([]);
 const stages = ref([]);
@@ -488,7 +517,6 @@ const handleUpdateStage = async (newStage) => {
     const selectedIds = selectedRows.value.map((row) => row.id);
     await updateDealsStage(selectedIds, newStage);
 
-    // Update local data
     items.value = items.value.map((item) => {
       if (selectedIds.includes(item.id)) {
         return { ...item, stage: newStage };
@@ -500,10 +528,14 @@ const handleUpdateStage = async (newStage) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    alert("Stage updated successfully");
+    toast.success("تم تحديث المرحلة بنجاح", {
+      timeout: 3000,
+    });
   } catch (error) {
+    toast.error("فشل في تحديث المرحلة", {
+      timeout: 3000,
+    });
     console.error("Error updating stage:", error);
-    alert("Error updating stage");
   }
 };
 
@@ -522,10 +554,14 @@ const handleUpdateSupervisor = async (newSupervisor) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    alert("Supervisor assigned successfully");
+    toast.success("تم تعيين المشرف بنجاح", {
+      timeout: 3000,
+    });
   } catch (error) {
+    toast.error("فشل في تعيين المشرف", {
+      timeout: 3000,
+    });
     console.error("Error assigning supervisor:", error);
-    alert("Error assigning supervisor");
   }
 };
 
@@ -544,10 +580,14 @@ const handleUpdateRepresentative = async (newRepresentative) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    alert("Representative assigned successfully");
+    toast.success("تم تعيين الممثل بنجاح", {
+      timeout: 3000,
+    });
   } catch (error) {
+    toast.error("فشل في تعيين الممثل", {
+      timeout: 3000,
+    });
     console.error("Error assigning representative:", error);
-    alert("Error assigning representative");
   }
 };
 
@@ -566,42 +606,55 @@ const handleUpdateSource = async (newSource) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    alert("Source updated successfully");
+    toast.success("تم تحديث المصدر بنجاح", {
+      timeout: 3000,
+    });
   } catch (error) {
+    toast.error("فشل في تحديث المصدر", {
+      timeout: 3000,
+    });
     console.error("Error updating source:", error);
-    alert("Error updating source");
   }
 };
 
 const handleDelete = async () => {
   try {
     const selectedIds = selectedRows.value.map((row) => row.id);
-    console.log("Deleting IDs:", selectedIds);
 
-    // Call the API
-    const response = await deleteDeals(selectedIds);
+    const result = await Swal.fire({
+      title: "هل أنت متأكد؟",
+      text: `هل تريد حذف ${selectedIds.length} عنصر؟`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "نعم، قم بالحذف!",
+      cancelButtonText: "إلغاء",
+      reverseButtons: true,
+    });
 
-    if (response.data.success) {
-      // Assuming your API returns a success flag
-      // Update local data
-      items.value = items.value.filter(
-        (item) => !selectedIds.includes(item.id)
-      );
+    if (result.isConfirmed) {
+      const response = await deleteDeals(selectedIds);
 
-      // Reset selections
-      selectedRows.value = [];
-      selectedAction.value = "";
+      if (response.data.success) {
+        items.value = items.value.filter(
+          (item) => !selectedIds.includes(item.id)
+        );
+        selectedRows.value = [];
+        selectedAction.value = "";
 
-      alert("Items deleted successfully");
-    } else {
-      throw new Error(response.data.message || "Delete operation failed");
+        toast.success("تم حذف العناصر بنجاح", {
+          timeout: 3000,
+        });
+      } else {
+        throw new Error(response.data.message || "فشلت عملية الحذف");
+      }
     }
   } catch (error) {
+    toast.error(error.response?.data?.message || "حدث خطأ أثناء الحذف", {
+      timeout: 3000,
+    });
     console.error("Delete Error:", error);
-    alert(
-      "Error deleting items: " +
-        (error.response?.data?.message || error.message)
-    );
   }
 };
 
