@@ -56,12 +56,14 @@
 <script>
 import { ref, onMounted } from "vue";
 import { Modal } from "bootstrap";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "FilterContact",
   emits: ["apply-filters", "reset-filters"],
 
   setup(props, { emit }) {
+    const toast = useToast();
     const modalInstance = ref(null);
 
     const filterData = ref({
@@ -70,30 +72,67 @@ export default {
     });
 
     const openFilterModal = () => {
-      modalInstance.value.show();
+      try {
+        modalInstance.value.show();
+        toast.info("يمكنك تحديد معايير الفلترة", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        toast.error("حدث خطأ في فتح نافذة الفلترة", {
+          timeout: 3000,
+        });
+        console.error("Error opening modal:", error);
+      }
     };
 
     const applyFilters = () => {
-      const filters = {
-        start_date: filterData.value.startDate,
-        end_date: filterData.value.endDate,
-      };
+      try {
+        const filters = {
+          start_date: filterData.value.startDate,
+          end_date: filterData.value.endDate,
+        };
 
-      emit("apply-filters", filters);
-      modalInstance.value.hide();
+        emit("apply-filters", filters);
+        modalInstance.value.hide();
+        toast.success("تم تطبيق الفلتر بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        toast.error("فشل في تطبيق الفلتر", {
+          timeout: 3000,
+        });
+        console.error("Error applying filters:", error);
+      }
     };
 
     const resetFilters = () => {
-      filterData.value = {
-        startDate: "",
-        endDate: "",
-      };
-      emit("reset-filters");
-      modalInstance.value.hide();
+      try {
+        filterData.value = {
+          startDate: "",
+          endDate: "",
+        };
+        emit("reset-filters");
+        modalInstance.value.hide();
+        toast.success("تم إعادة تعيين الفلتر بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        toast.error("فشل في إعادة تعيين الفلتر", {
+          timeout: 3000,
+        });
+        console.error("Error resetting filters:", error);
+      }
     };
 
     onMounted(() => {
-      modalInstance.value = new Modal(document.getElementById("filterModal"));
+      try {
+        modalInstance.value = new Modal(document.getElementById("filterModal"));
+      } catch (error) {
+        toast.error("حدث خطأ في تهيئة نافذة الفلترة", {
+          timeout: 3000,
+        });
+        console.error("Error initializing modal:", error);
+      }
     });
 
     return {

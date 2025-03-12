@@ -183,8 +183,14 @@
 </template>
 
 <script>
+import { useToast } from "vue-toastification";
+
 export default {
   name: "createDealModal",
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       showModal: false,
@@ -214,18 +220,65 @@ export default {
   },
   methods: {
     submitForm() {
-      console.log("Form Data:", this.form);
-      this.showModal = false;
+      try {
+        if (!this.form.name.trim()) {
+          this.toast.error("الرجاء إدخال الاسم الكامل", { timeout: 3000 });
+          return;
+        }
+
+        if (!this.form.phone.trim()) {
+          this.toast.error("الرجاء إدخال رقم الهاتف", { timeout: 3000 });
+          return;
+        }
+
+        console.log("Form Data:", this.form);
+        this.showModal = false;
+        this.toast.success("تم إنشاء الصفقة بنجاح", { timeout: 3000 });
+        this.resetForm();
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        this.toast.error("حدث خطأ أثناء إنشاء الصفقة", { timeout: 3000 });
+      }
     },
     addPackage() {
-      this.form.packages.push({
-        package: "any",
-        quantity: "",
-        id: Date.now(),
-      });
+      try {
+        if (this.form.packages.length >= 5) {
+          this.toast.warning("لا يمكن إضافة أكثر من 5 باقات", {
+            timeout: 3000,
+          });
+          return;
+        }
+        this.form.packages.push({
+          package: "any",
+          quantity: "",
+          id: Date.now(),
+        });
+        this.toast.info("تم إضافة باقة جديدة", { timeout: 3000 });
+      } catch (error) {
+        console.error("Error adding package:", error);
+        this.toast.error("حدث خطأ أثناء إضافة الباقة", { timeout: 3000 });
+      }
     },
     removePackage(id) {
-      this.form.packages = this.form.packages.filter((pkg) => pkg.id !== id);
+      try {
+        this.form.packages = this.form.packages.filter((pkg) => pkg.id !== id);
+        this.toast.success("تم حذف الباقة بنجاح", { timeout: 3000 });
+      } catch (error) {
+        console.error("Error removing package:", error);
+        this.toast.error("حدث خطأ أثناء حذف الباقة", { timeout: 3000 });
+      }
+    },
+    resetForm() {
+      this.form = {
+        name: "",
+        phone: "",
+        notes: "",
+        source: "",
+        company: "any",
+        representative: "any",
+        package: "Choose a Service",
+        packages: [],
+      };
     },
   },
 };

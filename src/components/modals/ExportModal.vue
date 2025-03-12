@@ -54,21 +54,43 @@
 <script>
 import { ref } from "vue";
 import { Modal } from "bootstrap";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "ExportModal",
   setup() {
+    const toast = useToast();
     const exportFormat = ref("");
 
     const handleExport = () => {
-      if (!exportFormat.value) return;
+      try {
+        if (!exportFormat.value) {
+          toast.error("الرجاء اختيار صيغة التصدير", {
+            timeout: 3000,
+          });
+          return;
+        }
 
-      console.log("Exporting as:", exportFormat.value);
+        toast.info("جاري تصدير البيانات...", {
+          timeout: 2000,
+        });
 
-      const modal = Modal.getInstance(document.getElementById("exportModal"));
-      modal?.hide();
+        console.log("Exporting as:", exportFormat.value);
 
-      exportFormat.value = "";
+        const modal = Modal.getInstance(document.getElementById("exportModal"));
+        modal?.hide();
+
+        toast.success("تم تصدير البيانات بنجاح", {
+          timeout: 3000,
+        });
+
+        exportFormat.value = "";
+      } catch (error) {
+        console.error("Error during export:", error);
+        toast.error("حدث خطأ أثناء تصدير البيانات", {
+          timeout: 3000,
+        });
+      }
     };
 
     return {

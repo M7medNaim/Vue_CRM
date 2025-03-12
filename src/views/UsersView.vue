@@ -33,11 +33,12 @@
     </div>
 
     <!-- الجدول -->
-    <!-- :loading="tableLoading" -->
+    <!--  -->
 
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
+      :loading="tableLoading"
       :rows-per-page="selectedPerPage"
       table-class-name="custom-table"
     >
@@ -139,7 +140,7 @@ export default {
     const selectedStatus = ref("");
     const selectedCreatedAt = ref("");
     const selectedPerPage = ref("10");
-    // const tableLoading = ref(false);
+    const tableLoading = ref(false);
     const isFiltered = computed(() => {
       return (
         selectedRole.value || selectedStatus.value || selectedCreatedAt.value
@@ -180,13 +181,13 @@ export default {
     };
     const fetchUsers = async () => {
       try {
-        // tableLoading.value = true;
+        tableLoading.value = true;
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
-        // tableLoading.value = false;
+        tableLoading.value = false;
       }
     };
 
@@ -241,8 +242,8 @@ export default {
           text: "لن تتمكن من التراجع عن هذا الإجراء!",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
           confirmButtonText: "نعم، قم بالحذف!",
           cancelButtonText: "إلغاء",
           reverseButtons: true,
@@ -311,7 +312,7 @@ export default {
       adminModalRef,
       filterModalRef,
       isFiltered,
-      // tableLoading,
+      tableLoading,
       updateUserList,
       toggleStatus,
       editItem,

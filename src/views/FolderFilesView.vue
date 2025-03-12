@@ -159,6 +159,8 @@ import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import FolderForm from "@/components/modals/FolderForm.vue";
 import Modal from "bootstrap/js/dist/modal";
+import { useToast } from "vue-toastification";
+import Swal from "sweetalert2";
 
 export default {
   name: "FolderFilesView",
@@ -166,6 +168,7 @@ export default {
     FolderForm,
   },
   setup() {
+    const toast = useToast();
     const route = useRoute();
     const router = useRouter();
     const files = ref([]);
@@ -214,8 +217,14 @@ export default {
         }));
 
         files.value = [...files.value, ...uploadedFiles];
-      } catch {
-        console.log("error Find Files");
+        toast.success("تم رفع الملفات بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        toast.error("حدث خطأ أثناء رفع الملفات", {
+          timeout: 3000,
+        });
+        console.error("Error uploading files:", error);
       }
     };
 
@@ -238,9 +247,15 @@ export default {
 
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+
+        toast.success("تم بدء تحميل الملف", {
+          timeout: 3000,
+        });
       } catch (error) {
         console.error("Error downloading file:", error);
-        alert("حدث خطأ أثناء تحميل الملف");
+        toast.error("حدث خطأ أثناء تحميل الملف", {
+          timeout: 3000,
+        });
       }
     };
     const editFolder = (folder) => {
@@ -251,14 +266,38 @@ export default {
       folderFormModal.value.show();
     };
     const deleteFile = async (fileId) => {
-      if (confirm("Are you sure you want to delete this file?")) {
-        files.value = files.value.filter((file) => file.id !== fileId);
+      try {
+        const result = await Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "لن تتمكن من استعادة هذا الملف بعد الحذف!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "نعم، قم بالحذف!",
+          cancelButtonText: "إلغاء",
+          reverseButtons: true,
+        });
+
+        if (result.isConfirmed) {
+          files.value = files.value.filter((file) => file.id !== fileId);
+          toast.success("تم حذف الملف بنجاح", {
+            timeout: 3000,
+          });
+        }
+      } catch (error) {
+        toast.error("حدث خطأ أثناء حذف الملف", {
+          timeout: 3000,
+        });
+        console.error("Error deleting file:", error);
       }
     };
 
     const handleFolderSubmit = async (folderData) => {
       if (!folderData.name?.trim()) {
-        alert("Please enter a folder name");
+        toast.error("الرجاء إدخال اسم المجلد", {
+          timeout: 3000,
+        });
         return;
       }
       try {
@@ -274,6 +313,9 @@ export default {
               name: folderData.name,
               updated_at: new Date().toLocaleDateString("ar-EG"),
             };
+            toast.success("تم تحديث المجلد بنجاح", {
+              timeout: 3000,
+            });
           }
         } else {
           const newFolder = {
@@ -284,13 +326,18 @@ export default {
             files: [],
           };
           folders.value.unshift(newFolder);
+          toast.success("تم إنشاء المجلد بنجاح", {
+            timeout: 3000,
+          });
         }
 
         folderFormModal.value.hide();
         selectedFolder.value = null;
       } catch (error) {
         console.error("Error handling folder:", error);
-        alert("An error occurred while processing the folder");
+        toast.error("حدث خطأ أثناء معالجة المجلد", {
+          timeout: 3000,
+        });
       }
     };
 
@@ -332,12 +379,14 @@ export default {
         files.value = currentFolder.files || [];
         folders.value = currentFolder.subFolders || [];
 
-        console.log("Loaded folder:", currentFolder.name);
-        console.log("Files:", files.value.length);
-        console.log("Subfolders:", folders.value.length);
+        // toast.success("تم تحميل محتويات المجلد بنجاح", {
+        //   timeout: 3000,
+        // });
       } catch (error) {
         console.error("Error fetching folder contents:", error);
-        alert("An error occurred while loading folder contents");
+        toast.error("حدث خطأ أثناء تحميل محتويات المجلد", {
+          timeout: 3000,
+        });
       }
     };
 
@@ -352,15 +401,41 @@ export default {
       try {
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert("Folder download started");
+        toast.success("تم بدء تحميل المجلد", {
+          timeout: 3000,
+        });
       } catch (error) {
         console.error("Error downloading folder:", error);
-        alert("An error occurred while downloading the folder");
+        toast.error("حدث خطأ أثناء تحميل المجلد", {
+          timeout: 3000,
+        });
       }
     };
     const deleteFolder = async (folderId) => {
-      if (confirm("Are you sure you want to delete this folder?")) {
-        folders.value = folders.value.filter((f) => f.id !== folderId);
+      try {
+        const result = await Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "لن تتمكن من استعادة هذا المجلد وجميع محتوياته بعد الحذف!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "نعم، قم بالحذف!",
+          cancelButtonText: "إلغاء",
+          reverseButtons: true,
+        });
+
+        if (result.isConfirmed) {
+          folders.value = folders.value.filter((f) => f.id !== folderId);
+          toast.success("تم حذف المجلد بنجاح", {
+            timeout: 3000,
+          });
+        }
+      } catch (error) {
+        toast.error("حدث خطأ أثناء حذف المجلد", {
+          timeout: 3000,
+        });
+        console.error("Error deleting folder:", error);
       }
     };
 

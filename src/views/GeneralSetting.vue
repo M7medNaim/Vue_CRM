@@ -244,13 +244,19 @@
 </template>
 
 <script>
+import { useToast } from "vue-toastification";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 import defaultImage from "@/assets/new-nokta-logo.png";
+
 export default {
   name: "GeneralSetting",
   components: {
     Multiselect,
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -320,18 +326,105 @@ export default {
   },
   methods: {
     saveSettings() {
-      console.log("Settings saved:", this.settings);
+      try {
+        // التحقق من الحقول المطلوبة
+        if (!this.settings.appName?.trim()) {
+          this.toast.error("اسم التطبيق مطلوب", {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        if (!this.settings.planExpireDays) {
+          this.toast.error("عدد أيام إشعار انتهاء الخطة مطلوب", {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        if (!this.settings.defaultCountry) {
+          this.toast.error("الرجاء اختيار رمز الدولة الافتراضي", {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        if (!this.settings.currency) {
+          this.toast.error("الرجاء اختيار العملة", {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        // التحقق من حقول reCAPTCHA إذا كانت مفعلة
+        if (this.settings.enableRecaptcha) {
+          if (!this.settings.googleCaptchaKey?.trim()) {
+            this.toast.error("مفتاح Google Captcha مطلوب", {
+              timeout: 3000,
+            });
+            return;
+          }
+          if (!this.settings.googleCaptchaSecret?.trim()) {
+            this.toast.error("كلمة سر Google Captcha مطلوبة", {
+              timeout: 3000,
+            });
+            return;
+          }
+        }
+
+        console.log("Settings saved:", this.settings);
+        this.toast.success("تم حفظ الإعدادات بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error saving settings:", error);
+        this.toast.error("حدث خطأ أثناء حفظ الإعدادات", {
+          timeout: 3000,
+        });
+      }
     },
     handleLogoUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.settings.appLogo = URL.createObjectURL(file);
+      try {
+        const file = event.target.files[0];
+        if (file) {
+          if (!file.type.startsWith("image/")) {
+            this.toast.error("الرجاء اختيار ملف صورة صالح", {
+              timeout: 3000,
+            });
+            return;
+          }
+          this.settings.appLogo = URL.createObjectURL(file);
+          this.toast.success("تم تحديث شعار التطبيق بنجاح", {
+            timeout: 3000,
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading logo:", error);
+        this.toast.error("حدث خطأ أثناء تحميل الشعار", {
+          timeout: 3000,
+        });
       }
     },
     handleFaviconUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.settings.favicon = URL.createObjectURL(file);
+      try {
+        const file = event.target.files[0];
+        if (file) {
+          if (!file.type.startsWith("image/")) {
+            this.toast.error("الرجاء اختيار ملف صورة صالح", {
+              timeout: 3000,
+            });
+            return;
+          }
+          this.settings.favicon = URL.createObjectURL(file);
+          this.toast.success("تم تحديث أيقونة التطبيق بنجاح", {
+            timeout: 3000,
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading favicon:", error);
+        this.toast.error("حدث خطأ أثناء تحميل الأيقونة", {
+          timeout: 3000,
+        });
       }
     },
   },
@@ -340,6 +433,13 @@ export default {
       if (!newValue) {
         this.settings.googleCaptchaKey = "";
         this.settings.googleCaptchaSecret = "";
+        this.toast.info("تم تعطيل خاصية Google reCAPTCHA", {
+          timeout: 3000,
+        });
+      } else {
+        this.toast.info("تم تفعيل خاصية Google reCAPTCHA", {
+          timeout: 3000,
+        });
       }
     },
   },

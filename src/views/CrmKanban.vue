@@ -23,6 +23,7 @@ import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
 import { kanbanStages } from "@/plugins/stages";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "CrmKanban",
@@ -32,7 +33,9 @@ export default {
     WhatsappModal,
   },
   setup() {
+    const toast = useToast();
     const stages = ref(kanbanStages);
+    const whatsappModalRef = ref(null);
 
     const filters = ref({
       source: "",
@@ -50,24 +53,40 @@ export default {
     const applyFilters = async (newFilters) => {
       try {
         filters.value = { ...newFilters };
+        // toast.success("تم تطبيق الفلتر بنجاح", {
+        //   timeout: 3000,
+        // });
       } catch (error) {
         console.error("Error applying filters:", error);
+        toast.error("حدث خطأ أثناء تطبيق الفلتر", {
+          timeout: 3000,
+        });
       }
     };
 
     const resetFilter = async () => {
-      filters.value = {
-        source: "",
-        stage: "",
-        supervisor: "",
-        representative: "",
-        package: "",
-        createdStart: "",
-        createdEnd: "",
-        modifiedStart: "",
-        modifiedEnd: "",
-        status: [],
-      };
+      try {
+        filters.value = {
+          source: "",
+          stage: "",
+          supervisor: "",
+          representative: "",
+          package: "",
+          createdStart: "",
+          createdEnd: "",
+          modifiedStart: "",
+          modifiedEnd: "",
+          status: [],
+        };
+        toast.success("تم إعادة تعيين الفلتر بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error resetting filters:", error);
+        toast.error("حدث خطأ أثناء إعادة تعيين الفلتر", {
+          timeout: 3000,
+        });
+      }
     };
 
     const handleRightClick = (event) => {
@@ -82,24 +101,47 @@ export default {
         }
       });
     };
+
     const openWhatsappModal = () => {
-      const modal = new Modal(document.getElementById("whatsappModal"));
-      modal.show();
+      try {
+        const modal = new Modal(document.getElementById("whatsappModal"));
+        modal.show();
+        // toast.info("يمكنك إرسال رسالة واتساب", {
+        //   timeout: 3000,
+        // });
+      } catch (error) {
+        console.error("Error opening WhatsApp modal:", error);
+        toast.error("حدث خطأ أثناء فتح نافذة الواتساب", {
+          timeout: 3000,
+        });
+      }
     };
 
-    // upload data
     onMounted(async () => {
-      window.addEventListener("contextmenu", handleRightClick);
+      try {
+        window.addEventListener("contextmenu", handleRightClick);
+        // toast.success("تم تحميل لوحة كانبان بنجاح", {
+        //   timeout: 3000,
+        // });
+      } catch (error) {
+        console.error("Error mounting component:", error);
+        toast.error("حدث خطأ أثناء تحميل لوحة كانبان", {
+          timeout: 3000,
+        });
+      }
     });
+
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
     });
+
     return {
       stages,
       filters,
       applyFilters,
       resetFilter,
       openWhatsappModal,
+      whatsappModalRef,
     };
   },
 };

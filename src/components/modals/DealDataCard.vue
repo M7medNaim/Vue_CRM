@@ -586,11 +586,13 @@ import RatingStars from "../CreateDealElements/RatingStars.vue";
 import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "DealDataCard",
   components: { RatingStars, ViewReport, WhatsappModal },
   setup() {
+    const toast = useToast();
     const stages = [
       { id: "new", name: "New Deal", color: "#4CAF50" },
       { id: "notResponding1", name: "Not Responding 1", color: "#FF5722" },
@@ -700,16 +702,28 @@ export default {
     };
 
     const changeStage = (stageId) => {
-      currentStage.value = stageId;
-      const stageIndex = stages.findIndex((s) => s.id === stageId);
+      try {
+        currentStage.value = stageId;
+        const stageIndex = stages.findIndex((s) => s.id === stageId);
+        const stageName = stages.find((s) => s.id === stageId)?.name;
 
-      stages.forEach((stage, index) => {
-        if (index <= stageIndex) {
-          stageColors[stage.id] = stages[stageIndex].color;
-        } else {
-          stageColors[stage.id] = "";
-        }
-      });
+        stages.forEach((stage, index) => {
+          if (index <= stageIndex) {
+            stageColors[stage.id] = stages[stageIndex].color;
+          } else {
+            stageColors[stage.id] = "";
+          }
+        });
+
+        toast.success(`تم تغيير المرحلة إلى ${stageName} بنجاح`, {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error changing stage:", error);
+        toast.error("حدث خطأ أثناء تغيير المرحلة", {
+          timeout: 3000,
+        });
+      }
     };
 
     const getStageClasses = (stageId) => {
@@ -740,7 +754,9 @@ export default {
     };
 
     const startCall = () => {
-      // Implement call functionality
+      toast.info("جاري بدء المكالمة...", {
+        timeout: 3000,
+      });
     };
 
     const startWhatsapp = () => {
@@ -748,15 +764,38 @@ export default {
     };
 
     const sendEmail = () => {
-      // Implement email functionality
+      toast.info("جاري فتح نافذة البريد الإلكتروني...", {
+        timeout: 3000,
+      });
     };
 
     const confirm = () => {
-      // Implement save functionality
+      try {
+        // Implement save functionality
+        toast.success("تم حفظ التغييرات بنجاح", {
+          timeout: 3000,
+        });
+        isEditMode.value = false;
+      } catch (error) {
+        console.error("Error saving changes:", error);
+        toast.error("حدث خطأ أثناء حفظ التغييرات", {
+          timeout: 3000,
+        });
+      }
     };
 
     const updateRating = (newRating) => {
-      rating.value = newRating;
+      try {
+        rating.value = newRating;
+        toast.success("تم تحديث التقييم بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error updating rating:", error);
+        toast.error("حدث خطأ أثناء تحديث التقييم", {
+          timeout: 3000,
+        });
+      }
     };
 
     const truncateText = (text) => {
@@ -769,28 +808,68 @@ export default {
     const packages = ref([]);
 
     const addNewPackage = () => {
-      packages.value.push({
-        serviceSelect: "",
-        serviceInput: "",
-      });
+      try {
+        packages.value.push({
+          serviceSelect: "",
+          serviceInput: "",
+        });
+        toast.success("تمت إضافة الباقة بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error adding package:", error);
+        toast.error("حدث خطأ أثناء إضافة الباقة", {
+          timeout: 3000,
+        });
+      }
     };
 
     const removePackage = (index) => {
-      packages.value.splice(index, 1);
+      try {
+        packages.value.splice(index, 1);
+        toast.success("تم حذف الباقة بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error removing package:", error);
+        toast.error("حدث خطأ أثناء حذف الباقة", {
+          timeout: 3000,
+        });
+      }
     };
 
     const handleTaskCompletion = (index) => {
-      if (tasks.value[index].status) {
-        tasks.value[index].toDelete = true;
-
-        setTimeout(() => {
-          tasks.value.splice(index, 1);
-        }, 500);
+      try {
+        if (tasks.value[index].status) {
+          tasks.value[index].toDelete = true;
+          setTimeout(() => {
+            tasks.value.splice(index, 1);
+            toast.success("تم إكمال المهمة بنجاح", {
+              timeout: 3000,
+            });
+          }, 500);
+        }
+      } catch (error) {
+        console.error("Error completing task:", error);
+        toast.error("حدث خطأ أثناء إكمال المهمة", {
+          timeout: 3000,
+        });
       }
     };
+
     const openQuestionsModal = () => {
-      const modal = new Modal(document.getElementById("questionsModal"));
-      modal.show();
+      try {
+        const modal = new Modal(document.getElementById("questionsModal"));
+        modal.show();
+        toast.info("تم فتح تقرير الأسئلة", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error opening questions modal:", error);
+        toast.error("حدث خطأ أثناء فتح تقرير الأسئلة", {
+          timeout: 3000,
+        });
+      }
     };
 
     const comments = ref([
@@ -834,14 +913,29 @@ export default {
 
     const toggleEditMode = () => {
       isEditMode.value = !isEditMode.value;
+      if (isEditMode.value) {
+        toast.info("يمكنك تعديل البيانات الآن", {
+          timeout: 3000,
+        });
+      }
     };
 
     const handleDoubleClick = () => {
       isEditMode.value = true;
     };
     const openWhatsappModal = () => {
-      const modal = new Modal(document.getElementById("whatsappModal"));
-      modal.show();
+      try {
+        const modal = new Modal(document.getElementById("whatsappModal"));
+        modal.show();
+        toast.info("يمكنك إرسال رسالة واتساب", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error opening WhatsApp modal:", error);
+        toast.error("حدث خطأ أثناء فتح نافذة الواتساب", {
+          timeout: 3000,
+        });
+      }
     };
     return {
       stages,

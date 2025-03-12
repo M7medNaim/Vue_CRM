@@ -33,12 +33,12 @@
     </div>
 
     <!-- Contacts Table -->
-    <!-- :loading="tableLoading" -->
 
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
       :rows-per-page="selectedPerPage"
+      :loading="tableLoading"
       table-class-name="custom-table"
     >
       <!-- Contact Info Column -->
@@ -102,7 +102,10 @@ import "vue3-easy-data-table/dist/style.css";
 import { getContacts, deleteContact } from "@/plugins/services/authService";
 import CreateContact from "@/components/ContactModals/CreateContact.vue";
 import FilterContact from "@/components/ContactModals/FilterContact.vue";
+import { useToast } from "vue-toastification";
+import Swal from "sweetalert2";
 // import { useLoadingStore } from "@/plugins/loadingStore";
+
 export default {
   name: "ContactsView",
   components: {
@@ -111,6 +114,7 @@ export default {
     FilterContact,
   },
   setup() {
+    const toast = useToast();
     const headers = [
       { text: "الاسم", value: "name" },
       { text: "البريد الإلكتروني", value: "email" },
@@ -118,7 +122,7 @@ export default {
       { text: "عمل", value: "actions" },
     ];
     // const loadingStore = useLoadingStore();
-    // const tableLoading = ref(false);
+    const tableLoading = ref(false);
     const items = ref([]);
     const search = ref("");
     const selectedPerPage = ref("10");
@@ -140,13 +144,19 @@ export default {
     // Fetch Contacts
     const fetchContacts = async () => {
       try {
-        // tableLoading.value = true;
+        tableLoading.value = true;
         const response = await getContacts();
         items.value = response.data.data;
+        // toast.success("تم جلب جهات الاتصال بنجاح", {
+        //   timeout: 3000,
+        // });
       } catch (error) {
+        // toast.error("فشل في جلب جهات الاتصال", {
+        //   timeout: 3000,
+        // });
         console.error("Error fetching contacts:", error);
       } finally {
-        // tableLoading.value = false;
+        tableLoading.value = false;
       }
     };
 
@@ -173,18 +183,48 @@ export default {
     const updateContactList = (updatedContact) => {
       const index = items.value.findIndex((c) => c.id === updatedContact.id);
       if (index !== -1) {
-        items.value[index] = updatedContact;
+        // Update existing contact
+        items.value = items.value.map((item) =>
+          item.id === updatedContact.id ? updatedContact : item
+        );
+        toast.success("تم تحديث جهة الاتصال بنجاح", {
+          timeout: 3000,
+        });
       } else {
-        items.value.push(updatedContact);
+        // Add new contact
+        items.value = [...items.value, updatedContact];
+        toast.success("تم إضافة جهة الاتصال بنجاح", {
+          timeout: 3000,
+        });
       }
     };
 
     // Delete Operations
     const removeContact = async (id) => {
       try {
-        await deleteContact(id);
-        items.value = items.value.filter((contact) => contact.id !== id);
+        const result = await Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "لن تتمكن من التراجع عن هذا الإجراء!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "نعم، قم بالحذف!",
+          cancelButtonText: "إلغاء",
+          reverseButtons: true,
+        });
+
+        if (result.isConfirmed) {
+          await deleteContact(id);
+          items.value = items.value.filter((contact) => contact.id !== id);
+          toast.success("تم حذف جهة الاتصال بنجاح", {
+            timeout: 3000,
+          });
+        }
       } catch (error) {
+        toast.error("فشل في حذف جهة الاتصال", {
+          timeout: 3000,
+        });
         console.error("Delete Contact Failed:", error);
       }
     };
@@ -205,8 +245,14 @@ export default {
         const response = await getContacts(formattedFilters);
         if (response.data.success) {
           items.value = response.data.data;
+          toast.success("تم تطبيق الفلتر بنجاح", {
+            timeout: 3000,
+          });
         }
       } catch (error) {
+        toast.error("فشل في تطبيق الفلتر", {
+          timeout: 3000,
+        });
         console.error("Filter application failed:", error);
       } finally {
         // tableLoading.value = false;
@@ -220,8 +266,14 @@ export default {
         const response = await getContacts();
         if (response.data.success) {
           items.value = response.data.data;
+          toast.success("تم إعادة تعيين الفلتر بنجاح", {
+            timeout: 3000,
+          });
         }
       } catch (error) {
+        toast.error("فشل في إعادة تعيين الفلتر", {
+          timeout: 3000,
+        });
         console.error("Reset filters failed:", error);
       } finally {
         // tableLoading.value = false;
@@ -268,7 +320,7 @@ export default {
       updateContactList,
       applyFilters,
       resetFilters,
-      // tableLoading,
+      tableLoading,
     };
   },
 };

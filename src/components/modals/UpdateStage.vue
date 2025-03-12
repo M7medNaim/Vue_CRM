@@ -46,7 +46,9 @@
           <button type="button" class="btn btn-primary" @click="updateStage">
             Update
           </button>
-          <button type="button" class="btn btn-primary">Delete Stage</button>
+          <button type="button" class="btn btn-danger" @click="deleteStage">
+            Delete Stage
+          </button>
           <button
             type="button"
             class="btn btn-secondary"
@@ -62,6 +64,8 @@
 
 <script>
 import { Modal } from "bootstrap";
+import { useToast } from "vue-toastification";
+
 export default {
   name: "UpdateStage",
   props: {
@@ -69,6 +73,10 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -80,28 +88,71 @@ export default {
     stage: {
       immediate: true,
       handler(newStage) {
-        if (newStage) {
-          this.stageName = newStage.name;
-          this.stageColor = this.getStageColor(newStage);
+        try {
+          if (newStage) {
+            this.stageName = newStage.name;
+            this.stageColor = this.getStageColor(newStage);
+          }
+        } catch (error) {
+          console.error("Error updating stage data:", error);
+          this.toast.error("حدث خطأ أثناء تحديث بيانات المرحلة", {
+            timeout: 3000,
+          });
         }
       },
     },
   },
   methods: {
     getStageColor(stage) {
-      // Return the actual stage color from the stage object
       return stage.color || "#000";
     },
     updateStage() {
-      this.$emit("update-stage", {
-        id: this.stage.id,
-        name: this.stageName,
-        color: this.stageColor,
-      });
-      const modalElement = document.getElementById("updateStage");
-      const modal = Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
+      try {
+        if (!this.stageName.trim()) {
+          this.toast.error("اسم المرحلة مطلوب", {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        this.$emit("update-stage", {
+          id: this.stage.id,
+          name: this.stageName,
+          color: this.stageColor,
+        });
+
+        const modalElement = document.getElementById("updateStage");
+        const modal = Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+
+        this.toast.success("تم تحديث المرحلة بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error updating stage:", error);
+        this.toast.error("حدث خطأ أثناء تحديث المرحلة", {
+          timeout: 3000,
+        });
+      }
+    },
+    deleteStage() {
+      try {
+        this.$emit("delete-stage", this.stage.id);
+        const modalElement = document.getElementById("updateStage");
+        const modal = Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+        this.toast.success("تم حذف المرحلة بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error deleting stage:", error);
+        this.toast.error("حدث خطأ أثناء حذف المرحلة", {
+          timeout: 3000,
+        });
       }
     },
   },

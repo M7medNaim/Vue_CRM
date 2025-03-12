@@ -96,6 +96,8 @@ import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import { Modal } from "bootstrap";
 import RoleModal from "@/components/modals/RoleSettings.vue";
+import { useToast } from "vue-toastification";
+import Swal from "sweetalert2";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 // import {
 //   updateRole,
@@ -111,6 +113,7 @@ export default {
     RoleModal,
   },
   setup() {
+    const toast = useToast();
     const search = ref("");
     // const tableLoading = ref(false);
     const items = ref([]);
@@ -198,8 +201,14 @@ export default {
         // items.value = response.data
 
         items.value = staticRoles;
+        // toast.success("تم تحميل الأدوار بنجاح", {
+        //   timeout: 3000,
+        // });
       } catch (error) {
         console.error("Error loading roles:", error);
+        toast.error("حدث خطأ أثناء تحميل الأدوار", {
+          timeout: 3000,
+        });
         items.value = [];
       } finally {
         // tableLoading.value = false;
@@ -235,28 +244,53 @@ export default {
     });
 
     const openModal = (role = null) => {
-      if (role) {
-        currentRole.value = {
-          ...role,
-          permissions: [...role.permissions],
-        };
-        isEditing.value = true;
-      } else {
-        currentRole.value = {
-          name: "",
-          permissions: [],
-          create_at: new Date().toISOString().split("T")[0],
-        };
-        isEditing.value = false;
+      try {
+        if (role) {
+          currentRole.value = {
+            ...role,
+            permissions: [...role.permissions],
+          };
+          isEditing.value = true;
+          toast.info("يمكنك تعديل الدور الحالي", {
+            timeout: 3000,
+          });
+        } else {
+          currentRole.value = {
+            name: "",
+            permissions: [],
+            create_at: new Date().toISOString().split("T")[0],
+          };
+          isEditing.value = false;
+          toast.info("يمكنك إضافة دور جديد", {
+            timeout: 3000,
+          });
+        }
+        modal.value?.show();
+      } catch (error) {
+        console.error("Error opening modal:", error);
+        toast.error("حدث خطأ أثناء فتح النافذة", {
+          timeout: 3000,
+        });
       }
-      modal.value?.show();
     };
 
     const saveRole = async (role) => {
-      // tableLoading.value = true;
       try {
+        if (!role.name?.trim()) {
+          toast.error("اسم الدور مطلوب", {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        if (role.permissions.length === 0) {
+          toast.error("يجب اختيار صلاحية واحدة على الأقل", {
+            timeout: 3000,
+          });
+          return;
+        }
+
         if (isEditing.value) {
-          // await updateRole(role.id, role);
           const index = items.value.findIndex((r) => r.id === role.id);
           if (index !== -1) {
             items.value[index] = {
@@ -264,38 +298,68 @@ export default {
               ...role,
               permissions: [...role.permissions],
             };
+            toast.success("تم تحديث الدور بنجاح", {
+              timeout: 3000,
+            });
           }
         } else {
-          // const response = await createRole(role);
           const newId = Math.max(...items.value.map((r) => r.id), 0) + 1;
           items.value.push({
             id: newId,
             ...role,
             permissions: [...role.permissions],
           });
+          toast.success("تم إضافة الدور بنجاح", {
+            timeout: 3000,
+          });
         }
         modal.value?.hide();
-      } finally {
-        // tableLoading.value = false;
+      } catch (error) {
+        console.error("Error saving role:", error);
+        toast.error("حدث خطأ أثناء حفظ الدور", {
+          timeout: 3000,
+        });
       }
     };
 
     const deleteRole = async (id) => {
-      if (confirm("هل أنت متأكد من حذف هذا الدور؟")) {
-        try {
-          // await deleteRoleAPI(id)
+      try {
+        const result = await Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "لن تتمكن من استعادة هذا الدور بعد الحذف!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "نعم، قم بالحذف!",
+          cancelButtonText: "إلغاء",
+          reverseButtons: true,
+        });
 
+        if (result.isConfirmed) {
           const index = items.value.findIndex((r) => r.id === id);
           if (index !== -1) {
             items.value.splice(index, 1);
+            toast.success("تم حذف الدور بنجاح", {
+              timeout: 3000,
+            });
           }
-        } catch (error) {
-          console.error("Error deleting role:", error);
         }
+      } catch (error) {
+        console.error("Error deleting role:", error);
+        toast.error("حدث خطأ أثناء حذف الدور", {
+          timeout: 3000,
+        });
       }
     };
 
     const editRole = (role) => {
+      if (role.name === "Admin") {
+        toast.error("لا يمكن تعديل دور المسؤول", {
+          timeout: 3000,
+        });
+        return;
+      }
       openModal(role);
     };
 

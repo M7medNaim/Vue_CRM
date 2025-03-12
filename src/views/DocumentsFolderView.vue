@@ -15,13 +15,14 @@
     </div>
 
     <!-- Folders Table -->
-    <!-- :loading="tableLoading" -->
+    <!--  -->
 
     <EasyDataTable
       :headers="headers"
       :items="filteredItems"
       @click-row="handleRowClick"
       table-class-name="custom-table"
+      :loading="tableLoading"
       :per-page="10"
     >
       <!-- Folder Name Column -->
@@ -105,6 +106,8 @@ import EasyDataTable from "vue3-easy-data-table";
 import FolderForm from "@/components/modals/FolderForm.vue";
 import ImportFolder from "@/components/modals/ImportFolder.vue";
 import Modal from "bootstrap/js/dist/modal";
+import { useToast } from "vue-toastification";
+import Swal from "sweetalert2";
 
 export default {
   name: "DocumentsFolderView",
@@ -114,8 +117,9 @@ export default {
     ImportFolder,
   },
   setup() {
+    const toast = useToast();
     const router = useRouter();
-    // const tableLoading = ref(false);
+    const tableLoading = ref(false);
     const items = ref([]);
     const folderFormModal = ref(null);
     const importFolderModal = ref(null);
@@ -167,11 +171,13 @@ export default {
 
     const handleFolderSubmit = async (folderData) => {
       try {
-        // tableLoading.value = true;
         if (folderData.id) {
           const index = items.value.findIndex((f) => f.id === folderData.id);
           if (index !== -1) {
             items.value[index] = { ...items.value[index], ...folderData };
+            toast.success("تم تحديث المجلد بنجاح", {
+              timeout: 3000,
+            });
           }
         } else {
           const newFolder = {
@@ -181,60 +187,93 @@ export default {
             files_count: 0,
           };
           items.value.unshift(newFolder);
+          toast.success("تم إنشاء المجلد بنجاح", {
+            timeout: 3000,
+          });
         }
         folderFormModal.value.hide();
-      } finally {
-        // tableLoading.value = false;
+      } catch (error) {
+        toast.error("حدث خطأ أثناء حفظ المجلد", {
+          timeout: 3000,
+        });
+        console.error("Error submitting folder:", error);
       }
     };
 
     const handleFolderImport = async (files) => {
       try {
-        // tableLoading.value = true;
         console.log("Importing files:", files);
         importFolderModal.value.hide();
-      } finally {
-        // tableLoading.value = false;
+        toast.success("تم استيراد الملفات بنجاح", {
+          timeout: 3000,
+        });
+      } catch (error) {
+        toast.error("حدث خطأ أثناء استيراد الملفات", {
+          timeout: 3000,
+        });
+        console.error("Error importing files:", error);
       }
     };
 
     const deleteFolder = async (id) => {
-      if (confirm("Are you sure you want to delete this folder?")) {
-        try {
-          // tableLoading.value = true;
+      try {
+        const result = await Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "لن تتمكن من استعادة هذا المجلد بعد الحذف!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "نعم، قم بالحذف!",
+          cancelButtonText: "إلغاء",
+          reverseButtons: true,
+        });
+
+        if (result.isConfirmed) {
           await new Promise((resolve) => setTimeout(resolve, 500));
           items.value = items.value.filter((folder) => folder.id !== id);
-        } catch (error) {
-          console.error("Error deleting folder:", error);
-        } finally {
-          // tableLoading.value = false;
+          toast.success("تم حذف المجلد بنجاح", {
+            timeout: 3000,
+          });
         }
+      } catch (error) {
+        toast.error("حدث خطأ أثناء حذف المجلد", {
+          timeout: 3000,
+        });
+        console.error("Error deleting folder:", error);
       }
     };
 
     const downloadFolder = async (folderId) => {
       try {
-        // tableLoading.value = true;
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert("Folder download started");
+        toast.success("بدأ تحميل المجلد", {
+          timeout: 3000,
+        });
       } catch (error) {
+        toast.error("حدث خطأ أثناء تحميل المجلد", {
+          timeout: 3000,
+        });
         console.error("Error downloading folder:", error);
-        alert("An error occurred while downloading the folder");
-      } finally {
-        // tableLoading.value = false;
       }
     };
 
     const fetchFolders = async () => {
       try {
-        // tableLoading.value = true;
+        tableLoading.value = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
         items.value = mockFolders;
+        //toast.success("تم تحميل المجلدات بنجاح", {
+        //   timeout: 3000,
+        //});
       } catch (error) {
+        toast.error("حدث خطأ أثناء تحميل المجلدات", {
+          timeout: 3000,
+        });
         console.error("Error fetching folders:", error);
       } finally {
-        // tableLoading.value = false;
+        tableLoading.value = false;
       }
     };
     const handleRowClick = (item, event) => {
@@ -278,7 +317,7 @@ export default {
     return {
       headers,
       filteredItems,
-      // tableLoading,
+      tableLoading,
       selectedFolder,
       openNewFolderModal,
       openImportModal,

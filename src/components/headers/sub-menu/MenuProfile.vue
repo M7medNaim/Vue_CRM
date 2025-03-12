@@ -64,6 +64,7 @@ import EditProfile from "@/components/modals/EditProfile.vue";
 import ChangePassword from "@/components/modals/ChangePassword.vue";
 import ChangeLang from "@/components/modals/ChangeLang.vue";
 import CalenderModal from "@/components/modals/CalenderModal.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "MenuProfile",
@@ -73,6 +74,10 @@ export default {
     ChangePassword,
     ChangeLang,
     CalenderModal,
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -109,17 +114,34 @@ export default {
         this.$router.push("/login");
       } catch (error) {
         console.error("Error logging out:", error);
+        this.toast.error("حدث خطأ أثناء تسجيل الخروج", {
+          timeout: 3000,
+        });
       }
     },
     changeBackground() {
-      const randomImage =
-        this.images[Math.floor(Math.random() * this.images.length)];
+      try {
+        const randomImage =
+          this.images[Math.floor(Math.random() * this.images.length)];
 
-      document.body.style.backgroundImage = `url(${randomImage})`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundImage = `url(${randomImage})`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
 
-      localStorage.setItem("backgroundImage", randomImage);
+        localStorage.setItem("backgroundImage", randomImage);
+
+        this.toast.success("تم تغيير خلفية النظام بنجاح", {
+          timeout: 3000,
+          id: "background-change",
+          singleton: true,
+        });
+      } catch (error) {
+        this.toast.error("حدث خطأ أثناء تغيير الخلفية", {
+          timeout: 3000,
+          id: "background-error",
+          singleton: true,
+        });
+      }
     },
     openEditProfileModal() {
       this.$refs.editProfileModal.openEditProfile();
