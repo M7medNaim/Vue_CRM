@@ -1,15 +1,12 @@
 <template>
   <div class="mb-3">
-    <label for="lang" class="form-label">اللغة</label>
-    <select
-      class="form-control"
-      id="lang"
-      v-model="lang"
-      @change="validateLang"
-    >
-      <option value="" disabled selected>اختر اللغة</option>
-      <option value="arabic">العربية</option>
-      <option value="english">English</option>
+    <label for="lang" class="form-label">{{ $t("forms.language") }}</label>
+    <select class="form-control" id="lang" v-model="selectedLang">
+      <option value="" disabled selected>
+        {{ $t("forms.select_language") }}
+      </option>
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
     </select>
   </div>
 
@@ -26,13 +23,20 @@ import { ref } from "vue";
 
 export default {
   name: "ChangeLangForm",
+  props: {
+    modelValue: {
+      type: String,
+      default: "en",
+    },
+  },
+  emits: ["update:modelValue"],
   setup() {
-    const lang = ref("");
+    const selectedLang = ref(null);
     const errorMessage = ref("");
     const successMessage = ref("");
 
     const validateLang = () => {
-      if (lang.value === "") {
+      if (selectedLang.value === "") {
         errorMessage.value = "يرجى اختيار اللغة";
         successMessage.value = "";
       } else {
@@ -42,11 +46,19 @@ export default {
     };
 
     return {
-      lang,
+      selectedLang,
       errorMessage,
       successMessage,
       validateLang,
     };
+  },
+  watch: {
+    selectedLang(newVal) {
+      this.$emit("update:modelValue", newVal);
+    },
+    modelValue(newVal) {
+      this.selectedLang = newVal;
+    },
   },
 };
 </script>

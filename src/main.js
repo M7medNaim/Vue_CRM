@@ -6,6 +6,7 @@ import store from "./store";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import Swal from "sweetalert2";
+import i18n from "./i18n";
 
 Swal.mixin({
   customClass: {
@@ -31,6 +32,7 @@ app.use(pinia);
 // Use other plugins
 app.use(store);
 app.use(router);
+app.use(i18n);
 
 // إعدادات التوست
 const toastOptions = {

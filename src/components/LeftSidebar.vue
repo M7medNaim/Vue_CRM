@@ -11,28 +11,28 @@
           alt=""
         />
       </div>
-      <span class="fw-bold" v-if="!isCollapsed">CRM Staging</span>
+      <span class="fw-bold" v-if="!isCollapsed">{{ $t("crmStaging") }}</span>
     </div>
     <div class="sidebar-items overflow-auto">
       <div
         v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="Dashboard"
+        :title="$t('sidebar.dashboard')"
       >
         <router-link to="/dashboard" class="text-decoration-none text-white">
           <i class="fa-solid fa-house fs-5 me-2"></i>
           <!-- <i class="fa-solid fa-chart-line"></i> -->
-          <span v-if="!isCollapsed">Dashboard</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.dashboard") }}</span>
         </router-link>
       </div>
       <div
         v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        title="CRM Kanban"
+        :title="$t('sidebar.crmKanban')"
       >
         <router-link to="/crm-kanban" class="text-decoration-none text-white">
           <i class="fa-solid fa-chart-column fs-5 me-2"></i>
-          <span v-if="!isCollapsed">CRM Kanban</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.crmKanban") }}</span>
         </router-link>
       </div>
       <router-link
@@ -42,10 +42,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          title="CRM List"
+          :title="$t('sidebar.crmList')"
         >
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
-          <span v-if="!isCollapsed">CRM List</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.crmList") }}</span>
         </div>
       </router-link>
       <router-link
@@ -55,10 +55,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          title="Users"
+          :title="$t('sidebar.users')"
         >
           <i class="fa-solid fa-users fs-5 me-2"></i>
-          <span v-if="!isCollapsed">Users</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.users") }}</span>
         </div>
       </router-link>
       <router-link
@@ -68,10 +68,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          title="Contacts"
+          :title="$t('sidebar.contacts')"
         >
           <i class="fa-regular fa-address-book fs-5 me-2"></i>
-          <span v-if="!isCollapsed">Contacts</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.contacts") }}</span>
         </div>
       </router-link>
       <router-link
@@ -81,10 +81,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          title="Documents"
+          :title="$t('sidebar.documents')"
         >
           <i class="fa-regular fa-folder-open fs-5 me-2"></i>
-          <span v-if="!isCollapsed">Documents</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.documents") }}</span>
         </div>
       </router-link>
       <router-link
@@ -94,10 +94,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          title="Settings"
+          :title="$t('sidebar.settings')"
         >
           <i class="fa-solid fa-cog fs-5 me-2"></i>
-          <span v-if="!isCollapsed">Settings</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar.settings") }}</span>
         </div>
       </router-link>
       <!-- <router-link
@@ -117,10 +117,10 @@
       <div
         class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"
         @click="toggleSidebar"
-        title="Toggle Menu"
+        :title="$t('sidebar.menu')"
       >
         <i class="fa-solid fa-bars fs-5 me-2"></i>
-        <span v-if="!isCollapsed">Toggle Menu</span>
+        <span v-if="!isCollapsed">{{ $t("sidebar.menu") }}</span>
       </div>
     </div>
   </div>
@@ -129,6 +129,7 @@
 <script>
 import { ref } from "vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "LeftSidebar",
@@ -136,6 +137,8 @@ export default {
   setup(props, { emit }) {
     const isCollapsed = ref(true);
     const permissionStore = usePermissionStore();
+    const { t } = useI18n();
+
     permissionStore.setPermissions([
       "dashboard",
       "deals-kanban",
@@ -158,6 +161,7 @@ export default {
       toggleSidebar,
       permissionStore,
       PERMISSIONS,
+      t,
     };
   },
 };

@@ -7,14 +7,14 @@
           <input
             type="text"
             class="form-control w-50 ps-5 rounded-end-0"
-            placeholder="ابحث..."
+            :placeholder="t('forms.search')"
             v-model="search"
           />
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
           ></i>
           <button
-            title="Fillter"
+            :title="t('buttons.filter')"
             type="button"
             class="btn btn-primary me-2 rounded-start-0"
             @click="openFilterModal"
@@ -26,7 +26,7 @@
       <div class="col-6 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
-            إضافة مستخدم جديد
+            {{ t("buttons.addUser") }}
           </button>
         </div>
       </div>
@@ -83,7 +83,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">جاري التحميل...</div>
+          <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
         </div>
       </template>
     </EasyDataTable>
@@ -115,7 +115,7 @@ import {
   deleteUser,
   updateUser,
 } from "@/plugins/services/authService";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "UsersView",
   components: {
@@ -126,12 +126,13 @@ export default {
     FilterForm,
   },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const headers = [
-      { text: "المستخدمون:", value: "profile" },
-      { text: ":البريد الإلكتروني", value: "emailVerified" },
-      { text: "الحالة", value: "status" },
-      { text: "عمل", value: "actions" },
+      { text: t("tables.users"), value: "profile" },
+      { text: t("tables.email"), value: "emailVerified" },
+      { text: t("tables.status"), value: "status" },
+      { text: t("tables.actions"), value: "actions" },
     ];
     // const loadingStore = useLoadingStore();
     const items = ref([]);
@@ -174,7 +175,7 @@ export default {
         const response = await getUser(query);
         items.value = response.data.data;
       } catch (error) {
-        console.error("هناك مشكلة في فلترة المستخدمين:", error);
+        console.error(t("error.filterFailed"), error);
       } finally {
         // tableLoading.value = false;
       }
@@ -205,11 +206,11 @@ export default {
         const newStatus = event.target.checked ? "active" : "inactive";
         await updateUser(item.id, { status: newStatus });
         item.status = newStatus;
-        toast.success("تم تحديث حالة المستخدم بنجاح", {
+        toast.success(t("success.updated"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("فشل تحديث حالة المستخدم", {
+        toast.error(t("error.updateFailed"), {
           timeout: 3000,
         });
         console.error("Update Status Is Failed:", error);
@@ -238,26 +239,26 @@ export default {
     const removeUser = async (id) => {
       try {
         const result = await Swal.fire({
-          title: "هل أنت متأكد؟",
-          text: "لن تتمكن من التراجع عن هذا الإجراء!",
+          title: t("error.deleteTitle"),
+          text: t("error.deleteText"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: "نعم، قم بالحذف!",
-          cancelButtonText: "إلغاء",
+          confirmButtonText: t("success.deleteConfirm"),
+          cancelButtonText: t("error.deleteCancel"),
           reverseButtons: true,
         });
 
         if (result.isConfirmed) {
           await deleteUser(id);
           items.value = items.value.filter((user) => user.id !== id);
-          toast.success("تم حذف المستخدم بنجاح", {
+          toast.success(t("success.deleteSuccess"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("فشل حذف المستخدم", {
+        toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
         console.error("Delete User Is Failed:", error);
@@ -276,7 +277,7 @@ export default {
         const response = await getUser();
         items.value = response.data.data;
       } catch (error) {
-        console.error("فشل في إعادة تعيين الفلترة:", error);
+        console.error(t("error.filterFailed"), error);
       } finally {
         // tableLoading.value = false;
       }
@@ -321,6 +322,7 @@ export default {
       openFilterModal,
       applyFilters,
       resetFilters,
+      t,
     };
   },
 };

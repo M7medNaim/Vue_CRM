@@ -18,7 +18,7 @@
           <div class="col-12">
             <input
               type="text"
-              placeholder="Search Conversation ..."
+              :placeholder="$t('whatsapp.searchConversation')"
               v-model="searchQuery"
               style="outline: none"
               class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
@@ -31,7 +31,7 @@
               @click="clearSearch"
               class="btnCloseSearch bg-transparent border-0 position-absolute text-danger d-flex justify-content-center align-items-center gap-1 fs-5"
             >
-              <span>close search</span>
+              <span>{{ $t("whatsapp.closeSearch") }}</span>
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>

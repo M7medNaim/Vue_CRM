@@ -2,17 +2,17 @@
   <div class="dropdown-menu my-2 d-block border-0 position-absolute z-3">
     <ul class="list-unstyled mb-0 lh-lg">
       <li>
-        <a class="dropdown-item ps-3">
+        <a class="dropdown-item ps-3" @click="changeLanguage('en')">
           <span class="dropdown-icon me-4 text-secondary flageImage">
-            <img src="@/assets/flag-usa.png" alt="" />
+            <img src="@/assets/flag-usa.png" alt="English" />
           </span>
           <span>English</span>
         </a>
       </li>
       <li>
-        <a class="dropdown-item ps-3">
+        <a class="dropdown-item ps-3" @click="changeLanguage('ar')">
           <span class="dropdown-icon me-4 text-secondary flageImage">
-            <img src="@/assets/Flag_of_Saudi_Arabia.svg" alt="" />
+            <img src="@/assets/Flag_of_Saudi_Arabia.svg" alt="العربية" />
           </span>
           <span>العربية</span>
         </a>
@@ -20,11 +20,24 @@
     </ul>
   </div>
 </template>
+
 <script>
+import { changeLanguage } from "@/i18n";
+
 export default {
   name: "ListLang",
+  methods: {
+    changeLanguage(lang) {
+      try {
+        changeLanguage(lang);
+      } catch (error) {
+        console.error("Error changing language:", error);
+      }
+    },
+  },
 };
 </script>
+
 <style scoped>
 .dropdown-menu {
   top: 35px;

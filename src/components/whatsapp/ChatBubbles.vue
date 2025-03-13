@@ -2,7 +2,7 @@
   <p
     class="date fs-6 text-center bg-secondary text-white py-1 px-3 rounded-3 position-sticky start-50 z-3"
   >
-    اليوم
+    {{ $t("whatsapp.date") }}
   </p>
   <div
     class="msg position-relative w-100 d-flex my-1 pb-2"
@@ -33,7 +33,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="copyMessage(message)"
-              >copy</a
+              >{{ $t("whatsapp.copy") }}</a
             >
           </li>
           <li>
@@ -41,7 +41,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="replyToMessage(message)"
-              >reply</a
+              >{{ $t("whatsapp.reply") }}</a
             >
           </li>
           <li>
@@ -49,7 +49,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="deleteMessage(index)"
-              >delete</a
+              >{{ $t("whatsapp.delete") }}</a
             >
           </li>
         </ul>
@@ -58,7 +58,7 @@
         v-if="message.isCopied"
         class="copy-message position-absolute bg-secondary-subtle py-1 px-2 rounded-1 bottom-100 text-center"
       >
-        Message copied!
+        {{ $t("whatsapp.messageCopied") }}
       </div>
     </div>
   </div>

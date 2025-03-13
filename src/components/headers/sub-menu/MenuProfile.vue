@@ -20,33 +20,37 @@
     <ul class="list-unstyled mb-0 lh-lg">
       <ProfileMenuItem
         icon="fa-user"
-        title="Edit Profile"
+        :title="t('topHeader.editProfile')"
         @click="openEditProfileModal"
       />
       <ProfileMenuItem
         icon="fa-calendar-days"
-        title="Calender"
+        :title="t('topHeader.calender')"
         @click="openCalenderModal"
       />
       <ProfileMenuItem
         icon="fa-image"
-        title="Customize Background"
+        :title="t('topHeader.customizeBackground')"
         @click="changeBackground"
       />
-      <ProfileMenuItem icon="fa-rotate" title="Reload" @click="reloadPage" />
+      <ProfileMenuItem
+        icon="fa-rotate"
+        :title="t('topHeader.reload')"
+        @click="reloadPage"
+      />
       <ProfileMenuItem
         icon="fa-lock"
-        title="Change Password"
+        :title="t('topHeader.changePassword')"
         @click="openChangePasswordModal"
       />
       <ProfileMenuItem
         icon="fa-globe"
-        title="Change Language"
+        :title="t('topHeader.changeLanguage')"
         @click="openChangeLangModal"
       />
       <ProfileMenuItem
         icon="fa-right-from-bracket"
-        title="Logout"
+        :title="t('topHeader.logout')"
         @click="handleLogout"
       />
     </ul>
@@ -65,6 +69,7 @@ import ChangePassword from "@/components/modals/ChangePassword.vue";
 import ChangeLang from "@/components/modals/ChangeLang.vue";
 import CalenderModal from "@/components/modals/CalenderModal.vue";
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "MenuProfile",
@@ -77,7 +82,8 @@ export default {
   },
   setup() {
     const toast = useToast();
-    return { toast };
+    const { t } = useI18n();
+    return { toast, t };
   },
   data() {
     return {

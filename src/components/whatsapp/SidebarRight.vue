@@ -33,7 +33,7 @@
                   id="searchChat"
                   class="ms-3 border-0 py-1 px-2 fs-6 w-100 ms-5 bg-transparent border-1 border-bottom border-secondary"
                   v-model="searchQuery"
-                  placeholder="... Search Chat"
+                  :placeholder="$t('whatsapp.searchChat')"
                   style="outline: none"
                 />
               </div>
@@ -90,7 +90,7 @@
                 class="text-primary text-decoration-none"
                 href="#"
                 @click="handleArchiveChat"
-                >Archive Chat</a
+                >{{ $t("whatsapp.archiveChat") }}</a
               >
             </li>
             <li>
@@ -98,7 +98,7 @@
                 class="text-primary text-decoration-none"
                 href="#"
                 @click="handlePinChat"
-                >Pin Chat</a
+                >{{ $t("whatsapp.pinChat") }}</a
               >
             </li>
             <li>
@@ -106,7 +106,7 @@
                 class="text-primary text-decoration-none"
                 href="#"
                 @click="handleLabelClick"
-                >Label Chat</a
+                >{{ $t("whatsapp.labelChat") }}</a
               >
             </li>
             <li>
@@ -114,7 +114,7 @@
                 class="text-primary text-decoration-none"
                 href="#"
                 @click="$emit('mark-as-unread', chat)"
-                >Mark as Unread</a
+                >{{ $t("whatsapp.markAsUnread") }}</a
               >
             </li>
             <li>
@@ -122,7 +122,7 @@
                 class="text-primary text-decoration-none"
                 href="#"
                 @click="handleDeleteChat"
-                >Delete Chat</a
+                >{{ $t("whatsapp.deleteChat") }}</a
               >
             </li>
           </ul>

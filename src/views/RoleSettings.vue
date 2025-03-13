@@ -7,7 +7,7 @@
           <input
             type="text"
             class="form-control ps-5"
-            placeholder="ابحث..."
+            :placeholder="$t('forms.search')"
             v-model="search"
           />
           <i
@@ -18,7 +18,7 @@
       <div class="col-6 col-md-8">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal()">
-            <span>إضافة دور جديد</span>
+            <span>{{ $t("buttons.addRole") }}</span>
           </button>
         </div>
       </div>
@@ -74,7 +74,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">جاري التحميل...</div>
+          <div class="mt-2 text-primary">{{ $t("tables.loading") }}</div>
         </div>
       </template>
     </EasyDataTable>
@@ -98,6 +98,7 @@ import { Modal } from "bootstrap";
 import RoleModal from "@/components/modals/RoleSettings.vue";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
+import { useI18n } from "vue-i18n";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 // import {
 //   updateRole,
@@ -113,6 +114,7 @@ export default {
     RoleModal,
   },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const search = ref("");
     // const tableLoading = ref(false);
@@ -171,9 +173,9 @@ export default {
 
     const headers = [
       { text: "#", value: "id" },
-      { text: "الدور", value: "name" },
-      { text: "تم الإنشاء في", value: "create_at" },
-      { text: "الإجراءات", value: "actions" },
+      { text: t("tables.name"), value: "name" },
+      { text: t("tables.createdAt"), value: "create_at" },
+      { text: t("tables.actions"), value: "actions" },
     ];
 
     const availablePermissions = [
@@ -206,7 +208,7 @@ export default {
         // });
       } catch (error) {
         console.error("Error loading roles:", error);
-        toast.error("حدث خطأ أثناء تحميل الأدوار", {
+        toast.error(t("error.loadFailedRoles"), {
           timeout: 3000,
         });
         items.value = [];
@@ -251,7 +253,7 @@ export default {
             permissions: [...role.permissions],
           };
           isEditing.value = true;
-          toast.info("يمكنك تعديل الدور الحالي", {
+          toast.info(t("roleSettings.editRole"), {
             timeout: 3000,
           });
         } else {
@@ -261,14 +263,14 @@ export default {
             create_at: new Date().toISOString().split("T")[0],
           };
           isEditing.value = false;
-          toast.info("يمكنك إضافة دور جديد", {
+          toast.info(t("roleSettings.addRole"), {
             timeout: 3000,
           });
         }
         modal.value?.show();
       } catch (error) {
         console.error("Error opening modal:", error);
-        toast.error("حدث خطأ أثناء فتح النافذة", {
+        toast.error(t("error.openModal"), {
           timeout: 3000,
         });
       }
@@ -277,14 +279,14 @@ export default {
     const saveRole = async (role) => {
       try {
         if (!role.name?.trim()) {
-          toast.error("اسم الدور مطلوب", {
+          toast.error(t("roleSettings.requiredRoleName"), {
             timeout: 3000,
           });
           return;
         }
 
         if (role.permissions.length === 0) {
-          toast.error("يجب اختيار صلاحية واحدة على الأقل", {
+          toast.error(t("roleSettings.requiredPermission"), {
             timeout: 3000,
           });
           return;
@@ -298,7 +300,7 @@ export default {
               ...role,
               permissions: [...role.permissions],
             };
-            toast.success("تم تحديث الدور بنجاح", {
+            toast.success(t("success.updated"), {
               timeout: 3000,
             });
           }
@@ -309,14 +311,14 @@ export default {
             ...role,
             permissions: [...role.permissions],
           });
-          toast.success("تم إضافة الدور بنجاح", {
+          toast.success(t("success.saved"), {
             timeout: 3000,
           });
         }
         modal.value?.hide();
       } catch (error) {
         console.error("Error saving role:", error);
-        toast.error("حدث خطأ أثناء حفظ الدور", {
+        toast.error(t("error.saveFailed"), {
           timeout: 3000,
         });
       }
@@ -325,14 +327,14 @@ export default {
     const deleteRole = async (id) => {
       try {
         const result = await Swal.fire({
-          title: "هل أنت متأكد؟",
-          text: "لن تتمكن من استعادة هذا الدور بعد الحذف!",
+          title: t("error.deleteTitle"),
+          text: t("error.deleteText"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: "نعم، قم بالحذف!",
-          cancelButtonText: "إلغاء",
+          confirmButtonText: t("success.deleteConfirm"),
+          cancelButtonText: t("error.deleteCancel"),
           reverseButtons: true,
         });
 
@@ -340,14 +342,14 @@ export default {
           const index = items.value.findIndex((r) => r.id === id);
           if (index !== -1) {
             items.value.splice(index, 1);
-            toast.success("تم حذف الدور بنجاح", {
+            toast.success(t("success.deleted"), {
               timeout: 3000,
             });
           }
         }
       } catch (error) {
         console.error("Error deleting role:", error);
-        toast.error("حدث خطأ أثناء حذف الدور", {
+        toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
       }
@@ -355,7 +357,7 @@ export default {
 
     const editRole = (role) => {
       if (role.name === "Admin") {
-        toast.error("لا يمكن تعديل دور المسؤول", {
+        toast.error(t("roleSettings.cannotEditAdmin"), {
           timeout: 3000,
         });
         return;
@@ -382,6 +384,7 @@ export default {
       editRole,
       closeModal,
       loadData,
+      t,
     };
   },
 };

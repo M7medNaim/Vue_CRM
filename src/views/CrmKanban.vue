@@ -8,7 +8,7 @@
   </div>
   <div class="watsappIcon position-absolute z-3">
     <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
-      <p class="position-absolute">Watsapp</p>
+      <p class="position-absolute">{{ $t("buttons.watsapp") }}</p>
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
   </div>
@@ -24,7 +24,7 @@ import { kanbanStages } from "@/plugins/stages";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "CrmKanban",
   components: {
@@ -33,6 +33,7 @@ export default {
     WhatsappModal,
   },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const stages = ref(kanbanStages);
     const whatsappModalRef = ref(null);
@@ -58,7 +59,7 @@ export default {
         // });
       } catch (error) {
         console.error("Error applying filters:", error);
-        toast.error("حدث خطأ أثناء تطبيق الفلتر", {
+        toast.error(t("error.applyFilters"), {
           timeout: 3000,
         });
       }
@@ -78,12 +79,12 @@ export default {
           modifiedEnd: "",
           status: [],
         };
-        toast.success("تم إعادة تعيين الفلتر بنجاح", {
+        toast.success(t("success.resetFilters"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error resetting filters:", error);
-        toast.error("حدث خطأ أثناء إعادة تعيين الفلتر", {
+        toast.error(t("error.resetFilters"), {
           timeout: 3000,
         });
       }
@@ -111,7 +112,7 @@ export default {
         // });
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
-        toast.error("حدث خطأ أثناء فتح نافذة الواتساب", {
+        toast.error(t("error.openWhatsappModal"), {
           timeout: 3000,
         });
       }
@@ -125,7 +126,7 @@ export default {
         // });
       } catch (error) {
         console.error("Error mounting component:", error);
-        toast.error("حدث خطأ أثناء تحميل لوحة كانبان", {
+        toast.error(t("error.loadKanban"), {
           timeout: 3000,
         });
       }

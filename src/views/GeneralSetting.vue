@@ -6,7 +6,7 @@
         <div class="col-12 col-md-6">
           <div class="form-group">
             <label class="form-label">
-              App Name <span class="text-danger">*</span>
+              {{ t("settings.appName") }}<span class="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -21,7 +21,7 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="form-group">
             <label class="form-label">
-              Plan Expire Notification (in Days)
+              {{ t("settings.planExpireNotification") }}
               <span class="text-danger">*</span>
             </label>
             <input
@@ -36,7 +36,8 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="form-group">
             <label class="form-label">
-              Default Country Code <span class="text-danger">*</span>
+              {{ t("settings.defaultCountryCode") }}
+              <span class="text-danger">*</span>
             </label>
             <div
               class="input-group d-flex align-items-stretch position-relative"
@@ -82,7 +83,8 @@
         <div class="col-12 col-md-6">
           <div class="form-group">
             <label class="form-label">
-              Current Currency <span class="text-danger">*</span>
+              {{ t("settings.currentCurrency") }}
+              <span class="text-danger">*</span>
             </label>
             <Multiselect
               v-model="settings.currency"
@@ -103,7 +105,9 @@
         <!-- Enable Google reCAPTCHA -->
         <div class="col-12 col-md-6 col-lg-3">
           <div class="form-group">
-            <label class="form-label d-block">Enable Google reCAPTCHA</label>
+            <label class="form-label d-block">
+              {{ t("settings.enableGoogleRecaptcha") }}
+            </label>
             <div class="form-check form-switch">
               <input
                 class="form-check-input shadow-none custom-switch"
@@ -117,7 +121,9 @@
         <!-- Language -->
         <div class="col-12 col-md-6 col-lg-3">
           <div class="form-group">
-            <label class="form-label">Language</label>
+            <label class="form-label">
+              {{ t("forms.language") }}
+            </label>
             <Multiselect
               v-model="settings.language"
               :options="languages"
@@ -138,7 +144,9 @@
           <div class="row">
             <div class="col-12 col-md-6">
               <div class="form-group">
-                <label class="form-label"> Google Captcha key: </label>
+                <label class="form-label">
+                  {{ t("settings.googleCaptchaKey") }}
+                </label>
                 <input
                   type="text"
                   class="form-control"
@@ -149,7 +157,9 @@
             </div>
             <div class="col-12 col-md-6">
               <div class="form-group">
-                <label class="form-label"> Google Captcha Secret: </label>
+                <label class="form-label">
+                  {{ t("settings.googleCaptchaSecret") }}
+                </label>
                 <input
                   type="text"
                   class="form-control"
@@ -163,7 +173,9 @@
         <!-- Manual Instruction -->
         <div class="col-12 col-md-6">
           <div class="form-group">
-            <label class="form-label">Manual Instruction</label>
+            <label class="form-label">
+              {{ t("settings.manualInstruction") }}
+            </label>
             <textarea
               class="form-control"
               v-model="settings.manualInstruction"
@@ -176,7 +188,7 @@
         <div class="col-6 col-md-3">
           <div class="form-group">
             <label class="form-label">
-              App Logo
+              {{ t("settings.appLogo") }}
               <i class="fa-solid fa-pen" title="Upload your app logo here"></i>
             </label>
             <div class="image-upload-container">
@@ -204,7 +216,7 @@
         <div class="col-6 col-md-3">
           <div class="form-group">
             <label class="form-label">
-              Favicon <span class="text-danger">*</span>
+              {{ t("settings.favicon") }} <span class="text-danger">*</span>
               <i class="fa-solid fa-pen" title="Upload your favicon here"></i>
             </label>
             <div class="image-upload-container position-relative">
@@ -235,7 +247,7 @@
             class="btn btn-primary"
             @click.prevent="saveSettings"
           >
-            Save Changes
+            {{ t("buttons.saveChanges") }}
           </button>
         </div>
       </div>
@@ -248,6 +260,7 @@ import { useToast } from "vue-toastification";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 import defaultImage from "@/assets/new-nokta-logo.png";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "GeneralSetting",
@@ -255,8 +268,9 @@ export default {
     Multiselect,
   },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
-    return { toast };
+    return { toast, t };
   },
   data() {
     return {
@@ -327,45 +341,43 @@ export default {
   methods: {
     saveSettings() {
       try {
-        // التحقق من الحقول المطلوبة
         if (!this.settings.appName?.trim()) {
-          this.toast.error("اسم التطبيق مطلوب", {
+          this.toast.error(this.$t("error.required"), {
             timeout: 3000,
           });
           return;
         }
 
         if (!this.settings.planExpireDays) {
-          this.toast.error("عدد أيام إشعار انتهاء الخطة مطلوب", {
+          this.toast.error(this.$t("error.requiredplanExpireDays"), {
             timeout: 3000,
           });
           return;
         }
 
         if (!this.settings.defaultCountry) {
-          this.toast.error("الرجاء اختيار رمز الدولة الافتراضي", {
+          this.toast.error(this.$t("error.requiredDefaultCountry"), {
             timeout: 3000,
           });
           return;
         }
 
         if (!this.settings.currency) {
-          this.toast.error("الرجاء اختيار العملة", {
+          this.toast.error(this.$t("error.requiredCurrency"), {
             timeout: 3000,
           });
           return;
         }
 
-        // التحقق من حقول reCAPTCHA إذا كانت مفعلة
         if (this.settings.enableRecaptcha) {
           if (!this.settings.googleCaptchaKey?.trim()) {
-            this.toast.error("مفتاح Google Captcha مطلوب", {
+            this.toast.error(this.$t("error.requiredGoogleCaptchaKey"), {
               timeout: 3000,
             });
             return;
           }
           if (!this.settings.googleCaptchaSecret?.trim()) {
-            this.toast.error("كلمة سر Google Captcha مطلوبة", {
+            this.toast.error(this.$t("error.requiredGoogleCaptchaSecret"), {
               timeout: 3000,
             });
             return;
@@ -373,12 +385,12 @@ export default {
         }
 
         console.log("Settings saved:", this.settings);
-        this.toast.success("تم حفظ الإعدادات بنجاح", {
+        this.toast.success(this.$t("success.saved"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error saving settings:", error);
-        this.toast.error("حدث خطأ أثناء حفظ الإعدادات", {
+        this.toast.error(this.$t("error.saveFailed"), {
           timeout: 3000,
         });
       }
@@ -388,19 +400,19 @@ export default {
         const file = event.target.files[0];
         if (file) {
           if (!file.type.startsWith("image/")) {
-            this.toast.error("الرجاء اختيار ملف صورة صالح", {
+            this.toast.error(this.$t("error.invalidFile"), {
               timeout: 3000,
             });
             return;
           }
           this.settings.appLogo = URL.createObjectURL(file);
-          this.toast.success("تم تحديث شعار التطبيق بنجاح", {
+          this.toast.success(this.$t("success.updatedAppLogo"), {
             timeout: 3000,
           });
         }
       } catch (error) {
         console.error("Error uploading logo:", error);
-        this.toast.error("حدث خطأ أثناء تحميل الشعار", {
+        this.toast.error(this.$t("error.uploadFailed"), {
           timeout: 3000,
         });
       }
@@ -410,19 +422,19 @@ export default {
         const file = event.target.files[0];
         if (file) {
           if (!file.type.startsWith("image/")) {
-            this.toast.error("الرجاء اختيار ملف صورة صالح", {
+            this.toast.error(this.$t("error.invalidFile"), {
               timeout: 3000,
             });
             return;
           }
           this.settings.favicon = URL.createObjectURL(file);
-          this.toast.success("تم تحديث أيقونة التطبيق بنجاح", {
+          this.toast.success(this.$t("success.updatedFavicon"), {
             timeout: 3000,
           });
         }
       } catch (error) {
         console.error("Error uploading favicon:", error);
-        this.toast.error("حدث خطأ أثناء تحميل الأيقونة", {
+        this.toast.error(this.$t("error.uploadFaviconFailed"), {
           timeout: 3000,
         });
       }
@@ -433,11 +445,11 @@ export default {
       if (!newValue) {
         this.settings.googleCaptchaKey = "";
         this.settings.googleCaptchaSecret = "";
-        this.toast.info("تم تعطيل خاصية Google reCAPTCHA", {
+        this.toast.info(this.$t("success.disabledRecaptcha"), {
           timeout: 3000,
         });
       } else {
-        this.toast.info("تم تفعيل خاصية Google reCAPTCHA", {
+        this.toast.info(this.$t("success.enabledRecaptcha"), {
           timeout: 3000,
         });
       }

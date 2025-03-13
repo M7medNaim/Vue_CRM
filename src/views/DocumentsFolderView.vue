@@ -4,11 +4,11 @@
     <div class="row mb-3">
       <div class="col-12 text-end">
         <button class="btn btn-primary me-2" @click="openImportModal">
-          Import Folder
+          {{ t("buttons.importFolder") }}
           <i class="fas fa-file-import me-1"></i>
         </button>
         <button class="btn btn-primary" @click="openNewFolderModal">
-          New Folder
+          {{ t("buttons.newFolder") }}
           <i class="fas fa-folder-plus me-1"></i>
         </button>
       </div>
@@ -80,7 +80,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">Loading...</div>
+          <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
         </div>
       </template>
 
@@ -88,7 +88,7 @@
       <template #empty>
         <div class="text-center py-5 text-muted">
           <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-          <p>No folders</p>
+          <p>{{ t("tables.noFolders") }}</p>
         </div>
       </template>
     </EasyDataTable>
@@ -108,7 +108,7 @@ import ImportFolder from "@/components/modals/ImportFolder.vue";
 import Modal from "bootstrap/js/dist/modal";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "DocumentsFolderView",
   components: {
@@ -124,12 +124,12 @@ export default {
     const folderFormModal = ref(null);
     const importFolderModal = ref(null);
     const selectedFolder = ref(null);
-
+    const { t } = useI18n();
     const headers = [
-      { text: "اسم المجلد", value: "name" },
-      { text: "تاريخ الإنشاء", value: "created_at" },
-      { text: "عدد الملفات", value: "files_count" },
-      { text: "الإجراءات", value: "actions" },
+      { text: t("tables.name"), value: "name" },
+      { text: t("tables.createdAt"), value: "created_at" },
+      { text: t("tables.filesCount"), value: "files_count" },
+      { text: t("tables.actions"), value: "actions" },
     ];
 
     const mockFolders = [
@@ -175,7 +175,7 @@ export default {
           const index = items.value.findIndex((f) => f.id === folderData.id);
           if (index !== -1) {
             items.value[index] = { ...items.value[index], ...folderData };
-            toast.success("تم تحديث المجلد بنجاح", {
+            toast.success(t("success.updated"), {
               timeout: 3000,
             });
           }
@@ -187,13 +187,13 @@ export default {
             files_count: 0,
           };
           items.value.unshift(newFolder);
-          toast.success("تم إنشاء المجلد بنجاح", {
+          toast.success(t("success.saved"), {
             timeout: 3000,
           });
         }
         folderFormModal.value.hide();
       } catch (error) {
-        toast.error("حدث خطأ أثناء حفظ المجلد", {
+        toast.error(t("error.saveFailed"), {
           timeout: 3000,
         });
         console.error("Error submitting folder:", error);
@@ -204,11 +204,11 @@ export default {
       try {
         console.log("Importing files:", files);
         importFolderModal.value.hide();
-        toast.success("تم استيراد الملفات بنجاح", {
+        toast.success(t("success.imported"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("حدث خطأ أثناء استيراد الملفات", {
+        toast.error(t("error.importFailed"), {
           timeout: 3000,
         });
         console.error("Error importing files:", error);
@@ -218,26 +218,26 @@ export default {
     const deleteFolder = async (id) => {
       try {
         const result = await Swal.fire({
-          title: "هل أنت متأكد؟",
-          text: "لن تتمكن من استعادة هذا المجلد بعد الحذف!",
+          title: t("error.deleteTitle"),
+          text: t("error.deleteText"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: "نعم، قم بالحذف!",
-          cancelButtonText: "إلغاء",
+          confirmButtonText: t("success.deleteConfirm"),
+          cancelButtonText: t("error.deleteCancel"),
           reverseButtons: true,
         });
 
         if (result.isConfirmed) {
           await new Promise((resolve) => setTimeout(resolve, 500));
           items.value = items.value.filter((folder) => folder.id !== id);
-          toast.success("تم حذف المجلد بنجاح", {
+          toast.success(t("success.deleteSuccess"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء حذف المجلد", {
+        toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
         console.error("Error deleting folder:", error);
@@ -248,11 +248,11 @@ export default {
       try {
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        toast.success("بدأ تحميل المجلد", {
+        toast.success(t("success.downloadStarted"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("حدث خطأ أثناء تحميل المجلد", {
+        toast.error(t("error.downloadFailed"), {
           timeout: 3000,
         });
         console.error("Error downloading folder:", error);
@@ -268,7 +268,7 @@ export default {
         //   timeout: 3000,
         //});
       } catch (error) {
-        toast.error("حدث خطأ أثناء تحميل المجلدات", {
+        toast.error(t("error.fetchFailed"), {
           timeout: 3000,
         });
         console.error("Error fetching folders:", error);
@@ -327,6 +327,7 @@ export default {
       handleFolderImport,
       handleRowClick,
       downloadFolder,
+      t,
     };
   },
 };

@@ -8,7 +8,7 @@
   </div>
   <div class="watsappIcon position-absolute z-3">
     <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
-      <p class="position-absolute">Watsapp</p>
+      <p class="position-absolute">{{ $t("buttons.watsapp") }}</p>
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
   </div>
@@ -23,7 +23,7 @@ import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
 import { tasksStages } from "@/plugins/stages";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
-
+// import { useI18n } from "vue-i18n";
 export default {
   name: "CrmKanban",
   components: {
@@ -32,6 +32,7 @@ export default {
     WhatsappModal,
   },
   setup() {
+    // const { t } = useI18n();
     const stages = ref(tasksStages);
     const filters = ref({
       source: "",

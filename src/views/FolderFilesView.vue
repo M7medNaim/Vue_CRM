@@ -8,14 +8,14 @@
       <div class="d-flex gap-2">
         <button class="btn btn-primary" @click="openNewFolderModal">
           <i class="fas fa-folder-plus me-1"></i>
-          New Folder
+          {{ t("buttons.newFolder") }}
         </button>
         <button
           class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
           @click="$router.back()"
         >
           <i class="fas fa-arrow-right pt-1"></i>
-          <span>Back</span>
+          <span>{{ t("buttons.back") }}</span>
         </button>
       </div>
     </div>
@@ -50,7 +50,7 @@
           style="font-size: 48px"
         ></i>
         <p class="text-muted mb-3">
-          Drag and drop files here or click anywhere to upload
+          {{ t("upload.dragAndDrop") }}
         </p>
         <input
           type="file"
@@ -147,7 +147,7 @@
         class="text-center py-5 text-muted"
       >
         <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-        <p>No files or folders</p>
+        <p>{{ t("tables.noFiles") }}</p>
       </div>
     </div>
   </div>
@@ -161,13 +161,14 @@ import FolderForm from "@/components/modals/FolderForm.vue";
 import Modal from "bootstrap/js/dist/modal";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "FolderFilesView",
   components: {
     FolderForm,
   },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const route = useRoute();
     const router = useRouter();
@@ -217,11 +218,11 @@ export default {
         }));
 
         files.value = [...files.value, ...uploadedFiles];
-        toast.success("تم رفع الملفات بنجاح", {
+        toast.success(t("success.uploaded"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("حدث خطأ أثناء رفع الملفات", {
+        toast.error(t("error.uploadFailed"), {
           timeout: 3000,
         });
         console.error("Error uploading files:", error);
@@ -248,12 +249,12 @@ export default {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
 
-        toast.success("تم بدء تحميل الملف", {
+        toast.success(t("success.downloadStarted"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error downloading file:", error);
-        toast.error("حدث خطأ أثناء تحميل الملف", {
+        toast.error(t("error.downloadFailed"), {
           timeout: 3000,
         });
       }
@@ -268,25 +269,25 @@ export default {
     const deleteFile = async (fileId) => {
       try {
         const result = await Swal.fire({
-          title: "هل أنت متأكد؟",
-          text: "لن تتمكن من استعادة هذا الملف بعد الحذف!",
+          title: t("error.deleteTitle"),
+          text: t("error.deleteText"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: "نعم، قم بالحذف!",
-          cancelButtonText: "إلغاء",
+          confirmButtonText: t("success.deleteConfirm"),
+          cancelButtonText: t("error.deleteCancel"),
           reverseButtons: true,
         });
 
         if (result.isConfirmed) {
           files.value = files.value.filter((file) => file.id !== fileId);
-          toast.success("تم حذف الملف بنجاح", {
+          toast.success(t("success.deleteSuccess"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء حذف الملف", {
+        toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
         console.error("Error deleting file:", error);
@@ -295,7 +296,7 @@ export default {
 
     const handleFolderSubmit = async (folderData) => {
       if (!folderData.name?.trim()) {
-        toast.error("الرجاء إدخال اسم المجلد", {
+        toast.error(t("error.required"), {
           timeout: 3000,
         });
         return;
@@ -313,7 +314,7 @@ export default {
               name: folderData.name,
               updated_at: new Date().toLocaleDateString("ar-EG"),
             };
-            toast.success("تم تحديث المجلد بنجاح", {
+            toast.success(t("success.updated"), {
               timeout: 3000,
             });
           }
@@ -326,7 +327,7 @@ export default {
             files: [],
           };
           folders.value.unshift(newFolder);
-          toast.success("تم إنشاء المجلد بنجاح", {
+          toast.success(t("success.saved"), {
             timeout: 3000,
           });
         }
@@ -335,7 +336,7 @@ export default {
         selectedFolder.value = null;
       } catch (error) {
         console.error("Error handling folder:", error);
-        toast.error("حدث خطأ أثناء معالجة المجلد", {
+        toast.error(t("error.saveFailed"), {
           timeout: 3000,
         });
       }
@@ -384,7 +385,7 @@ export default {
         // });
       } catch (error) {
         console.error("Error fetching folder contents:", error);
-        toast.error("حدث خطأ أثناء تحميل محتويات المجلد", {
+        toast.error(t("error.fetchFailed"), {
           timeout: 3000,
         });
       }
@@ -401,12 +402,12 @@ export default {
       try {
         console.log("Downloading folder:", folderId);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        toast.success("تم بدء تحميل المجلد", {
+        toast.success(t("success.downloadStarted"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error downloading folder:", error);
-        toast.error("حدث خطأ أثناء تحميل المجلد", {
+        toast.error(t("error.downloadFailed"), {
           timeout: 3000,
         });
       }
@@ -414,25 +415,25 @@ export default {
     const deleteFolder = async (folderId) => {
       try {
         const result = await Swal.fire({
-          title: "هل أنت متأكد؟",
-          text: "لن تتمكن من استعادة هذا المجلد وجميع محتوياته بعد الحذف!",
+          title: t("error.deleteTitle"),
+          text: t("error.deleteText"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: "نعم، قم بالحذف!",
-          cancelButtonText: "إلغاء",
+          confirmButtonText: t("success.deleteConfirm"),
+          cancelButtonText: t("error.deleteCancel"),
           reverseButtons: true,
         });
 
         if (result.isConfirmed) {
           folders.value = folders.value.filter((f) => f.id !== folderId);
-          toast.success("تم حذف المجلد بنجاح", {
+          toast.success(t("success.deleteSuccess"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء حذف المجلد", {
+        toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
         console.error("Error deleting folder:", error);
@@ -512,6 +513,7 @@ export default {
       downloadFolder,
       breadcrumbs,
       navigateToCrumb,
+      t,
     };
   },
 };

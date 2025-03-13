@@ -8,7 +8,7 @@
               v-model="selectedAction"
               class="text-secondary form-control"
             >
-              <option value="" disabled>Select Action</option>
+              <option value="" disabled>{{ t("crmList.selectAction") }}</option>
               <option
                 v-for="action in actions"
                 :key="action.value"
@@ -31,11 +31,11 @@
             <input
               type="text"
               class="form-control"
-              placeholder="ابحث..."
+              :placeholder="t('forms.search')"
               v-model="search"
             />
             <button
-              title="Fillter"
+              :title="t('buttons.filter')"
               type="button"
               class="btn btn-primary input-group-text"
               @click="openFilterModal"
@@ -46,11 +46,11 @@
         </div>
         <div class="col-sm-6 col-lg-4 text-end">
           <button class="btn btn-primary rounded-2 me-2" @click="openDealModal">
-            <span>Create Deal</span>
+            <span>{{ t("buttons.createDeal") }}</span>
           </button>
           <button class="btn btn-primary rounded-2" @click="openImportModal">
             <i class="fa-solid fa-upload me-2"></i>
-            <span>Import</span>
+            <span>{{ t("buttons.import") }}</span>
           </button>
         </div>
       </div>
@@ -97,7 +97,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">جاري التحميل...</div>
+          <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
         </div>
       </template>
     </EasyDataTable>
@@ -131,6 +131,7 @@ import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
+import { useI18n } from "vue-i18n";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 
 import {
@@ -145,6 +146,7 @@ import {
   getStages,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
+const { t } = useI18n();
 
 // Items data
 const items = ref([]);
@@ -152,16 +154,15 @@ const items = ref([]);
 const tableLoading = ref(false);
 // Table headers
 const headers = [
-  { text: "Name", value: "name" },
-  { text: "Phone Number", value: "phone" },
-  { text: "Notes", value: "description" },
-  { text: "Created At", value: "created_at" },
-  { text: "Source", value: "source" },
-  { text: "Stage", value: "stage" },
-  { text: "Responsible Person", value: "responsible" },
-  { text: "Action", value: "actions", sortable: false },
+  { text: t("tables.name"), value: "name" },
+  { text: t("tables.phone"), value: "phone" },
+  { text: t("tables.notes"), value: "description" },
+  { text: t("tables.createdAt"), value: "created_at" },
+  { text: t("tables.source"), value: "source" },
+  { text: t("tables.stage"), value: "stage" },
+  { text: t("tables.responsible"), value: "responsible" },
+  { text: t("tables.actions"), value: "actions", sortable: false },
 ];
-
 const search = ref("");
 const selectedRows = ref([]);
 const itemsPerPage = ref(10);
@@ -183,37 +184,37 @@ const filters = ref({
 });
 // Actions operations
 const actions = ref([
-  { value: "changeStage", label: "Change Stage" },
+  { value: "changeStage", label: t("actions.changeStage") },
   // { value: "assignSalesSupervisor", label: "Assign Sales Supervisor" },
-  { value: "assignUser", label: "Assign User" },
-  { value: "changeSource", label: "Change Source" },
-  { value: "delete", label: "Delete" },
+  { value: "assignUser", label: t("actions.assignUser") },
+  { value: "changeSource", label: t("actions.changeSource") },
+  { value: "delete", label: t("actions.delete") },
 ]);
 const toast = useToast();
 
 const deleteItem = async (id) => {
   try {
     const result = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن تتمكن من التراجع عن هذا الإجراء!",
+      title: t("error.deleteTitle"),
+      text: t("error.deleteText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "نعم، قم بالحذف!",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: t("success.deleteConfirm"),
+      cancelButtonText: t("error.deleteCancel"),
       reverseButtons: true,
     });
 
     if (result.isConfirmed) {
       await deleteDeals([id]);
       items.value = items.value.filter((item) => item.id !== id);
-      toast.success("تم حذف العنصر بنجاح", {
+      toast.success(t("success.deleteSuccess"), {
         timeout: 3000,
       });
     }
   } catch (error) {
-    toast.error("فشل في حذف العنصر", {
+    toast.error(t("error.deleteFailed"), {
       timeout: 3000,
     });
     console.error("Delete Error:", error);
@@ -284,7 +285,9 @@ const executeAction = () => {
     case "delete":
       if (
         confirm(
-          `Are you sure you want to delete ${selectedRows.value.length} selected items?`
+          `${t("error.deleteTitle")} ${selectedRows.value.length} ${t(
+            "error.deleteText"
+          )}`
         )
       ) {
         handleDelete();
@@ -528,11 +531,11 @@ const handleUpdateStage = async (newStage) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    toast.success("تم تحديث المرحلة بنجاح", {
+    toast.success(t("success.updated"), {
       timeout: 3000,
     });
   } catch (error) {
-    toast.error("فشل في تحديث المرحلة", {
+    toast.error(t("error.updateFailed"), {
       timeout: 3000,
     });
     console.error("Error updating stage:", error);
@@ -554,11 +557,11 @@ const handleUpdateSupervisor = async (newSupervisor) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    toast.success("تم تعيين المشرف بنجاح", {
+    toast.success(t("success.updated"), {
       timeout: 3000,
     });
   } catch (error) {
-    toast.error("فشل في تعيين المشرف", {
+    toast.error(t("error.updateFailed"), {
       timeout: 3000,
     });
     console.error("Error assigning supervisor:", error);
@@ -580,11 +583,11 @@ const handleUpdateRepresentative = async (newRepresentative) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    toast.success("تم تعيين الممثل بنجاح", {
+    toast.success(t("success.updated"), {
       timeout: 3000,
     });
   } catch (error) {
-    toast.error("فشل في تعيين الممثل", {
+    toast.error(t("error.updateFailed"), {
       timeout: 3000,
     });
     console.error("Error assigning representative:", error);
@@ -606,11 +609,11 @@ const handleUpdateSource = async (newSource) => {
     selectedRows.value = [];
     selectedAction.value = "";
 
-    toast.success("تم تحديث المصدر بنجاح", {
+    toast.success(t("success.updated"), {
       timeout: 3000,
     });
   } catch (error) {
-    toast.error("فشل في تحديث المصدر", {
+    toast.error(t("error.updateFailed"), {
       timeout: 3000,
     });
     console.error("Error updating source:", error);
@@ -622,14 +625,14 @@ const handleDelete = async () => {
     const selectedIds = selectedRows.value.map((row) => row.id);
 
     const result = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: `هل تريد حذف ${selectedIds.length} عنصر؟`,
+      title: t("error.deleteTitle"),
+      text: t("error.deleteText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "نعم، قم بالحذف!",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: t("success.deleteConfirm"),
+      cancelButtonText: t("error.deleteCancel"),
       reverseButtons: true,
     });
 
@@ -643,15 +646,15 @@ const handleDelete = async () => {
         selectedRows.value = [];
         selectedAction.value = "";
 
-        toast.success("تم حذف العناصر بنجاح", {
+        toast.success(t("success.deleteSuccess"), {
           timeout: 3000,
         });
       } else {
-        throw new Error(response.data.message || "فشلت عملية الحذف");
+        throw new Error(response.data.message || t("error.deleteFailed"));
       }
     }
   } catch (error) {
-    toast.error(error.response?.data?.message || "حدث خطأ أثناء الحذف", {
+    toast.error(error.response?.data?.message || t("error.deleteFailed"), {
       timeout: 3000,
     });
     console.error("Delete Error:", error);

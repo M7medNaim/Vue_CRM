@@ -7,14 +7,14 @@
           <input
             type="text"
             class="form-control ps-5 rounded-end-0"
-            placeholder="ابحث..."
+            :placeholder="t('forms.search')"
             v-model="search"
           />
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
           ></i>
           <button
-            title="Filter"
+            :title="t('buttons.filter')"
             type="button"
             class="btn btn-primary me-2 rounded-start-0"
             @click="openFilterModal"
@@ -26,7 +26,7 @@
       <div class="col-6 col-md-8 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
-            <span> إضافة جهة اتصال جديدة</span>
+            <span>{{ t("buttons.addContact") }}</span>
           </button>
         </div>
       </div>
@@ -77,7 +77,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">جاري التحميل...</div>
+          <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
         </div>
       </template>
     </EasyDataTable>
@@ -104,6 +104,7 @@ import CreateContact from "@/components/ContactModals/CreateContact.vue";
 import FilterContact from "@/components/ContactModals/FilterContact.vue";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
+import { useI18n } from "vue-i18n";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 
 export default {
@@ -114,12 +115,13 @@ export default {
     FilterContact,
   },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const headers = [
-      { text: "الاسم", value: "name" },
-      { text: "البريد الإلكتروني", value: "email" },
-      { text: "رقم الهاتف", value: "phone" },
-      { text: "عمل", value: "actions" },
+      { text: t("tables.name"), value: "name" },
+      { text: t("tables.email"), value: "email" },
+      { text: t("tables.phone"), value: "phone" },
+      { text: t("tables.actions"), value: "actions" },
     ];
     // const loadingStore = useLoadingStore();
     const tableLoading = ref(false);
@@ -187,13 +189,13 @@ export default {
         items.value = items.value.map((item) =>
           item.id === updatedContact.id ? updatedContact : item
         );
-        toast.success("تم تحديث جهة الاتصال بنجاح", {
+        toast.success(t("success.updated"), {
           timeout: 3000,
         });
       } else {
         // Add new contact
         items.value = [...items.value, updatedContact];
-        toast.success("تم إضافة جهة الاتصال بنجاح", {
+        toast.success(t("success.saved"), {
           timeout: 3000,
         });
       }
@@ -203,26 +205,26 @@ export default {
     const removeContact = async (id) => {
       try {
         const result = await Swal.fire({
-          title: "هل أنت متأكد؟",
-          text: "لن تتمكن من التراجع عن هذا الإجراء!",
+          title: t("error.deleteTitle"),
+          text: t("error.deleteText"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: "نعم، قم بالحذف!",
-          cancelButtonText: "إلغاء",
+          confirmButtonText: t("success.deleteConfirm"),
+          cancelButtonText: t("error.deleteCancel"),
           reverseButtons: true,
         });
 
         if (result.isConfirmed) {
           await deleteContact(id);
           items.value = items.value.filter((contact) => contact.id !== id);
-          toast.success("تم حذف جهة الاتصال بنجاح", {
+          toast.success(t("success.deleteSuccess"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("فشل في حذف جهة الاتصال", {
+        toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
         console.error("Delete Contact Failed:", error);
@@ -245,12 +247,12 @@ export default {
         const response = await getContacts(formattedFilters);
         if (response.data.success) {
           items.value = response.data.data;
-          toast.success("تم تطبيق الفلتر بنجاح", {
+          toast.success(t("success.filterSuccess"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("فشل في تطبيق الفلتر", {
+        toast.error(t("error.filterFailed"), {
           timeout: 3000,
         });
         console.error("Filter application failed:", error);
@@ -266,12 +268,12 @@ export default {
         const response = await getContacts();
         if (response.data.success) {
           items.value = response.data.data;
-          toast.success("تم إعادة تعيين الفلتر بنجاح", {
+          toast.success(t("success.filterReset"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("فشل في إعادة تعيين الفلتر", {
+        toast.error(t("error.filterFailed"), {
           timeout: 3000,
         });
         console.error("Reset filters failed:", error);
@@ -321,6 +323,7 @@ export default {
       applyFilters,
       resetFilters,
       tableLoading,
+      t,
     };
   },
 };

@@ -13,14 +13,18 @@
           to="/role-settings"
           class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
         >
-          <span class="text-white px-3">Role Settings</span>
+          <span class="text-white px-3">{{
+            $t("topHeader.roleSettings")
+          }}</span>
         </router-link>
         <router-link
           v-if="$route.path === '/role-settings'"
           to="/general-setting"
           class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
         >
-          <span class="text-white px-3">General Settings</span>
+          <span class="text-white px-3">{{
+            $t("topHeader.generalSettings")
+          }}</span>
         </router-link>
       </div>
       <div
@@ -50,7 +54,7 @@
               @click="toggleMenu('lang', $refs.langButton)"
             >
               <i class="fa-solid fa-globe"></i>
-              <span class="fs-6">English</span>
+              <span class="fs-6">{{ $t("language") }}</span>
               <i class="fa-solid fa-chevron-down"></i>
               <transition name="fade">
                 <ListLang v-if="activeMenu === 'lang'" :style="listLangStyle" />

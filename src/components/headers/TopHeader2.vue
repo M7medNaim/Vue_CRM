@@ -12,14 +12,14 @@
                 class="btn btn-light px-4 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
-                إضافة
+                {{ t("topHeader2.addDeal") }}
               </button>
               <button
                 class="btn btn-light px-4 py-2 fw-semibold"
                 @click="openCrmKanban"
                 v-if="$route.name !== 'CrmKanban'"
               >
-                الرئيسية
+                {{ t("topHeader2.home") }}
               </button>
               <button
                 class="btn btn-light px-4 py-2 fw-semibold"
@@ -29,7 +29,7 @@
                   permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
                 "
               >
-                المهام
+                {{ t("topHeader2.tasks") }}
               </button>
             </div>
 
@@ -44,11 +44,11 @@
                 <input
                   type="text"
                   class="form-control bg-light border-light py-2"
-                  placeholder="اكتب لبدء عملية البحث ...."
+                  :placeholder="t('topHeader2.searchPlaceholder')"
                 />
                 <button
                   class="btn btn-primary"
-                  title="تطبيق فلترة"
+                  :title="t('topHeader2.applyFilterTitle')"
                   @click="openFilterModal"
                 >
                   <i class="fa-solid fa-filter"></i>
@@ -64,27 +64,27 @@
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
                     >99+</span
                   >
-                  <span class="ms-1">متأخر</span>
+                  <span class="ms-1">{{ t("topHeader2.late") }}</span>
                 </div>
                 <div class="btn btn-light px-1">
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
                     >15</span
                   >
-                  <span class="ms-1">اليوم</span>
+                  <span class="ms-1">{{ t("topHeader2.today") }}</span>
                 </div>
                 <div class="btn btn-light px-1">
                   <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
                     >4</span
                   >
-                  <span class="ms-1">غداً</span>
+                  <span class="ms-1">{{ t("topHeader2.tomorrow") }}</span>
                 </div>
                 <div class="btn btn-light px-1">
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
                     >99+</span
                   >
-                  <span class="ms-1">بدون مهام</span>
+                  <span class="ms-1">{{ t("topHeader2.noTasks") }}</span>
                 </div>
               </div>
             </div>
@@ -94,14 +94,14 @@
                 class="btn btn-light flex-fill py-2"
                 @click="openImportModal"
               >
-                <span>استيراد</span>
+                <span>{{ t("buttons.import") }}</span>
                 <i class="fa-solid fa-upload ms-1"></i>
               </button>
               <button
                 class="btn btn-light flex-fill py-2"
                 @click="openExportModal"
               >
-                <span>تصدير</span>
+                <span>{{ t("buttons.export") }}</span>
                 <i class="fa-solid fa-download ms-1"></i>
               </button>
             </div>
@@ -129,7 +129,7 @@ import ExportModal from "@/components/modals/ExportModal.vue";
 import { Modal } from "bootstrap";
 import CreateDealModal from "../kanban/CreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "TopHeader2",
   components: {
@@ -167,7 +167,7 @@ export default {
       },
       { deep: true }
     );
-
+    const { t } = useI18n();
     const openFilterModal = () => {
       const modal = new Modal(document.getElementById("filterModal"));
       modal.show();
@@ -211,6 +211,7 @@ export default {
       openCrmKanban,
       permissionStore,
       PERMISSIONS,
+      t,
     };
   },
 };
