@@ -88,11 +88,12 @@ import { ref, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { createContact, updateContact } from "@/plugins/services/authService";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ContactForm",
   emits: ["contact-updated"],
   setup(props, { emit }) {
+    const { t } = useI18n();
     const toast = useToast();
     const modalInstance = ref(null);
     const isEditing = ref(false);
@@ -120,18 +121,18 @@ export default {
         if (contact) {
           formData.value = { ...contact };
           isEditing.value = true;
-          toast.info("يمكنك تعديل بيانات جهة الاتصال", {
+          toast.info(t("success.editContact"), {
             timeout: 3000,
           });
         } else {
           resetForm();
-          toast.info("يمكنك إضافة جهة اتصال جديدة", {
+          toast.info(t("success.addContact"), {
             timeout: 3000,
           });
         }
         modalInstance.value.show();
       } catch (error) {
-        toast.error("حدث خطأ في فتح النافذة", {
+        toast.error(t("error.openModal"), {
           timeout: 3000,
         });
         console.error("Error opening modal:", error);
@@ -143,31 +144,30 @@ export default {
       let isValid = true;
 
       if (!formData.value.name) {
-        errors.value.name = "الاسم مطلوب";
+        errors.value.name = t("error.nameRequired");
         isValid = false;
       }
 
       if (!formData.value.email) {
-        errors.value.email = "البريد الإلكتروني مطلوب";
+        errors.value.email = t("error.emailRequired");
         isValid = false;
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
-        errors.value.email = "البريد الإلكتروني غير صالح";
+        errors.value.email = t("error.invalidEmail");
         isValid = false;
       }
 
       if (!formData.value.phone) {
-        errors.value.phone = "رقم الهاتف مطلوب";
+        errors.value.phone = t("error.phoneRequired");
         isValid = false;
       } else if (
         !/^[+]?\d{8,}$/.test(formData.value.phone.replace(/\s/g, ""))
       ) {
-        errors.value.phone =
-          "رقم الهاتف غير صالح - يجب أن يحتوي على 8 أرقام على الأقل";
+        errors.value.phone = t("error.invalidPhoneNumber");
         isValid = false;
       }
 
       if (!isValid) {
-        toast.error("يرجى تصحيح الأخطاء في النموذج", {
+        toast.error(t("error.formErrors"), {
           timeout: 3000,
         });
       }
@@ -188,7 +188,7 @@ export default {
             emit("contact-updated", response.data.data || formData.value);
             modalInstance.value.hide();
             resetForm();
-            toast.success("تم تحديث جهة الاتصال بنجاح", {
+            toast.success(t("success.contactUpdated"), {
               timeout: 3000,
             });
           }
@@ -198,7 +198,7 @@ export default {
             emit("contact-updated", response.data.data || formData.value);
             modalInstance.value.hide();
             resetForm();
-            toast.success("تم إضافة جهة الاتصال بنجاح", {
+            toast.success(t("success.contactAdded"), {
               timeout: 3000,
             });
           }
@@ -208,12 +208,9 @@ export default {
         if (error.response?.data?.errors) {
           errors.value = error.response.data.errors;
         }
-        toast.error(
-          error.response?.data?.message || "حدث خطأ في حفظ جهة الاتصال",
-          {
-            timeout: 3000,
-          }
-        );
+        toast.error(error.response?.data?.message || t("error.saveContact"), {
+          timeout: 3000,
+        });
       } finally {
         isSubmitting.value = false;
       }
@@ -225,7 +222,7 @@ export default {
           document.getElementById("contactCreateModal")
         );
       } catch (error) {
-        toast.error("حدث خطأ في تهيئة النافذة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
         console.error("Error initializing modal:", error);
@@ -239,6 +236,7 @@ export default {
       isSubmitting,
       openModal,
       handleSubmit,
+      t,
     };
   },
 };

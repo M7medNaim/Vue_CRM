@@ -9,7 +9,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="updateStageLabel">Edit Board Title</h5>
+          <h5 class="modal-title" id="updateStageLabel">
+            {{ $t("modals.editBoardTitle") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -21,14 +23,14 @@
           <form @submit.prevent="updateStage">
             <div class="stageTitile d-flex align-content-center gap-4">
               <div class="">
-                <span>Stage Title</span>
+                <span>{{ $t("modals.stageTitle") }}</span>
                 <span class="text-danger">*</span>
               </div>
               <input type="text" v-model="stageName" name="title" id="title" />
             </div>
             <div class="stageColor d-flex align-items-center gap-4 mt-3">
               <div class="">
-                <span>Stage Color</span>
+                <span>{{ $t("modals.stageColor") }}</span>
                 <span class="text-danger">*</span>
               </div>
               <input
@@ -44,17 +46,17 @@
           class="modal-footer d-flex justify-content-between align-items-center"
         >
           <button type="button" class="btn btn-primary" @click="updateStage">
-            Update
+            {{ $t("buttons.update") }}
           </button>
           <button type="button" class="btn btn-danger" @click="deleteStage">
-            Delete Stage
+            {{ $t("buttons.delete") }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cancel
+            {{ $t("buttons.cancel") }}
           </button>
         </div>
       </div>
@@ -65,7 +67,7 @@
 <script>
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "UpdateStage",
   props: {
@@ -76,7 +78,8 @@ export default {
   },
   setup() {
     const toast = useToast();
-    return { toast };
+    const { t } = useI18n();
+    return { toast, t };
   },
   data() {
     return {
@@ -95,7 +98,7 @@ export default {
           }
         } catch (error) {
           console.error("Error updating stage data:", error);
-          this.toast.error("حدث خطأ أثناء تحديث بيانات المرحلة", {
+          this.toast.error(this.$t("error.updateStage"), {
             timeout: 3000,
           });
         }
@@ -109,7 +112,7 @@ export default {
     updateStage() {
       try {
         if (!this.stageName.trim()) {
-          this.toast.error("اسم المرحلة مطلوب", {
+          this.toast.error(this.$t("error.stageNameRequired"), {
             timeout: 3000,
           });
           return;
@@ -127,12 +130,12 @@ export default {
           modal.hide();
         }
 
-        this.toast.success("تم تحديث المرحلة بنجاح", {
+        this.toast.success(this.$t("success.stageUpdated"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error updating stage:", error);
-        this.toast.error("حدث خطأ أثناء تحديث المرحلة", {
+        this.toast.error(this.$t("error.updateStage"), {
           timeout: 3000,
         });
       }
@@ -145,12 +148,12 @@ export default {
         if (modal) {
           modal.hide();
         }
-        this.toast.success("تم حذف المرحلة بنجاح", {
+        this.toast.success(this.$t("success.stageDeleted"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error deleting stage:", error);
-        this.toast.error("حدث خطأ أثناء حذف المرحلة", {
+        this.toast.error(this.$t("error.deleteStage"), {
           timeout: 3000,
         });
       }

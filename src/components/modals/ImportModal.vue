@@ -10,7 +10,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="importModalLabel">Import</h5>
+          <h5 class="modal-title" id="importModalLabel">
+            {{ $t("modals.import") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -37,13 +39,14 @@ import { Modal } from "bootstrap";
 import ImportForm from "../importElements/ImportForm.vue";
 import ImportButtons from "../importElements/ImportButtons.vue";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ImportModal",
   components: { ImportButtons, ImportForm },
 
   setup() {
     const toast = useToast();
+    const { t } = useI18n();
     const importModalRef = ref(null);
     let modalInstance = null;
 
@@ -52,12 +55,12 @@ export default {
         if (importModalRef.value) {
           modalInstance = new Modal(importModalRef.value);
           modalInstance.show();
-          toast.info("يرجى اختيار الملف المراد استيراده", {
+          toast.info(t("modals.importModalInfo"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("حدث خطأ في فتح نافذة الاستيراد", {
+        toast.error(t("error.importModalError"), {
           timeout: 3000,
         });
         console.error("Error opening modal:", error);
@@ -70,7 +73,7 @@ export default {
           modalInstance.hide();
         }
       } catch (error) {
-        toast.error("حدث خطأ في إغلاق النافذة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
         console.error("Error closing modal:", error);
@@ -80,13 +83,13 @@ export default {
     const submitImports = async () => {
       try {
         // هنا يمكنك إضافة منطق استيراد البيانات
-        toast.success("تم استيراد البيانات بنجاح", {
+        toast.success(t("success.importModalSuccess"), {
           timeout: 3000,
         });
         closeImportModal();
       } catch (error) {
         toast.error(
-          error.response?.data?.message || "فشل في استيراد البيانات",
+          error.response?.data?.message || t("error.importModalError"),
           {
             timeout: 3000,
           }
@@ -100,6 +103,7 @@ export default {
       openImportModal,
       closeImportModal,
       submitImports,
+      t,
     };
   },
 };

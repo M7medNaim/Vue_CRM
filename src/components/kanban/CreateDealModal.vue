@@ -9,7 +9,9 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="createDealModalLabel">Create New Deal</h5>
+          <h5 class="modal-title" id="createDealModalLabel">
+            {{ t("modals.create_new_deal") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -22,7 +24,7 @@
             <div class="row mb-3">
               <div class="col-4">
                 <label>
-                  <i class="fas fa-a"></i> Full Name
+                  <i class="fas fa-user"></i> {{ t("modals.full_name") }}
                   <span class="text-danger">*</span>
                 </label>
               </div>
@@ -38,7 +40,7 @@
             <div class="row mb-3">
               <div class="col-4">
                 <label>
-                  <i class="fas fa-phone"></i> Phone Number
+                  <i class="fas fa-phone"></i> {{ t("modals.phone") }}
                   <span class="text-danger">*</span>
                 </label>
               </div>
@@ -53,7 +55,9 @@
             </div>
             <div class="row mb-3">
               <div class="col-4">
-                <label> <i class="fas fa-sticky-note"></i> Notes </label>
+                <label>
+                  <i class="fas fa-sticky-note"></i> {{ t("modals.note") }}
+                </label>
               </div>
               <div class="col-8 text-end">
                 <textarea class="w-100" name="notes" id="note"></textarea>
@@ -61,7 +65,10 @@
             </div>
             <div class="row mb-3">
               <div class="col-4">
-                <label> <i class="fas fa-info-circle me-2"></i> Source </label>
+                <label>
+                  <i class="fas fa-info-circle me-2"></i>
+                  {{ t("modals.source") }}
+                </label>
               </div>
               <div class="col-8 text-end">
                 <div class="d-flex flex-wrap gap-2">
@@ -81,21 +88,25 @@
             </div>
             <div class="row mb-3">
               <div class="col-4">
-                <label><i class="fa-solid fa-user"></i> Assign Company </label>
+                <label>
+                  <i class="fa-solid fa-user"></i>
+                  {{ t("modals.assign_company") }}
+                </label>
               </div>
               <div class="col-8 text-end">
                 <select
                   class="form-select border-0 bg-light text-secondary"
                   v-model="form.company"
                 >
-                  <option value="any">Any</option>
+                  <option value="any">{{ t("modals.any") }}</option>
                 </select>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-4">
-                <label
-                  ><i class="fa-solid fa-users"></i> Assign Representative
+                <label>
+                  <i class="fa-solid fa-users"></i>
+                  {{ t("modals.assign_representative") }}
                 </label>
               </div>
               <div class="col-8 text-end">
@@ -103,13 +114,16 @@
                   class="form-select border-0 bg-light text-secondary"
                   v-model="form.representative"
                 >
-                  <option value="any">Any</option>
+                  <option value="any">{{ t("modals.any") }}</option>
                 </select>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-4">
-                <label><i class="fa-solid fa-cubes"></i> Packages </label>
+                <label>
+                  <i class="fa-solid fa-cubes"></i>
+                  {{ t("modals.packages") }}
+                </label>
               </div>
               <div class="col-8">
                 <div class="border border-secondary-subtle p-2 rounded-3">
@@ -120,13 +134,15 @@
                       class="form-select border-0 bg-light text-secondary"
                       v-model="form.package"
                     >
-                      <option value="Choose a Service">Choose a Service</option>
+                      <option value="Choose a Service">
+                        {{ t("modals.choose_a_service") }}
+                      </option>
                     </select>
                     <input
                       type="text"
                       class="form-control"
                       required
-                      placeholder="Quantity / Type"
+                      :placeholder="t('modals.quantity_type')"
                     />
                     <button
                       type="button"
@@ -146,13 +162,15 @@
                       class="form-select border-0 bg-light text-secondary"
                       v-model="pkg.package"
                     >
-                      <option value="any">Choose a Service</option>
+                      <option value="any">
+                        {{ t("modals.choose_a_service") }}
+                      </option>
                     </select>
                     <input
                       type="text"
                       class="form-control"
                       required
-                      placeholder="Quantity / Type"
+                      :placeholder="t('modals.quantity_type')"
                       v-model="pkg.quantity"
                     />
                     <button
@@ -171,9 +189,11 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Close
+                {{ t("buttons.close") }}
               </button>
-              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="submit" class="btn btn-primary">
+                {{ t("buttons.create") }}
+              </button>
             </div>
           </form>
         </div>
@@ -184,12 +204,14 @@
 
 <script>
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "createDealModal",
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
-    return { toast };
+    return { t, toast };
   },
   data() {
     return {
@@ -222,28 +244,34 @@ export default {
     submitForm() {
       try {
         if (!this.form.name.trim()) {
-          this.toast.error("الرجاء إدخال الاسم الكامل", { timeout: 3000 });
+          this.toast.error(this.t("error.please_enter_full_name"), {
+            timeout: 3000,
+          });
           return;
         }
 
         if (!this.form.phone.trim()) {
-          this.toast.error("الرجاء إدخال رقم الهاتف", { timeout: 3000 });
+          this.toast.error(this.t("error.please_enter_phone"), {
+            timeout: 3000,
+          });
           return;
         }
 
         console.log("Form Data:", this.form);
         this.showModal = false;
-        this.toast.success("تم إنشاء الصفقة بنجاح", { timeout: 3000 });
+        this.toast.success(this.t("success.deal_created"), { timeout: 3000 });
         this.resetForm();
       } catch (error) {
         console.error("Error submitting form:", error);
-        this.toast.error("حدث خطأ أثناء إنشاء الصفقة", { timeout: 3000 });
+        this.toast.error(this.t("error.deal_creation_failed"), {
+          timeout: 3000,
+        });
       }
     },
     addPackage() {
       try {
         if (this.form.packages.length >= 5) {
-          this.toast.warning("لا يمكن إضافة أكثر من 5 باقات", {
+          this.toast.warning(this.t("error.cannot_add_more_than_5_packages"), {
             timeout: 3000,
           });
           return;
@@ -253,19 +281,25 @@ export default {
           quantity: "",
           id: Date.now(),
         });
-        this.toast.info("تم إضافة باقة جديدة", { timeout: 3000 });
+        this.toast.info(this.t("success.package_added"), { timeout: 3000 });
       } catch (error) {
         console.error("Error adding package:", error);
-        this.toast.error("حدث خطأ أثناء إضافة الباقة", { timeout: 3000 });
+        this.toast.error(this.t("error.error_adding_package"), {
+          timeout: 3000,
+        });
       }
     },
     removePackage(id) {
       try {
         this.form.packages = this.form.packages.filter((pkg) => pkg.id !== id);
-        this.toast.success("تم حذف الباقة بنجاح", { timeout: 3000 });
+        this.toast.success(this.t("success.package_removed"), {
+          timeout: 3000,
+        });
       } catch (error) {
         console.error("Error removing package:", error);
-        this.toast.error("حدث خطأ أثناء حذف الباقة", { timeout: 3000 });
+        this.toast.error(this.t("error.removing_package"), {
+          timeout: 3000,
+        });
       }
     },
     resetForm() {

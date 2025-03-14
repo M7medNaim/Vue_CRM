@@ -11,7 +11,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="changePasswordModalLabel">
-            تغيير كلمة المرور
+            {{ t("modals.changePassword") }}
           </h5>
           <button
             type="button"
@@ -41,11 +41,12 @@ import ChangePasswordForm from "@/components/changePasswordElements/ChangePasswo
 import ChangePasswordButtons from "@/components/changePasswordElements/ChangePasswordButtons.vue";
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ChangePassword",
   components: { ChangePasswordForm, ChangePasswordButtons },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const password = ref("");
     const loading = ref(false);
@@ -55,13 +56,13 @@ export default {
         const modal = document.getElementById("changePasswordModal");
         const modalInstance = new Modal(modal);
         modalInstance.show();
-        toast.info("يمكنك تغيير كلمة المرور الخاصة بك", {
+        toast.info(t("success.openChangePassword"), {
           timeout: 3000,
           id: "change-password-open",
           singleton: true,
         });
       } catch (error) {
-        toast.error("حدث خطأ أثناء فتح نافذة تغيير كلمة المرور", {
+        toast.error(t("error.openChangePassword"), {
           timeout: 3000,
           id: "change-password-error",
           singleton: true,
@@ -80,7 +81,7 @@ export default {
           password.value = "";
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء إغلاق النافذة", {
+        toast.error(t("error.closeChangePassword"), {
           timeout: 3000,
           id: "change-password-close-error",
           singleton: true,
@@ -92,7 +93,7 @@ export default {
       try {
         loading.value = true;
         if (!password.value) {
-          toast.error("الرجاء إدخال كلمة المرور الجديدة", {
+          toast.error(t("error.passwordRequired"), {
             timeout: 3000,
             id: "change-password-validation",
             singleton: true,
@@ -102,14 +103,14 @@ export default {
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        toast.success("تم تغيير كلمة المرور بنجاح", {
+        toast.success(t("success.changePassword"), {
           timeout: 3000,
           id: "change-password-success",
           singleton: true,
         });
         closeChangePassword();
       } catch (error) {
-        toast.error("حدث خطأ أثناء تغيير كلمة المرور", {
+        toast.error(t("error.changePassword"), {
           timeout: 3000,
           id: "change-password-submit-error",
           singleton: true,
@@ -125,6 +126,7 @@ export default {
       openChangePassword,
       closeChangePassword,
       submitForm,
+      t,
     };
   },
 };

@@ -10,7 +10,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="filterModalLabel">تطبيق فلتر</h5>
+          <h5 class="modal-title" id="filterModalLabel">
+            {{ t("modals.applyFilter") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -45,13 +47,15 @@ import FilterForm from "@/components/filterElements/FilterForm.vue";
 import FilterButtons from "@/components/filterElements/FilterButtons.vue";
 import { getRoles } from "@/plugins/services/authService";
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "FilterModal",
   components: { FilterForm, FilterButtons },
   setup() {
     const toast = useToast();
-    return { toast };
+    const { t } = useI18n();
+    return { toast, t };
   },
   data() {
     return {
@@ -75,7 +79,7 @@ export default {
       this.loading = true;
       try {
         this.$emit("apply-filters", filters);
-        this.toast.success("تم تطبيق الفلتر بنجاح", {
+        this.toast.success(this.$t("success.applyFilters"), {
           timeout: 3000,
         });
         setTimeout(() => {
@@ -83,7 +87,7 @@ export default {
           this.closeFilterModal();
         }, 1000);
       } catch (error) {
-        this.toast.error("فشل في تطبيق الفلتر", {
+        this.toast.error(this.$t("error.applyFilters"), {
           timeout: 3000,
         });
         this.loading = false;
@@ -105,7 +109,7 @@ export default {
           createdAt: this.createdAt,
           perPage: this.perPage,
         });
-        this.toast.success("تم تطبيق الفلتر بنجاح", {
+        this.toast.success(this.$t("success.applyFilters"), {
           timeout: 3000,
         });
         setTimeout(() => {
@@ -113,7 +117,7 @@ export default {
           this.closeFilterModal();
         }, 1000);
       } catch (error) {
-        this.toast.error("فشل في تطبيق الفلتر", {
+        this.toast.error(this.$t("error.applyFilters"), {
           timeout: 3000,
         });
         this.loading = false;
@@ -127,12 +131,12 @@ export default {
         this.perPage = "10";
 
         this.$emit("reset-filters");
-        this.toast.success("تم إعادة تعيين الفلتر بنجاح", {
+        this.toast.success(this.$t("success.resetFilters"), {
           timeout: 3000,
         });
         this.closeFilterModal();
       } catch (error) {
-        this.toast.error("فشل في إعادة تعيين الفلتر", {
+        this.toast.error(this.$t("error.resetFilters"), {
           timeout: 3000,
         });
       }
@@ -142,7 +146,7 @@ export default {
         const response = await getRoles();
         this.roles = response.data.data;
       } catch (error) {
-        this.toast.error("فشل في جلب الأدوار", {
+        this.toast.error(this.$t("error.fetchRoles"), {
           timeout: 3000,
         });
         console.error("Error fetching roles:", error);

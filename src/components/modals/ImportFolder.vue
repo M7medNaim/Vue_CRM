@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">استيراد مجلد</h5>
+          <h5 class="modal-title">{{ t("modals.importFolder") }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -20,7 +20,7 @@
             >
               <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
               <p class="text-muted mb-3">
-                اسحب وأفلت المجلد هنا أو انقر للاختيار
+                {{ t("upload.dragAndDrop") }}
               </p>
               <input
                 type="file"
@@ -40,7 +40,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            إلغاء
+            {{ t("buttons.cancel") }}
           </button>
           <button
             type="button"
@@ -48,7 +48,7 @@
             @click="handleImport"
             :disabled="!hasFiles"
           >
-            استيراد
+            {{ t("buttons.import") }}
           </button>
         </div>
       </div>
@@ -58,11 +58,12 @@
 
 <script>
 import { ref, computed } from "vue";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ImportFolderModal",
   emits: ["import"],
   setup(props, { emit }) {
+    const { t } = useI18n();
     const fileInput = ref(null);
     const selectedFiles = ref([]);
 
@@ -119,6 +120,7 @@ export default {
       handleDrop,
       handleFileSelect,
       handleImport,
+      t,
     };
   },
 };

@@ -11,7 +11,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="adminModalLabel">
-            {{ isEditMode ? "تعديل المستخدم" : "إضافة مستخدم جديد" }}
+            {{ isEditMode ? t("modals.editUser") : t("modals.addUser") }}
           </h5>
           <button
             type="button"
@@ -24,7 +24,9 @@
         <form @submit.prevent="submitForm">
           <div class="modal-body">
             <div class="mb-3">
-              <label for="username" class="form-label">اسم المستخدم</label>
+              <label for="username" class="form-label">
+                {{ t("modals.username") }}
+              </label>
               <input
                 type="text"
                 class="form-control"
@@ -34,7 +36,9 @@
               />
             </div>
             <div class="mb-3">
-              <label for="email" class="form-label">البريد الإلكتروني</label>
+              <label for="email" class="form-label">
+                {{ t("modals.email") }}
+              </label>
               <input
                 type="email"
                 class="form-control"
@@ -44,7 +48,9 @@
               />
             </div>
             <div class="mb-3">
-              <label for="phoneNumber" class="form-label">رقم الهاتف</label>
+              <label for="phoneNumber" class="form-label">
+                {{ t("modals.phone") }}
+              </label>
               <input
                 type="text"
                 class="form-control"
@@ -54,7 +60,9 @@
             </div>
 
             <div v-if="!isEditMode" class="mb-3">
-              <label for="password" class="form-label">كلمة المرور</label>
+              <label for="password" class="form-label">
+                {{ t("modals.password") }}
+              </label>
               <input
                 type="password"
                 class="form-control"
@@ -64,9 +72,9 @@
               />
             </div>
             <div v-if="!isEditMode" class="mb-3">
-              <label for="password_confirmation" class="form-label"
-                >تأكيد كلمة المرور</label
-              >
+              <label for="password_confirmation" class="form-label">{{
+                t("modals.passwordConfirmation")
+              }}</label>
               <input
                 type="password"
                 class="form-control"
@@ -77,10 +85,12 @@
             </div>
 
             <div class="mb-3">
-              <label for="role" class="form-label">الدور</label>
+              <label for="role" class="form-label">
+                {{ t("modals.role") }}
+              </label>
               <select class="form-control" id="role" v-model="formData.role">
                 <option v-if="!isEditMode" value="" disabled selected>
-                  اختر الدور
+                  {{ t("modals.chooseRole") }}
                 </option>
                 <option v-for="role in roles" :key="role.id" :value="role.name">
                   {{ role.name }}
@@ -89,18 +99,22 @@
             </div>
 
             <div class="mb-3">
-              <label for="reportTo" class="form-label">من يتبع له</label>
+              <label for="reportTo" class="form-label">
+                {{ t("modals.reportTo") }}
+              </label>
               <Multiselect
                 v-model="formData.reportTo"
                 :options="filteredUsers"
                 label="name"
                 track-by="id"
-                placeholder="اختر المسؤول"
+                :placeholder="t('modals.chooseReportTo')"
                 :searchable="true"
               />
             </div>
             <div class="mb-3">
-              <label for="image" class="form-label">الصورة</label>
+              <label for="image" class="form-label">
+                {{ t("modals.image") }}
+              </label>
               <input
                 type="file"
                 class="form-control"
@@ -124,15 +138,15 @@
               {{
                 loading
                   ? isEditMode
-                    ? "جاري التعديل..."
-                    : "جاري الحفظ..."
+                    ? t("modals.editing")
+                    : t("modals.saving")
                   : isEditMode
-                  ? "تعديل المستخدم"
-                  : "إنشاء مستخدم"
+                  ? t("modals.editUser")
+                  : t("modals.addUser")
               }}
             </button>
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              إغلاق
+              {{ t("buttons.close") }}
             </button>
           </div>
         </form>
@@ -146,7 +160,7 @@ import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 import {
   createUser,
   updateUser,
@@ -158,8 +172,9 @@ export default {
   name: "AdminModal",
   components: { Multiselect },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
-    return { toast };
+    return { t, toast };
   },
   data() {
     return {
@@ -266,12 +281,12 @@ export default {
         let response;
         if (this.isEditMode) {
           response = await updateUser(this.formData.id, formData);
-          this.toast.success("تم تحديث المستخدم بنجاح", {
+          this.toast.success(this.t("success.updateUser"), {
             timeout: 3000,
           });
         } else {
           response = await createUser(formData);
-          this.toast.success("تم إنشاء المستخدم بنجاح", {
+          this.toast.success(this.t("success.createUser"), {
             timeout: 3000,
           });
         }
@@ -285,7 +300,7 @@ export default {
         }
       } catch (error) {
         this.toast.error(
-          error.response?.data?.message || "حدث خطأ، يرجى المحاولة مرة أخرى",
+          error.response?.data?.message || this.t("error.saveFailed"),
           {
             timeout: 3000,
           }

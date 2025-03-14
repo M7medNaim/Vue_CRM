@@ -1,8 +1,8 @@
 <template>
   <div class="mb-3">
-    <label for="role" class="form-label">الدور</label>
+    <label for="role" class="form-label">{{ t("modals.role") }}</label>
     <select class="form-control" id="role" v-model="localRole">
-      <option value="" disabled selected>اختر الدور</option>
+      <option value="" disabled selected>{{ t("modals.selectRole") }}</option>
       <option v-for="role in roles" :key="role.id" :value="role.name">
         {{ role.name }}
       </option>
@@ -11,7 +11,9 @@
   <div class="row">
     <div class="col-6">
       <div class="mb-3">
-        <label for="createdAt" class="form-label">تاريخ الاضافة</label>
+        <label for="createdAt" class="form-label">{{
+          t("modals.created_at")
+        }}</label>
         <input
           type="date"
           class="form-control"
@@ -22,7 +24,9 @@
     </div>
     <div class="col-6">
       <div class="mb-3">
-        <label for="rowsPerPage" class="form-label">عدد الصفوف في الصفحة</label>
+        <label for="rowsPerPage" class="form-label">{{
+          t("modals.rowsPerPage")
+        }}</label>
         <select
           class="form-control"
           id="rowsPerPage"
@@ -37,7 +41,7 @@
     </div>
   </div>
   <div class="mb-3">
-    <label class="form-label">الحالة</label>
+    <label class="form-label">{{ t("modals.status") }}</label>
     <div
       class="radioStatus d-flex justify-content-start align-items-center gap-3"
     >
@@ -49,7 +53,9 @@
           value="active"
           v-model="localStatus"
         />
-        <label class="form-check-label" for="status-active"> نشط </label>
+        <label class="form-check-label" for="status-active">{{
+          t("modals.active")
+        }}</label>
       </div>
       <div class="form-check">
         <input
@@ -59,7 +65,9 @@
           value="inactive"
           v-model="localStatus"
         />
-        <label class="form-check-label" for="status-inactive"> غير نشط </label>
+        <label class="form-check-label" for="status-inactive">{{
+          t("modals.inactive")
+        }}</label>
       </div>
     </div>
   </div>
@@ -73,12 +81,15 @@
 
 <script>
 import { getRoles } from "@/plugins/services/authService";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "FilterForm",
   props: ["role", "status", "createdAt", "perPage"],
   emits: ["update:role", "update:status", "update:createdAt", "update:perPage"],
-
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       roles: [],

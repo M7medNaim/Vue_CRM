@@ -9,7 +9,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exportModalLabel">تصدير البيانات</h5>
+          <h5 class="modal-title" id="exportModalLabel">
+            {{ t("modals.exportData") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -20,9 +22,13 @@
         <div class="modal-body">
           <form @submit.prevent="handleExport">
             <div class="mb-3">
-              <label class="form-label">صيغة التصدير</label>
+              <label class="form-label">
+                {{ t("modals.exportFormat") }}
+              </label>
               <select class="form-select" v-model="exportFormat" required>
-                <option value="" disabled selected>اختر صيغة التصدير</option>
+                <option value="" disabled selected>
+                  {{ t("modals.chooseExportFormat") }}
+                </option>
                 <option value="excel">Excel</option>
                 <option value="sql">SQL</option>
               </select>
@@ -33,7 +39,7 @@
                 class="btn btn-primary"
                 :disabled="!exportFormat"
               >
-                تصدير
+                {{ t("buttons.export") }}
                 <i class="fa-solid fa-download ms-1"></i>
               </button>
               <button
@@ -41,7 +47,7 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                إلغاء
+                {{ t("buttons.cancel") }}
               </button>
             </div>
           </form>
@@ -55,23 +61,24 @@
 import { ref } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ExportModal",
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const exportFormat = ref("");
 
     const handleExport = () => {
       try {
         if (!exportFormat.value) {
-          toast.error("الرجاء اختيار صيغة التصدير", {
+          toast.error(t("error.chooseExportFormat"), {
             timeout: 3000,
           });
           return;
         }
 
-        toast.info("جاري تصدير البيانات...", {
+        toast.info(t("modals.exportingData"), {
           timeout: 2000,
         });
 
@@ -80,14 +87,14 @@ export default {
         const modal = Modal.getInstance(document.getElementById("exportModal"));
         modal?.hide();
 
-        toast.success("تم تصدير البيانات بنجاح", {
+        toast.success(t("success.exportData"), {
           timeout: 3000,
         });
 
         exportFormat.value = "";
       } catch (error) {
         console.error("Error during export:", error);
-        toast.error("حدث خطأ أثناء تصدير البيانات", {
+        toast.error(t("error.exportData"), {
           timeout: 3000,
         });
       }
@@ -96,6 +103,7 @@ export default {
     return {
       exportFormat,
       handleExport,
+      t,
     };
   },
 };

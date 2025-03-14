@@ -14,7 +14,7 @@
       <div class="modal-content ps-3">
         <div class="modal-header border-bottom-0">
           <h6 class="modal-title fw-semibold" id="questionsModalLabel">
-            Questions List
+            {{ t("modals.questionsList") }}
           </h6>
           <button
             type="button"
@@ -27,7 +27,7 @@
           <form @submit.prevent="submitForm">
             <!-- age -->
             <div class="question bg-light ps-2 py-2 mb-2">
-              <p class="fw-medium">What is your Age?</p>
+              <p class="fw-medium">{{ t("modals.whatIsYourAge") }}</p>
               <div class="form-check">
                 <input
                   class="form-check-input bg-secondary-subtle p-2"
@@ -67,7 +67,7 @@
             </div>
             <!-- weight -->
             <div class="question bg-light ps-2 py-2 mb-2">
-              <p class="fw-medium">What is your weight?</p>
+              <p class="fw-medium">{{ t("modals.whatIsYourWeight") }}</p>
               <div class="form-check">
                 <input
                   class="form-check-input bg-secondary-subtle p-2"
@@ -75,9 +75,9 @@
                   name="weight"
                   id="Underweight"
                 />
-                <label class="form-check-label" for="Underweight"
-                  >Underweight</label
-                >
+                <label class="form-check-label" for="Underweight">{{
+                  t("modals.underweight")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -86,7 +86,9 @@
                   name="weight"
                   id="normal"
                 />
-                <label class="form-check-label" for="normal">Normal</label>
+                <label class="form-check-label" for="normal">{{
+                  t("modals.normal")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -95,9 +97,9 @@
                   name="weight"
                   id="overweight"
                 />
-                <label class="form-check-label" for="overweight"
-                  >Overweight</label
-                >
+                <label class="form-check-label" for="overweight">{{
+                  t("modals.overweight")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -106,12 +108,14 @@
                   name="weight"
                   id="obese"
                 />
-                <label class="form-check-label" for="obese">Obese</label>
+                <label class="form-check-label" for="obese">{{
+                  t("modals.obese")
+                }}</label>
               </div>
             </div>
             <!-- height -->
             <div class="question bg-light ps-2 py-2 mb-2">
-              <p class="fw-medium">What is your height?</p>
+              <p class="fw-medium">{{ t("modals.whatIsYourHeight") }}</p>
               <div class="form-check">
                 <input
                   class="form-check-input bg-secondary-subtle p-2"
@@ -119,7 +123,9 @@
                   name="height"
                   id="short"
                 />
-                <label class="form-check-label" for="short">Short</label>
+                <label class="form-check-label" for="short">{{
+                  t("modals.short")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -128,7 +134,9 @@
                   name="height"
                   id="average"
                 />
-                <label class="form-check-label" for="average">Average</label>
+                <label class="form-check-label" for="average">{{
+                  t("modals.average")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -137,12 +145,16 @@
                   name="height"
                   id="tall"
                 />
-                <label class="form-check-label" for="tall">Tall</label>
+                <label class="form-check-label" for="tall">{{
+                  t("modals.tall")
+                }}</label>
               </div>
             </div>
             <!-- chronic diseases -->
             <div class="question bg-light ps-2 py-2 mb-2">
-              <p class="fw-medium">Do you suffer from any chronic diseases?</p>
+              <p class="fw-medium">
+                {{ t("modals.doYouSufferFromAnyChronicDiseases") }}
+              </p>
               <div class="form-check">
                 <input
                   class="form-check-input bg-secondary-subtle p-2"
@@ -152,7 +164,9 @@
                   v-model="showDiseases"
                   :value="true"
                 />
-                <label class="form-check-label" for="yesChronic">Yes</label>
+                <label class="form-check-label" for="yesChronic">{{
+                  t("modals.yes")
+                }}</label>
               </div>
               <!-- showDiseases -->
               <div
@@ -160,9 +174,9 @@
                 class="disease-options ms-4 my-1 ps-3"
                 style="border-left: 1px dashed #333"
               >
-                <span class="fw-semibold" style="font-size: 14px"
-                  >Please list the diseases.</span
-                >
+                <span class="fw-semibold" style="font-size: 14px">{{
+                  t("modals.pleaseListTheDiseases")
+                }}</span>
                 <div class="form-check">
                   <input
                     class="form-check-input bg-secondary-subtle p-2"
@@ -172,9 +186,9 @@
                     v-model="selectedDiseases"
                     value="Diabetes"
                   />
-                  <label class="form-check-label" for="diabetes"
-                    >Diabetes</label
-                  >
+                  <label class="form-check-label" for="diabetes">{{
+                    t("modals.diabetes")
+                  }}</label>
                 </div>
                 <div class="form-check">
                   <input
@@ -185,9 +199,9 @@
                     v-model="selectedDiseases"
                     value="Hypertension"
                   />
-                  <label class="form-check-label" for="hypertension"
-                    >Hypertension (High Blood Pressure)</label
-                  >
+                  <label class="form-check-label" for="hypertension">{{
+                    t("modals.hypertension")
+                  }}</label>
                 </div>
                 <div class="form-check">
                   <input
@@ -198,9 +212,9 @@
                     v-model="selectedDiseases"
                     value="Heart Disease"
                   />
-                  <label class="form-check-label" for="heartDisease"
-                    >Heart Disease</label
-                  >
+                  <label class="form-check-label" for="heartDisease">{{
+                    t("modals.heartDisease")
+                  }}</label>
                 </div>
                 <div class="form-check">
                   <input
@@ -211,9 +225,9 @@
                     v-model="selectedDiseases"
                     value="Cholesterol"
                   />
-                  <label class="form-check-label" for="cholesterol"
-                    >Cholesterol</label
-                  >
+                  <label class="form-check-label" for="cholesterol">{{
+                    t("modals.cholesterol")
+                  }}</label>
                 </div>
               </div>
               <div class="form-check">
@@ -225,13 +239,15 @@
                   v-model="showDiseases"
                   :value="false"
                 />
-                <label class="form-check-label" for="noChronic">No</label>
+                <label class="form-check-label" for="noChronic">{{
+                  t("modals.no")
+                }}</label>
               </div>
             </div>
             <!-- surgeries -->
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
-                Have you undergone any previous surgeries?
+                {{ t("modals.haveYouUndergoneAnyPreviousSurgeries") }}
               </p>
               <div class="form-check">
                 <input
@@ -242,20 +258,22 @@
                   v-model="showSurgeriesInput"
                   :value="true"
                 />
-                <label class="form-check-label" for="yesSurgeries">Yes</label>
+                <label class="form-check-label" for="yesSurgeries">{{
+                  t("modals.yes")
+                }}</label>
               </div>
               <div
                 v-if="showSurgeriesInput"
                 class="ms-4 mt-2 ps-4"
                 style="border-left: 1px dashed #333"
               >
-                <span class="fw-semibold mb-2" style="font-size: 14px"
-                  >Please list the surgeries.</span
-                >
+                <span class="fw-semibold mb-2" style="font-size: 14px">{{
+                  t("modals.pleaseListTheSurgeries")
+                }}</span>
                 <input
                   type="text"
                   class="form-control mb-2 border-secondary-subtle"
-                  placeholder="Please specify the surgeries"
+                  :placeholder="t('modals.pleaseSpecifyTheSurgeries')"
                   v-model="surgeriesDetails"
                 />
               </div>
@@ -268,13 +286,17 @@
                   v-model="showSurgeriesInput"
                   :value="false"
                 />
-                <label class="form-check-label" for="noSurgeries">No</label>
+                <label class="form-check-label" for="noSurgeries">{{
+                  t("modals.no")
+                }}</label>
               </div>
             </div>
 
             <!-- smoking and alcohol -->
             <div class="question bg-light ps-2 py-2 mb-2">
-              <p class="fw-medium">Do you smoke or drink alcohol?</p>
+              <p class="fw-medium">
+                {{ t("modals.doYouSmokeOrDrinkAlcohol") }}
+              </p>
               <div class="form-check">
                 <input
                   class="form-check-input bg-secondary-subtle p-2"
@@ -282,9 +304,9 @@
                   name="habits"
                   id="neither"
                 />
-                <label class="form-check-label" for="neither"
-                  >I neither smoke nor drink alcohol</label
-                >
+                <label class="form-check-label" for="neither">{{
+                  t("modals.iNeitherSmokeNorDrinkAlcohol")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -293,7 +315,9 @@
                   name="habits"
                   id="smoke"
                 />
-                <label class="form-check-label" for="smoke">I smoke</label>
+                <label class="form-check-label" for="smoke">{{
+                  t("modals.iSmoke")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -302,9 +326,9 @@
                   name="habits"
                   id="drink"
                 />
-                <label class="form-check-label" for="drink"
-                  >I drink alcohol</label
-                >
+                <label class="form-check-label" for="drink">{{
+                  t("modals.iDrink")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -313,16 +337,16 @@
                   name="habits"
                   id="both"
                 />
-                <label class="form-check-label" for="both"
-                  >I smoke and drink alcohol</label
-                >
+                <label class="form-check-label" for="both">{{
+                  t("modals.iSmokeAndDrinkAlcohol")
+                }}</label>
               </div>
             </div>
 
             <!-- erectile stimulants -->
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
-                Do you use erectile stimulants (such as Viagra or Cialis)?
+                {{ t("modals.doYouUseErectileStimulants") }}
               </p>
               <div class="form-check">
                 <input
@@ -333,7 +357,9 @@
                   v-model="showStimulantsDetails"
                   :value="true"
                 />
-                <label class="form-check-label" for="yesStimulants">Yes</label>
+                <label class="form-check-label" for="yesStimulants">{{
+                  t("modals.yes")
+                }}</label>
               </div>
               <!-- Stimulants Details -->
               <div
@@ -342,9 +368,9 @@
                 style="border-left: 1px dashed #333"
               >
                 <div class="mb-3">
-                  <span class="fw-semibold" style="font-size: 14px"
-                    >Please select the dosage of Viagra.</span
-                  >
+                  <span class="fw-semibold" style="font-size: 14px">{{
+                    t("modals.pleaseSelectTheDosageOfViagra")
+                  }}</span>
                   <div class="form-check">
                     <input
                       class="form-check-input bg-secondary-subtle p-2"
@@ -354,7 +380,9 @@
                       v-model="selectedViagraDosages"
                       value="25 mg"
                     />
-                    <label class="form-check-label" for="viagra25">25 mg</label>
+                    <label class="form-check-label" for="viagra25"
+                      >25 {{ t("modals.mg") }}</label
+                    >
                   </div>
                   <div class="form-check">
                     <input
@@ -365,7 +393,9 @@
                       v-model="selectedViagraDosages"
                       value="50 mg"
                     />
-                    <label class="form-check-label" for="viagra50">50 mg</label>
+                    <label class="form-check-label" for="viagra50"
+                      >50 {{ t("modals.mg") }}</label
+                    >
                   </div>
                   <div class="form-check">
                     <input
@@ -377,15 +407,15 @@
                       value="100 mg"
                     />
                     <label class="form-check-label" for="viagra100"
-                      >100 mg</label
+                      >100 {{ t("modals.mg") }}</label
                     >
                   </div>
                 </div>
 
                 <div>
-                  <span class="fw-semibold" style="font-size: 14px"
-                    >Please select the dosage of Cialis.</span
-                  >
+                  <span class="fw-semibold" style="font-size: 14px">{{
+                    t("modals.pleaseSelectTheDosageOfCialis")
+                  }}</span>
                   <div class="form-check">
                     <input
                       class="form-check-input bg-secondary-subtle p-2"
@@ -396,7 +426,7 @@
                       value="2.5 mg"
                     />
                     <label class="form-check-label" for="cialis2_5"
-                      >2.5 mg</label
+                      >2.5 {{ t("modals.mg") }}</label
                     >
                   </div>
                   <div class="form-check">
@@ -408,7 +438,9 @@
                       v-model="selectedCialisDosages"
                       value="5 mg"
                     />
-                    <label class="form-check-label" for="cialis5">5 mg</label>
+                    <label class="form-check-label" for="cialis5"
+                      >5 {{ t("modals.mg") }}</label
+                    >
                   </div>
                   <div class="form-check">
                     <input
@@ -419,7 +451,9 @@
                       v-model="selectedCialisDosages"
                       value="10 mg"
                     />
-                    <label class="form-check-label" for="cialis10">10 mg</label>
+                    <label class="form-check-label" for="cialis10"
+                      >10 {{ t("modals.mg") }}</label
+                    >
                   </div>
                   <div class="form-check">
                     <input
@@ -430,7 +464,9 @@
                       v-model="selectedCialisDosages"
                       value="20 mg"
                     />
-                    <label class="form-check-label" for="cialis20">20 mg</label>
+                    <label class="form-check-label" for="cialis20"
+                      >20 {{ t("modals.mg") }}</label
+                    >
                   </div>
                 </div>
               </div>
@@ -443,15 +479,19 @@
                   v-model="showStimulantsDetails"
                   :value="false"
                 />
-                <label class="form-check-label" for="noStimulants"
-                  >I don't use them</label
-                >
+                <label class="form-check-label" for="noStimulants">{{
+                  t("modals.iDontUseThem")
+                }}</label>
               </div>
             </div>
             <!-- erection level -->
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
-                How would you rate your erection level without using anything?
+                {{
+                  t(
+                    "modals.howWouldYouRateYourErectionLevelWithoutUsingAnything"
+                  )
+                }}
               </p>
               <div class="form-check">
                 <input
@@ -460,7 +500,9 @@
                   name="erectionLevel"
                   id="veryWeak"
                 />
-                <label class="form-check-label" for="veryWeak">Very Weak</label>
+                <label class="form-check-label" for="veryWeak">{{
+                  t("modals.veryWeak")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -469,7 +511,9 @@
                   name="erectionLevel"
                   id="weak"
                 />
-                <label class="form-check-label" for="weak">Weak</label>
+                <label class="form-check-label" for="weak">{{
+                  t("modals.weak")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -478,9 +522,9 @@
                   name="erectionLevel"
                   id="averageErection"
                 />
-                <label class="form-check-label" for="averageErection"
-                  >Average</label
-                >
+                <label class="form-check-label" for="averageErection">{{
+                  t("modals.average")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -489,7 +533,9 @@
                   name="erectionLevel"
                   id="good"
                 />
-                <label class="form-check-label" for="good">Good</label>
+                <label class="form-check-label" for="good">{{
+                  t("modals.good")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -498,16 +544,20 @@
                   name="erectionLevel"
                   id="excellent"
                 />
-                <label class="form-check-label" for="excellent"
-                  >Excellent</label
-                >
+                <label class="form-check-label" for="excellent">{{
+                  t("modals.excellent")
+                }}</label>
               </div>
             </div>
 
             <!-- erection flexibility -->
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
-                Do you experience any flexibility or softness in the erection?
+                {{
+                  t(
+                    "modals.doYouExperienceAnyFlexibilityOrSoftnessInTheErection"
+                  )
+                }}
               </p>
               <div class="form-check">
                 <input
@@ -516,7 +566,9 @@
                   name="flexibility"
                   id="yesFlexibility"
                 />
-                <label class="form-check-label" for="yesFlexibility">Yes</label>
+                <label class="form-check-label" for="yesFlexibility">{{
+                  t("modals.yes")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -525,7 +577,9 @@
                   name="flexibility"
                   id="noFlexibility"
                 />
-                <label class="form-check-label" for="noFlexibility">No</label>
+                <label class="form-check-label" for="noFlexibility">{{
+                  t("modals.no")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -534,15 +588,17 @@
                   name="flexibility"
                   id="sometimesFlexibility"
                 />
-                <label class="form-check-label" for="sometimesFlexibility"
-                  >Sometimes</label
-                >
+                <label class="form-check-label" for="sometimesFlexibility">{{
+                  t("modals.sometimes")
+                }}</label>
               </div>
             </div>
 
             <!-- premature ejaculation -->
             <div class="question bg-light ps-2 py-2 mb-2">
-              <p class="fw-medium">Do you experience premature ejaculation?</p>
+              <p class="fw-medium">
+                {{ t("modals.doYouExperiencePrematureEjaculation") }}
+              </p>
               <div class="form-check">
                 <input
                   class="form-check-input bg-secondary-subtle p-2"
@@ -550,7 +606,9 @@
                   name="ejaculation"
                   id="yesEjaculation"
                 />
-                <label class="form-check-label" for="yesEjaculation">Yes</label>
+                <label class="form-check-label" for="yesEjaculation">{{
+                  t("modals.yes")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -559,7 +617,9 @@
                   name="ejaculation"
                   id="noEjaculation"
                 />
-                <label class="form-check-label" for="noEjaculation">No</label>
+                <label class="form-check-label" for="noEjaculation">{{
+                  t("modals.no")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -568,16 +628,16 @@
                   name="ejaculation"
                   id="sometimesEjaculation"
                 />
-                <label class="form-check-label" for="sometimesEjaculation"
-                  >Sometimes</label
-                >
+                <label class="form-check-label" for="sometimesEjaculation">{{
+                  t("modals.sometimes")
+                }}</label>
               </div>
             </div>
 
             <!-- problem duration -->
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
-                When did your sexual dysfunction problem start?
+                {{ t("modals.whenDidYourSexualDysfunctionProblemStart") }}
               </p>
               <div class="form-check">
                 <input
@@ -586,9 +646,9 @@
                   name="problemDuration"
                   id="less6months"
                 />
-                <label class="form-check-label" for="less6months"
-                  >Less than 6 months ago</label
-                >
+                <label class="form-check-label" for="less6months">{{
+                  t("modals.lessThan6MonthsAgo")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -597,9 +657,9 @@
                   name="problemDuration"
                   id="6to12months"
                 />
-                <label class="form-check-label" for="6to12months"
-                  >6 months to 1 year</label
-                >
+                <label class="form-check-label" for="6to12months">{{
+                  t("modals.lessThan1YearAgo")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -608,9 +668,9 @@
                   name="problemDuration"
                   id="more1year"
                 />
-                <label class="form-check-label" for="more1year"
-                  >More than 1 year</label
-                >
+                <label class="form-check-label" for="more1year">{{
+                  t("modals.moreThan1YearAgo")
+                }}</label>
               </div>
               <div class="form-check">
                 <input
@@ -619,30 +679,34 @@
                   name="problemDuration"
                   id="longer"
                 />
-                <label class="form-check-label" for="longer"
-                  >Longer than that</label
-                >
+                <label class="form-check-label" for="longer">{{
+                  t("modals.longerThanThat")
+                }}</label>
               </div>
             </div>
             <!-- Additional Note: -->
             <div class="question bg-light px-2 py-2 mb-2">
-              <p class="fw-medium">Additional Note:</p>
+              <p class="fw-medium">
+                {{ t("modals.additionalNote") }}
+              </p>
               <div class="form-text">
                 <input
                   type="text"
-                  placeholder="Additional Note"
+                  :placeholder="t('modals.additionalNote')"
                   class="note w-100 rounded-3 p-2"
                 />
               </div>
             </div>
             <div class="d-flex justify-content-end gap-2 mt-4">
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn btn-primary">
+                {{ t("buttons.submit") }}
+              </button>
               <button
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Close
+                {{ t("buttons.close") }}
               </button>
             </div>
           </form>
@@ -653,8 +717,13 @@
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
 export default {
   name: "questionsModal",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       showDiseases: null,

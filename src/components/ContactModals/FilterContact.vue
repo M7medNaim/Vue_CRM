@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">تصفية جهات الاتصال</h5>
+          <h5 class="modal-title">{{ t("modals.filterContacts") }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -14,14 +14,14 @@
           <div class="modal-body">
             <!-- Date Range Filter -->
             <div class="mb-3">
-              <label class="form-label">تاريخ الإنشاء</label>
+              <label class="form-label">{{ t("modals.created_at") }}</label>
               <div class="row">
                 <div class="col-6">
                   <input
                     type="date"
                     class="form-control"
                     v-model="filterData.startDate"
-                    placeholder="من تاريخ"
+                    :placeholder="t('modals.fromDate')"
                   />
                 </div>
                 <div class="col-6">
@@ -29,7 +29,7 @@
                     type="date"
                     class="form-control"
                     v-model="filterData.endDate"
-                    placeholder="إلى تاريخ"
+                    :placeholder="t('modals.toDate')"
                   />
                 </div>
               </div>
@@ -38,13 +38,15 @@
           <div
             class="modal-footer d-flex justify-content-between align-items-center"
           >
-            <button type="submit" class="btn btn-primary">تطبيق الفلتر</button>
+            <button type="submit" class="btn btn-primary">
+              {{ t("buttons.applyFilters") }}
+            </button>
             <button
               type="button"
               class="btn btn-secondary"
               @click="resetFilters"
             >
-              إعادة تعيين
+              {{ t("buttons.resetFilters") }}
             </button>
           </div>
         </form>
@@ -57,7 +59,7 @@
 import { ref, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "FilterContact",
   emits: ["apply-filters", "reset-filters"],
@@ -65,6 +67,7 @@ export default {
   setup(props, { emit }) {
     const toast = useToast();
     const modalInstance = ref(null);
+    const { t } = useI18n();
 
     const filterData = ref({
       startDate: "",
@@ -74,11 +77,11 @@ export default {
     const openFilterModal = () => {
       try {
         modalInstance.value.show();
-        toast.info("يمكنك تحديد معايير الفلترة", {
+        toast.info(t("modals.youCanDefineFilterCriteria"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("حدث خطأ في فتح نافذة الفلترة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
         console.error("Error opening modal:", error);
@@ -94,11 +97,11 @@ export default {
 
         emit("apply-filters", filters);
         modalInstance.value.hide();
-        toast.success("تم تطبيق الفلتر بنجاح", {
+        toast.success(t("success.applyFilters"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("فشل في تطبيق الفلتر", {
+        toast.error(t("error.applyFilters"), {
           timeout: 3000,
         });
         console.error("Error applying filters:", error);
@@ -113,11 +116,11 @@ export default {
         };
         emit("reset-filters");
         modalInstance.value.hide();
-        toast.success("تم إعادة تعيين الفلتر بنجاح", {
+        toast.success(t("success.resetFilters"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("فشل في إعادة تعيين الفلتر", {
+        toast.error(t("error.resetFilters"), {
           timeout: 3000,
         });
         console.error("Error resetting filters:", error);
@@ -128,7 +131,7 @@ export default {
       try {
         modalInstance.value = new Modal(document.getElementById("filterModal"));
       } catch (error) {
-        toast.error("حدث خطأ في تهيئة نافذة الفلترة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
         console.error("Error initializing modal:", error);
@@ -140,6 +143,7 @@ export default {
       openFilterModal,
       applyFilters,
       resetFilters,
+      t,
     };
   },
 };

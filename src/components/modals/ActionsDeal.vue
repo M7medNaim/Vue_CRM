@@ -5,7 +5,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            Change Stage ({{ props.selectedRows.length }} items)
+            {{ t("modals.changeStage") }} ({{ props.selectedRows.length }}
+            {{ t("modals.items") }})
           </h5>
           <button
             type="button"
@@ -15,7 +16,7 @@
         </div>
         <div class="modal-body">
           <select v-model="newStage" class="form-select">
-            <option value="">Select Stage</option>
+            <option value="">{{ t("modals.selectStage") }}</option>
             <option
               v-for="option in stageOptions"
               :key="option.value"
@@ -31,7 +32,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cancel
+            {{ t("buttons.cancel") }}
           </button>
           <button
             type="button"
@@ -43,7 +44,7 @@
               v-if="isLoading"
               class="spinner-border spinner-border-sm me-2"
             ></span>
-            Apply
+            {{ t("buttons.apply") }}
           </button>
         </div>
       </div>
@@ -107,7 +108,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            Assign User ({{ selectedRows.length }} items)
+            {{ t("modals.assignUser") }} ({{ selectedRows.length }}
+            {{ t("modals.items") }})
           </h5>
           <button
             type="button"
@@ -117,7 +119,7 @@
         </div>
         <div class="modal-body">
           <select v-model="newUser" class="form-select">
-            <option value="">Select User</option>
+            <option value="">{{ t("modals.selectUser") }}</option>
             <option
               v-for="option in userOptions"
               :key="option.value"
@@ -133,7 +135,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cancel
+            {{ t("buttons.cancel") }}
           </button>
           <button
             type="button"
@@ -145,7 +147,7 @@
               v-if="isLoading"
               class="spinner-border spinner-border-sm me-2"
             ></span>
-            Apply
+            {{ t("buttons.apply") }}
           </button>
         </div>
       </div>
@@ -158,7 +160,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            Change Source ({{ selectedRows.length }} items)
+            {{ t("modals.changeSource") }} ({{ selectedRows.length }}
+            {{ t("modals.items") }})
           </h5>
           <button
             type="button"
@@ -168,7 +171,7 @@
         </div>
         <div class="modal-body">
           <select v-model="newSource" class="form-select">
-            <option value="">Select Source</option>
+            <option value="">{{ t("modals.selectSource") }}</option>
             <option
               v-for="option in sourceOptions"
               :key="option.value"
@@ -184,7 +187,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cancel
+            {{ t("buttons.cancel") }}
           </button>
           <button
             type="button"
@@ -196,7 +199,7 @@
               v-if="isLoading"
               class="spinner-border spinner-border-sm me-2"
             ></span>
-            Apply
+            {{ t("buttons.apply") }}
           </button>
         </div>
       </div>
@@ -208,7 +211,8 @@
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { getStages, getSources } from "@/plugins/services/authService";
-
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const props = defineProps({
   selectedRows: {
     type: Array,

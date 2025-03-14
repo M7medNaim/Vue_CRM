@@ -4,9 +4,9 @@
   >
     <button type="submit" class="btn btn-primary" :disabled="loading">
       <span v-if="loading">
-        <i class="fas fa-spinner fa-spin"></i> جاري التعديل...
+        <i class="fas fa-spinner fa-spin"></i> {{ t("modals.editing") }}
       </span>
-      <span v-else>تعديل</span>
+      <span v-else>{{ t("buttons.edit") }}</span>
     </button>
 
     <button
@@ -15,7 +15,7 @@
       @click="handleClose"
       data-bs-dismiss="modal"
     >
-      إغلاق
+      {{ t("buttons.close") }}
     </button>
   </div>
 </template>
@@ -23,13 +23,13 @@
 <script>
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ProfileButtons",
   props: ["loading"],
   setup() {
     const toast = useToast();
-
+    const { t } = useI18n();
     const handleClose = () => {
       try {
         const modal = document.getElementById("EditProfileModal");
@@ -38,12 +38,12 @@ export default {
           modalInstance.hide();
           document.querySelector(".modal-backdrop")?.remove();
           document.body.classList.remove("modal-open");
-          toast.success("تم إغلاق نافذة تعديل البروفايل", {
+          toast.success(t("success.profileClosed"), {
             timeout: 3000,
           });
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء إغلاق النافذة", {
+        toast.error(t("errors.profileClosedError"), {
           timeout: 3000,
         });
       }
@@ -51,6 +51,7 @@ export default {
 
     return {
       handleClose,
+      t,
     };
   },
 };

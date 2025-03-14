@@ -4,7 +4,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ isEditing ? "تعديل الدور" : "إضافة دور جديد" }}
+            {{ isEditing ? $t("modals.editRole") : $t("modals.addRole") }}
           </h5>
           <button
             type="button"
@@ -14,21 +14,23 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label required">اسم الدور</label>
+            <label class="form-label required">{{
+              $t("modals.roleName")
+            }}</label>
             <input
               type="text"
               class="form-control"
               v-model="role.name"
-              placeholder="اسم الدور"
+              :placeholder="$t('modals.roleName')"
               required
             />
           </div>
           <div class="mb-3">
-            <label class="form-label">تم الإنشاء في</label>
+            <label class="form-label">{{ $t("modals.created_at") }}</label>
             <input type="date" class="form-control" v-model="role.create_at" />
           </div>
           <div class="mb-3">
-            <label class="form-label">الصلاحيات</label>
+            <label class="form-label">{{ $t("modals.permissions") }}</label>
             <div class="row">
               <div
                 class="col-md-4 mb-2"
@@ -54,7 +56,7 @@
             class="btn btn-secondary"
             @click="$emit('close')"
           >
-            إلغاء
+            {{ $t("buttons.cancel") }}
           </button>
           <button
             type="button"
@@ -62,7 +64,7 @@
             @click="save"
             :disabled="!role.name"
           >
-            حفظ
+            {{ $t("buttons.save") }}
           </button>
         </div>
       </div>
@@ -73,6 +75,7 @@
 <script>
 import { ref, onMounted, watch } from "vue";
 import { Modal } from "bootstrap";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "RoleModal",
@@ -93,17 +96,17 @@ export default {
       type: Array,
       required: true,
       default: () => [
-        "إدارة المستخدمين",
-        "إدارة الأدوار",
-        "إدارة المحتوى",
-        "إدارة الإعدادات",
-        "عرض التقارير",
-        "عرض المحتوى",
+        this.t("modals.usersManagement"),
+        this.t("modals.rolesManagement"),
+        this.t("modals.contentManagement"),
+        this.t("modals.settingsManagement"),
+        this.t("modals.reportsView"),
+        this.t("modals.contentView"),
       ],
     },
   },
-  emits: ["save", "close"],
   setup(props, { emit }) {
+    const { t } = useI18n();
     const modal = ref(null);
     const role = ref({ ...props.currentRole });
 
@@ -139,8 +142,11 @@ export default {
     return {
       role,
       save,
+      t,
     };
   },
+
+  emits: ["save", "close"],
 };
 </script>
 

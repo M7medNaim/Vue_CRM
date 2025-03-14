@@ -120,7 +120,7 @@ export default {
         this.$router.push("/login");
       } catch (error) {
         console.error("Error logging out:", error);
-        this.toast.error("حدث خطأ أثناء تسجيل الخروج", {
+        this.toast.error(this.t("topHeader.logoutError"), {
           timeout: 3000,
         });
       }
@@ -136,13 +136,13 @@ export default {
 
         localStorage.setItem("backgroundImage", randomImage);
 
-        this.toast.success("تم تغيير خلفية النظام بنجاح", {
+        this.toast.success(this.t("topHeader.backgroundChangeSuccess"), {
           timeout: 3000,
           id: "background-change",
           singleton: true,
         });
       } catch (error) {
-        this.toast.error("حدث خطأ أثناء تغيير الخلفية", {
+        this.toast.error(this.t("topHeader.backgroundChangeError"), {
           timeout: 3000,
           id: "background-error",
           singleton: true,

@@ -10,7 +10,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="dealModalLabel">Create Deal</h5>
+          <h5 class="modal-title" id="dealModalLabel">
+            {{ t("modals.createDeal") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -34,14 +36,15 @@ import DealForm from "../CreateDealElements/DealForm.vue";
 import DealButtons from "../CreateDealElements/DealButtons.vue";
 import { createDeal } from "@/plugins/services/authService";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "DealModal",
   components: { DealForm, DealButtons },
   emits: ["add-deal"],
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
-    return { toast };
+    return { toast, t };
   },
   data() {
     return {
@@ -86,7 +89,7 @@ export default {
         const response = await createDeal(dealData);
 
         if (response.data) {
-          this.toast.success("تم إنشاء الصفقة بنجاح", {
+          this.toast.success(this.t("success.createDeal"), {
             timeout: 3000,
           });
           this.$emit("add-deal", response.data.data);
@@ -97,7 +100,7 @@ export default {
         }
       } catch (error) {
         this.toast.error(
-          error.response?.data?.message || "حدث خطأ، يرجى المحاولة مرة أخرى",
+          error.response?.data?.message || this.t("error.createDeal"),
           {
             timeout: 3000,
           }

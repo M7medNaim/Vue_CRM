@@ -5,7 +5,7 @@
         <!-- Status Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>Status</span>
+            <span>{{ t("modals.status") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3 d-flex justify-content-center flex-wrap gap-2">
@@ -31,7 +31,7 @@
         <!-- Source Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>Source</span>
+            <span>{{ t("modals.source") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -54,7 +54,7 @@
         <!-- Stage Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>Stage</span>
+            <span>{{ t("modals.stage") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -77,7 +77,7 @@
         <!-- Supervisor Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>Supervisor</span>
+            <span>{{ t("modals.supervisor") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -100,7 +100,7 @@
         <!-- Representative Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>Representative</span>
+            <span>{{ t("modals.representative") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -123,7 +123,7 @@
         <!-- Package Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>Packages</span>
+            <span>{{ t("modals.packages") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -146,7 +146,7 @@
         <!-- Created Date Range -->
         <div class="row mb-3">
           <div class="col-3">
-            <span>Created Date Range</span>
+            <span>{{ t("modals.createdDateRange") }}</span>
           </div>
           <div
             class="col-9 d-flex justify-content-center align-items-center gap-3"
@@ -167,7 +167,7 @@
         <!-- Modified Date Range -->
         <div class="row mb-3">
           <div class="col-3">
-            <span>Modified Date Range</span>
+            <span>{{ t("modals.modifiedDateRange") }}</span>
           </div>
           <div
             class="col-9 d-flex justify-content-center align-items-center gap-3"
@@ -191,7 +191,7 @@
 
 <script>
 import { ref, watch } from "vue";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "FilterCrmListFormVue",
   props: {
@@ -203,6 +203,7 @@ export default {
   },
   emits: ["update:filters", "update:selectedStatuses"],
   setup(props, { emit }) {
+    const { t } = useI18n();
     const localFilters = ref({
       source: "facebook",
       stage: "newDeal",
@@ -262,6 +263,7 @@ export default {
       localFilters,
       statuses,
       toggleStatus,
+      t,
       sources: [
         { value: "facebook", label: "Facebook" },
         { value: "twitter", label: "Twitter" },

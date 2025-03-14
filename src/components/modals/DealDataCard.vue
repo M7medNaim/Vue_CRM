@@ -13,7 +13,7 @@
         >
           <div class="d-flex align-items-center gap-4">
             <h5 class="modal-title" id="dealDataCardLabel">
-              Edit Deal
+              {{ t("modals.editDeal") }}
               <button
                 type="button"
                 @click="toggleEditMode"
@@ -29,21 +29,23 @@
           </div>
           <div class="source">
             <i class="fa-solid fa-circle-exclamation me-1"></i>
-            <span>Source: Whatsapp</span>
+            <span>{{ t("modals.source") }}: Whatsapp</span>
           </div>
           <div class="d-flex justify-content-end align-items-center gap-2">
             <button class="btn border-none text-primary" @click="startCall">
-              <i class="fa-solid fa-phone-volume fs-5"></i> Start a Call
+              <i class="fa-solid fa-phone-volume fs-5"></i>
+              {{ t("modals.startCall") }}
             </button>
             <button
               class="btn border-none text-primary"
               @click="openWhatsappModal"
             >
-              <i class="fab fa-whatsapp border-none text-primary fs-5"></i> Chat
-              via Whatsapp
+              <i class="fab fa-whatsapp border-none text-primary fs-5"></i>
+              {{ t("modals.chatViaWhatsapp") }}
             </button>
             <button class="btn border-none text-primary" @click="sendEmail">
-              <i class="fas fa-envelope fs-5"></i> Send an E-mail
+              <i class="fas fa-envelope fs-5"></i>
+              {{ t("modals.sendEmail") }}
             </button>
             <button
               type="button"
@@ -83,10 +85,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-a"></i> Full Name<span
-                      class="text-danger"
-                      >*</span
-                    >
+                    ><i class="fa-solid fa-a"></i> {{ t("modals.fullName")
+                    }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -95,7 +95,7 @@
                       type="text"
                       class="form-control bg-light text-secondary py-2"
                       v-model="customerData.fullName"
-                      placeholder="Full Name"
+                      :placeholder="t('modals.fullName')"
                       :readonly="!isEditMode"
                     />
                     <button
@@ -115,10 +115,8 @@
               >
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-a"></i> Nick Name<span
-                      class="text-danger"
-                      >*</span
-                    >
+                    ><i class="fa-solid fa-a"></i> {{ t("modals.nickName")
+                    }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -126,7 +124,7 @@
                     type="text"
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.nickName"
-                    placeholder="Nick Name"
+                    :placeholder="t('modals.nickName')"
                     :readonly="!isEditMode"
                   />
                 </div>
@@ -136,10 +134,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-phone-volume"></i> Phone<span
-                      class="text-danger"
-                      >*</span
-                    >
+                    ><i class="fa-solid fa-phone-volume"></i>
+                    {{ t("modals.phone") }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -148,7 +144,7 @@
                       type="text"
                       class="form-control bg-light text-secondary py-2"
                       v-model="customerData.phone"
-                      placeholder="Full Name"
+                      :placeholder="t('modals.phone')"
                       :readonly="!isEditMode"
                     />
                     <button
@@ -168,10 +164,8 @@
               >
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-phone-volume"></i> Phone 2<span
-                      class="text-danger"
-                      >*</span
-                    >
+                    ><i class="fa-solid fa-phone-volume"></i>
+                    {{ t("modals.phone2") }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -179,7 +173,7 @@
                     type="text"
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.phone2"
-                    placeholder="Phone 2"
+                    :placeholder="t('modals.phone2')"
                     :readonly="!isEditMode"
                   />
                 </div>
@@ -189,10 +183,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-envelope"></i> Email<span
-                      class="text-danger"
-                      >*</span
-                    >
+                    ><i class="fa-solid fa-envelope"></i> {{ t("modals.email")
+                    }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -200,7 +192,7 @@
                     type="text"
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.email"
-                    placeholder="Email"
+                    :placeholder="t('modals.email')"
                     :readonly="!isEditMode"
                   />
                 </div>
@@ -209,7 +201,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-note-sticky"></i> Notes</label
+                    ><i class="fa-solid fa-note-sticky"></i>
+                    {{ t("modals.note") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -226,7 +219,7 @@
                 <div class="col-2">
                   <label for=""
                     ><i class="fa-solid fa-circle-question"></i>
-                    Questions</label
+                    {{ t("modals.questions") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -234,7 +227,7 @@
                     class="btn btn-primary w-100"
                     @click="openQuestionsModal"
                   >
-                    View Report
+                    {{ t("modals.viewReport") }}
                   </button>
                 </div>
               </div>
@@ -243,7 +236,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-user"></i> Assign Company</label
+                    ><i class="fa-solid fa-user"></i>
+                    {{ t("modals.assignCompany") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -261,8 +255,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-users"></i> Assign
-                    Representative</label
+                    ><i class="fa-solid fa-users"></i>
+                    {{ t("modals.assignRepresentative") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -271,7 +265,9 @@
                     v-model="customerData.representative"
                     :readonly="!isEditMode"
                   >
-                    <option value="">Select Representative</option>
+                    <option value="">
+                      {{ t("modals.selectRepresentative") }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -280,7 +276,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-cubes"></i> Packages</label
+                    ><i class="fa-solid fa-cubes"></i>
+                    {{ t("modals.packages") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -294,13 +291,15 @@
                         class="form-select bg-light"
                         v-model="item.serviceSelect"
                       >
-                        <option value="" disabled>Select a service</option>
+                        <option value="" disabled>
+                          {{ t("modals.selectService") }}
+                        </option>
                       </select>
                       <input
                         type="text"
                         class="bg-light text-secondary p-2"
                         v-model="item.serviceInput"
-                        placeholder="service"
+                        :placeholder="t('modals.service')"
                       />
                       <button
                         class="btn btn-secondary"
@@ -323,8 +322,9 @@
               <div class="row mb-3">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-cubes"></i> Deal Status
-                  </label>
+                    ><i class="fa-solid fa-cubes"></i>
+                    {{ t("modals.dealStatus") }}</label
+                  >
                 </div>
                 <div class="col-10">
                   <span class="fw-bolder" style="font-size: 14px"
@@ -334,20 +334,20 @@
               </div>
               <div class="row">
                 <div class="col-6 pt-2">
-                  <h5>History</h5>
+                  <h5>{{ t("modals.history") }}</h5>
                 </div>
                 <div
                   class="col-6 d-flex justify-content-end align-items-center gap-2"
                   v-if="isEditMode"
                 >
                   <button class="btn btn-primary px-4 py-2" @click="confirm">
-                    Confirm
+                    {{ t("buttons.confirm") }}
                   </button>
                   <button
                     class="btn btn-secondary px-4 py-2"
                     data-bs-dismiss="modal"
                   >
-                    Cancel
+                    {{ t("buttons.cancel") }}
                   </button>
                 </div>
               </div>
@@ -419,16 +419,16 @@
                       class="btn btn-light text-primary me-1"
                       style="background-color: #eee"
                     >
-                      Comment
+                      {{ t("modals.comment") }}
                     </span>
                     <input
                       type="text"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.comment"
-                      placeholder="Add a New Task"
+                      :placeholder="t('modals.addNewComment')"
                     />
                     <button class="btn btn-primary py-1 px-4" type="submit">
-                      Submit
+                      {{ t("buttons.submit") }}
                     </button>
                   </div>
                 </div>
@@ -473,22 +473,22 @@
                       class="btn btn-light text-primary me-1 px-4"
                       style="background-color: #eee"
                     >
-                      Tasks
+                      {{ t("modals.tasks") }}
                     </span>
                     <input
                       type="text"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.task"
-                      placeholder="Add a New Task"
+                      :placeholder="t('modals.addNewTask')"
                     />
                     <input
                       type="date"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.date"
-                      placeholder="Select a Date"
+                      :placeholder="t('modals.selectDate')"
                     />
                     <button class="btn btn-primary py-1 px-4" type="submit">
-                      Submit
+                      {{ t("buttons.submit") }}
                     </button>
                   </div>
                 </div>
@@ -496,9 +496,9 @@
                   <div
                     class="row bg-light-subtle border-top border-bottom py-1"
                   >
-                    <div class="col-5">Description</div>
-                    <div class="col-5">DATE</div>
-                    <div class="col-2">STATUS</div>
+                    <div class="col-5">{{ t("modals.description") }}</div>
+                    <div class="col-5">{{ t("modals.date") }}</div>
+                    <div class="col-2">{{ t("modals.status") }}</div>
                   </div>
                   <!-- data Tasks -->
                   <div
@@ -513,7 +513,7 @@
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
                         v-model="task.date"
-                        placeholder="Select a Date"
+                        :placeholder="t('modals.selectDate')"
                       />
                     </div>
                     <div class="col-2">
@@ -587,11 +587,12 @@ import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "DealDataCard",
   components: { RatingStars, ViewReport, WhatsappModal },
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const stages = [
       { id: "new", name: "New Deal", color: "#4CAF50" },
@@ -715,12 +716,12 @@ export default {
           }
         });
 
-        toast.success(`تم تغيير المرحلة إلى ${stageName} بنجاح`, {
+        toast.success(`${t("success.stageChanged")} ${stageName}`, {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error changing stage:", error);
-        toast.error("حدث خطأ أثناء تغيير المرحلة", {
+        toast.error(t("error.changingStage"), {
           timeout: 3000,
         });
       }
@@ -754,7 +755,7 @@ export default {
     };
 
     const startCall = () => {
-      toast.info("جاري بدء المكالمة...", {
+      toast.info(t("success.startCall"), {
         timeout: 3000,
       });
     };
@@ -764,7 +765,7 @@ export default {
     };
 
     const sendEmail = () => {
-      toast.info("جاري فتح نافذة البريد الإلكتروني...", {
+      toast.info(t("success.sendEmail"), {
         timeout: 3000,
       });
     };
@@ -772,13 +773,13 @@ export default {
     const confirm = () => {
       try {
         // Implement save functionality
-        toast.success("تم حفظ التغييرات بنجاح", {
+        toast.success(t("success.saveChanges"), {
           timeout: 3000,
         });
         isEditMode.value = false;
       } catch (error) {
         console.error("Error saving changes:", error);
-        toast.error("حدث خطأ أثناء حفظ التغييرات", {
+        toast.error(t("error.saveChanges"), {
           timeout: 3000,
         });
       }
@@ -787,12 +788,12 @@ export default {
     const updateRating = (newRating) => {
       try {
         rating.value = newRating;
-        toast.success("تم تحديث التقييم بنجاح", {
+        toast.success(t("success.updateRating"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error updating rating:", error);
-        toast.error("حدث خطأ أثناء تحديث التقييم", {
+        toast.error(t("error.updateRating"), {
           timeout: 3000,
         });
       }
@@ -813,12 +814,12 @@ export default {
           serviceSelect: "",
           serviceInput: "",
         });
-        toast.success("تمت إضافة الباقة بنجاح", {
+        toast.success(t("success.addPackage"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error adding package:", error);
-        toast.error("حدث خطأ أثناء إضافة الباقة", {
+        toast.error(t("error.addPackage"), {
           timeout: 3000,
         });
       }
@@ -827,12 +828,12 @@ export default {
     const removePackage = (index) => {
       try {
         packages.value.splice(index, 1);
-        toast.success("تم حذف الباقة بنجاح", {
+        toast.success(t("success.removePackage"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error removing package:", error);
-        toast.error("حدث خطأ أثناء حذف الباقة", {
+        toast.error(t("error.removePackage"), {
           timeout: 3000,
         });
       }
@@ -844,14 +845,14 @@ export default {
           tasks.value[index].toDelete = true;
           setTimeout(() => {
             tasks.value.splice(index, 1);
-            toast.success("تم إكمال المهمة بنجاح", {
+            toast.success(t("success.completeTask"), {
               timeout: 3000,
             });
           }, 500);
         }
       } catch (error) {
         console.error("Error completing task:", error);
-        toast.error("حدث خطأ أثناء إكمال المهمة", {
+        toast.error(t("error.completeTask"), {
           timeout: 3000,
         });
       }
@@ -861,12 +862,12 @@ export default {
       try {
         const modal = new Modal(document.getElementById("questionsModal"));
         modal.show();
-        toast.info("تم فتح تقرير الأسئلة", {
+        toast.info(t("success.openQuestionsModal"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error opening questions modal:", error);
-        toast.error("حدث خطأ أثناء فتح تقرير الأسئلة", {
+        toast.error(t("error.openQuestionsModal"), {
           timeout: 3000,
         });
       }
@@ -914,7 +915,7 @@ export default {
     const toggleEditMode = () => {
       isEditMode.value = !isEditMode.value;
       if (isEditMode.value) {
-        toast.info("يمكنك تعديل البيانات الآن", {
+        toast.info(t("success.editMode"), {
           timeout: 3000,
         });
       }
@@ -927,12 +928,12 @@ export default {
       try {
         const modal = new Modal(document.getElementById("whatsappModal"));
         modal.show();
-        toast.info("يمكنك إرسال رسالة واتساب", {
+        toast.info(t("success.openWhatsappModal"), {
           timeout: 3000,
         });
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
-        toast.error("حدث خطأ أثناء فتح نافذة الواتساب", {
+        toast.error(t("error.openWhatsappModal"), {
           timeout: 3000,
         });
       }
@@ -970,6 +971,7 @@ export default {
       handleDoubleClick,
       isEditMode,
       openWhatsappModal,
+      t,
     };
   },
 };

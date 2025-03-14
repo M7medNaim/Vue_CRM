@@ -4,9 +4,9 @@
   >
     <button type="submit" class="btn btn-primary" :disabled="loading">
       <span v-if="loading">
-        <i class="fas fa-spinner fa-spin"></i> جاري التحديث...
+        <i class="fas fa-spinner fa-spin"></i> {{ t("modals.updating") }}
       </span>
-      <span v-else>تأكيد</span>
+      <span v-else>{{ t("buttons.confirm") }}</span>
     </button>
 
     <button
@@ -15,7 +15,7 @@
       @click="handleClose"
       data-bs-dismiss="modal"
     >
-      إغلاق
+      {{ t("buttons.close") }}
     </button>
   </div>
 </template>
@@ -23,14 +23,14 @@
 <script>
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ChangePasswordButtons",
   props: ["loading"],
   emits: ["close"],
   setup(props, { emit }) {
     const toast = useToast();
-
+    const { t } = useI18n();
     const handleClose = () => {
       try {
         const modal = document.getElementById("changePasswordModal");
@@ -42,7 +42,7 @@ export default {
           emit("close");
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء إغلاق النافذة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
       }
@@ -50,6 +50,7 @@ export default {
 
     return {
       handleClose,
+      t,
     };
   },
 };

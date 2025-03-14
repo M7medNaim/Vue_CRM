@@ -17,7 +17,7 @@
     />
   </div>
   <div class="mb-3">
-    <label for="name" class="form-label">الاسم</label>
+    <label for="name" class="form-label">{{ t("modals.name") }}</label>
     <input
       type="text"
       class="form-control"
@@ -28,7 +28,7 @@
   </div>
 
   <div class="mb-3">
-    <label for="email" class="form-label">البريد الإلكتروني</label>
+    <label for="email" class="form-label">{{ t("modals.email") }}</label>
     <input
       type="email"
       class="form-control"
@@ -47,9 +47,14 @@
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
 export default {
   name: "ProfileForm",
   props: ["name", "email", "image"],
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       localName: this.name,

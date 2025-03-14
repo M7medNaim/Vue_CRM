@@ -47,18 +47,20 @@
     <div v-if="deal.attention" class="col-12 pt-1">
       <div class="notes">
         <i class="fa-solid fa-triangle-exclamation"></i>
-        <span class="px-2">ملاحظة ادارية</span>
+        <span class="px-2">{{ t("modals.attention") }}</span>
         <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
     </div>
 
     <!-- التواريخ -->
     <div class="col-12 mt-2 d-flex">
-      <span class="text-success fs-7 pe-1">تم الانشاء: </span>
+      <span class="text-success fs-7 pe-1">{{ t("modals.created_at") }}</span>
       <p class="fs-7">{{ deal.created_at }}</p>
     </div>
     <div class="col-12 d-flex">
-      <span class="text-black-50 fs-7 pe-1">اخر تعديل: </span>
+      <span class="text-black-50 fs-7 pe-1">{{
+        t("modals.last_updated")
+      }}</span>
       <p class="fs-7">{{ deal.last_updated }}</p>
     </div>
 
@@ -69,8 +71,14 @@
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
+
 export default {
   name: "CustomerCard",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     deal: {
       type: Object,

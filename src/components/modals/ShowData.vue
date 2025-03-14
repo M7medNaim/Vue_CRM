@@ -10,7 +10,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="showDataModalLabel">Show Deal Details</h5>
+          <h5 class="modal-title" id="showDataModalLabel">
+            {{ $t("modals.showDataModalTitle") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -23,9 +25,9 @@
           <div class="row">
             <div class="col-12">
               <!-- Deal Information -->
-              <h6 class="mb-3">Deal Information</h6>
+              <h6 class="mb-3">{{ $t("modals.dealInformation") }}</h6>
               <div class="mb-3">
-                <label class="form-label">Stage Name</label>
+                <label class="form-label">{{ $t("modals.stageName") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -34,7 +36,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Source Name</label>
+                <label class="form-label">{{ $t("modals.sourceName") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -43,7 +45,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Rating</label>
+                <label class="form-label">{{ $t("modals.rating") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -52,7 +54,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Nots</label>
+                <label class="form-label">{{ $t("modals.note") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -61,7 +63,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Created At</label>
+                <label class="form-label">{{ $t("modals.created_at") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -70,7 +72,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Updated At</label>
+                <label class="form-label">{{ $t("modals.updated_at") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -80,9 +82,9 @@
               </div>
 
               <!-- Contact Information -->
-              <h6 class="mb-3 mt-4">Contact Information</h6>
+              <h6 class="mb-3 mt-4">{{ $t("modals.contactInformation") }}</h6>
               <div class="mb-3">
-                <label class="form-label">Name</label>
+                <label class="form-label">{{ $t("modals.name") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -91,7 +93,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Nickname</label>
+                <label class="form-label">{{ $t("modals.nickname") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -100,7 +102,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Email</label>
+                <label class="form-label">{{ $t("modals.email") }}</label>
                 <input
                   type="email"
                   class="form-control"
@@ -109,7 +111,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Address</label>
+                <label class="form-label">{{ $t("modals.address") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -118,7 +120,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Country</label>
+                <label class="form-label">{{ $t("modals.country") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -127,7 +129,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label class="form-label">Phone Number</label>
+                <label class="form-label">{{ $t("modals.phone") }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -147,7 +149,7 @@
 import { ref, watch } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "showDataModal",
   props: {
@@ -158,6 +160,7 @@ export default {
   },
   setup(props) {
     const toast = useToast();
+    const { t } = useI18n();
     const showDataModalRef = ref(null);
     const dealData = ref(null);
 
@@ -166,7 +169,7 @@ export default {
       (newData) => {
         if (newData) {
           dealData.value = newData;
-          toast.success("تم جلب بيانات الصفقة بنجاح", {
+          toast.success(this.$t("success.showData"), {
             timeout: 3000,
           });
         }
@@ -185,7 +188,7 @@ export default {
         const modal = new Modal(modalElement);
         modal.show();
       } catch (error) {
-        toast.error("حدث خطأ في عرض البيانات", {
+        toast.error(this.$t("error.showData"), {
           timeout: 3000,
         });
         console.error("Error opening modal:", error);
@@ -200,7 +203,7 @@ export default {
           modal.hide();
         }
       } catch (error) {
-        toast.error("حدث خطأ في إغلاق النافذة", {
+        toast.error(this.$t("error.closeModal"), {
           timeout: 3000,
         });
         console.error("Error closing modal:", error);
@@ -213,6 +216,7 @@ export default {
       showDataModalRef,
       dealData,
       formatDate,
+      t,
     };
   },
 };

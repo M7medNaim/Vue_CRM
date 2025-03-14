@@ -42,10 +42,11 @@ import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { ref } from "vue";
 import { changeLanguage } from "@/i18n";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ChangeLang",
   setup() {
+    const { t } = useI18n();
     const toast = useToast();
     const selectedLang = ref(localStorage.getItem("locale") || "en");
 
@@ -55,7 +56,7 @@ export default {
         const modalInstance = new Modal(modal);
         modalInstance.show();
       } catch (error) {
-        toast.error("حدث خطأ أثناء فتح نافذة تغيير اللغة", {
+        toast.error(t("error.openModal"), {
           timeout: 3000,
           id: "change-lang-open-error",
           singleton: true,
@@ -73,7 +74,7 @@ export default {
           document.body.classList.remove("modal-open");
         }
       } catch (error) {
-        toast.error("حدث خطأ أثناء إغلاق النافذة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
           id: "change-lang-close-error",
           singleton: true,
@@ -84,7 +85,7 @@ export default {
     const submitForm = async () => {
       try {
         if (!selectedLang.value) {
-          toast.error("الرجاء اختيار اللغة", {
+          toast.error(t("error.selectLang"), {
             timeout: 3000,
             id: "change-lang-validation",
             singleton: true,
@@ -95,7 +96,7 @@ export default {
         changeLanguage(selectedLang.value);
         closeChangeLang();
       } catch (error) {
-        toast.error("حدث خطأ أثناء تغيير اللغة", {
+        toast.error(t("error.changeLang"), {
           timeout: 3000,
           id: "change-lang-submit-error",
           singleton: true,
@@ -113,6 +114,7 @@ export default {
       closeChangeLang,
       submitForm,
       changeLang,
+      t,
     };
   },
 };

@@ -3,53 +3,59 @@
     <div class="row">
       <div class="col-12">
         <div class="mb-3">
-          <label for="name" class="form-label">Name</label>
+          <label for="name" class="form-label">{{ t("modals.name") }}</label>
           <input
             type="text"
             class="form-control"
             id="userName"
             v-model="localFormData.contact.name"
-            placeholder="ادخل الاسم"
+            :placeholder="t('modals.name')"
           />
         </div>
         <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
+          <label for="email" class="form-label">{{ t("modals.email") }}</label>
           <input
             type="email"
             class="form-control"
             id="email"
             v-model="localFormData.contact.email"
-            placeholder="Enter email"
+            :placeholder="t('modals.email')"
           />
         </div>
         <div class="mb-3">
-          <label for="phone" class="form-label">Phone Number</label>
+          <label for="phone" class="form-label">{{ t("modals.phone") }}</label>
           <input
             type="text"
             class="form-control"
             id="phone"
             v-model="localFormData.contact.phones[0].phone"
-            placeholder="ادخل رقم الهاتف"
+            :placeholder="t('modals.phone')"
           />
         </div>
         <div class="mb-3">
-          <label for="description" class="form-label">Notes</label>
+          <label for="description" class="form-label">{{
+            t("modals.notes")
+          }}</label>
           <input
             type="text"
             class="form-control"
             id="description"
             v-model="localFormData.description"
-            placeholder="ادخل الملاحظات"
+            :placeholder="t('modals.notes')"
           />
         </div>
         <div class="mb-3">
-          <label for="source" class="form-label">Source</label>
+          <label for="source" class="form-label">{{
+            t("modals.source")
+          }}</label>
           <select
             class="form-select"
             id="source"
             v-model="localFormData.source"
           >
-            <option value="" disabled selected>Select Source</option>
+            <option value="" disabled selected>
+              {{ t("modals.selectSource") }}
+            </option>
             <option
               v-for="source in sources"
               :key="source.value"
@@ -77,14 +83,16 @@
           </select>
         </div> -->
         <div class="mb-3">
-          <label for="responsible" class="form-label">Responsible Person</label>
+          <label for="responsible" class="form-label">{{
+            t("modals.responsiblePerson")
+          }}</label>
           <select
             class="form-select"
             id="responsible"
             v-model="localFormData.responsible_id"
           >
             <option value="" disabled selected>
-              Select Responsible Person
+              {{ t("modals.selectResponsiblePerson") }}
             </option>
             <option v-for="user in users" :key="user.id" :value="user.id">
               {{ user.name }}
@@ -103,7 +111,7 @@
 import { ref, onMounted, watch } from "vue";
 import { getSources, getStages } from "@/plugins/services/authService";
 import RatingStars from "@/components/CreateDealElements/RatingStars.vue";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "DealForm",
   components: {
@@ -116,6 +124,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const { t } = useI18n();
     // const users = ref([]);
     const localFormData = ref({
       ...props.formData,
@@ -167,6 +176,7 @@ export default {
       localFormData,
       sources,
       stages,
+      t,
     };
   },
 };

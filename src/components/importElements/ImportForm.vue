@@ -12,7 +12,7 @@
             accept=".xlsx,.xls,.csv"
           />
           <small class="text-muted">
-            Allowed file types: .xlsx, .xls, .csv
+            {{ t("upload.allowed_file_types") }}
           </small>
           <div v-if="fileError" class="text-danger mt-1">
             {{ fileError }}
@@ -22,9 +22,13 @@
       <div v-if="isFileValid" class="chooseHeader">
         <div class="col-12">
           <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
+            <label for="description" class="form-label">
+              {{ t("modals.description") }}
+            </label>
             <select v-model="description" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
+              <option value="" disabled selected>
+                {{ t("modals.select_header") }}
+              </option>
               <option
                 v-for="option in options"
                 :key="option.value"
@@ -37,9 +41,13 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="source" class="form-label">Source</label>
+            <label for="source" class="form-label">
+              {{ t("modals.source") }}
+            </label>
             <select v-model="source" class="text-secondary form-select">
-              <option value="" disabled selected>Any</option>
+              <option value="" disabled selected>
+                {{ t("modals.any") }}
+              </option>
               <option
                 v-for="source in sources"
                 :key="source.id"
@@ -52,9 +60,13 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
+            <label for="name" class="form-label">
+              {{ t("modals.name") }}
+            </label>
             <select v-model="name" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
+              <option value="" disabled selected>
+                {{ t("modals.select_header") }}
+              </option>
               <option
                 v-for="option in options"
                 :key="option.value"
@@ -67,9 +79,13 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="phone" class="form-label">Phone</label>
+            <label for="phone" class="form-label">
+              {{ t("modals.phone") }}
+            </label>
             <select v-model="phone" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
+              <option value="" disabled selected>
+                {{ t("modals.select_header") }}
+              </option>
               <option
                 v-for="option in options"
                 :key="option.value"
@@ -82,9 +98,13 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="comment" class="form-label">Comments</label>
+            <label for="comment" class="form-label">
+              {{ t("modals.comment") }}
+            </label>
             <select v-model="comment" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
+              <option value="" disabled selected>
+                {{ t("modals.select_header") }}
+              </option>
               <option
                 v-for="option in options"
                 :key="option.value"
@@ -97,9 +117,13 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="address" class="form-label">Address</label>
+            <label for="address" class="form-label">
+              {{ t("modals.address") }}
+            </label>
             <select v-model="address" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
+              <option value="" disabled selected>
+                {{ t("modals.select_header") }}
+              </option>
               <option
                 v-for="option in options"
                 :key="option.value"
@@ -112,9 +136,13 @@
         </div>
         <div class="col-12">
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">
+              {{ t("modals.email") }}
+            </label>
             <select v-model="email" class="text-secondary form-select">
-              <option value="" disabled selected>Select a header</option>
+              <option value="" disabled selected>
+                {{ t("modals.select_header") }}
+              </option>
               <option
                 v-for="option in options"
                 :key="option.value"
@@ -134,10 +162,11 @@
 import { ref, onMounted } from "vue";
 import { getSources } from "@/plugins/services/authService";
 import * as XLSX from "xlsx";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ImportForm",
   setup() {
+    const { t } = useI18n();
     const fileError = ref("");
     const isFileValid = ref(false);
     const sources = ref([]);
@@ -259,6 +288,7 @@ export default {
       address,
       email,
       handleFileChange,
+      t,
     };
   },
 };

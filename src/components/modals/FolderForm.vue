@@ -3,7 +3,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ isEdit ? "تعديل مجلد" : "مجلد جديد" }}</h5>
+          <h5 class="modal-title">
+            {{ isEdit ? t("modals.editFolder") : t("modals.newFolder") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -13,13 +15,15 @@
         <div class="modal-body">
           <form @submit.prevent="handleSubmit">
             <div class="mb-3">
-              <label for="folderName" class="form-label">اسم المجلد</label>
+              <label for="folderName" class="form-label">
+                {{ t("modals.folderName") }}
+              </label>
               <input
                 type="text"
                 class="form-control"
                 id="folderName"
                 v-model="folderName"
-                placeholder="اسم المجلد"
+                :placeholder="t('modals.folderName')"
                 required
               />
             </div>
@@ -31,7 +35,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            إلغاء
+            {{ t("buttons.cancel") }}
           </button>
           <button
             type="button"
@@ -39,7 +43,7 @@
             @click="handleSubmit"
             :disabled="!folderName"
           >
-            {{ isEdit ? "حفظ التغييرات" : "إنشاء" }}
+            {{ isEdit ? t("buttons.saveChanges") : t("buttons.create") }}
           </button>
         </div>
       </div>
@@ -49,6 +53,7 @@
 
 <script>
 import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "FolderFormModal",
@@ -60,6 +65,7 @@ export default {
   },
   emits: ["submit"],
   setup(props, { emit }) {
+    const { t } = useI18n();
     const folderName = ref("");
     const isEdit = ref(false);
 
@@ -93,6 +99,7 @@ export default {
       folderName,
       isEdit,
       handleSubmit,
+      t,
     };
   },
 };

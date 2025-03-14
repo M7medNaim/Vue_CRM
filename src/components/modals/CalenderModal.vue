@@ -10,7 +10,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="calenderModalLabel">تغيير التاريخ</h5>
+          <h5 class="modal-title" id="calenderModalLabel">
+            {{ t("modals.calenderModal") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -35,11 +37,12 @@ import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import CalenderForm from "@/components/calenderElements/CalenderForm.vue";
 import CalenderButtons from "@/components/calenderElements/CalenderButtons.vue";
 import { ref } from "vue";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "CalenderModal",
   components: { CalenderForm, CalenderButtons },
   setup() {
+    const { t } = useI18n();
     const loading = ref(false);
     const calender = ref("");
 
@@ -67,6 +70,7 @@ export default {
       openCalenderModal,
       closeCalenderModal,
       submitForm,
+      t,
     };
   },
 };

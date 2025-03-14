@@ -1,7 +1,7 @@
 <template>
   <div class="rating-container d-flex align-items-center gap-1">
     <div class="stars d-flex justify-content-center align-items-center">
-      <span class="fs-6 me-2">Rating:</span>
+      <span class="fs-6 me-2">{{ t("modals.rating") }}:</span>
       <span
         v-for="index in 7"
         :key="index"
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
 export default {
   name: "RatingStars",
   props: {
@@ -34,6 +35,10 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       hoveredStar: 0,

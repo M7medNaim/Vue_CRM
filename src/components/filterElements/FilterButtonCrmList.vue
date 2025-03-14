@@ -3,18 +3,23 @@
     <div class="btns d-flex justify-content-end align-items-center gap-3">
       <button type="submit" class="btn btn-primary">تطبيق الفلتر</button>
       <button type="button" class="btn btn-warning" @click="removeFilter">
-        إزالة الفلتر
+        {{ t("modals.resetFilters") }}
       </button>
     </div>
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-      إغلاق
+      {{ t("buttons.close") }}
     </button>
   </div>
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
 export default {
   name: "FilterButtonCrmList",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   methods: {
     closeFilterModal() {
       this.$emit("close-modal");

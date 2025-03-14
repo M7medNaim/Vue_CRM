@@ -9,7 +9,9 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="filterModalLabel">Filter Deal</h5>
+          <h5 class="modal-title" id="filterModalLabel">
+            {{ t("modals.filterDeal") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -41,7 +43,7 @@ import { Modal } from "bootstrap";
 import FilterCrmListFormVue from "../filterElements/FilterCrmListForm.vue";
 import FilterButtonCrmList from "../filterElements/FilterButtonCrmList.vue";
 import { useToast } from "vue-toastification";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "FilterModal",
   components: { FilterCrmListFormVue, FilterButtonCrmList },
@@ -51,6 +53,7 @@ export default {
   emits: ["update:modelValue", "apply-filters"],
 
   setup(props, { emit }) {
+    const { t } = useI18n();
     const toast = useToast();
     const filters = ref({ ...props.modelValue });
     const selectedStatuses = ref([]);
@@ -65,11 +68,11 @@ export default {
     const openFilterModal = () => {
       try {
         this.isModalOpen = true;
-        toast.info("يمكنك تحديد معايير الفلترة", {
+        toast.info(t("modals.filterDealInfo"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("حدث خطأ في فتح نافذة الفلترة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
       }
@@ -83,7 +86,7 @@ export default {
         document.querySelector(".modal-backdrop")?.remove();
         document.body.classList.remove("modal-open");
       } catch (error) {
-        toast.error("حدث خطأ في إغلاق النافذة", {
+        toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
       }
@@ -93,12 +96,12 @@ export default {
       try {
         emit("update:modelValue", filters.value);
         emit("apply-filters", filters.value);
-        toast.success("تم تطبيق الفلتر بنجاح", {
+        toast.success(t("success.applyFilters"), {
           timeout: 3000,
         });
         closeFilterModal();
       } catch (error) {
-        toast.error("فشل في تطبيق الفلتر", {
+        toast.error(t("error.applyFilters"), {
           timeout: 3000,
         });
       }
@@ -131,11 +134,11 @@ export default {
         selectedStatuses.value = [];
         emit("update:modelValue", emptyFilters);
         emit("apply-filters", emptyFilters);
-        toast.success("تم إعادة تعيين الفلتر بنجاح", {
+        toast.success(t("success.resetFilters"), {
           timeout: 3000,
         });
       } catch (error) {
-        toast.error("فشل في إعادة تعيين الفلتر", {
+        toast.error(t("error.resetFilters"), {
           timeout: 3000,
         });
       }
@@ -155,6 +158,7 @@ export default {
       updateSelectedStatuses,
       applyFilters,
       resetFilter,
+      t,
     };
   },
 };

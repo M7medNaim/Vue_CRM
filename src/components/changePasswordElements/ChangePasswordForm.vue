@@ -1,6 +1,8 @@
 <template>
   <div class="mb-3">
-    <label for="newPassword" class="form-label">كلمة المرور الجديدة</label>
+    <label for="newPassword" class="form-label">{{
+      t("modals.newPassword")
+    }}</label>
     <input
       type="password"
       class="form-control"
@@ -10,7 +12,9 @@
     />
   </div>
   <div class="mb-3">
-    <label for="confirmPassword" class="form-label"> تأكيد كلمة المرور</label>
+    <label for="confirmPassword" class="form-label">{{
+      t("modals.confirmPassword")
+    }}</label>
     <input
       type="password"
       class="form-control"
@@ -30,10 +34,11 @@
 
 <script>
 import { ref } from "vue";
-
+import { useI18n } from "vue-i18n";
 export default {
   name: "ChangePasswordForm",
   setup() {
+    const { t } = useI18n();
     const newPassword = ref("");
     const confirmPassword = ref("");
     const errorMessage = ref("");
@@ -44,6 +49,7 @@ export default {
       confirmPassword,
       errorMessage,
       successMessage,
+      t,
     };
   },
 };

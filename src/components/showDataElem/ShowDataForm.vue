@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-6">
         <div class="mb-3">
-          <label for="name" class="form-label">Name</label>
+          <label for="name" class="form-label">{{ $t("modals.name") }}</label>
           <input
             type="text"
             class="form-control"
@@ -15,7 +15,7 @@
       </div>
       <div class="col-6">
         <div class="mb-3">
-          <label for="phone" class="form-label">Phone Number</label>
+          <label for="phone" class="form-label">{{ $t("modals.phone") }}</label>
           <input
             type="text"
             class="form-control"
@@ -27,7 +27,7 @@
       </div>
       <div class="col-6">
         <div class="mb-3">
-          <label for="note" class="form-label">Notes</label>
+          <label for="note" class="form-label">{{ $t("modals.note") }}</label>
           <input
             type="text"
             class="form-control"
@@ -39,7 +39,9 @@
       </div>
       <div class="col-6">
         <div class="mb-3">
-          <label for="created_at" class="form-label">Created At</label>
+          <label for="created_at" class="form-label">{{
+            $t("modals.created_at")
+          }}</label>
           <input
             type="date"
             class="form-control"
@@ -51,7 +53,9 @@
       </div>
       <div class="col-6">
         <div class="mb-3">
-          <label for="source" class="form-label">Source</label>
+          <label for="source" class="form-label">{{
+            $t("modals.source")
+          }}</label>
           <input
             type="text"
             class="form-control"
@@ -63,7 +67,7 @@
       </div>
       <div class="col-6">
         <div class="mb-3">
-          <label for="stage" class="form-label">Stage</label>
+          <label for="stage" class="form-label">{{ $t("modals.stage") }}</label>
           <input
             type="text"
             class="form-control"
@@ -75,9 +79,9 @@
       </div>
       <div class="col-12">
         <div class="mb-3">
-          <label for="responsablePerson" class="form-label"
-            >Responsable Person</label
-          >
+          <label for="responsablePerson" class="form-label">{{
+            $t("modals.responsablePerson")
+          }}</label>
           <input
             type="text"
             class="form-control"
@@ -92,6 +96,8 @@
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
+
 export default {
   name: "ShowDataForm",
   props: {
@@ -99,6 +105,10 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
   data() {
     return {
