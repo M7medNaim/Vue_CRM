@@ -1,8 +1,8 @@
 <template>
   <div class="col-0 col-md-8 boxChat px-0" v-if="selectedChat">
-    <div class="right-side position-relative" style="height: 95vh">
+    <div class="right-side position-relative pt-2" style="height: 100vh">
       <div
-        class="header position-relative px-2 border-1 mt-1 border-end bg-success rounded-4"
+        class="header position-relative px-2 border-1 border-end bg-success rounded-3"
       >
         <div class="row h-100">
           <div class="col-4 h-100 pe-4">
@@ -13,14 +13,14 @@
                 <img
                   :src="selectedChat.img"
                   alt="user image"
-                  class="img-fluid rounded-circle w-100 h-100"
+                  class="img-fluid rounded-circle"
                 />
               </div>
               <h6 class="my-auto text-white">{{ selectedChat.name }} <br /></h6>
             </div>
           </div>
           <div
-            class="col-8 search_list d-flex justify-content-end align-items-center ps-4 gap-3 fs-5 h-100"
+            class="col-8 search_list d-flex justify-content-end align-items-center ps-4 gap-2 fs-6 h-100"
           >
             <div id="bxSearch" class="d-flex">
               <div
@@ -256,6 +256,37 @@ export default {
 </script>
 
 <style scoped>
+.right-side {
+  position: relative;
+  background-image: url(../../assets/whatsappImage/background.jpg);
+  background-size: contain;
+  background-position: center;
+}
+
+.right-side::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 110px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.6) 30%,
+    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.right-side .message-input {
+  position: sticky;
+  bottom: 2%;
+  width: 98%;
+  z-index: 999;
+}
+
 .right-side .header {
   height: 7vh;
   width: 98%;
@@ -285,14 +316,8 @@ input::placeholder {
 .right-side .chatBx {
   height: 92vh;
 }
-.right-side .message-input {
-  position: sticky;
-  bottom: 2%;
-  width: 98%;
-}
-
 .right-side .chatBx .menu {
-  top: 7vh;
+  top: 8vh;
   right: 1%;
   opacity: 0;
   visibility: hidden;

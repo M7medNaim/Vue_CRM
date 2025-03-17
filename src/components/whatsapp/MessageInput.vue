@@ -2,7 +2,7 @@
   <div class="chat-input w-100 position-relative">
     <div class="d-flex align-items-center gap-3 p-2">
       <div
-        class="actions-group d-flex justify-content-center align-items-center gap-3 bg-secondary-subtle mt-1 rounded-5"
+        class="actions-group d-flex justify-content-center align-items-center gap-2 bg-secondary-subtle mt-1 rounded-5"
       >
         <div class="emoje">
           <button
@@ -12,7 +12,7 @@
             class="border-0 bg-transparent"
             aria-label="Emojis"
           >
-            <i class="fa-regular fa-face-smile fs-5 text-dark"></i>
+            <i class="fa-regular fa-face-smile fs-6 text-dark"></i>
           </button>
           <!-- all Emojis -->
           <div
@@ -65,7 +65,7 @@
         <!-- upload_file Icon -->
         <div class="upload_file cursor-pointer d-block position-relative">
           <label for="file" class="upload-label">
-            <i class="fa-solid fa-paperclip upload-icon fs-5 text-dark"></i>
+            <i class="fa-solid fa-paperclip upload-icon fs-6 text-dark"></i>
           </label>
           <form action="" autocomplete="off">
             <input
@@ -82,7 +82,7 @@
             @click="toggleClipboard"
             v-click-outside="closeClipboard"
             aria-label="Clipboard"
-            class="border-0 bg-transparent fs-5 text-dark pb-1"
+            class="border-0 bg-transparent fs-6 text-dark pb-1"
           >
             <i class="fa-regular fa-clipboard"></i>
           </button>
@@ -231,7 +231,7 @@ export default {
 
 .actions-group {
   min-width: fit-content;
-  padding: 5px 5px !important;
+  padding: 6px 10px !important;
 }
 
 .send-button {
