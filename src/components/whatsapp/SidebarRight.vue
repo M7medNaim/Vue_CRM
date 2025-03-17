@@ -2,7 +2,7 @@
   <div class="col-0 col-md-8 boxChat px-0" v-if="selectedChat">
     <div class="right-side position-relative" style="height: 95vh">
       <div
-        class="header position-relative px-2 border-1 border-end bg-success rounded-4"
+        class="header position-relative px-2 border-1 mt-1 border-end bg-success rounded-4"
       >
         <div class="row h-100">
           <div class="col-4 h-100 pe-4">
@@ -31,7 +31,7 @@
                   type="text"
                   name="searchChat"
                   id="searchChat"
-                  class="ms-3 border-0 py-1 px-2 fs-6 w-100 ms-5 bg-transparent border-1 border-bottom border-white"
+                  class="ms-3 border-0 text-white py-1 px-2 fs-6 w-100 ms-5 bg-transparent border-1 border-bottom border-white"
                   v-model="searchQuery"
                   :placeholder="$t('whatsapp.searchChat')"
                   style="outline: none"
@@ -43,7 +43,7 @@
                 class="border-0 bg-transparent"
               >
                 <i
-                  class="fa-solid fa-magnifying-glass searchIcon me-2 text-white cursor-pointer"
+                  class="fa-solid fa-magnifying-glass searchIcon fs-6 text-white cursor-pointer"
                 ></i>
               </button>
             </div>
@@ -52,7 +52,7 @@
               aria-label="list chat (menu)"
               class="border-0 bg-transparent"
             >
-              <i class="fa-solid fa-ellipsis-vertical text-white"></i>
+              <i class="fa-solid fa-ellipsis-vertical fs-6 text-white"></i>
             </button>
             <button
               class="bg-transparent border-0"
@@ -60,7 +60,7 @@
               data-bs-dismiss="modal"
               aria-label="Close"
             >
-              <i class="fa fa-window-restore fs-5 pt-2 ps-1 text-white"></i>
+              <i class="fa fa-window-restore fs-6 pt-2 ps-1 text-white"></i>
             </button>
           </div>
         </div>
@@ -127,7 +127,10 @@
       </div>
 
       <div class="message-input m-auto">
-        <MessageInput @send-message="receiveMessage" />
+        <MessageInput
+          @send-message="receiveMessage"
+          @scroll-to-bottom="scrollToBottom"
+        />
       </div>
     </div>
   </div>
@@ -254,12 +257,14 @@ export default {
 
 <style scoped>
 .right-side .header {
-  height: 8vh;
+  height: 7vh;
+  width: 98%;
+  margin: 0 auto;
 }
 
 .right-side .header .user-details .user-imgBx {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
 }
 input::placeholder {
   color: white;
@@ -283,7 +288,7 @@ input::placeholder {
 .right-side .message-input {
   position: sticky;
   bottom: 2%;
-  width: 90%;
+  width: 98%;
 }
 
 .right-side .chatBx .menu {
