@@ -57,9 +57,7 @@
               <h4 class="name fs-6 fw-medium text-black pt-2">
                 {{ chat.name }}
               </h4>
-              <span class="time text-secondary fst-normal">{{
-                chat.time
-              }}</span>
+              <span class="time text-success fst-normal">{{ chat.time }}</span>
             </div>
             <div
               class="msgs d-flex justify-content-between align-items-center text-secondary"

@@ -1,8 +1,8 @@
 <template>
   <div class="col-0 col-md-8 boxChat px-0" v-if="selectedChat">
-    <div class="right-side" style="height: 95vh">
+    <div class="right-side position-relative" style="height: 95vh">
       <div
-        class="header position-relative bg-secondary-subtle px-2 border-1 border-end border-secondary-subtle"
+        class="header position-relative px-2 border-1 border-end bg-success rounded-4"
       >
         <div class="row h-100">
           <div class="col-4 h-100 pe-4">
@@ -16,7 +16,7 @@
                   class="img-fluid rounded-circle w-100 h-100"
                 />
               </div>
-              <h6 class="my-auto">{{ selectedChat.name }} <br /></h6>
+              <h6 class="my-auto text-white">{{ selectedChat.name }} <br /></h6>
             </div>
           </div>
           <div
@@ -31,7 +31,7 @@
                   type="text"
                   name="searchChat"
                   id="searchChat"
-                  class="ms-3 border-0 py-1 px-2 fs-6 w-100 ms-5 bg-transparent border-1 border-bottom border-secondary"
+                  class="ms-3 border-0 py-1 px-2 fs-6 w-100 ms-5 bg-transparent border-1 border-bottom border-white"
                   v-model="searchQuery"
                   :placeholder="$t('whatsapp.searchChat')"
                   style="outline: none"
@@ -43,7 +43,7 @@
                 class="border-0 bg-transparent"
               >
                 <i
-                  class="fa-solid fa-magnifying-glass searchIcon me-2 text-secondary cursor-pointer"
+                  class="fa-solid fa-magnifying-glass searchIcon me-2 text-white cursor-pointer"
                 ></i>
               </button>
             </div>
@@ -52,10 +52,7 @@
               aria-label="list chat (menu)"
               class="border-0 bg-transparent"
             >
-              <i
-                class="fa-solid fa-ellipsis-vertical text-secondary"
-                style="color: #5a5757"
-              ></i>
+              <i class="fa-solid fa-ellipsis-vertical text-white"></i>
             </button>
             <button
               class="bg-transparent border-0"
@@ -63,14 +60,14 @@
               data-bs-dismiss="modal"
               aria-label="Close"
             >
-              <i class="fa fa-window-restore fs-5 pt-2 ps-1 text-black-50"></i>
+              <i class="fa fa-window-restore fs-5 pt-2 ps-1 text-white"></i>
             </button>
           </div>
         </div>
       </div>
 
       <div
-        class="chatBx position-relative w-100 overflow-auto px-5 pt-5 pb-3"
+        class="chatBx position-relative w-100 overflow-auto px-5 pt-5 pb-5"
         ref="chatBox"
       >
         <ChatBubbles
@@ -129,7 +126,9 @@
         </div>
       </div>
 
-      <MessageInput @send-message="receiveMessage" />
+      <div class="message-input m-auto">
+        <MessageInput @send-message="receiveMessage" />
+      </div>
     </div>
   </div>
 </template>
@@ -262,6 +261,9 @@ export default {
   width: 45px;
   height: 45px;
 }
+input::placeholder {
+  color: white;
+}
 
 .searchInput {
   opacity: 0;
@@ -276,7 +278,12 @@ export default {
 /* chat box */
 
 .right-side .chatBx {
-  height: calc(92vh - 60px);
+  height: 92vh;
+}
+.right-side .message-input {
+  position: sticky;
+  bottom: 2%;
+  width: 90%;
 }
 
 .right-side .chatBx .menu {
@@ -298,7 +305,10 @@ export default {
 .right-side .chatBx .menu ul li:hover {
   background-color: #fff;
 }
-
+.right-side .chat-input {
+  position: sticky;
+  bottom: 0;
+}
 /* scroll style */
 .right-side .chatBx::-webkit-scrollbar {
   width: 10px;
