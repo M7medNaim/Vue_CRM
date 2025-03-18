@@ -1,5 +1,5 @@
 <template>
-  <div class="dropdown-menu my-2 d-block border-0 position-absolute z-3">
+  <div class="dropdown-menu my-2 d-block border-0 position-absolute">
     <ul class="list-unstyled mb-0 lh-lg">
       <li>
         <a class="dropdown-item ps-3" @click="changeLanguage('en')">
@@ -43,6 +43,7 @@ export default {
   top: 35px;
   left: 0;
   width: fit-content !important;
+  z-index: 1000 !important;
 }
 .flageImage img {
   width: 30px;

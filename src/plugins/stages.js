@@ -1,5 +1,3 @@
-import i18n from "@/i18n";
-
 export function getStages() {
   return [
     {
@@ -850,7 +848,7 @@ export const kanbanStages = [
 export const tasksStages = [
   {
     id: 1,
-    name: i18n.global.t("kanban-tasks-view-stage-notasks"),
+    name: "New Deals (143)",
     deals: [
       {
         id: 1,
@@ -884,7 +882,7 @@ export const tasksStages = [
   },
   {
     id: 2,
-    name: i18n.global.t("kanban-tasks-view-stage-overdue"),
+    name: "Overdue (1542)",
     deals: [
       {
         id: 4,
@@ -908,7 +906,7 @@ export const tasksStages = [
   },
   {
     id: 3,
-    name: i18n.global.t("kanban-tasks-view-stage-duetoday"),
+    name: "Due Today (47)",
     deals: [
       {
         id: 6,
@@ -933,7 +931,7 @@ export const tasksStages = [
   },
   {
     id: 4,
-    name: i18n.global.t("kanban-tasks-view-stage-duethisweek"),
+    name: "Due This Week (102)",
     deals: [
       {
         id: 8,
@@ -958,7 +956,7 @@ export const tasksStages = [
   },
   {
     id: 5,
-    name: i18n.global.t("kanban-tasks-view-stage-duenextweek"),
+    name: "Due Next Week (47)",
     deals: [
       {
         id: 10,
@@ -984,7 +982,7 @@ export const tasksStages = [
   },
   {
     id: 6,
-    name: i18n.global.t("kanban-tasks-view-stage-duelater"),
+    name: "Due Later (52)",
     deals: [
       {
         id: 10,
@@ -1010,7 +1008,7 @@ export const tasksStages = [
   },
   {
     id: 7,
-    name: i18n.global.t("kanban-tasks-view-stage-idle"),
+    name: "Idle (17)",
     deals: [
       {
         id: 10,
