@@ -11,7 +11,11 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="adminModalLabel">
-            {{ isEditMode ? t("modals.editUser") : t("modals.addUser") }}
+            {{
+              isEditMode
+                ? t("users-modal-edit-heading")
+                : t("users-modal-add-heading")
+            }}
           </h5>
           <button
             type="button"
@@ -25,55 +29,59 @@
           <div class="modal-body">
             <div class="mb-3">
               <label for="username" class="form-label">
-                {{ t("modals.username") }}
+                {{ t("users-modal-add-label-fullname") }}
               </label>
               <input
                 type="text"
                 class="form-control"
                 id="username"
+                :placeholder="t('users-modal-add-placeholder-fullname')"
                 v-model="formData.username"
                 required
               />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">
-                {{ t("modals.email") }}
+                {{ t("users-modal-add-label-email") }}
               </label>
               <input
                 type="email"
                 class="form-control"
                 id="email"
+                :placeholder="t('users-modal-add-placeholder-email')"
                 v-model="formData.email"
                 required
               />
             </div>
             <div class="mb-3">
               <label for="phoneNumber" class="form-label">
-                {{ t("modals.phone") }}
+                {{ t("users-modal-add-label-phone") }}
               </label>
               <input
                 type="text"
                 class="form-control"
                 id="phoneNumber"
+                :placeholder="t('users-modal-add-placeholder-phone')"
                 v-model="formData.phoneNumber"
               />
             </div>
 
             <div v-if="!isEditMode" class="mb-3">
               <label for="password" class="form-label">
-                {{ t("modals.password") }}
+                {{ t("users-modal-add-label-password") }}
               </label>
               <input
                 type="password"
                 class="form-control"
                 id="password"
+                :placeholder="t('users-modal-add-placeholder-password')"
                 v-model="formData.password"
                 required
               />
             </div>
             <div v-if="!isEditMode" class="mb-3">
               <label for="password_confirmation" class="form-label">{{
-                t("modals.passwordConfirmation")
+                t("users-modal-add-label-passwordconfirm")
               }}</label>
               <input
                 type="password"
@@ -86,11 +94,11 @@
 
             <div class="mb-3">
               <label for="role" class="form-label">
-                {{ t("modals.role") }}
+                {{ t("users-modal-add-label-role") }}
               </label>
               <select class="form-control" id="role" v-model="formData.role">
                 <option v-if="!isEditMode" value="" disabled selected>
-                  {{ t("modals.chooseRole") }}
+                  {{ t("users-modal-add-label-role") }}
                 </option>
                 <option v-for="role in roles" :key="role.id" :value="role.name">
                   {{ role.name }}
@@ -100,25 +108,26 @@
 
             <div class="mb-3">
               <label for="reportTo" class="form-label">
-                {{ t("modals.reportTo") }}
+                {{ t("users-modal-add-label-reportto") }}
               </label>
               <Multiselect
                 v-model="formData.reportTo"
                 :options="filteredUsers"
                 label="name"
                 track-by="id"
-                :placeholder="t('modals.chooseReportTo')"
+                :placeholder="t('users-modal-add-placeholder-reportto')"
                 :searchable="true"
               />
             </div>
             <div class="mb-3">
               <label for="image" class="form-label">
-                {{ t("modals.image") }}
+                {{ t("users-modal-add-label-image") }}
               </label>
               <input
                 type="file"
                 class="form-control"
                 id="image"
+                :placeholder="t('users-modal-add-placeholder-image')"
                 @change="handleImageUpload"
                 accept="image/*"
               />
@@ -138,15 +147,15 @@
               {{
                 loading
                   ? isEditMode
-                    ? t("modals.editing")
-                    : t("modals.saving")
+                    ? t("users-modal-edit-button-submit")
+                    : t("users-modal-edit-button-submit")
                   : isEditMode
-                  ? t("modals.editUser")
-                  : t("modals.addUser")
+                  ? t("users-modal-edit-button-submit")
+                  : t("users-modal-add-button-submit")
               }}
             </button>
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              {{ t("buttons.close") }}
+              {{ t("users-modal-add-button-cancel") }}
             </button>
           </div>
         </form>

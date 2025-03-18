@@ -11,28 +11,32 @@
           alt=""
         />
       </div>
-      <span class="fw-bold" v-if="!isCollapsed">{{ $t("crmStaging") }}</span>
+      <span class="fw-bold" v-if="!isCollapsed">{{
+        $t("sidebar-heading")
+      }}</span>
     </div>
     <div class="sidebar-items overflow-auto">
       <div
         v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        :title="$t('sidebar.dashboard')"
+        :title="$t('sidebar-nav-item-dashboard')"
       >
         <router-link to="/dashboard" class="text-decoration-none text-white">
           <i class="fa-solid fa-house fs-5 me-2"></i>
           <!-- <i class="fa-solid fa-chart-line"></i> -->
-          <span v-if="!isCollapsed">{{ $t("sidebar.dashboard") }}</span>
+          <span v-if="!isCollapsed">{{
+            $t("sidebar-nav-item-dashboard")
+          }}</span>
         </router-link>
       </div>
       <div
         v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        :title="$t('sidebar.crmKanban')"
+        :title="$t('sidebar-nav-item-kanban')"
       >
         <router-link to="/crm-kanban" class="text-decoration-none text-white">
           <i class="fa-solid fa-chart-column fs-5 me-2"></i>
-          <span v-if="!isCollapsed">{{ $t("sidebar.crmKanban") }}</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-kanban") }}</span>
         </router-link>
       </div>
       <router-link
@@ -42,10 +46,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          :title="$t('sidebar.crmList')"
+          :title="$t('sidebar-nav-item-crmlist')"
         >
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
-          <span v-if="!isCollapsed">{{ $t("sidebar.crmList") }}</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-crmlist") }}</span>
         </div>
       </router-link>
       <router-link
@@ -55,10 +59,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          :title="$t('sidebar.users')"
+          :title="$t('sidebar-nav-item-users')"
         >
           <i class="fa-solid fa-users fs-5 me-2"></i>
-          <span v-if="!isCollapsed">{{ $t("sidebar.users") }}</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-users") }}</span>
         </div>
       </router-link>
       <router-link
@@ -68,10 +72,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          :title="$t('sidebar.contacts')"
+          :title="$t('sidebar-nav-item-contacts')"
         >
           <i class="fa-regular fa-address-book fs-5 me-2"></i>
-          <span v-if="!isCollapsed">{{ $t("sidebar.contacts") }}</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-contacts") }}</span>
         </div>
       </router-link>
       <router-link
@@ -81,10 +85,12 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          :title="$t('sidebar.documents')"
+          :title="$t('sidebar-nav-item-documents')"
         >
           <i class="fa-regular fa-folder-open fs-5 me-2"></i>
-          <span v-if="!isCollapsed">{{ $t("sidebar.documents") }}</span>
+          <span v-if="!isCollapsed">{{
+            $t("sidebar-nav-item-documents")
+          }}</span>
         </div>
       </router-link>
       <router-link
@@ -94,10 +100,10 @@
       >
         <div
           class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-          :title="$t('sidebar.settings')"
+          :title="$t('sidebar-nav-item-settings')"
         >
           <i class="fa-solid fa-cog fs-5 me-2"></i>
-          <span v-if="!isCollapsed">{{ $t("sidebar.settings") }}</span>
+          <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-settings") }}</span>
         </div>
       </router-link>
       <!-- <router-link
@@ -117,10 +123,10 @@
       <div
         class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"
         @click="toggleSidebar"
-        :title="$t('sidebar.menu')"
+        :title="$t('sidebar-nav-item-toggle')"
       >
         <i class="fa-solid fa-bars fs-5 me-2"></i>
-        <span v-if="!isCollapsed">{{ $t("sidebar.menu") }}</span>
+        <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-toggle") }}</span>
       </div>
     </div>
   </div>

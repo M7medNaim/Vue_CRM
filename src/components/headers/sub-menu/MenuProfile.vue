@@ -20,37 +20,37 @@
     <ul class="list-unstyled mb-0 lh-lg">
       <ProfileMenuItem
         icon="fa-user"
-        :title="t('topHeader.editProfile')"
+        :title="t('header-user-menu-item-profile')"
         @click="openEditProfileModal"
       />
       <ProfileMenuItem
         icon="fa-calendar-days"
-        :title="t('topHeader.calender')"
+        :title="t('header-user-menu-item-calendar')"
         @click="openCalenderModal"
       />
       <ProfileMenuItem
         icon="fa-image"
-        :title="t('topHeader.customizeBackground')"
+        :title="t('header-user-menu-item-background')"
         @click="changeBackground"
       />
       <ProfileMenuItem
         icon="fa-rotate"
-        :title="t('topHeader.reload')"
+        :title="t('header-reload')"
         @click="reloadPage"
       />
       <ProfileMenuItem
         icon="fa-lock"
-        :title="t('topHeader.changePassword')"
+        :title="t('header-user-menu-item-password')"
         @click="openChangePasswordModal"
       />
       <ProfileMenuItem
         icon="fa-globe"
-        :title="t('topHeader.changeLanguage')"
+        :title="t('header-user-menu-item-language')"
         @click="openChangeLangModal"
       />
       <ProfileMenuItem
         icon="fa-right-from-bracket"
-        :title="t('topHeader.logout')"
+        :title="t('header-user-menu-item-logout')"
         @click="handleLogout"
       />
     </ul>

@@ -8,7 +8,7 @@
   </div>
   <div class="watsappIcon position-absolute z-3">
     <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
-      <p class="position-absolute">{{ $t("buttons.watsapp") }}</p>
+      <p class="position-absolute">{{ $t("kanban-modal-edit-whatsapp") }}</p>
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
   </div>

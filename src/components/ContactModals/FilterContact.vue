@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ t("modals.filterContacts") }}</h5>
+          <h5 class="modal-title">{{ t("contacts-modal-filter-heading") }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -14,14 +14,16 @@
           <div class="modal-body">
             <!-- Date Range Filter -->
             <div class="mb-3">
-              <label class="form-label">{{ t("modals.created_at") }}</label>
+              <label class="form-label">{{
+                t("contacts-modal-filter-label-created-at")
+              }}</label>
               <div class="row">
                 <div class="col-6">
                   <input
                     type="date"
                     class="form-control"
                     v-model="filterData.startDate"
-                    :placeholder="t('modals.fromDate')"
+                    :placeholder="t('contacts-modal-filter-label-created-at')"
                   />
                 </div>
                 <div class="col-6">
@@ -29,7 +31,7 @@
                     type="date"
                     class="form-control"
                     v-model="filterData.endDate"
-                    :placeholder="t('modals.toDate')"
+                    :placeholder="t('contacts-modal-filter-label-updated-at')"
                   />
                 </div>
               </div>
@@ -39,14 +41,14 @@
             class="modal-footer d-flex justify-content-between align-items-center"
           >
             <button type="submit" class="btn btn-primary">
-              {{ t("buttons.applyFilters") }}
+              {{ t("contacts-modal-filter-button-submit") }}
             </button>
             <button
               type="button"
               class="btn btn-secondary"
               @click="resetFilters"
             >
-              {{ t("buttons.resetFilters") }}
+              {{ t("contacts-modal-filter-button-reset") }}
             </button>
           </div>
         </form>

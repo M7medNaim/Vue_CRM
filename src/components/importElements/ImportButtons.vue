@@ -2,7 +2,7 @@
   <div class="modal-footer d-flex justify-content-between align-items-center">
     <div class="btns d-flex justify-content-end align-items-center gap-3">
       <button type="submit" class="btn btn-primary">
-        {{ t("buttons.import") }}
+        {{ t("crmlist-modal-import-button-submit") }}
       </button>
     </div>
     <button
@@ -11,7 +11,7 @@
       data-bs-dismiss="modal"
       @click="closeImportModal"
     >
-      {{ t("buttons.close") }}
+      {{ t("crmlist-modal-import-button-close") }}
     </button>
   </div>
 </template>

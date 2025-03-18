@@ -5,7 +5,7 @@
         <!-- Status Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>{{ t("modals.status") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-status") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3 d-flex justify-content-center flex-wrap gap-2">
@@ -31,7 +31,7 @@
         <!-- Source Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>{{ t("modals.source") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-source") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -54,7 +54,7 @@
         <!-- Stage Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>{{ t("modals.stage") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-stage") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -100,7 +100,7 @@
         <!-- Representative Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>{{ t("modals.representative") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-representative") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -123,7 +123,7 @@
         <!-- Package Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>{{ t("modals.packages") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-packages") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -146,7 +146,7 @@
         <!-- Created Date Range -->
         <div class="row mb-3">
           <div class="col-3">
-            <span>{{ t("modals.createdDateRange") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-created-at") }}</span>
           </div>
           <div
             class="col-9 d-flex justify-content-center align-items-center gap-3"
@@ -167,7 +167,7 @@
         <!-- Modified Date Range -->
         <div class="row mb-3">
           <div class="col-3">
-            <span>{{ t("modals.modifiedDateRange") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-updated-at") }}</span>
           </div>
           <div
             class="col-9 d-flex justify-content-center align-items-center gap-3"

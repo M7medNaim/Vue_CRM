@@ -6,21 +6,21 @@
       <button type="submit" class="btn btn-primary me-2" :disabled="loading">
         <span v-if="loading">
           <i class="fas fa-spinner fa-spin"></i
-          >{{ t("modals.applyingFilters") }}
+          >{{ t("users-modal-filter-button-submit") }}
         </span>
-        <span v-else>{{ t("modals.applyFilters") }}</span>
+        <span v-else>{{ t("users-modal-filter-button-submit") }}</span>
       </button>
       <button
         type="button"
         class="btn btn-warning"
         @click="$emit('reset-filters')"
       >
-        {{ t("modals.resetFilters") }}
+        {{ t("users-modal-filter-button-reset") }}
       </button>
     </div>
 
     <button type="button" class="btn btn-secondary" @click="$emit('close')">
-      {{ t("buttons.close") }}
+      {{ t("users-modal-filter-button-close") }}
     </button>
   </div>
 </template>

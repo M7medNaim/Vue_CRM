@@ -3,7 +3,9 @@
     <div class="row">
       <div class="col-12">
         <div class="mb-3">
-          <label for="file" class="form-label">File</label>
+          <label for="file" class="form-label">{{
+            t("crmlist-modal-import-label-file")
+          }}</label>
           <input
             type="file"
             class="form-control"
@@ -23,7 +25,7 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="description" class="form-label">
-              {{ t("modals.description") }}
+              {{ t("crmlist-modal-import-label-description") }}
             </label>
             <select v-model="description" class="text-secondary form-select">
               <option value="" disabled selected>
@@ -42,7 +44,7 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="source" class="form-label">
-              {{ t("modals.source") }}
+              {{ t("crmlist-modal-import-label-source") }}
             </label>
             <select v-model="source" class="text-secondary form-select">
               <option value="" disabled selected>
@@ -61,7 +63,7 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="name" class="form-label">
-              {{ t("modals.name") }}
+              {{ t("crmlist-modal-import-label-name") }}
             </label>
             <select v-model="name" class="text-secondary form-select">
               <option value="" disabled selected>
@@ -80,7 +82,7 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="phone" class="form-label">
-              {{ t("modals.phone") }}
+              {{ t("crmlist-modal-import-label-phone") }}
             </label>
             <select v-model="phone" class="text-secondary form-select">
               <option value="" disabled selected>
@@ -99,7 +101,7 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="comment" class="form-label">
-              {{ t("modals.comment") }}
+              {{ t("crmlist-modal-import-label-comment") }}
             </label>
             <select v-model="comment" class="text-secondary form-select">
               <option value="" disabled selected>
@@ -137,7 +139,7 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="email" class="form-label">
-              {{ t("modals.email") }}
+              {{ t("crmlist-modal-import-label-email") }}
             </label>
             <select v-model="email" class="text-secondary form-select">
               <option value="" disabled selected>

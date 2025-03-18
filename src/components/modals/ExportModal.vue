@@ -10,7 +10,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exportModalLabel">
-            {{ t("modals.exportData") }}
+            {{ t("kanban-modal-export-heading") }}
           </h5>
           <button
             type="button"
@@ -23,11 +23,11 @@
           <form @submit.prevent="handleExport">
             <div class="mb-3">
               <label class="form-label">
-                {{ t("modals.exportFormat") }}
+                {{ t("kanban-modal-export-label-format") }}
               </label>
               <select class="form-select" v-model="exportFormat" required>
                 <option value="" disabled selected>
-                  {{ t("modals.chooseExportFormat") }}
+                  {{ t("kanban-modal-export-placeholder-format") }}
                 </option>
                 <option value="excel">Excel</option>
                 <option value="sql">SQL</option>
@@ -39,7 +39,7 @@
                 class="btn btn-primary"
                 :disabled="!exportFormat"
               >
-                {{ t("buttons.export") }}
+                {{ t("kanban-modal-export-button-submit") }}
                 <i class="fa-solid fa-download ms-1"></i>
               </button>
               <button
@@ -47,7 +47,7 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                {{ t("buttons.cancel") }}
+                {{ t("kanban-modal-export-button-close") }}
               </button>
             </div>
           </form>

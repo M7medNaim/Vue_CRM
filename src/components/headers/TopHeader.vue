@@ -14,7 +14,7 @@
           class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
         >
           <span class="text-white px-3">{{
-            $t("topHeader.roleSettings")
+            $t("header-subnav-item-settings-role")
           }}</span>
         </router-link>
         <router-link
@@ -23,7 +23,7 @@
           class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
         >
           <span class="text-white px-3">{{
-            $t("topHeader.generalSettings")
+            $t("header-subnav-item-settings-general")
           }}</span>
         </router-link>
       </div>

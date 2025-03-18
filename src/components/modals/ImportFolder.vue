@@ -3,7 +3,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ t("modals.importFolder") }}</h5>
+          <h5 class="modal-title">
+            {{ t("documents-modal-importdocument-heading") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -20,7 +22,7 @@
             >
               <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
               <p class="text-muted mb-3">
-                {{ t("upload.dragAndDrop") }}
+                {{ t("documents-modal-importdocument-placeholder") }}
               </p>
               <input
                 type="file"
@@ -40,7 +42,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            {{ t("buttons.cancel") }}
+            {{ t("documents-modal-importdocument-button-close") }}
           </button>
           <button
             type="button"
@@ -48,7 +50,7 @@
             @click="handleImport"
             :disabled="!hasFiles"
           >
-            {{ t("buttons.import") }}
+            {{ t("documents-modal-importdocument-button-submit") }}
           </button>
         </div>
       </div>

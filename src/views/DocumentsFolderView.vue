@@ -4,11 +4,11 @@
     <div class="row mb-3">
       <div class="col-12 text-end">
         <button class="btn btn-primary me-2" @click="openImportModal">
-          {{ t("buttons.importFolder") }}
+          {{ t("documents-modal-importdocument-heading") }}
           <i class="fas fa-file-import me-1"></i>
         </button>
         <button class="btn btn-primary" @click="openNewFolderModal">
-          {{ t("buttons.newFolder") }}
+          {{ t("documents-button-createfolder") }}
           <i class="fas fa-folder-plus me-1"></i>
         </button>
       </div>

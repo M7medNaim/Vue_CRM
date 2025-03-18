@@ -1,8 +1,12 @@
 <template>
   <div class="mb-3">
-    <label for="role" class="form-label">{{ t("modals.role") }}</label>
+    <label for="role" class="form-label">{{
+      t("users-modal-filter-label-role")
+    }}</label>
     <select class="form-control" id="role" v-model="localRole">
-      <option value="" disabled selected>{{ t("modals.selectRole") }}</option>
+      <option value="" disabled selected>
+        {{ t("users-modal-filter-placeholder-role") }}
+      </option>
       <option v-for="role in roles" :key="role.id" :value="role.name">
         {{ role.name }}
       </option>
@@ -12,7 +16,7 @@
     <div class="col-6">
       <div class="mb-3">
         <label for="createdAt" class="form-label">{{
-          t("modals.created_at")
+          t("users-modal-filter-label-created-at")
         }}</label>
         <input
           type="date"
@@ -41,7 +45,7 @@
     </div>
   </div>
   <div class="mb-3">
-    <label class="form-label">{{ t("modals.status") }}</label>
+    <label class="form-label">{{ t("users-modal-filter-label-status") }}</label>
     <div
       class="radioStatus d-flex justify-content-start align-items-center gap-3"
     >
@@ -54,7 +58,7 @@
           v-model="localStatus"
         />
         <label class="form-check-label" for="status-active">{{
-          t("modals.active")
+          t("users-modal-filter-status-active")
         }}</label>
       </div>
       <div class="form-check">
@@ -66,7 +70,7 @@
           v-model="localStatus"
         />
         <label class="form-check-label" for="status-inactive">{{
-          t("modals.inactive")
+          t("users-modal-filter-status-inactive")
         }}</label>
       </div>
     </div>

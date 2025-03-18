@@ -6,7 +6,7 @@
         <div class="col-12 col-md-6">
           <div class="form-group">
             <label class="form-label">
-              {{ t("settings.appName") }}<span class="text-danger">*</span>
+              {{ t("settings-label-name") }}<span class="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -36,7 +36,7 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="form-group">
             <label class="form-label">
-              {{ t("settings.defaultCountryCode") }}
+              {{ t("settings-label-countrycode") }}
               <span class="text-danger">*</span>
             </label>
             <div
@@ -83,7 +83,7 @@
         <div class="col-12 col-md-6">
           <div class="form-group">
             <label class="form-label">
-              {{ t("settings.currentCurrency") }}
+              {{ t("settings-label-currency") }}
               <span class="text-danger">*</span>
             </label>
             <Multiselect
@@ -122,7 +122,7 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="form-group">
             <label class="form-label">
-              {{ t("forms.language") }}
+              {{ t("settings-label-language") }}
             </label>
             <Multiselect
               v-model="settings.language"
@@ -188,7 +188,7 @@
         <div class="col-6 col-md-3">
           <div class="form-group">
             <label class="form-label">
-              {{ t("settings.appLogo") }}
+              {{ t("settings-label-applogo") }}
               <i class="fa-solid fa-pen" title="Upload your app logo here"></i>
             </label>
             <div class="image-upload-container">
@@ -216,7 +216,8 @@
         <div class="col-6 col-md-3">
           <div class="form-group">
             <label class="form-label">
-              {{ t("settings.favicon") }} <span class="text-danger">*</span>
+              {{ t("settings-label-favicon") }}
+              <span class="text-danger">*</span>
               <i class="fa-solid fa-pen" title="Upload your favicon here"></i>
             </label>
             <div class="image-upload-container position-relative">
@@ -247,7 +248,7 @@
             class="btn btn-primary"
             @click.prevent="saveSettings"
           >
-            {{ t("buttons.saveChanges") }}
+            {{ t("settings-button-save") }}
           </button>
         </div>
       </div>

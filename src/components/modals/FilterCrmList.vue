@@ -10,7 +10,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="filterModalLabel">
-            {{ t("modals.filterDeal") }}
+            {{ t("crmlist-modal-filter-heading") }}
           </h5>
           <button
             type="button"

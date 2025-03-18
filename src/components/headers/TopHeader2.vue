@@ -12,14 +12,14 @@
                 class="btn btn-light px-4 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
-                {{ t("topHeader2.addDeal") }}
+                {{ t("kanban-button-add-deal") }}
               </button>
               <button
                 class="btn btn-light px-4 py-2 fw-semibold"
                 @click="openCrmKanban"
                 v-if="$route.name !== 'CrmKanban'"
               >
-                {{ t("topHeader2.home") }}
+                {{ t("kanban-button-kanban-view") }}
               </button>
               <button
                 class="btn btn-light px-4 py-2 fw-semibold"
@@ -29,7 +29,7 @@
                   permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
                 "
               >
-                {{ t("topHeader2.tasks") }}
+                {{ t("kanban-button-tasks-view") }}
               </button>
             </div>
 
@@ -44,11 +44,11 @@
                 <input
                   type="text"
                   class="form-control bg-light border-light py-2"
-                  :placeholder="t('topHeader2.searchPlaceholder')"
+                  :placeholder="t('crmlist-placeholder-search')"
                 />
                 <button
                   class="btn btn-primary"
-                  :title="t('topHeader2.applyFilterTitle')"
+                  :title="t('kanban-modal-filter-heading')"
                   @click="openFilterModal"
                 >
                   <i class="fa-solid fa-filter"></i>
@@ -64,27 +64,33 @@
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
                     >99+</span
                   >
-                  <span class="ms-1">{{ t("topHeader2.late") }}</span>
+                  <span class="ms-1">{{
+                    t("kanban-task-status-overdue")
+                  }}</span>
                 </div>
                 <div class="btn btn-light px-1">
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
                     >15</span
                   >
-                  <span class="ms-1">{{ t("topHeader2.today") }}</span>
+                  <span class="ms-1">{{ t("kanban-task-status-today") }}</span>
                 </div>
                 <div class="btn btn-light px-1">
                   <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
                     >4</span
                   >
-                  <span class="ms-1">{{ t("topHeader2.tomorrow") }}</span>
+                  <span class="ms-1">{{
+                    t("kanban-task-status-tomorrow")
+                  }}</span>
                 </div>
                 <div class="btn btn-light px-1">
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
                     >99+</span
                   >
-                  <span class="ms-1">{{ t("topHeader2.noTasks") }}</span>
+                  <span class="ms-1">{{
+                    t("kanban-task-status-notasks")
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -94,14 +100,14 @@
                 class="btn btn-light flex-fill py-2"
                 @click="openImportModal"
               >
-                <span>{{ t("buttons.import") }}</span>
+                <span>{{ t("kanban-button-import") }}</span>
                 <i class="fa-solid fa-upload ms-1"></i>
               </button>
               <button
                 class="btn btn-light flex-fill py-2"
                 @click="openExportModal"
               >
-                <span>{{ t("buttons.export") }}</span>
+                <span>{{ t("kanban-button-export") }}</span>
                 <i class="fa-solid fa-download ms-1"></i>
               </button>
             </div>
@@ -130,6 +136,7 @@ import { Modal } from "bootstrap";
 import CreateDealModal from "../kanban/CreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
+
 export default {
   name: "TopHeader2",
   components: {
@@ -159,7 +166,7 @@ export default {
   setup(props, { emit }) {
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
-
+    const { t } = useI18n();
     watch(
       () => props.initialFilters,
       (newFilters) => {
@@ -167,7 +174,6 @@ export default {
       },
       { deep: true }
     );
-    const { t } = useI18n();
     const openFilterModal = () => {
       const modal = new Modal(document.getElementById("filterModal"));
       modal.show();

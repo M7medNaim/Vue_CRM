@@ -8,7 +8,7 @@
       <div class="d-flex gap-2">
         <button class="btn btn-primary" @click="openNewFolderModal">
           <i class="fas fa-folder-plus me-1"></i>
-          {{ t("buttons.newFolder") }}
+          {{ t("documents-button-createfolder") }}
         </button>
         <button
           class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
@@ -50,7 +50,7 @@
           style="font-size: 48px"
         ></i>
         <p class="text-muted mb-3">
-          {{ t("upload.dragAndDrop") }}
+          {{ t("documents-modal-importdocument-placeholder") }}
         </p>
         <input
           type="file"

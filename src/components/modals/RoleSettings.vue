@@ -4,7 +4,11 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ isEditing ? $t("modals.editRole") : $t("modals.addRole") }}
+            {{
+              isEditing
+                ? $t("settings-role-modal-edit-heading")
+                : $t("settings-role-modal-add-heading")
+            }}
           </h5>
           <button
             type="button"
@@ -15,22 +19,26 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label required">{{
-              $t("modals.roleName")
+              $t("settings-role-modal-add-label-name")
             }}</label>
             <input
               type="text"
               class="form-control"
               v-model="role.name"
-              :placeholder="$t('modals.roleName')"
+              :placeholder="$t('settings-role-modal-add-placeholder-name')"
               required
             />
           </div>
           <div class="mb-3">
-            <label class="form-label">{{ $t("modals.created_at") }}</label>
+            <label class="form-label">{{
+              $t("settings-role-table-header-created-at")
+            }}</label>
             <input type="date" class="form-control" v-model="role.create_at" />
           </div>
           <div class="mb-3">
-            <label class="form-label">{{ $t("modals.permissions") }}</label>
+            <label class="form-label">{{
+              $t("settings-role-modal-add-label-permissions")
+            }}</label>
             <div class="row">
               <div
                 class="col-md-4 mb-2"
@@ -56,7 +64,7 @@
             class="btn btn-secondary"
             @click="$emit('close')"
           >
-            {{ $t("buttons.cancel") }}
+            {{ $t("settings-role-modal-add-button-cancel") }}
           </button>
           <button
             type="button"
@@ -64,7 +72,7 @@
             @click="save"
             :disabled="!role.name"
           >
-            {{ $t("buttons.save") }}
+            {{ $t("settings-role-modal-add-button-submit") }}
           </button>
         </div>
       </div>

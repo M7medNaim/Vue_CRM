@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-menu position-absolute d-block pb-1 border-0">
-    <h5 class="text-center noneMessage">{{ t("notifications") }}</h5>
+    <h5 class="text-center noneMessage">{{ t("kanban-no-notification") }}</h5>
     <div class="titleNot border-top p-2 d-none">
       <h5>Title</h5>
       <span class="date">18/4/2000</span>

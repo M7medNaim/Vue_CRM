@@ -4,7 +4,11 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ isEditing ? "تعديل جهة اتصال" : "إضافة جهة اتصال جديدة" }}
+            {{
+              isEditing
+                ? t("contacts-modal-edit-heading")
+                : t("contacts-modal-add-heading")
+            }}
           </h5>
           <button
             type="button"
@@ -16,12 +20,15 @@
           <div class="modal-body">
             <!-- Name Input -->
             <div class="mb-3">
-              <label for="name" class="form-label">الاسم</label>
+              <label for="name" class="form-label">{{
+                t("contacts-modal-add-label-fullname")
+              }}</label>
               <input
                 type="text"
                 class="form-control"
                 id="name"
                 v-model="formData.name"
+                :placeholder="t('contacts-modal-add-placeholder-fullname')"
                 required
               />
               <div v-if="errors.name" class="text-danger">
@@ -31,12 +38,15 @@
 
             <!-- Email Input -->
             <div class="mb-3">
-              <label for="email" class="form-label">البريد الإلكتروني</label>
+              <label for="email" class="form-label">{{
+                t("contacts-modal-add-label-email")
+              }}</label>
               <input
                 type="email"
                 class="form-control"
                 id="email"
                 v-model="formData.email"
+                :placeholder="t('contacts-modal-add-placeholder-email')"
                 required
               />
               <div v-if="errors.email" class="text-danger">
@@ -46,12 +56,15 @@
 
             <!-- Phone Input -->
             <div class="mb-3">
-              <label for="phone" class="form-label">رقم الهاتف</label>
+              <label for="phone" class="form-label">{{
+                t("contacts-modal-add-label-phone")
+              }}</label>
               <input
                 type="tel"
                 class="form-control"
                 id="phone"
                 v-model="formData.phone"
+                :placeholder="t('contacts-modal-add-placeholder-phone')"
                 required
               />
               <div v-if="errors.phone" class="text-danger">
@@ -67,14 +80,18 @@
               class="btn btn-primary"
               :disabled="isSubmitting"
             >
-              {{ isSubmitting ? "جاري الحفظ..." : "حفظ" }}
+              {{
+                isSubmitting
+                  ? t("contacts-modal-edit-button-submit")
+                  : t("contacts-modal-edit-button-submit")
+              }}
             </button>
             <button
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
             >
-              إلغاء
+              {{ t("contacts-modal-edit-button-cancel") }}
             </button>
           </div>
         </form>

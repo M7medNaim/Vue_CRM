@@ -7,7 +7,7 @@
           <input
             type="text"
             class="form-control ps-5 rounded-end-0"
-            :placeholder="t('forms.search')"
+            :placeholder="t('contacts-placeholder-search')"
             v-model="search"
           />
           <i
@@ -26,7 +26,7 @@
       <div class="col-6 col-md-8 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
-            <span>{{ t("buttons.addContact") }}</span>
+            <span>{{ t("contacts-button-add") }}</span>
           </button>
         </div>
       </div>
@@ -118,10 +118,10 @@ export default {
     const { t } = useI18n();
     const toast = useToast();
     const headers = [
-      { text: t("tables.name"), value: "name" },
-      { text: t("tables.email"), value: "email" },
-      { text: t("tables.phone"), value: "phone" },
-      { text: t("tables.actions"), value: "actions" },
+      { text: t("contacts-table-header-fullname"), value: "name" },
+      { text: t("contacts-table-header-email"), value: "email" },
+      { text: t("contacts-table-header-phone"), value: "phone" },
+      { text: t("contacts-table-header-actions"), value: "actions" },
     ];
     // const loadingStore = useLoadingStore();
     const tableLoading = ref(false);

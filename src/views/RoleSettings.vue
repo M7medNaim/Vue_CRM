@@ -7,7 +7,7 @@
           <input
             type="text"
             class="form-control ps-5"
-            :placeholder="$t('forms.search')"
+            :placeholder="$t('settings-role-placeholder-search')"
             v-model="search"
           />
           <i
@@ -18,7 +18,7 @@
       <div class="col-6 col-md-8">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal()">
-            <span>{{ $t("buttons.addRole") }}</span>
+            <span>{{ $t("settings-role-button-add-role") }}</span>
           </button>
         </div>
       </div>
@@ -173,9 +173,9 @@ export default {
 
     const headers = [
       { text: "#", value: "id" },
-      { text: t("tables.name"), value: "name" },
-      { text: t("tables.createdAt"), value: "create_at" },
-      { text: t("tables.actions"), value: "actions" },
+      { text: t("settings-role-table-header-name"), value: "name" },
+      { text: t("settings-role-table-header-created-at"), value: "create_at" },
+      { text: t("settings-role-table-header-actions"), value: "actions" },
     ];
 
     const availablePermissions = [

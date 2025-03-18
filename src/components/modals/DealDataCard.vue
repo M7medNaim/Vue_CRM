@@ -13,7 +13,7 @@
         >
           <div class="d-flex align-items-center gap-4">
             <h5 class="modal-title" id="dealDataCardLabel">
-              {{ t("modals.editDeal") }}
+              {{ t("kanban-modal-edit-heading") }}
               <button
                 type="button"
                 @click="toggleEditMode"
@@ -29,23 +29,23 @@
           </div>
           <div class="source">
             <i class="fa-solid fa-circle-exclamation me-1"></i>
-            <span>{{ t("modals.source") }}: Whatsapp</span>
+            <span>{{ t("kanban-modal-edit-source-heading") }}: Whatsapp</span>
           </div>
           <div class="d-flex justify-content-end align-items-center gap-2">
             <button class="btn border-none text-primary" @click="startCall">
               <i class="fa-solid fa-phone-volume fs-5"></i>
-              {{ t("modals.startCall") }}
+              {{ t("kanban-modal-edit-call-heading") }}
             </button>
             <button
               class="btn border-none text-primary"
               @click="openWhatsappModal"
             >
               <i class="fab fa-whatsapp border-none text-primary fs-5"></i>
-              {{ t("modals.chatViaWhatsapp") }}
+              {{ t("kanban-modal-edit-whatsapp") }}
             </button>
             <button class="btn border-none text-primary" @click="sendEmail">
               <i class="fas fa-envelope fs-5"></i>
-              {{ t("modals.sendEmail") }}
+              {{ t("kanban-modal-edit-sendemail") }}
             </button>
             <button
               type="button"
@@ -85,7 +85,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-a"></i> {{ t("modals.fullName")
+                    ><i class="fa-solid fa-a"></i>
+                    {{ t("kanban-modal-edit-label-fullname")
                     }}<span class="text-danger">*</span>
                   </label>
                 </div>
@@ -95,7 +96,7 @@
                       type="text"
                       class="form-control bg-light text-secondary py-2"
                       v-model="customerData.fullName"
-                      :placeholder="t('modals.fullName')"
+                      :placeholder="t('kanban-modal-edit-placeholder-fullname')"
                       :readonly="!isEditMode"
                     />
                     <button
@@ -115,7 +116,8 @@
               >
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-a"></i> {{ t("modals.nickName")
+                    ><i class="fa-solid fa-a"></i>
+                    {{ t("kanban-modal-edit-label-nickname")
                     }}<span class="text-danger">*</span>
                   </label>
                 </div>
@@ -124,7 +126,7 @@
                     type="text"
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.nickName"
-                    :placeholder="t('modals.nickName')"
+                    :placeholder="t('kanban-modal-edit-placeholder-nickname')"
                     :readonly="!isEditMode"
                   />
                 </div>
@@ -135,7 +137,8 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-phone-volume"></i>
-                    {{ t("modals.phone") }}<span class="text-danger">*</span>
+                    {{ t("kanban-modal-edit-label-phone")
+                    }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -144,7 +147,7 @@
                       type="text"
                       class="form-control bg-light text-secondary py-2"
                       v-model="customerData.phone"
-                      :placeholder="t('modals.phone')"
+                      :placeholder="t('kanban-modal-edit-placeholder-phone')"
                       :readonly="!isEditMode"
                     />
                     <button
@@ -165,7 +168,8 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-phone-volume"></i>
-                    {{ t("modals.phone2") }}<span class="text-danger">*</span>
+                    {{ t("kanban-modal-edit-label-phone")
+                    }}<span class="text-danger">*</span>
                   </label>
                 </div>
                 <div class="col-10">
@@ -173,7 +177,7 @@
                     type="text"
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.phone2"
-                    :placeholder="t('modals.phone2')"
+                    :placeholder="t('kanban-modal-edit-placeholder-phone')"
                     :readonly="!isEditMode"
                   />
                 </div>
@@ -183,7 +187,8 @@
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-envelope"></i> {{ t("modals.email")
+                    ><i class="fa-solid fa-envelope"></i>
+                    {{ t("kanban-modal-edit-label-email")
                     }}<span class="text-danger">*</span>
                   </label>
                 </div>
@@ -192,7 +197,7 @@
                     type="text"
                     class="form-control bg-light text-secondary py-2"
                     v-model="customerData.email"
-                    :placeholder="t('modals.email')"
+                    :placeholder="t('kanban-modal-edit-placeholder-email')"
                     :readonly="!isEditMode"
                   />
                 </div>
@@ -202,7 +207,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-note-sticky"></i>
-                    {{ t("modals.note") }}</label
+                    {{ t("kanban-modal-edit-label-notes") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -219,7 +224,7 @@
                 <div class="col-2">
                   <label for=""
                     ><i class="fa-solid fa-circle-question"></i>
-                    {{ t("modals.questions") }}</label
+                    {{ t("kanban-modal-edit-label-questions") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -227,7 +232,7 @@
                     class="btn btn-primary w-100"
                     @click="openQuestionsModal"
                   >
-                    {{ t("modals.viewReport") }}
+                    {{ t("kanban-modal-edit-button-reports") }}
                   </button>
                 </div>
               </div>
@@ -237,7 +242,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-user"></i>
-                    {{ t("modals.assignCompany") }}</label
+                    {{ t("kanban-modal-edit-label-company") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -256,7 +261,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-users"></i>
-                    {{ t("modals.assignRepresentative") }}</label
+                    {{ t("kanban-modal-edit-label-representative") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -266,7 +271,7 @@
                     :readonly="!isEditMode"
                   >
                     <option value="">
-                      {{ t("modals.selectRepresentative") }}
+                      {{ t("kanban-modal-edit-placeholder-representative") }}
                     </option>
                   </select>
                 </div>
@@ -277,7 +282,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i>
-                    {{ t("modals.packages") }}</label
+                    {{ t("kanban-modal-edit-label-packages") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -292,14 +297,16 @@
                         v-model="item.serviceSelect"
                       >
                         <option value="" disabled>
-                          {{ t("modals.selectService") }}
+                          {{ t("kanban-modal-edit-placeholder-packages-name") }}
                         </option>
                       </select>
                       <input
                         type="text"
                         class="bg-light text-secondary p-2"
                         v-model="item.serviceInput"
-                        :placeholder="t('modals.service')"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-packages-quantity')
+                        "
                       />
                       <button
                         class="btn btn-secondary"
@@ -323,7 +330,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i>
-                    {{ t("modals.dealStatus") }}</label
+                    {{ t("dealStatus") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -334,20 +341,20 @@
               </div>
               <div class="row">
                 <div class="col-6 pt-2">
-                  <h5>{{ t("modals.history") }}</h5>
+                  <h5>{{ t("kanban-modal-edit-history-heading") }}</h5>
                 </div>
                 <div
                   class="col-6 d-flex justify-content-end align-items-center gap-2"
                   v-if="isEditMode"
                 >
                   <button class="btn btn-primary px-4 py-2" @click="confirm">
-                    {{ t("buttons.confirm") }}
+                    {{ t("kanban-modal-edit-button-submit") }}
                   </button>
                   <button
                     class="btn btn-secondary px-4 py-2"
                     data-bs-dismiss="modal"
                   >
-                    {{ t("buttons.cancel") }}
+                    {{ t("kanban-modal-edit-button-cancel") }}
                   </button>
                 </div>
               </div>
@@ -419,16 +426,16 @@
                       class="btn btn-light text-primary me-1"
                       style="background-color: #eee"
                     >
-                      {{ t("modals.comment") }}
+                      {{ t("kanban-modal-edit-comment-heading") }}
                     </span>
                     <input
                       type="text"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.comment"
-                      :placeholder="t('modals.addNewComment')"
+                      :placeholder="t('kanban-modal-edit-comment-placeholder')"
                     />
                     <button class="btn btn-primary py-1 px-4" type="submit">
-                      {{ t("buttons.submit") }}
+                      {{ t("kanban-modal-edit-comment-button-submit") }}
                     </button>
                   </div>
                 </div>
@@ -473,13 +480,13 @@
                       class="btn btn-light text-primary me-1 px-4"
                       style="background-color: #eee"
                     >
-                      {{ t("modals.tasks") }}
+                      {{ t("kanban-modal-edit-tasks-heading") }}
                     </span>
                     <input
                       type="text"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.task"
-                      :placeholder="t('modals.addNewTask')"
+                      :placeholder="t('kanban-modal-edit-tasks-placeholder')"
                     />
                     <input
                       type="date"
@@ -488,7 +495,7 @@
                       :placeholder="t('modals.selectDate')"
                     />
                     <button class="btn btn-primary py-1 px-4" type="submit">
-                      {{ t("buttons.submit") }}
+                      {{ t("kanban-modal-edit-tasks-button-add") }}
                     </button>
                   </div>
                 </div>
@@ -496,9 +503,15 @@
                   <div
                     class="row bg-light-subtle border-top border-bottom py-1"
                   >
-                    <div class="col-5">{{ t("modals.description") }}</div>
-                    <div class="col-5">{{ t("modals.date") }}</div>
-                    <div class="col-2">{{ t("modals.status") }}</div>
+                    <div class="col-5">
+                      {{ t("kanban-modal-edit-tasks-table-description") }}
+                    </div>
+                    <div class="col-5">
+                      {{ t("kanban-modal-edit-tasks-table-due-date") }}
+                    </div>
+                    <div class="col-2">
+                      {{ t("kanban-modal-edit-tasks-table-status") }}
+                    </div>
                   </div>
                   <!-- data Tasks -->
                   <div

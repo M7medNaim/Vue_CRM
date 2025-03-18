@@ -8,7 +8,9 @@
               v-model="selectedAction"
               class="text-secondary form-control"
             >
-              <option value="" disabled>{{ t("crmList.selectAction") }}</option>
+              <option value="" disabled>
+                {{ t("crmlist-placeholder-action") }}
+              </option>
               <option
                 v-for="action in actions"
                 :key="action.value"
@@ -22,7 +24,9 @@
               @click="executeAction"
               :disabled="!selectedAction || !selectedRows.length"
             >
-              <span>Submit</span> ({{ selectedRows.length }})
+              <span>{{ t("crmlist-button-actionsubmit") }}</span> ({{
+                selectedRows.length
+              }})
             </button>
           </div>
         </div>
@@ -31,7 +35,7 @@
             <input
               type="text"
               class="form-control"
-              :placeholder="t('forms.search')"
+              :placeholder="t('crmlist-placeholder-search')"
               v-model="search"
             />
             <button
@@ -50,7 +54,7 @@
           </button>
           <button class="btn btn-primary rounded-2" @click="openImportModal">
             <i class="fa-solid fa-upload me-2"></i>
-            <span>{{ t("buttons.import") }}</span>
+            <span>{{ t("crmlist-button-import") }}</span>
           </button>
         </div>
       </div>
@@ -154,14 +158,14 @@ const items = ref([]);
 const tableLoading = ref(false);
 // Table headers
 const headers = [
-  { text: t("tables.name"), value: "name" },
-  { text: t("tables.phone"), value: "phone" },
-  { text: t("tables.notes"), value: "description" },
-  { text: t("tables.createdAt"), value: "created_at" },
-  { text: t("tables.source"), value: "source" },
-  { text: t("tables.stage"), value: "stage" },
-  { text: t("tables.responsible"), value: "responsible" },
-  { text: t("tables.actions"), value: "actions", sortable: false },
+  { text: t("crmlist-table-header-fullname"), value: "name" },
+  { text: t("crmlist-table-header-phone"), value: "phone" },
+  { text: t("crmlist-table-header-notes"), value: "description" },
+  { text: t("crmlist-table-header-created-at"), value: "created_at" },
+  { text: t("crmlist-table-header-source"), value: "source" },
+  { text: t("crmlist-table-header-stage"), value: "stage" },
+  { text: t("crmlist-table-header-responsible"), value: "responsible" },
+  { text: t("crmlist-table-header-action"), value: "actions", sortable: false },
 ];
 const search = ref("");
 const selectedRows = ref([]);

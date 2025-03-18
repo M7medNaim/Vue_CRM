@@ -1,7 +1,9 @@
 <template>
   <div class="rating-container d-flex align-items-center gap-1">
     <div class="stars d-flex justify-content-center align-items-center">
-      <span class="fs-6 me-2">{{ t("modals.rating") }}:</span>
+      <span class="fs-6 me-2"
+        >{{ t("kanban-modal-edit-rating-heading") }}:</span
+      >
       <span
         v-for="index in 7"
         :key="index"

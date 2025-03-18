@@ -107,3 +107,13 @@ export const updateContact = (contactId, formData) =>
 // delete contact
 export const deleteContact = (contactId) =>
   axios.delete(`/contacts/${contactId}`);
+
+// Get All Translations
+export const getTranslations = (locale) => {
+  const token = Cookies.get("authToken");
+  return axios.get(`/translations/all?locale=${locale}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -4,7 +4,11 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ isEdit ? t("modals.editFolder") : t("modals.newFolder") }}
+            {{
+              isEdit
+                ? t("documents-modal-edit-heading")
+                : t("documents-modal-createfolder-heading")
+            }}
           </h5>
           <button
             type="button"
@@ -16,14 +20,16 @@
           <form @submit.prevent="handleSubmit">
             <div class="mb-3">
               <label for="folderName" class="form-label">
-                {{ t("modals.folderName") }}
+                {{ t("documents-modal-createfolder-label-name") }}
               </label>
               <input
                 type="text"
                 class="form-control"
                 id="folderName"
                 v-model="folderName"
-                :placeholder="t('modals.folderName')"
+                :placeholder="
+                  t('documents-modal-createfolder-placeholder-name')
+                "
                 required
               />
             </div>
@@ -35,7 +41,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            {{ t("buttons.cancel") }}
+            {{ t("documents-modal-createfolder-button-close") }}
           </button>
           <button
             type="button"
@@ -43,7 +49,11 @@
             @click="handleSubmit"
             :disabled="!folderName"
           >
-            {{ isEdit ? t("buttons.saveChanges") : t("buttons.create") }}
+            {{
+              isEdit
+                ? t("documents-modal-createfolder-button-submit")
+                : t("documents-modal-createfolder-button-submit")
+            }}
           </button>
         </div>
       </div>

@@ -7,14 +7,14 @@
           <input
             type="text"
             class="form-control w-50 ps-5 rounded-end-0"
-            :placeholder="t('forms.search')"
+            :placeholder="t('users-placeholder-search')"
             v-model="search"
           />
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
           ></i>
           <button
-            :title="t('buttons.filter')"
+            :title="t('users-modal-filter-heading')"
             type="button"
             class="btn btn-primary me-2 rounded-start-0"
             @click="openFilterModal"
@@ -26,7 +26,7 @@
       <div class="col-6 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
-            {{ t("buttons.addUser") }}
+            {{ t("users-button-add-user") }}
           </button>
         </div>
       </div>
@@ -129,10 +129,10 @@ export default {
     const { t } = useI18n();
     const toast = useToast();
     const headers = [
-      { text: t("tables.users"), value: "profile" },
-      { text: t("tables.email"), value: "emailVerified" },
-      { text: t("tables.status"), value: "status" },
-      { text: t("tables.actions"), value: "actions" },
+      { text: t("users-table-header-fullname"), value: "profile" },
+      { text: t("users-table-header-email"), value: "emailVerified" },
+      { text: t("users-table-header-status"), value: "status" },
+      { text: t("users-table-header-actions"), value: "actions" },
     ];
     // const loadingStore = useLoadingStore();
     const items = ref([]);
