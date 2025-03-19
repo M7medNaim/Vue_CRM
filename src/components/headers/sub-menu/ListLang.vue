@@ -2,7 +2,7 @@
   <div class="dropdown-menu my-2 d-block border-0 position-absolute">
     <ul class="list-unstyled mb-0 lh-lg">
       <li>
-        <a class="dropdown-item ps-3" @click="changeLanguage('en')">
+        <a class="dropdown-item ps-3" @click="handleLanguageChange('en')">
           <span class="dropdown-icon me-4 text-secondary flageImage">
             <img src="@/assets/flag-usa.png" alt="English" />
           </span>
@@ -10,7 +10,7 @@
         </a>
       </li>
       <li>
-        <a class="dropdown-item ps-3" @click="changeLanguage('ar')">
+        <a class="dropdown-item ps-3" @click="handleLanguageChange('ar')">
           <span class="dropdown-icon me-4 text-secondary flageImage">
             <img src="@/assets/Flag_of_Saudi_Arabia.svg" alt="العربية" />
           </span>
@@ -23,15 +23,26 @@
 
 <script>
 import { changeLanguage } from "@/i18n";
+import { useLoadingStore } from "@/plugins/loadingStore";
 
 export default {
   name: "ListLang",
+  setup() {
+    const loadingStore = useLoadingStore();
+    return { loadingStore };
+  },
   methods: {
-    changeLanguage(lang) {
+    async handleLanguageChange(lang) {
       try {
-        changeLanguage(lang);
+        this.loadingStore.startLoading();
+
+        await changeLanguage(lang);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (error) {
         console.error("Error changing language:", error);
+      } finally {
+        this.loadingStore.stopLoading();
       }
     },
   },

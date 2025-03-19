@@ -19,7 +19,7 @@
                 @click="openCrmKanban"
                 v-if="$route.name !== 'CrmKanban'"
               >
-                {{ t("kanban-button-kanban-view") }}
+                {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
                 class="btn btn-light px-4 py-2 fw-semibold"
@@ -29,7 +29,7 @@
                   permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
                 "
               >
-                {{ t("kanban-button-tasks-view") }}
+                {{ t("header-subnav-item-kanban-tasks") }}
               </button>
             </div>
 

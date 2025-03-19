@@ -16,7 +16,6 @@
             class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
-            @click="closeChangeLang"
           ></button>
         </div>
         <form @submit.prevent="submitForm">
@@ -27,7 +26,12 @@
             </select>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click="changeLang">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="changeLang"
+            >
               {{ $t("save") }}
             </button>
           </div>
@@ -39,44 +43,33 @@
 
 <script>
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { changeLanguage } from "@/i18n";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { useLoadingStore } from "@/plugins/loadingStore";
+
 export default {
   name: "ChangeLang",
   setup() {
     const { t } = useI18n();
     const toast = useToast();
+    const loadingStore = useLoadingStore();
     const selectedLang = ref(localStorage.getItem("locale") || "en");
+    const modalInstance = ref(null);
+
+    onMounted(() => {
+      const modal = document.getElementById("changeLangModal");
+      modalInstance.value = new Modal(modal);
+    });
 
     const openChangeLang = () => {
       try {
-        const modal = document.getElementById("changeLangModal");
-        const modalInstance = new Modal(modal);
-        modalInstance.show();
+        modalInstance.value.show();
       } catch (error) {
         toast.error(t("error.openModal"), {
           timeout: 3000,
           id: "change-lang-open-error",
-          singleton: true,
-        });
-      }
-    };
-
-    const closeChangeLang = () => {
-      try {
-        const modal = document.getElementById("changeLangModal");
-        const modalInstance = Modal.getInstance(modal);
-        if (modalInstance) {
-          modalInstance.hide();
-          document.querySelector(".modal-backdrop")?.remove();
-          document.body.classList.remove("modal-open");
-        }
-      } catch (error) {
-        toast.error(t("error.closeModal"), {
-          timeout: 3000,
-          id: "change-lang-close-error",
           singleton: true,
         });
       }
@@ -93,14 +86,25 @@ export default {
           return;
         }
 
-        changeLanguage(selectedLang.value);
-        closeChangeLang();
+        // تأكد من إزالة خلفية المودال وتنظيف DOM
+        document.querySelector(".modal-backdrop")?.remove();
+        document.body.classList.remove("modal-open");
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+
+        // بدء التحميل
+        loadingStore.startLoading();
+
+        await changeLanguage(selectedLang.value);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (error) {
         toast.error(t("error.changeLang"), {
           timeout: 3000,
           id: "change-lang-submit-error",
           singleton: true,
         });
+      } finally {
+        loadingStore.stopLoading();
       }
     };
 
@@ -111,7 +115,6 @@ export default {
     return {
       selectedLang,
       openChangeLang,
-      closeChangeLang,
       submitForm,
       changeLang,
       t,
