@@ -50,7 +50,7 @@
         </div>
         <div class="col-sm-6 col-lg-4 text-end">
           <button class="btn btn-primary rounded-2 me-2" @click="openDealModal">
-            <span>{{ t("buttons.createDeal") }}</span>
+            <span>{{ t("kanban-button-add-deal") }}</span>
           </button>
           <button class="btn btn-primary rounded-2" @click="openImportModal">
             <i class="fa-solid fa-upload me-2"></i>

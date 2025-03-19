@@ -3,50 +3,56 @@
     <div class="row">
       <div class="col-12">
         <div class="mb-3">
-          <label for="name" class="form-label">{{ t("modals.name") }}</label>
+          <label for="name" class="form-label">{{
+            t("documents-modal-edit-label-name")
+          }}</label>
           <input
             type="text"
             class="form-control"
             id="userName"
             v-model="localFormData.contact.name"
-            :placeholder="t('modals.name')"
+            :placeholder="t('documents-modal-edit-placeholder-name')"
           />
         </div>
         <div class="mb-3">
-          <label for="email" class="form-label">{{ t("modals.email") }}</label>
+          <label for="email" class="form-label">{{
+            t("users-modal-add-label-email")
+          }}</label>
           <input
             type="email"
             class="form-control"
             id="email"
             v-model="localFormData.contact.email"
-            :placeholder="t('modals.email')"
+            :placeholder="t('users-modal-add-placeholder-email')"
           />
         </div>
         <div class="mb-3">
-          <label for="phone" class="form-label">{{ t("modals.phone") }}</label>
+          <label for="phone" class="form-label">{{
+            t("users-modal-add-label-phone")
+          }}</label>
           <input
             type="text"
             class="form-control"
             id="phone"
             v-model="localFormData.contact.phones[0].phone"
-            :placeholder="t('modals.phone')"
+            :placeholder="t('users-modal-add-placeholder-phone')"
           />
         </div>
         <div class="mb-3">
           <label for="description" class="form-label">{{
-            t("modals.notes")
+            t("kanban-modal-create-label-notes")
           }}</label>
           <input
             type="text"
             class="form-control"
             id="description"
             v-model="localFormData.description"
-            :placeholder="t('modals.notes')"
+            :placeholder="t('kanban-modal-create-placeholder-notes')"
           />
         </div>
         <div class="mb-3">
           <label for="source" class="form-label">{{
-            t("modals.source")
+            t("kanban-modal-create-label-source")
           }}</label>
           <select
             class="form-select"
@@ -54,7 +60,7 @@
             v-model="localFormData.source"
           >
             <option value="" disabled selected>
-              {{ t("modals.selectSource") }}
+              {{ t("kanban-modal-create-placeholder-source") }}
             </option>
             <option
               v-for="source in sources"
@@ -84,7 +90,7 @@
         </div> -->
         <div class="mb-3">
           <label for="responsible" class="form-label">{{
-            t("modals.responsiblePerson")
+            t("crmlist-table-header-responsible")
           }}</label>
           <select
             class="form-select"
@@ -92,7 +98,7 @@
             v-model="localFormData.responsible_id"
           >
             <option value="" disabled selected>
-              {{ t("modals.selectResponsiblePerson") }}
+              {{ t("crmlist-table-header-responsible") }}
             </option>
             <option v-for="user in users" :key="user.id" :value="user.id">
               {{ user.name }}

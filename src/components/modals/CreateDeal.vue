@@ -11,7 +11,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="dealModalLabel">
-            {{ t("modals.createDeal") }}
+            {{ t("kanban-button-add-deal") }}
           </h5>
           <button
             type="button"

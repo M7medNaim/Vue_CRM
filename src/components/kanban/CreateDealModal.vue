@@ -10,7 +10,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="createDealModalLabel">
-            {{ t("modals.create_new_deal") }}
+            {{ t("kanban-modal-create-heading") }}
           </h5>
           <button
             type="button"
@@ -24,7 +24,8 @@
             <div class="row mb-3">
               <div class="col-4">
                 <label>
-                  <i class="fas fa-user"></i> {{ t("modals.full_name") }}
+                  <i class="fas fa-user"></i>
+                  {{ t("kanban-modal-create-label-fullname") }}
                   <span class="text-danger">*</span>
                 </label>
               </div>
@@ -33,14 +34,15 @@
                   type="text"
                   class="form-control"
                   required
-                  placeholder="Example. Muhammad Sadek"
+                  :placeholder="t('kanban-modal-create-placeholder-fullname')"
                 />
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-4">
                 <label>
-                  <i class="fas fa-phone"></i> {{ t("modals.phone") }}
+                  <i class="fas fa-phone"></i>
+                  {{ t("kanban-modal-create-label-phone") }}
                   <span class="text-danger">*</span>
                 </label>
               </div>
@@ -49,25 +51,31 @@
                   type="text"
                   class="form-control"
                   required
-                  placeholder="97155123456"
+                  :placeholder="t('kanban-modal-create-placeholder-phone')"
                 />
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-4">
                 <label>
-                  <i class="fas fa-sticky-note"></i> {{ t("modals.note") }}
+                  <i class="fas fa-sticky-note"></i>
+                  {{ t("kanban-modal-create-label-notes") }}
                 </label>
               </div>
               <div class="col-8 text-end">
-                <textarea class="w-100" name="notes" id="note"></textarea>
+                <textarea
+                  class="w-100"
+                  name="notes"
+                  id="note"
+                  :placeholder="t('kanban-modal-create-placeholder-notes')"
+                ></textarea>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-4">
                 <label>
                   <i class="fas fa-info-circle me-2"></i>
-                  {{ t("modals.source") }}
+                  {{ t("kanban-modal-create-label-source") }}
                 </label>
               </div>
               <div class="col-8 text-end">
@@ -90,7 +98,7 @@
               <div class="col-4">
                 <label>
                   <i class="fa-solid fa-user"></i>
-                  {{ t("modals.assign_company") }}
+                  {{ t("kanban-modal-create-label-company") }}
                 </label>
               </div>
               <div class="col-8 text-end">
@@ -98,7 +106,9 @@
                   class="form-select border-0 bg-light text-secondary"
                   v-model="form.company"
                 >
-                  <option value="any">{{ t("modals.any") }}</option>
+                  <option value="any">
+                    {{ t("kanban-modal-create-placeholder-company") }}
+                  </option>
                 </select>
               </div>
             </div>
@@ -106,7 +116,7 @@
               <div class="col-4">
                 <label>
                   <i class="fa-solid fa-users"></i>
-                  {{ t("modals.assign_representative") }}
+                  {{ t("kanban-modal-create-label-representative") }}
                 </label>
               </div>
               <div class="col-8 text-end">
@@ -114,7 +124,9 @@
                   class="form-select border-0 bg-light text-secondary"
                   v-model="form.representative"
                 >
-                  <option value="any">{{ t("modals.any") }}</option>
+                  <option value="any">
+                    {{ t("kanban-modal-create-placeholder-representative") }}
+                  </option>
                 </select>
               </div>
             </div>
@@ -122,7 +134,7 @@
               <div class="col-4">
                 <label>
                   <i class="fa-solid fa-cubes"></i>
-                  {{ t("modals.packages") }}
+                  {{ t("kanban-modal-create-label-packages") }}
                 </label>
               </div>
               <div class="col-8">
@@ -135,14 +147,16 @@
                       v-model="form.package"
                     >
                       <option value="Choose a Service">
-                        {{ t("modals.choose_a_service") }}
+                        {{ t("kanban-modal-create-placeholder-packages-name") }}
                       </option>
                     </select>
                     <input
                       type="text"
                       class="form-control"
                       required
-                      :placeholder="t('modals.quantity_type')"
+                      :placeholder="
+                        t('kanban-modal-create-placeholder-packages-quantity')
+                      "
                     />
                     <button
                       type="button"
@@ -162,15 +176,15 @@
                       class="form-select border-0 bg-light text-secondary"
                       v-model="pkg.package"
                     >
-                      <option value="any">
-                        {{ t("modals.choose_a_service") }}
-                      </option>
+                      <option value="any">choose a service</option>
                     </select>
                     <input
                       type="text"
                       class="form-control"
                       required
-                      :placeholder="t('modals.quantity_type')"
+                      :placeholder="
+                        t('kanban-modal-create-placeholder-packages-quantity')
+                      "
                       v-model="pkg.quantity"
                     />
                     <button
@@ -189,10 +203,10 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                {{ t("buttons.close") }}
+                {{ t("kanban-modal-create-button-close") }}
               </button>
               <button type="submit" class="btn btn-primary">
-                {{ t("buttons.create") }}
+                {{ t("kanban-modal-create-button-submit") }}
               </button>
             </div>
           </form>

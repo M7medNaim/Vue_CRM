@@ -10,7 +10,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="updateStageLabel">
-            {{ $t("modals.editBoardTitle") }}
+            {{ $t("kanban-modal-editstage-heading") }}
           </h5>
           <button
             type="button"
@@ -23,14 +23,14 @@
           <form @submit.prevent="updateStage">
             <div class="stageTitile d-flex align-content-center gap-4">
               <div class="">
-                <span>{{ $t("modals.stageTitle") }}</span>
+                <span>{{ $t("kanban-modal-editstage-label-title-en") }}</span>
                 <span class="text-danger">*</span>
               </div>
               <input type="text" v-model="stageName" name="title" id="title" />
             </div>
             <div class="stageColor d-flex align-items-center gap-4 mt-3">
               <div class="">
-                <span>{{ $t("modals.stageColor") }}</span>
+                <span>{{ $t("kanban-modal-editstage-label-color") }}</span>
                 <span class="text-danger">*</span>
               </div>
               <input
@@ -46,17 +46,17 @@
           class="modal-footer d-flex justify-content-between align-items-center"
         >
           <button type="button" class="btn btn-primary" @click="updateStage">
-            {{ $t("buttons.update") }}
+            {{ $t("kanban-modal-editstage-button-submit") }}
           </button>
           <button type="button" class="btn btn-danger" @click="deleteStage">
-            {{ $t("buttons.delete") }}
+            delete
           </button>
           <button
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            {{ $t("buttons.cancel") }}
+            {{ $t("kanban-modal-editstage-button-cancel") }}
           </button>
         </div>
       </div>

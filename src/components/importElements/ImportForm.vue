@@ -4,7 +4,7 @@
       <div class="col-12">
         <div class="mb-3">
           <label for="file" class="form-label">{{
-            t("crmlist-modal-import-label-file")
+            t("kanban-modal-import-label-file")
           }}</label>
           <input
             type="file"
@@ -14,7 +14,7 @@
             accept=".xlsx,.xls,.csv"
           />
           <small class="text-muted">
-            {{ t("upload.allowed_file_types") }}
+            Allowed file types: .xlsx, .xls, .csv
           </small>
           <div v-if="fileError" class="text-danger mt-1">
             {{ fileError }}
@@ -25,11 +25,11 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="description" class="form-label">
-              {{ t("crmlist-modal-import-label-description") }}
+              {{ t("kanban-modal-import-label-description") }}
             </label>
             <select v-model="description" class="text-secondary form-select">
               <option value="" disabled selected>
-                {{ t("modals.select_header") }}
+                {{ t("kanban-modal-import-placeholder-description") }}
               </option>
               <option
                 v-for="option in options"
@@ -44,11 +44,11 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="source" class="form-label">
-              {{ t("crmlist-modal-import-label-source") }}
+              {{ t("kanban-modal-import-label-source") }}
             </label>
             <select v-model="source" class="text-secondary form-select">
               <option value="" disabled selected>
-                {{ t("modals.any") }}
+                {{ t("kanban-modal-import-placeholder-source") }}
               </option>
               <option
                 v-for="source in sources"
@@ -63,11 +63,11 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="name" class="form-label">
-              {{ t("crmlist-modal-import-label-name") }}
+              {{ t("kanban-modal-import-label-name") }}
             </label>
             <select v-model="name" class="text-secondary form-select">
               <option value="" disabled selected>
-                {{ t("modals.select_header") }}
+                {{ t("kanban-modal-import-placeholder-name") }}
               </option>
               <option
                 v-for="option in options"
@@ -82,11 +82,11 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="phone" class="form-label">
-              {{ t("crmlist-modal-import-label-phone") }}
+              {{ t("kanban-modal-import-label-phone") }}
             </label>
             <select v-model="phone" class="text-secondary form-select">
               <option value="" disabled selected>
-                {{ t("modals.select_header") }}
+                {{ t("kanban-modal-import-placeholder-phone") }}
               </option>
               <option
                 v-for="option in options"
@@ -101,11 +101,11 @@
         <div class="col-12">
           <div class="mb-3">
             <label for="comment" class="form-label">
-              {{ t("crmlist-modal-import-label-comment") }}
+              {{ t("kanban-modal-import-label-comment") }}
             </label>
             <select v-model="comment" class="text-secondary form-select">
               <option value="" disabled selected>
-                {{ t("modals.select_header") }}
+                {{ t("kanban-modal-import-placeholder-comment") }}
               </option>
               <option
                 v-for="option in options"
@@ -117,7 +117,7 @@
             </select>
           </div>
         </div>
-        <div class="col-12">
+        <!-- <div class="col-12">
           <div class="mb-3">
             <label for="address" class="form-label">
               {{ t("modals.address") }}
@@ -135,15 +135,15 @@
               </option>
             </select>
           </div>
-        </div>
+        </div> -->
         <div class="col-12">
           <div class="mb-3">
             <label for="email" class="form-label">
-              {{ t("crmlist-modal-import-label-email") }}
+              {{ t("kanban-modal-import-label-email") }}
             </label>
             <select v-model="email" class="text-secondary form-select">
               <option value="" disabled selected>
-                {{ t("modals.select_header") }}
+                {{ t("kanban-modal-import-placeholder-email") }}
               </option>
               <option
                 v-for="option in options"
