@@ -15,7 +15,7 @@
           @click="$router.back()"
         >
           <i class="fas fa-arrow-right pt-1"></i>
-          <span>{{ t("buttons.back") }}</span>
+          <span>{{ t("documents-button-back") }}</span>
         </button>
       </div>
     </div>

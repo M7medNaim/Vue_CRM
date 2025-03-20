@@ -7,9 +7,8 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import Swal from "sweetalert2";
 import i18n from "./i18n";
-import { getTranslations } from "./plugins/services/authService";
 
-// تعريف toastOptions خارج then و catch
+// تعريف toastOptions
 const toastOptions = {
   position: "top-left",
   timeout: 3000,
@@ -46,29 +45,9 @@ const app = createApp(App);
 const pinia = createPinia();
 app.use(pinia);
 
-// تحميل الترجمات قبل تثبيت التطبيق
-const currentLocale = localStorage.getItem("locale") || "en";
-
-// تحميل الترجمات من API
-getTranslations(currentLocale)
-  .then((response) => {
-    if (response.data && response.data.translations) {
-      // تحديث الترجمات في i18n
-      i18n.global.setLocaleMessage(currentLocale, response.data.translations);
-    }
-    // تثبيت التطبيق
-    app.use(store);
-    app.use(router);
-    app.use(i18n);
-    app.use(Toast, toastOptions);
-    app.mount("#app");
-  })
-  .catch((error) => {
-    console.error("Failed to load translations:", error);
-    // تثبيت التطبيق حتى في حالة فشل تحميل الترجمات
-    app.use(store);
-    app.use(router);
-    app.use(i18n);
-    app.use(Toast, toastOptions);
-    app.mount("#app");
-  });
+// تثبيت التطبيق
+app.use(store);
+app.use(router);
+app.use(i18n);
+app.use(Toast, toastOptions);
+app.mount("#app");

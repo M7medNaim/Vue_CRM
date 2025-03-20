@@ -56,11 +56,11 @@ export default {
         const modal = document.getElementById("changePasswordModal");
         const modalInstance = new Modal(modal);
         modalInstance.show();
-        toast.info(t("success.openChangePassword"), {
-          timeout: 3000,
-          id: "change-password-open",
-          singleton: true,
-        });
+        // toast.info(t("success.openChangePassword"), {
+        //   timeout: 3000,
+        //   id: "change-password-open",
+        //   singleton: true,
+        // });
       } catch (error) {
         toast.error(t("error.openChangePassword"), {
           timeout: 3000,

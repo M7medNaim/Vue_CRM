@@ -113,9 +113,9 @@
                       type="button"
                       class="btn btn-primary"
                       @click="addPhone"
+                      v-if="formData.phones.length < 2"
                     >
                       <i class="fas fa-plus"></i>
-                      <!-- {{ t("contacts-modal-add-phone") }} -->
                     </button>
                   </div>
                 </div>
@@ -212,12 +212,12 @@ export default {
                 : [{ phone: "" }],
           };
           isEditing.value = true;
-          toast.info(t("success.editContact"), {
+          toast.success(t("success.editContact"), {
             timeout: 3000,
           });
         } else {
           resetForm();
-          toast.info(t("success.addContact"), {
+          toast.success(t("success.addContact"), {
             timeout: 3000,
           });
         }
@@ -226,12 +226,18 @@ export default {
         toast.error(t("error.openModal"), {
           timeout: 3000,
         });
-        // console.error("Error opening modal:", error);
+        console.error("Error opening modal:", error);
       }
     };
 
     const addPhone = () => {
-      formData.value.phones.push({ phone: "" });
+      if (formData.value.phones.length < 2) {
+        formData.value.phones.push({ phone: "" });
+      } else {
+        toast.error(t("error.maxPhonesReached"), {
+          timeout: 3000,
+        });
+      }
     };
 
     const removePhone = (index) => {
@@ -262,11 +268,6 @@ export default {
             .map((phone) => phone.phone.toString()),
         };
 
-        // console.log(
-        //   "Data to be submitted:",
-        //   JSON.stringify(submitData, null, 2)
-        // );
-
         if (isEditing.value) {
           response = await updateContact(formData.value.id, submitData);
         } else {
@@ -293,13 +294,6 @@ export default {
           );
         }
       } catch (error) {
-        // console.error("Error saving contact:", error);
-        // console.log("Error details:", {
-        //   message: error.message,
-        //   response: error.response?.data,
-        //   status: error.response?.status,
-        // });
-
         if (error.response?.data?.errors) {
           errors.value = error.response.data.errors;
         }

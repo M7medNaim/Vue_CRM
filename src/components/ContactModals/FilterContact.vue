@@ -79,9 +79,9 @@ export default {
     const openFilterModal = () => {
       try {
         modalInstance.value.show();
-        toast.info(t("modals.youCanDefineFilterCriteria"), {
-          timeout: 3000,
-        });
+        // toast.info(t("modals.youCanDefineFilterCriteria"), {
+        //   timeout: 3000,
+        // });
       } catch (error) {
         toast.error(t("error.closeModal"), {
           timeout: 3000,

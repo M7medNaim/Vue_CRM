@@ -78,10 +78,6 @@ export default {
           return;
         }
 
-        toast.info(t("modals.exportingData"), {
-          timeout: 2000,
-        });
-
         console.log("Exporting as:", exportFormat.value);
 
         const modal = Modal.getInstance(document.getElementById("exportModal"));

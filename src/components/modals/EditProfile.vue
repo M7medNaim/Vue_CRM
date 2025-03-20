@@ -60,11 +60,6 @@ export default {
         const modal = this.$refs.EditProfileModal;
         this.modalInstance = new Modal(modal);
         this.modalInstance.show();
-        this.toast.info(this.t("modals.editProfileInfo"), {
-          timeout: 3000,
-          id: "edit-profile-open",
-          singleton: true,
-        });
       } catch (error) {
         console.error("Error opening modal:", error);
         this.toast.error(this.t("error.closeModal"), {

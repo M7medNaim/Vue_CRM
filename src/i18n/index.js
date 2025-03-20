@@ -15,7 +15,7 @@ const i18n = createI18n({
 
 async function loadTranslationsFromAPI(locale) {
   try {
-    // جلب الترجمات من API مباشرة بدون التحقق من localStorage
+    // جلب الترجمات من API
     const response = await getTranslations(locale);
 
     if (response.data && response.data.translations) {

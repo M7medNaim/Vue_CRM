@@ -73,6 +73,7 @@ import { login } from "@/plugins/services/authService";
 import Cookies from "js-cookie";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useRouter } from "vue-router";
+import { initializeTranslations } from "@/i18n";
 // import axiosInstance from "@/plugins/axios";
 
 export default {
@@ -122,6 +123,11 @@ export default {
           Cookies.set("name", response.data.user.name, cookieOptions);
           Cookies.set("email", response.data.user.email, cookieOptions);
           Cookies.set("image", response.data.user.image || "", cookieOptions);
+
+          // تحميل الترجمات بعد تسجيل الدخول
+          const locale = localStorage.getItem("locale") || "en";
+          await initializeTranslations(locale);
+
           this.email = "";
           this.password = "";
           this.loginSuccess = true;

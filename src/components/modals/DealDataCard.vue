@@ -928,9 +928,9 @@ export default {
     const toggleEditMode = () => {
       isEditMode.value = !isEditMode.value;
       if (isEditMode.value) {
-        toast.info(t("success.editMode"), {
-          timeout: 3000,
-        });
+        // toast.info(t("success.editMode"), {
+        //   timeout: 3000,
+        // });
       }
     };
 
@@ -941,9 +941,9 @@ export default {
       try {
         const modal = new Modal(document.getElementById("whatsappModal"));
         modal.show();
-        toast.info(t("success.openWhatsappModal"), {
-          timeout: 3000,
-        });
+        // toast.info(t("success.openWhatsappModal"), {
+        //   timeout: 3000,
+        // });
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
         toast.error(t("error.openWhatsappModal"), {

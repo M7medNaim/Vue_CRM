@@ -253,9 +253,6 @@ export default {
             permissions: [...role.permissions],
           };
           isEditing.value = true;
-          toast.info(t("roleSettings.editRole"), {
-            timeout: 3000,
-          });
         } else {
           currentRole.value = {
             name: "",
@@ -263,9 +260,6 @@ export default {
             create_at: new Date().toISOString().split("T")[0],
           };
           isEditing.value = false;
-          toast.info(t("roleSettings.addRole"), {
-            timeout: 3000,
-          });
         }
         modal.value?.show();
       } catch (error) {

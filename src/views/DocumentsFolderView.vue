@@ -126,10 +126,10 @@ export default {
     const selectedFolder = ref(null);
     const { t } = useI18n();
     const headers = [
-      { text: t("tables.name"), value: "name" },
-      { text: t("tables.createdAt"), value: "created_at" },
-      { text: t("tables.filesCount"), value: "files_count" },
-      { text: t("tables.actions"), value: "actions" },
+      { text: t("documents-table-header-name"), value: "name" },
+      { text: t("documents-table-header-date"), value: "created_at" },
+      { text: t("documents-table-header-count"), value: "files_count" },
+      { text: t("documents-table-header-actions"), value: "actions" },
     ];
 
     const mockFolders = [

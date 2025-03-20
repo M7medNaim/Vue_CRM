@@ -68,9 +68,6 @@ export default {
     const openFilterModal = () => {
       try {
         this.isModalOpen = true;
-        toast.info(t("modals.filterDealInfo"), {
-          timeout: 3000,
-        });
       } catch (error) {
         toast.error(t("error.closeModal"), {
           timeout: 3000,

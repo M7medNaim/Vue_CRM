@@ -100,7 +100,7 @@
     <!-- Modals -->
     <CreateContact
       ref="contactCreateModalRef"
-      @contact-updated="updateContact"
+      @contact-updated="updateContactList"
     />
     <FilterContact
       ref="filterModalRef"
@@ -203,37 +203,22 @@ export default {
     };
 
     // Update Operations
-    const updateContactList = (updatedContact) => {
-      const index = items.value.findIndex((c) => c.id === updatedContact.id);
-      if (index !== -1) {
-        // Update existing contact
-        items.value = items.value.map((item) =>
-          item.id === updatedContact.id ? updatedContact : item
-        );
-        toast.success(t("success.updated"), {
-          timeout: 3000,
-        });
-      } else {
-        // Add new contact
-        items.value = [...items.value, updatedContact];
-        toast.success(t("success.saved"), {
-          timeout: 3000,
-        });
-      }
+    const updateContactList = (newContact) => {
+      items.value = [...items.value, newContact];
     };
 
     // Delete Operations
     const removeContact = async (id) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("contacts-alert-delete-title"),
+          text: t("contacts-alert-delete-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
           cancelButtonColor: "#3085d6",
-          confirmButtonText: t("success.deleteConfirm"),
-          cancelButtonText: t("error.deleteCancel"),
+          confirmButtonText: t("contacts-alert-delete-confirm"),
+          cancelButtonText: t("contacts-alert-delete-cancel"),
           reverseButtons: true,
         });
 

@@ -446,13 +446,6 @@ export default {
       if (!newValue) {
         this.settings.googleCaptchaKey = "";
         this.settings.googleCaptchaSecret = "";
-        this.toast.info(this.$t("success.disabledRecaptcha"), {
-          timeout: 3000,
-        });
-      } else {
-        this.toast.info(this.$t("success.enabledRecaptcha"), {
-          timeout: 3000,
-        });
       }
     },
   },
