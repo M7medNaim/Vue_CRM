@@ -31,9 +31,20 @@
                 :placeholder="t('contacts-modal-add-placeholder-fullname')"
                 required
               />
-              <div v-if="errors.name" class="text-danger">
-                {{ errors.name }}
-              </div>
+            </div>
+            <!-- nickname Input -->
+            <div class="mb-3">
+              <label for="nickname" class="form-label">{{
+                t("contacts-modal-add-label-nickname")
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nickname"
+                v-model="formData.nickname"
+                :placeholder="t('contacts-modal-add-placeholder-nickname')"
+                required
+              />
             </div>
 
             <!-- Email Input -->
@@ -49,26 +60,73 @@
                 :placeholder="t('contacts-modal-add-placeholder-email')"
                 required
               />
-              <div v-if="errors.email" class="text-danger">
-                {{ errors.email }}
-              </div>
+            </div>
+            <!-- Address Input -->
+            <div class="mb-3">
+              <label for="address" class="form-label">{{
+                t("contacts-modal-add-label-address")
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="address"
+                v-model="formData.address"
+                :placeholder="t('contacts-modal-add-placeholder-address')"
+                required
+              />
+            </div>
+            <!-- country Input -->
+            <div class="mb-3">
+              <label for="country" class="form-label">{{
+                t("contacts-modal-add-label-country")
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="country"
+                v-model="formData.country"
+                :placeholder="t('contacts-modal-add-placeholder-country')"
+                required
+              />
             </div>
 
             <!-- Phone Input -->
-            <div class="mb-3">
-              <label for="phone" class="form-label">{{
-                t("contacts-modal-add-label-phone")
-              }}</label>
-              <input
-                type="tel"
-                class="form-control"
-                id="phone"
-                v-model="formData.phone"
-                :placeholder="t('contacts-modal-add-placeholder-phone')"
-                required
-              />
-              <div v-if="errors.phone" class="text-danger">
-                {{ errors.phone }}
+            <div
+              class="mb-3"
+              v-for="(phone, index) in formData.phones"
+              :key="index"
+            >
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-grow-1">
+                  <label for="phone" class="form-label">
+                    {{ t("contacts-modal-add-label-phone") }} {{ index + 1 }}
+                  </label>
+                  <div class="mb-3 d-flex align-items-center gap-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      :id="`phone${index}`"
+                      v-model="phone.phone"
+                      :placeholder="t('contacts-modal-add-placeholder-phone')"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      @click="addPhone"
+                    >
+                      <i class="fas fa-plus"></i>
+                      <!-- {{ t("contacts-modal-add-phone") }} -->
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-danger mt-3"
+                  @click="removePhone(index)"
+                  v-if="formData.phones.length > 1"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -115,28 +173,44 @@ export default {
     const modalInstance = ref(null);
     const isEditing = ref(false);
     const isSubmitting = ref(false);
-    const errors = ref({});
+    const errors = ref([]);
 
     const formData = ref({
       name: "",
+      nickname: "",
       email: "",
-      phone: "",
+      address: "",
+      country: "",
+      phones: [{ phone: "" }],
     });
 
     const resetForm = () => {
       formData.value = {
         name: "",
+        nickname: "",
         email: "",
-        phone: "",
+        address: "",
+        country: "",
+        phones: [{ phone: "" }],
       };
-      errors.value = {};
       isEditing.value = false;
     };
 
     const openModal = (contact = null) => {
       try {
         if (contact) {
-          formData.value = { ...contact };
+          formData.value = {
+            id: contact.id,
+            name: contact.name,
+            nickname: contact.nickname,
+            email: contact.email,
+            address: contact.address || "",
+            country: contact.country || "",
+            phones:
+              contact.phones?.length > 0
+                ? contact.phones.map((phone) => ({ phone: phone.phone }))
+                : [{ phone: "" }],
+          };
           isEditing.value = true;
           toast.info(t("success.editContact"), {
             timeout: 3000,
@@ -152,44 +226,22 @@ export default {
         toast.error(t("error.openModal"), {
           timeout: 3000,
         });
-        console.error("Error opening modal:", error);
+        // console.error("Error opening modal:", error);
       }
     };
 
-    const validateForm = () => {
-      errors.value = {};
-      let isValid = true;
+    const addPhone = () => {
+      formData.value.phones.push({ phone: "" });
+    };
 
-      if (!formData.value.name) {
-        errors.value.name = t("error.nameRequired");
-        isValid = false;
-      }
-
-      if (!formData.value.email) {
-        errors.value.email = t("error.emailRequired");
-        isValid = false;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
-        errors.value.email = t("error.invalidEmail");
-        isValid = false;
-      }
-
-      if (!formData.value.phone) {
-        errors.value.phone = t("error.phoneRequired");
-        isValid = false;
-      } else if (
-        !/^[+]?\d{8,}$/.test(formData.value.phone.replace(/\s/g, ""))
-      ) {
-        errors.value.phone = t("error.invalidPhoneNumber");
-        isValid = false;
-      }
-
-      if (!isValid) {
-        toast.error(t("error.formErrors"), {
+    const removePhone = (index) => {
+      if (formData.value.phones.length > 1) {
+        formData.value.phones.splice(index, 1);
+      } else {
+        toast.error(t("error.atLeastOnePhone"), {
           timeout: 3000,
         });
       }
-
-      return isValid;
     };
 
     const handleSubmit = async () => {
@@ -199,29 +251,55 @@ export default {
         isSubmitting.value = true;
         let response;
 
+        const submitData = {
+          name: formData.value.name,
+          nickname: formData.value.nickname,
+          email: formData.value.email,
+          address: formData.value.address,
+          country: formData.value.country,
+          phones: formData.value.phones
+            .filter((phone) => phone.phone)
+            .map((phone) => phone.phone.toString()),
+        };
+
+        // console.log(
+        //   "Data to be submitted:",
+        //   JSON.stringify(submitData, null, 2)
+        // );
+
         if (isEditing.value) {
-          response = await updateContact(formData.value.id, formData.value);
-          if (response.data.success || response.status === 200) {
-            emit("contact-updated", response.data.data || formData.value);
-            modalInstance.value.hide();
-            resetForm();
-            toast.success(t("success.contactUpdated"), {
-              timeout: 3000,
-            });
-          }
+          response = await updateContact(formData.value.id, submitData);
         } else {
-          response = await createContact(formData.value);
-          if (response.data.success || response.status === 201) {
-            emit("contact-updated", response.data.data || formData.value);
-            modalInstance.value.hide();
-            resetForm();
-            toast.success(t("success.contactAdded"), {
+          response = await createContact(submitData);
+        }
+
+        if (
+          response.data.success ||
+          response.status === 200 ||
+          response.status === 201
+        ) {
+          emit("contact-updated", response.data.data);
+          modalInstance.value.hide();
+          resetForm();
+          toast.success(
+            t(
+              isEditing.value
+                ? "success.contactUpdated"
+                : "success.contactAdded"
+            ),
+            {
               timeout: 3000,
-            });
-          }
+            }
+          );
         }
       } catch (error) {
-        console.error("Error saving contact:", error);
+        // console.error("Error saving contact:", error);
+        // console.log("Error details:", {
+        //   message: error.message,
+        //   response: error.response?.data,
+        //   status: error.response?.status,
+        // });
+
         if (error.response?.data?.errors) {
           errors.value = error.response.data.errors;
         }
@@ -233,6 +311,10 @@ export default {
       }
     };
 
+    const validateForm = () => {
+      return true;
+    };
+
     onMounted(() => {
       try {
         modalInstance.value = new Modal(
@@ -242,18 +324,20 @@ export default {
         toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
-        console.error("Error initializing modal:", error);
+        // console.error("Error initializing modal:", error);
       }
     });
 
     return {
       formData,
-      errors,
       isEditing,
       isSubmitting,
       openModal,
       handleSubmit,
+      addPhone,
+      removePhone,
       t,
+      errors,
     };
   },
 };

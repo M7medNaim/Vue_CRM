@@ -45,15 +45,30 @@
       <template #item-name="item">
         <div class="fs-6">{{ item.name }}</div>
       </template>
+      <template #item-nickname="item">
+        <div class="fs-6">{{ item.nickname }}</div>
+      </template>
 
       <!-- Email Column -->
       <template #item-email="item">
         <div class="text-primary fs-6">{{ item.email }}</div>
       </template>
+      <!-- Address Column -->
+      <template #item-address="item">
+        <div class="text-primary fs-6">{{ item.address }}</div>
+      </template>
+      <!-- Country Column -->
+      <template #item-country="item">
+        <div class="text-primary fs-6">{{ item.country }}</div>
+      </template>
 
       <!-- Phone Column -->
-      <template #item-phone="item">
-        <div class="text-primary fs-6">{{ item.phone }}</div>
+      <template #item-phones="item">
+        <div class="text-primary fs-6">
+          {{
+            item.phones && item.phones.length > 0 ? item.phones[0].phone : "-"
+          }}
+        </div>
       </template>
 
       <!-- Actions Column -->
@@ -119,8 +134,11 @@ export default {
     const toast = useToast();
     const headers = [
       { text: t("contacts-table-header-fullname"), value: "name" },
+      { text: t("contacts-table-header-nickname"), value: "nickname" },
+      { text: t("contacts-table-header-address"), value: "address" },
+      { text: t("contacts-table-header-country"), value: "country" },
       { text: t("contacts-table-header-email"), value: "email" },
-      { text: t("contacts-table-header-phone"), value: "phone" },
+      { text: t("contacts-table-header-phone"), value: "phones" },
       { text: t("contacts-table-header-actions"), value: "actions" },
     ];
     // const loadingStore = useLoadingStore();
@@ -134,10 +152,13 @@ export default {
     // Filtered Items
     const filteredItems = computed(() => {
       const result = items.value.filter((item) => {
+        const phoneNumber =
+          item.phones && item.phones.length > 0 ? item.phones[0].phone : "";
+
         return (
           item.name.toLowerCase().includes(search.value.toLowerCase()) ||
           item.email.toLowerCase().includes(search.value.toLowerCase()) ||
-          item.phone.includes(search.value)
+          phoneNumber.includes(search.value)
         );
       });
       return result;
