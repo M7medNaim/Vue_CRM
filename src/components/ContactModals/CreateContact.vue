@@ -217,9 +217,9 @@ export default {
           });
         } else {
           resetForm();
-          toast.success(t("success.addContact"), {
-            timeout: 3000,
-          });
+          // toast.success(t("success.addContact"), {
+          //   timeout: 3000,
+          // });
         }
         modalInstance.value.show();
       } catch (error) {

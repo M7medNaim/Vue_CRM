@@ -6,7 +6,7 @@ import store from "./store";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import Swal from "sweetalert2";
-import i18n from "./i18n";
+import i18n, { initializeTranslations } from "./i18n";
 
 // تعريف toastOptions
 const toastOptions = {
@@ -45,9 +45,11 @@ const app = createApp(App);
 const pinia = createPinia();
 app.use(pinia);
 
-// تثبيت التطبيق
-app.use(store);
-app.use(router);
-app.use(i18n);
-app.use(Toast, toastOptions);
-app.mount("#app");
+const locale = localStorage.getItem("locale") || "en";
+initializeTranslations(locale).then(() => {
+  app.use(store);
+  app.use(router);
+  app.use(i18n);
+  app.use(Toast, toastOptions);
+  app.mount("#app");
+});

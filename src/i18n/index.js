@@ -1,7 +1,6 @@
 import { createI18n } from "vue-i18n";
 import { getTranslations } from "@/plugins/services/authService";
 
-// إنشاء i18n مع messages فارغة
 const i18n = createI18n({
   legacy: false,
   locale: localStorage.getItem("locale") || "en",
@@ -15,13 +14,16 @@ const i18n = createI18n({
 
 async function loadTranslationsFromAPI(locale) {
   try {
-    // جلب الترجمات من API
     const response = await getTranslations(locale);
 
     if (response.data && response.data.translations) {
       const translations = response.data.translations;
 
-      // تحديث الترجمات في i18n
+      localStorage.setItem(
+        `translations_${locale}`,
+        JSON.stringify(translations)
+      );
+
       i18n.global.setLocaleMessage(locale, translations);
       return translations;
     }
@@ -33,10 +35,18 @@ async function loadTranslationsFromAPI(locale) {
 
 export async function changeLanguage(locale) {
   try {
-    await loadTranslationsFromAPI(locale);
+    const storedTranslations = localStorage.getItem(`translations_${locale}`);
+    if (storedTranslations) {
+      i18n.global.setLocaleMessage(locale, JSON.parse(storedTranslations));
+    } else {
+      await loadTranslationsFromAPI(locale);
+    }
+
     i18n.global.locale.value = locale;
     localStorage.setItem("locale", locale);
     document.documentElement.lang = locale;
+
+    window.location.reload();
   } catch (error) {
     console.error("Error changing language:", error);
   }

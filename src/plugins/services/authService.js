@@ -88,10 +88,18 @@ export const getStages = () => axios.get("/stages");
 // Contacts
 // get all contacts
 // export const getContacts = () => axios.get("/contacts");
-export const getContacts = (filters) => {
+export const getContacts = async (params = {}) => {
   const token = Cookies.get("authToken");
+  console.log("Fetching contacts with params:", params);
+
   return axios.get("/contacts", {
-    params: filters,
+    params: {
+      page: params.page || 1,
+      per_page: params.per_page || 10,
+      sort_by: params.sort_by || "id",
+      sort_type: params.sort_type || "asc",
+      ...params,
+    },
     headers: {
       Authorization: `Bearer ${token}`,
     },

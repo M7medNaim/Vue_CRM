@@ -33,47 +33,53 @@
     </div>
 
     <!-- Contacts Table -->
-
-    <EasyDataTable
+    <Vue3EasyDataTable
       :headers="headers"
-      :items="filteredItems"
-      :rows-per-page="selectedPerPage"
-      :loading="tableLoading"
+      :items="tableData"
+      :server-items-length="totalRows"
+      :loading="loading"
+      :items-per-page="perPage"
+      :current-page="currentPage"
+      :sort-by="sortBy"
+      :sort-type="sortType"
+      :pagination-options="{
+        enabled: true,
+        position: 'bottom',
+      }"
+      @update:options="handleOptionsUpdate"
       table-class-name="custom-table"
     >
-      <!-- Contact Info Column -->
+      <!-- Id Column -->
+      <template #item-id="item">
+        <div class="text-muted fs-6">{{ item.id }}</div>
+      </template>
+
       <template #item-name="item">
-        <div class="fs-6">{{ item.name }}</div>
+        {{ item.name }}
       </template>
+
       <template #item-nickname="item">
-        <div class="fs-6">{{ item.nickname }}</div>
+        {{ item.nickname }}
       </template>
 
-      <!-- Email Column -->
       <template #item-email="item">
-        <div class="text-primary fs-6">{{ item.email }}</div>
+        {{ item.email }}
       </template>
-      <!-- Address Column -->
+
       <template #item-address="item">
-        <div class="text-primary fs-6">{{ item.address }}</div>
+        {{ item.address }}
       </template>
-      <!-- Country Column -->
+
       <template #item-country="item">
-        <div class="text-primary fs-6">{{ item.country }}</div>
+        {{ item.country }}
       </template>
 
-      <!-- Phone Column -->
       <template #item-phones="item">
-        <div class="text-primary fs-6">
-          {{
-            item.phones && item.phones.length > 0 ? item.phones[0].phone : "-"
-          }}
-        </div>
+        {{ item.phones?.[0]?.phone || "-" }}
       </template>
 
-      <!-- Actions Column -->
       <template #item-actions="item">
-        <div class="d-flex gap-2 my-1">
+        <div class="d-flex gap-2">
           <button class="btn btn-sm btn-primary" @click="editItem(item)">
             <i class="fas fa-edit"></i>
           </button>
@@ -82,7 +88,8 @@
           </button>
         </div>
       </template>
-      <!-- Loading -->
+
+      <!-- Loading template -->
       <template #loading>
         <div class="text-center loading-container">
           <div class="position-relative d-inline-block">
@@ -95,7 +102,7 @@
           <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
         </div>
       </template>
-    </EasyDataTable>
+    </Vue3EasyDataTable>
 
     <!-- Modals -->
     <CreateContact
@@ -111,8 +118,8 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import EasyDataTable from "vue3-easy-data-table";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import Vue3EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
 import { getContacts, deleteContact } from "@/plugins/services/authService";
 import CreateContact from "@/components/ContactModals/CreateContact.vue";
@@ -125,62 +132,114 @@ import { useI18n } from "vue-i18n";
 export default {
   name: "ContactsView",
   components: {
-    EasyDataTable,
+    Vue3EasyDataTable,
     CreateContact,
     FilterContact,
   },
   setup() {
     const { t } = useI18n();
     const toast = useToast();
+
+    // Table state
+    const tableData = ref([]);
+    const loading = ref(false);
+    const totalRows = ref(0);
+    const currentPage = ref(1);
+    const perPage = ref(10);
+    const sortBy = ref("id");
+    const sortType = ref("asc");
+
     const headers = [
-      { text: t("contacts-table-header-fullname"), value: "name" },
-      { text: t("contacts-table-header-nickname"), value: "nickname" },
-      { text: t("contacts-table-header-address"), value: "address" },
-      { text: t("contacts-table-header-country"), value: "country" },
-      { text: t("contacts-table-header-email"), value: "email" },
+      { text: "#", value: "id", sortable: true },
+      {
+        text: t("contacts-table-header-fullname"),
+        value: "name",
+        sortable: true,
+      },
+      {
+        text: t("contacts-table-header-nickname"),
+        value: "nickname",
+        sortable: true,
+      },
+      {
+        text: t("contacts-table-header-email"),
+        value: "email",
+        sortable: true,
+      },
+      {
+        text: t("contacts-table-header-address"),
+        value: "address",
+        sortable: true,
+      },
+      {
+        text: t("contacts-table-header-country"),
+        value: "country",
+        sortable: true,
+      },
       { text: t("contacts-table-header-phone"), value: "phones" },
       { text: t("contacts-table-header-actions"), value: "actions" },
     ];
+
     // const loadingStore = useLoadingStore();
-    const tableLoading = ref(false);
-    const items = ref([]);
     const search = ref("");
-    const selectedPerPage = ref("10");
     const contactCreateModalRef = ref(null);
     const filterModalRef = ref(null);
 
-    // Filtered Items
+    // تصفية العناصر حسب البحث
     const filteredItems = computed(() => {
-      const result = items.value.filter((item) => {
-        const phoneNumber =
-          item.phones && item.phones.length > 0 ? item.phones[0].phone : "";
+      if (!tableData.value || !Array.isArray(tableData.value)) return [];
 
+      return tableData.value.filter((item) => {
+        if (!item) return false;
+        const searchLower = (search.value || "").toLowerCase();
         return (
-          item.name.toLowerCase().includes(search.value.toLowerCase()) ||
-          item.email.toLowerCase().includes(search.value.toLowerCase()) ||
-          phoneNumber.includes(search.value)
+          (item.name || "").toLowerCase().includes(searchLower) ||
+          (item.email || "").toLowerCase().includes(searchLower) ||
+          (item.nickname || "").toLowerCase().includes(searchLower)
         );
       });
-      return result;
     });
 
-    // Fetch Contacts
-    const fetchContacts = async () => {
+    // تعديل دالة جلب البيانات
+    const fetchTableData = async () => {
+      loading.value = true;
       try {
-        tableLoading.value = true;
-        const response = await getContacts();
-        items.value = response.data.data;
-        // toast.success("تم جلب جهات الاتصال بنجاح", {
-        //   timeout: 3000,
-        // });
+        const response = await getContacts({
+          page: currentPage.value,
+          per_page: perPage.value,
+          sort_by: sortBy.value,
+          sort_type: sortType.value,
+        });
+
+        if (response?.data?.data) {
+          tableData.value = response.data.data;
+          totalRows.value = response.data.meta.total;
+          console.log("Table Data Updated:", {
+            items: tableData.value.length,
+            total: totalRows.value,
+            page: currentPage.value,
+          });
+        }
       } catch (error) {
-        // toast.error("فشل في جلب جهات الاتصال", {
-        //   timeout: 3000,
-        // });
-        console.error("Error fetching contacts:", error);
+        console.error("Failed to fetch contacts:", error);
+        toast.error(t("error.fetchFailed"));
       } finally {
-        tableLoading.value = false;
+        loading.value = false;
       }
+    };
+
+    // دالة معالجة تغييرات الجدول
+    const handleOptionsUpdate = async (options) => {
+      currentPage.value = options.page;
+      perPage.value = options.itemsPerPage;
+      sortBy.value = options.sortBy;
+      sortType.value = options.sortType;
+      await fetchTableData();
+    };
+
+    // تحديث القائمة
+    const updateContactList = async () => {
+      await fetchTableData();
     };
 
     // Modal Functions
@@ -202,12 +261,7 @@ export default {
       }
     };
 
-    // Update Operations
-    const updateContactList = (newContact) => {
-      items.value = [...items.value, newContact];
-    };
-
-    // Delete Operations
+    // حذف جهة اتصال
     const removeContact = async (id) => {
       try {
         const result = await Swal.fire({
@@ -224,67 +278,43 @@ export default {
 
         if (result.isConfirmed) {
           await deleteContact(id);
-          items.value = items.value.filter((contact) => contact.id !== id);
-          toast.success(t("success.deleteSuccess"), {
-            timeout: 3000,
-          });
+          await fetchTableData();
+          toast.success(t("success.deleteSuccess"));
         }
       } catch (error) {
-        toast.error(t("error.deleteFailed"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.deleteFailed"));
         console.error("Delete Contact Failed:", error);
       }
     };
 
-    // Filter Functions
+    // تطبيق الفلاتر
     const applyFilters = async (filters) => {
       try {
-        // tableLoading.value = true;
-        const formattedFilters = {
-          ...filters,
-          startDate: filters.startDate
-            ? new Date(filters.startDate).toISOString()
-            : "",
-          endDate: filters.endDate
-            ? new Date(filters.endDate).toISOString()
-            : "",
-        };
-        const response = await getContacts(formattedFilters);
-        if (response.data.success) {
-          items.value = response.data.data;
-          toast.success(t("success.filterSuccess"), {
-            timeout: 3000,
-          });
+        loading.value = true;
+        const response = await getContacts(filters);
+        if (response?.data?.data) {
+          tableData.value = response.data.data;
         }
+        toast.success(t("success.filterSuccess"));
       } catch (error) {
-        toast.error(t("error.filterFailed"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.filterFailed"));
         console.error("Filter application failed:", error);
       } finally {
-        // tableLoading.value = false;
+        loading.value = false;
       }
     };
 
-    // Reset Filters
+    // إعادة تعيين الفلاتر
     const resetFilters = async () => {
       try {
-        // tableLoading.value = true;
-        const response = await getContacts();
-        if (response.data.success) {
-          items.value = response.data.data;
-          toast.success(t("success.filterReset"), {
-            timeout: 3000,
-          });
-        }
+        loading.value = true;
+        await fetchTableData();
+        toast.success(t("success.filterReset"));
       } catch (error) {
-        toast.error(t("error.filterFailed"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.filterFailed"));
         console.error("Reset filters failed:", error);
       } finally {
-        // tableLoading.value = false;
+        loading.value = false;
       }
     };
 
@@ -301,11 +331,9 @@ export default {
       });
     };
 
-    onMounted(async () => {
-      // loadingStore.startLoading();
-      await fetchContacts();
-      // loadingStore.stopLoading();
-
+    onMounted(() => {
+      console.log("Component mounted");
+      fetchTableData(); // جلب البيانات الأولية
       window.addEventListener("contextmenu", handleRightClick);
     });
 
@@ -313,11 +341,31 @@ export default {
       window.removeEventListener("contextmenu", handleRightClick);
     });
 
+    // في بداية الـ setup
+    watch(
+      tableData,
+      (newValue) => {
+        console.log("Items changed:", newValue);
+      },
+      { immediate: true, deep: true }
+    );
+
+    watch(
+      filteredItems,
+      (newFilteredItems) => {
+        console.log("Filtered items:", {
+          length: newFilteredItems?.length,
+          items: newFilteredItems,
+        });
+      },
+      { deep: true, immediate: true }
+    );
+
     return {
       headers,
-      items,
+      tableData,
+      loading,
       search,
-      selectedPerPage,
       filteredItems,
       contactCreateModalRef,
       filterModalRef,
@@ -328,8 +376,14 @@ export default {
       updateContactList,
       applyFilters,
       resetFilters,
-      tableLoading,
       t,
+      totalRows,
+      currentPage,
+      perPage,
+      sortBy,
+      sortType,
+      handleOptionsUpdate,
+      fetchTableData,
     };
   },
 };
@@ -359,5 +413,30 @@ export default {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Add styles for sorted columns */
+:deep(.sorted-asc),
+:deep(.sorted-desc) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Add hover effect on sortable columns */
+:deep(.sortable):hover {
+  background-color: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+}
+
+/* إضافة ستايل للترقيم */
+:deep(.pagination-container) {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+:deep(.page-info) {
+  font-size: 0.9rem;
+  color: #666;
 }
 </style>
