@@ -31,7 +31,7 @@
                     type="date"
                     class="form-control"
                     v-model="filterData.endDate"
-                    :placeholder="t('contacts-modal-filter-label-updated-at')"
+                    :placeholder="t('contacts-modal-filter-label-created-at')"
                   />
                 </div>
               </div>
@@ -62,6 +62,7 @@ import { ref, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+
 export default {
   name: "FilterContact",
   emits: ["apply-filters", "reset-filters"],
@@ -76,37 +77,22 @@ export default {
       endDate: "",
     });
 
-    const openFilterModal = () => {
-      try {
-        modalInstance.value.show();
-        // toast.info(t("modals.youCanDefineFilterCriteria"), {
-        //   timeout: 3000,
-        // });
-      } catch (error) {
-        toast.error(t("error.closeModal"), {
-          timeout: 3000,
-        });
-        console.error("Error opening modal:", error);
-      }
-    };
-
     const applyFilters = () => {
       try {
+        if (!filterData.value.startDate || !filterData.value.endDate) {
+          toast.error(t("error.selectDateRange"));
+          return;
+        }
+
         const filters = {
-          start_date: filterData.value.startDate,
-          end_date: filterData.value.endDate,
+          created_at_from: filterData.value.startDate,
+          created_at_to: filterData.value.endDate,
         };
 
         emit("apply-filters", filters);
         modalInstance.value.hide();
-        toast.success(t("success.applyFilters"), {
-          timeout: 3000,
-        });
       } catch (error) {
-        toast.error(t("error.applyFilters"), {
-          timeout: 3000,
-        });
-        console.error("Error applying filters:", error);
+        toast.error(t("error.applyFilters"));
       }
     };
 
@@ -118,31 +104,19 @@ export default {
         };
         emit("reset-filters");
         modalInstance.value.hide();
-        toast.success(t("success.resetFilters"), {
-          timeout: 3000,
-        });
       } catch (error) {
-        toast.error(t("error.resetFilters"), {
-          timeout: 3000,
-        });
         console.error("Error resetting filters:", error);
+        toast.error(t("error.resetFilters"));
       }
     };
 
     onMounted(() => {
-      try {
-        modalInstance.value = new Modal(document.getElementById("filterModal"));
-      } catch (error) {
-        toast.error(t("error.closeModal"), {
-          timeout: 3000,
-        });
-        console.error("Error initializing modal:", error);
-      }
+      modalInstance.value = new Modal(document.getElementById("filterModal"));
     });
 
     return {
       filterData,
-      openFilterModal,
+      openFilterModal: () => modalInstance.value.show(),
       applyFilters,
       resetFilters,
       t,

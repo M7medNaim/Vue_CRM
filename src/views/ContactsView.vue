@@ -32,19 +32,21 @@
       </div>
     </div>
 
-    <!-- Contacts Table -->
+    <!-- Updated Table Component -->
     <Vue3EasyDataTable
       :headers="headers"
       :items="tableData"
       :server-items-length="totalRows"
       :loading="loading"
-      :items-per-page="perPage"
+      :items-per-page="-1"
+      :server-side-filtering="true"
+      :server-side-sorting="true"
+      :show-index="true"
       :current-page="currentPage"
       :sort-by="sortBy"
       :sort-type="sortType"
       :pagination-options="{
-        enabled: true,
-        position: 'bottom',
+        enabled: false,
       }"
       @update:options="handleOptionsUpdate"
       table-class-name="custom-table"
@@ -150,7 +152,7 @@ export default {
     const sortType = ref("asc");
 
     const headers = [
-      { text: "#", value: "id", sortable: true },
+      // { text: "#", value: "id", sortable: true },
       {
         text: t("contacts-table-header-fullname"),
         value: "name",
@@ -185,7 +187,6 @@ export default {
     const contactCreateModalRef = ref(null);
     const filterModalRef = ref(null);
 
-    // تصفية العناصر حسب البحث
     const filteredItems = computed(() => {
       if (!tableData.value || !Array.isArray(tableData.value)) return [];
 
@@ -200,41 +201,66 @@ export default {
       });
     });
 
-    // تعديل دالة جلب البيانات
-    const fetchTableData = async () => {
+    const fetchTableData = async (filters = null) => {
       loading.value = true;
       try {
-        const response = await getContacts({
-          page: currentPage.value,
-          per_page: perPage.value,
+        const params = {
+          page: 1,
+          per_page: 1000000,
           sort_by: sortBy.value,
           sort_type: sortType.value,
-        });
+          search: search.value,
+        };
+
+        if (filters) {
+          params.created_at_from = filters.created_at_from;
+          params.created_at_to = filters.created_at_to;
+        }
+
+        const response = await getContacts(params);
 
         if (response?.data?.data) {
-          tableData.value = response.data.data;
-          totalRows.value = response.data.meta.total;
-          console.log("Table Data Updated:", {
-            items: tableData.value.length,
-            total: totalRows.value,
-            page: currentPage.value,
-          });
+          let filteredData = response.data.data;
+          if (search.value) {
+            const searchLower = search.value.toLowerCase();
+            filteredData = filteredData.filter(
+              (item) =>
+                (item.name || "").toLowerCase().includes(searchLower) ||
+                (item.email || "").toLowerCase().includes(searchLower) ||
+                (item.nickname || "").toLowerCase().includes(searchLower)
+            );
+          }
+
+          // تطبيق فلتر التاريخ إذا وجد
+          if (filters) {
+            filteredData = filteredData.filter((item) => {
+              const itemDate = item.created_at.split("T")[0];
+              return (
+                itemDate >= filters.created_at_from &&
+                itemDate <= filters.created_at_to
+              );
+            });
+          }
+
+          tableData.value = filteredData;
+          totalRows.value = filteredData.length;
         }
       } catch (error) {
         console.error("Failed to fetch contacts:", error);
         toast.error(t("error.fetchFailed"));
+        tableData.value = [];
       } finally {
         loading.value = false;
       }
     };
 
-    // دالة معالجة تغييرات الجدول
+    // تعديل معالج تغييرات الجدول
     const handleOptionsUpdate = async (options) => {
-      currentPage.value = options.page;
-      perPage.value = options.itemsPerPage;
-      sortBy.value = options.sortBy;
-      sortType.value = options.sortType;
-      await fetchTableData();
+      if (options.sortBy) {
+        sortBy.value = options.sortBy;
+        sortType.value = options.sortType;
+        await fetchTableData();
+      }
     };
 
     // تحديث القائمة
@@ -291,14 +317,19 @@ export default {
     const applyFilters = async (filters) => {
       try {
         loading.value = true;
-        const response = await getContacts(filters);
-        if (response?.data?.data) {
-          tableData.value = response.data.data;
+
+        // التحقق من صحة التواريخ
+        if (filters.created_at_from > filters.created_at_to) {
+          toast.error(t("error.invalidDateRange"));
+          return;
         }
+
+        await fetchTableData(filters);
         toast.success(t("success.filterSuccess"));
       } catch (error) {
-        toast.error(t("error.filterFailed"));
         console.error("Filter application failed:", error);
+        toast.error(t("error.filterFailed"));
+        tableData.value = [];
       } finally {
         loading.value = false;
       }
@@ -308,11 +339,12 @@ export default {
     const resetFilters = async () => {
       try {
         loading.value = true;
+        tableData.value = [];
         await fetchTableData();
         toast.success(t("success.filterReset"));
       } catch (error) {
-        toast.error(t("error.filterFailed"));
         console.error("Reset filters failed:", error);
+        toast.error(t("error.filterFailed"));
       } finally {
         loading.value = false;
       }
@@ -333,15 +365,13 @@ export default {
 
     onMounted(() => {
       console.log("Component mounted");
-      fetchTableData(); // جلب البيانات الأولية
+      fetchTableData();
       window.addEventListener("contextmenu", handleRightClick);
     });
-
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
     });
 
-    // في بداية الـ setup
     watch(
       tableData,
       (newValue) => {
@@ -360,6 +390,10 @@ export default {
       },
       { deep: true, immediate: true }
     );
+
+    watch(search, () => {
+      fetchTableData();
+    });
 
     return {
       headers,
