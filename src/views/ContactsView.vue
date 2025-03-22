@@ -8,7 +8,8 @@
             type="text"
             class="form-control ps-5 rounded-end-0"
             :placeholder="t('contacts-placeholder-search')"
-            v-model="search"
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
           />
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
@@ -183,6 +184,7 @@ export default {
     ];
 
     // const loadingStore = useLoadingStore();
+    const searchQuery = ref("");
     const search = ref("");
     const contactCreateModalRef = ref(null);
     const filterModalRef = ref(null);
@@ -201,12 +203,17 @@ export default {
       });
     });
 
+    const handleSearch = () => {
+      search.value = searchQuery.value;
+      fetchTableData();
+    };
+
     const fetchTableData = async (filters = null) => {
       loading.value = true;
       try {
         const params = {
           page: 1,
-          per_page: 1000000,
+          per_page: 200,
           sort_by: sortBy.value,
           sort_type: sortType.value,
           search: search.value,
@@ -231,7 +238,6 @@ export default {
             );
           }
 
-          // تطبيق فلتر التاريخ إذا وجد
           if (filters) {
             filteredData = filteredData.filter((item) => {
               const itemDate = item.created_at.split("T")[0];
@@ -254,7 +260,6 @@ export default {
       }
     };
 
-    // تعديل معالج تغييرات الجدول
     const handleOptionsUpdate = async (options) => {
       if (options.sortBy) {
         sortBy.value = options.sortBy;
@@ -263,7 +268,6 @@ export default {
       }
     };
 
-    // تحديث القائمة
     const updateContactList = async () => {
       await fetchTableData();
     };
@@ -313,12 +317,10 @@ export default {
       }
     };
 
-    // تطبيق الفلاتر
     const applyFilters = async (filters) => {
       try {
         loading.value = true;
 
-        // التحقق من صحة التواريخ
         if (filters.created_at_from > filters.created_at_to) {
           toast.error(t("error.invalidDateRange"));
           return;
@@ -391,15 +393,11 @@ export default {
       { deep: true, immediate: true }
     );
 
-    watch(search, () => {
-      fetchTableData();
-    });
-
     return {
       headers,
       tableData,
       loading,
-      search,
+      searchQuery,
       filteredItems,
       contactCreateModalRef,
       filterModalRef,
@@ -418,6 +416,7 @@ export default {
       sortType,
       handleOptionsUpdate,
       fetchTableData,
+      handleSearch,
     };
   },
 };
