@@ -44,7 +44,11 @@
       :loading="loading"
       @page="onPageChange"
     >
-      <Column field="id" :header="'#'"></Column>
+      <Column :header="'#'">
+        <template #body="slotProps">
+          {{ slotProps.index + 1 + currentPage * rowsPerPage }}
+        </template>
+      </Column>
       <Column
         field="name"
         :header="t('contacts-table-header-fullname')"
@@ -67,8 +71,8 @@
       <Column :header="t('contacts-table-header-phone')">
         <template #body="slotProps">
           {{
-            Array.isArray(slotProps.data.phones) && slotProps.data.phones.length
-              ? slotProps.data.phones[0].phone
+            slotProps.data.phones && slotProps.data.phones.length > 0
+              ? slotProps.data.phones
               : "N/A"
           }}
         </template>
@@ -227,7 +231,7 @@ export default {
           per_page: perPage,
         });
         const data = response.data;
-        console.log(data);
+        // console.log("API Response:", response.data);
         // Update reactive variables with server data
         rows.value = data.data;
         totalRows.value = data.meta.total;
@@ -270,6 +274,7 @@ export default {
       if (contactCreateModalRef.value) {
         contactCreateModalRef.value.openModal(item);
         await refreshTable();
+        console.log("error");
       }
     };
 

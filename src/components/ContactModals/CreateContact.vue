@@ -91,7 +91,7 @@
             </div>
 
             <!-- Phone Input -->
-            <div
+            <!-- <div
               class="mb-3"
               v-for="(phone, index) in formData.phones"
               :key="index"
@@ -128,6 +128,46 @@
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
+            </div> -->
+            <!-- Phone 1 Input -->
+            <div class="mb-3">
+              <label for="phone1" class="form-label">
+                {{ t("contacts-modal-add-label-phone") }} 1
+              </label>
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-grow-1">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phone1"
+                    v-model="formData.phone1"
+                    :placeholder="t('contacts-modal-add-placeholder-phone')"
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  @click="togglePhone2"
+                >
+                  <i
+                    class="fas"
+                    :class="showPhone2 ? 'fa-minus' : 'fa-plus'"
+                  ></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3" v-if="showPhone2">
+              <label for="phone2" class="form-label">
+                {{ t("contacts-modal-add-label-phone") }} 2
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="phone2"
+                v-model="formData.phone2"
+                :placeholder="t('contacts-modal-add-placeholder-phone')"
+              />
             </div>
           </div>
           <div
@@ -174,6 +214,7 @@ export default {
     const isEditing = ref(false);
     const isSubmitting = ref(false);
     const errors = ref([]);
+    const showPhone2 = ref(false);
 
     const formData = ref({
       name: "",
@@ -181,7 +222,8 @@ export default {
       email: "",
       address: "",
       country: "",
-      phones: [{ phone: "" }],
+      phone1: "",
+      phone2: "",
     });
 
     const resetForm = () => {
@@ -206,10 +248,8 @@ export default {
             email: contact.email,
             address: contact.address || "",
             country: contact.country || "",
-            phones:
-              contact.phones?.length > 0
-                ? contact.phones.map((phone) => ({ phone: phone.phone }))
-                : [{ phone: "" }],
+            phone1: contact.phone1 || "",
+            phone2: contact.phone2 || "",
           };
           isEditing.value = true;
           toast.success(t("success.editContact"), {
@@ -230,25 +270,25 @@ export default {
       }
     };
 
-    const addPhone = () => {
-      if (formData.value.phones.length < 2) {
-        formData.value.phones.push({ phone: "" });
-      } else {
-        toast.error(t("error.maxPhonesReached"), {
-          timeout: 3000,
-        });
-      }
-    };
+    // const addPhone = () => {
+    //   if (formData.value.phones.length < 2) {
+    //     formData.value.phones.push({ phone: "" });
+    //   } else {
+    //     toast.error(t("error.maxPhonesReached"), {
+    //       timeout: 3000,
+    //     });
+    //   }
+    // };
 
-    const removePhone = (index) => {
-      if (formData.value.phones.length > 1) {
-        formData.value.phones.splice(index, 1);
-      } else {
-        toast.error(t("error.atLeastOnePhone"), {
-          timeout: 3000,
-        });
-      }
-    };
+    // const removePhone = (index) => {
+    //   if (formData.value.phones.length > 1) {
+    //     formData.value.phones.splice(index, 1);
+    //   } else {
+    //     toast.error(t("error.atLeastOnePhone"), {
+    //       timeout: 3000,
+    //     });
+    //   }
+    // };
 
     const handleSubmit = async () => {
       if (!validateForm()) return;
@@ -263,9 +303,8 @@ export default {
           email: formData.value.email,
           address: formData.value.address,
           country: formData.value.country,
-          phones: formData.value.phones
-            .filter((phone) => phone.phone)
-            .map((phone) => phone.phone.toString()),
+          phone1: formData.value.phone1 || "",
+          phone2: formData.value.phone2 || "",
         };
 
         if (isEditing.value) {
@@ -321,6 +360,12 @@ export default {
         // console.error("Error initializing modal:", error);
       }
     });
+    const togglePhone2 = () => {
+      showPhone2.value = !showPhone2.value;
+      if (!showPhone2.value) {
+        formData.value.phone2 = "";
+      }
+    };
 
     return {
       formData,
@@ -328,8 +373,10 @@ export default {
       isSubmitting,
       openModal,
       handleSubmit,
-      addPhone,
-      removePhone,
+      // addPhone,
+      // removePhone,
+      togglePhone2,
+      showPhone2,
       t,
       errors,
     };
