@@ -8,8 +8,7 @@
             type="text"
             class="form-control ps-5 rounded-end-0"
             :placeholder="t('contacts-placeholder-search')"
-            v-model="searchQuery"
-            @keyup.enter="handleSearch"
+            v-model="search"
           />
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
@@ -34,65 +33,65 @@
     </div>
 
     <!-- Updated Table Component -->
-    <Vue3EasyDataTable
-      :headers="headers"
-      :items="tableData"
-      :server-items-length="totalRows"
+    <DataTable
+      :value="rows"
+      :paginator="true"
+      :rows="rowsPerPage"
+      :rowsPerPageOptions="[10, 25, 50]"
+      :total-records="totalRows"
+      :lazy="true"
+      :onLazyLoad="loadCarsLazy"
       :loading="loading"
-      :items-per-page="-1"
-      :server-side-filtering="true"
-      :server-side-sorting="true"
-      :show-index="true"
-      :current-page="currentPage"
-      :sort-by="sortBy"
-      :sort-type="sortType"
-      :pagination-options="{
-        enabled: false,
-      }"
-      @update:options="handleOptionsUpdate"
-      table-class-name="custom-table"
+      @page="onPageChange"
     >
-      <!-- Id Column -->
-      <template #item-id="item">
-        <div class="text-muted fs-6">{{ item.id }}</div>
-      </template>
+      <Column field="id" :header="'#'"></Column>
+      <Column
+        field="name"
+        :header="t('contacts-table-header-fullname')"
+      ></Column>
+      <Column
+        field="nickname"
+        :header="t('contacts-table-header-nickname')"
+      ></Column>
+      <Column field="email" :header="t('contacts-table-header-email')"></Column>
+      <Column
+        field="address"
+        :header="t('contacts-table-header-address')"
+      ></Column>
+      <Column
+        field="country"
+        :header="t('contacts-table-header-country')"
+      ></Column>
 
-      <template #item-name="item">
-        {{ item.name }}
-      </template>
+      <!-- تخصيص عرض رقم الهاتف -->
+      <Column :header="t('contacts-table-header-phone')">
+        <template #body="slotProps">
+          {{
+            Array.isArray(slotProps.data.phones) && slotProps.data.phones.length
+              ? slotProps.data.phones[0].phone
+              : "N/A"
+          }}
+        </template>
+      </Column>
+      <Column :header="t('contacts-table-header-actions')">
+        <template #body="slotProps">
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-sm btn-primary"
+              @click="editItem(slotProps.data)"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              @click="removeContact(slotProps.data.id)"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </template>
+      </Column>
 
-      <template #item-nickname="item">
-        {{ item.nickname }}
-      </template>
-
-      <template #item-email="item">
-        {{ item.email }}
-      </template>
-
-      <template #item-address="item">
-        {{ item.address }}
-      </template>
-
-      <template #item-country="item">
-        {{ item.country }}
-      </template>
-
-      <template #item-phones="item">
-        {{ item.phones?.[0]?.phone || "-" }}
-      </template>
-
-      <template #item-actions="item">
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-primary" @click="editItem(item)">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="btn btn-sm btn-danger" @click="removeContact(item.id)">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </template>
-
-      <!-- Loading template -->
       <template #loading>
         <div class="text-center loading-container">
           <div class="position-relative d-inline-block">
@@ -105,7 +104,7 @@
           <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
         </div>
       </template>
-    </Vue3EasyDataTable>
+    </DataTable>
 
     <!-- Modals -->
     <CreateContact
@@ -122,22 +121,26 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import Vue3EasyDataTable from "vue3-easy-data-table";
-import "vue3-easy-data-table/dist/style.css";
+// import Vue3EasyDataTable from "vue3-easy-data-table";
+// import "vue3-easy-data-table/dist/style.css";
 import { getContacts, deleteContact } from "@/plugins/services/authService";
 import CreateContact from "@/components/ContactModals/CreateContact.vue";
 import FilterContact from "@/components/ContactModals/FilterContact.vue";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
 import { useI18n } from "vue-i18n";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 
 export default {
   name: "ContactsView",
   components: {
-    Vue3EasyDataTable,
+    // Vue3EasyDataTable,
     CreateContact,
     FilterContact,
+    DataTable,
+    Column,
   },
   setup() {
     const { t } = useI18n();
@@ -148,43 +151,54 @@ export default {
     const loading = ref(false);
     const totalRows = ref(0);
     const currentPage = ref(1);
+    const rowsPerPage = ref(10);
     const perPage = ref(10);
     const sortBy = ref("id");
     const sortType = ref("asc");
+    const rows = ref([]);
 
-    const headers = [
-      // { text: "#", value: "id", sortable: true },
-      {
-        text: t("contacts-table-header-fullname"),
-        value: "name",
-        sortable: true,
-      },
-      {
-        text: t("contacts-table-header-nickname"),
-        value: "nickname",
-        sortable: true,
-      },
-      {
-        text: t("contacts-table-header-email"),
-        value: "email",
-        sortable: true,
-      },
-      {
-        text: t("contacts-table-header-address"),
-        value: "address",
-        sortable: true,
-      },
-      {
-        text: t("contacts-table-header-country"),
-        value: "country",
-        sortable: true,
-      },
-      { text: t("contacts-table-header-phone"), value: "phones" },
-      { text: t("contacts-table-header-actions"), value: "actions" },
-    ];
+    // const columns = [
+    //   {
+    //     title: "#",
+    //     data: "id",
+    //   },
+    //   {
+    //     title: t("contacts-table-header-fullname"),
+    //     data: "name",
+    //   },
+    //   {
+    //     title: t("contacts-table-header-nickname"),
+    //     data: "nickname",
+    //   },
+    //   {
+    //     title: t("contacts-table-header-email"),
+    //     data: "email",
+    //   },
+    //   {
+    //     title: t("contacts-table-header-address"),
+    //     data: "address",
+    //   },
+    //   {
+    //     title: t("contacts-table-header-country"),
+    //     data: "country",
+    //   },
+    //   {
+    //     title: t("contacts-table-header-phone"),
+    //     data: "phones",
+    //     body: (rowData) =>
+    //       Array.isArray(rowData.phones) && rowData.phones.length
+    //         ? rowData.phones[0].phone
+    //         : "N/A",
+    //   },
+    // ];
 
+    // Handle page change event
+    const onPageChange = (event) => {
+      currentPage.value = event.page;
+      rowsPerPage.value = event.rows;
+      fetchData(currentPage.value, rowsPerPage.value);
+    };
     // const loadingStore = useLoadingStore();
-    const searchQuery = ref("");
     const search = ref("");
     const contactCreateModalRef = ref(null);
     const filterModalRef = ref(null);
@@ -203,73 +217,39 @@ export default {
       });
     });
 
-    const handleSearch = () => {
-      search.value = searchQuery.value;
-      fetchTableData();
-    };
-
-    const fetchTableData = async (filters = null) => {
-      loading.value = true;
+    // Fetch data from the server
+    const fetchData = async (page, perPage) => {
       try {
-        const params = {
-          page: 1,
-          per_page: 200,
-          sort_by: sortBy.value,
-          sort_type: sortType.value,
-          search: search.value,
-        };
-
-        if (filters) {
-          params.created_at_from = filters.created_at_from;
-          params.created_at_to = filters.created_at_to;
-        }
-
-        const response = await getContacts(params);
-
-        if (response?.data?.data) {
-          let filteredData = response.data.data;
-          if (search.value) {
-            const searchLower = search.value.toLowerCase();
-            filteredData = filteredData.filter(
-              (item) =>
-                (item.name || "").toLowerCase().includes(searchLower) ||
-                (item.email || "").toLowerCase().includes(searchLower) ||
-                (item.nickname || "").toLowerCase().includes(searchLower)
-            );
-          }
-
-          if (filters) {
-            filteredData = filteredData.filter((item) => {
-              const itemDate = item.created_at.split("T")[0];
-              return (
-                itemDate >= filters.created_at_from &&
-                itemDate <= filters.created_at_to
-              );
-            });
-          }
-
-          tableData.value = filteredData;
-          totalRows.value = filteredData.length;
-        }
+        loading.value = true;
+        const response = await getContacts({
+          page: page + 1,
+          per_page: perPage,
+        });
+        const data = response.data;
+        console.log(data);
+        // Update reactive variables with server data
+        rows.value = data.data;
+        totalRows.value = data.meta.total;
+        loading.value = false;
       } catch (error) {
-        console.error("Failed to fetch contacts:", error);
-        toast.error(t("error.fetchFailed"));
-        tableData.value = [];
+        console.error("Error fetching data:", error);
       } finally {
         loading.value = false;
       }
     };
 
+    // تعديل معالج تغييرات الجدول
     const handleOptionsUpdate = async (options) => {
       if (options.sortBy) {
         sortBy.value = options.sortBy;
         sortType.value = options.sortType;
-        await fetchTableData();
+        await fetchData();
       }
     };
 
+    // تحديث القائمة
     const updateContactList = async () => {
-      await fetchTableData();
+      await refreshTable();
     };
 
     // Modal Functions
@@ -285,9 +265,10 @@ export default {
       }
     };
     // open edit modal
-    const editItem = (item) => {
+    const editItem = async (item) => {
       if (contactCreateModalRef.value) {
         contactCreateModalRef.value.openModal(item);
+        await refreshTable();
       }
     };
 
@@ -308,7 +289,7 @@ export default {
 
         if (result.isConfirmed) {
           await deleteContact(id);
-          await fetchTableData();
+          await refreshTable();
           toast.success(t("success.deleteSuccess"));
         }
       } catch (error) {
@@ -316,17 +297,23 @@ export default {
         console.error("Delete Contact Failed:", error);
       }
     };
-
+    const refreshTable = async () => {
+      loading.value = true;
+      await fetchData(currentPage.value, rowsPerPage.value);
+      loading.value = false;
+    };
+    // تطبيق الفلاتر
     const applyFilters = async (filters) => {
       try {
         loading.value = true;
 
+        // التحقق من صحة التواريخ
         if (filters.created_at_from > filters.created_at_to) {
           toast.error(t("error.invalidDateRange"));
           return;
         }
 
-        await fetchTableData(filters);
+        await fetchData(filters);
         toast.success(t("success.filterSuccess"));
       } catch (error) {
         console.error("Filter application failed:", error);
@@ -342,7 +329,7 @@ export default {
       try {
         loading.value = true;
         tableData.value = [];
-        await fetchTableData();
+        await fetchData();
         toast.success(t("success.filterReset"));
       } catch (error) {
         console.error("Reset filters failed:", error);
@@ -366,8 +353,7 @@ export default {
     };
 
     onMounted(() => {
-      console.log("Component mounted");
-      fetchTableData();
+      fetchData(currentPage.value, rowsPerPage.value);
       window.addEventListener("contextmenu", handleRightClick);
     });
     onUnmounted(() => {
@@ -393,11 +379,15 @@ export default {
       { deep: true, immediate: true }
     );
 
+    watch(search, () => {
+      fetchData();
+    });
+
     return {
-      headers,
+      // headers,
       tableData,
       loading,
-      searchQuery,
+      search,
       filteredItems,
       contactCreateModalRef,
       filterModalRef,
@@ -415,8 +405,11 @@ export default {
       sortBy,
       sortType,
       handleOptionsUpdate,
-      fetchTableData,
-      handleSearch,
+      fetchData,
+      rows,
+      rowsPerPage,
+      // columns,
+      onPageChange,
     };
   },
 };
@@ -448,19 +441,16 @@ export default {
   }
 }
 
-/* Add styles for sorted columns */
 :deep(.sorted-asc),
 :deep(.sorted-desc) {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Add hover effect on sortable columns */
 :deep(.sortable):hover {
   background-color: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
 
-/* إضافة ستايل للترقيم */
 :deep(.pagination-container) {
   margin-top: 1rem;
   display: flex;
@@ -471,5 +461,23 @@ export default {
 :deep(.page-info) {
   font-size: 0.9rem;
   color: #666;
+}
+
+:deep(.p-datatable) {
+  font-size: 14px;
+}
+
+:deep(.p-datatable th),
+:deep(.p-datatable td) {
+  padding: 8px;
+}
+
+:deep(.p-datatable thead th) {
+  font-weight: bold;
+  text-align: center;
+}
+
+:deep(.p-datatable tbody td) {
+  text-align: left;
 }
 </style>
