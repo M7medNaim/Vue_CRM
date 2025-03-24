@@ -131,6 +131,7 @@ import Swal from "sweetalert2";
 import { useI18n } from "vue-i18n";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+// import Column from "primevue/column";
 // import { useLoadingStore } from "@/plugins/loadingStore";
 
 export default {
