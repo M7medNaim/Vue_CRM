@@ -3,55 +3,40 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ t("contacts-modal-filter-heading") }}</h5>
+          <h5 class="modal-title">{{ t("filter.title") }}</h5>
           <button
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
           ></button>
         </div>
-        <form @submit.prevent="applyFilters">
-          <div class="modal-body">
-            <!-- Date Range Filter -->
-            <div class="mb-3">
-              <label class="form-label">{{
-                t("contacts-modal-filter-label-created-at")
-              }}</label>
-              <div class="row">
-                <div class="col-6">
-                  <input
-                    type="date"
-                    class="form-control"
-                    v-model="filterData.startDate"
-                    :placeholder="t('contacts-modal-filter-label-created-at')"
-                  />
-                </div>
-                <div class="col-6">
-                  <input
-                    type="date"
-                    class="form-control"
-                    v-model="filterData.endDate"
-                    :placeholder="t('contacts-modal-filter-label-created-at')"
-                  />
-                </div>
-              </div>
-            </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Date From</label>
+            <input
+              type="date"
+              class="form-control"
+              v-model="filterData.created_at_from"
+            />
           </div>
-          <div
-            class="modal-footer d-flex justify-content-between align-items-center"
-          >
-            <button type="submit" class="btn btn-primary">
-              {{ t("contacts-modal-filter-button-submit") }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              @click="resetFilters"
-            >
-              {{ t("contacts-modal-filter-button-reset") }}
-            </button>
+
+          <div class="mb-3">
+            <label class="form-label">Date To</label>
+            <input
+              type="date"
+              class="form-control"
+              v-model="filterData.created_at_to"
+            />
           </div>
-        </form>
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary" @click="resetFilters">
+            Reset
+          </button>
+          <button type="button" class="btn btn-primary" @click="applyFilters">
+            Apply Filters
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -73,20 +58,23 @@ export default {
     const { t } = useI18n();
 
     const filterData = ref({
-      startDate: "",
-      endDate: "",
+      created_at_from: "",
+      created_at_to: "",
     });
 
     const applyFilters = () => {
       try {
-        if (!filterData.value.startDate || !filterData.value.endDate) {
+        if (
+          !filterData.value.created_at_from ||
+          !filterData.value.created_at_to
+        ) {
           toast.error(t("error.selectDateRange"));
           return;
         }
 
         const filters = {
-          created_at_from: filterData.value.startDate,
-          created_at_to: filterData.value.endDate,
+          created_at_from: filterData.value.created_at_from,
+          created_at_to: filterData.value.created_at_to,
         };
 
         emit("apply-filters", filters);
@@ -99,8 +87,8 @@ export default {
     const resetFilters = () => {
       try {
         filterData.value = {
-          startDate: "",
-          endDate: "",
+          created_at_from: "",
+          created_at_to: "",
         };
         emit("reset-filters");
         modalInstance.value.hide();

@@ -125,3 +125,7 @@ export const getTranslations = (locale) => {
     },
   });
 };
+
+export const showContact = async (id) => {
+  return await axios.get(`/contacts/${id}`);
+};

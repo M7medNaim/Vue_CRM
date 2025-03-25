@@ -251,6 +251,7 @@ export default {
             phone1: contact.phone1 || "",
             phone2: contact.phone2 || "",
           };
+          showPhone2.value = !!contact.phone2;
           isEditing.value = true;
           toast.success(t("success.editContact"), {
             timeout: 3000,
@@ -297,14 +298,21 @@ export default {
         isSubmitting.value = true;
         let response;
 
+        const phones = [];
+        if (formData.value.phone1) {
+          phones.push(formData.value.phone1);
+        }
+        if (formData.value.phone2) {
+          phones.push(formData.value.phone2);
+        }
+
         const submitData = {
           name: formData.value.name,
           nickname: formData.value.nickname,
           email: formData.value.email,
           address: formData.value.address,
           country: formData.value.country,
-          phone1: formData.value.phone1 || "",
-          phone2: formData.value.phone2 || "",
+          phones: phones,
         };
 
         if (isEditing.value) {

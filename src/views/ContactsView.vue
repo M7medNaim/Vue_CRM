@@ -6,17 +6,24 @@
         <div class="mb-3 position-relative inputSearch d-flex">
           <input
             type="text"
-            class="form-control ps-5 rounded-end-0"
+            class="form-control ps-5 pe-4 rounded-end-0"
             :placeholder="t('contacts-placeholder-search')"
             v-model="search"
+            @keyup.enter="handleSearch"
           />
+          <i class="fas fa-search search-icon"></i>
           <i
-            class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
-          ></i>
+            v-if="search"
+            class="fas fa-times clear-icon"
+            @click="resetSearch"
+            title="Clear Search"
+          >
+            CLR
+          </i>
           <button
-            :title="t('buttons.filter')"
+            title="Filter"
             type="button"
-            class="btn btn-primary me-2 rounded-start-0"
+            class="btn btn-primary rounded-start-0"
             @click="openFilterModal"
           >
             <i class="fas fa-filter"></i>
@@ -53,21 +60,20 @@
         field="name"
         :header="t('contacts-table-header-fullname')"
       ></Column>
-      <Column
+      <!-- <Column
         field="nickname"
         :header="t('contacts-table-header-nickname')"
-      ></Column>
+      ></Column> -->
       <Column field="email" :header="t('contacts-table-header-email')"></Column>
-      <Column
+      <!-- <Column
         field="address"
         :header="t('contacts-table-header-address')"
-      ></Column>
+      ></Column> -->
       <Column
         field="country"
         :header="t('contacts-table-header-country')"
       ></Column>
 
-      <!-- تخصيص عرض رقم الهاتف -->
       <Column :header="t('contacts-table-header-phone')">
         <template #body="slotProps">
           {{
@@ -127,7 +133,11 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 // import Vue3EasyDataTable from "vue3-easy-data-table";
 // import "vue3-easy-data-table/dist/style.css";
-import { getContacts, deleteContact } from "@/plugins/services/authService";
+import {
+  getContacts,
+  deleteContact,
+  showContact,
+} from "@/plugins/services/authService";
 import CreateContact from "@/components/ContactModals/CreateContact.vue";
 import FilterContact from "@/components/ContactModals/FilterContact.vue";
 import { useToast } from "vue-toastification";
@@ -231,19 +241,18 @@ export default {
           per_page: perPage,
         });
         const data = response.data;
-        // console.log("API Response:", response.data);
-        // Update reactive variables with server data
         rows.value = data.data;
         totalRows.value = data.meta.total;
-        loading.value = false;
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error(t("error.fetchFailed"));
+        rows.value = [];
+        totalRows.value = 0;
       } finally {
         loading.value = false;
       }
     };
 
-    // تعديل معالج تغييرات الجدول
     const handleOptionsUpdate = async (options) => {
       if (options.sortBy) {
         sortBy.value = options.sortBy;
@@ -252,7 +261,6 @@ export default {
       }
     };
 
-    // تحديث القائمة
     const updateContactList = async () => {
       await refreshTable();
     };
@@ -271,14 +279,29 @@ export default {
     };
     // open edit modal
     const editItem = async (item) => {
-      if (contactCreateModalRef.value) {
-        contactCreateModalRef.value.openModal(item);
-        await refreshTable();
-        console.log("error");
+      try {
+        // loading.value = true;
+        const response = await showContact(item.id);
+        const contactDetails = response.data.data;
+
+        if (contactCreateModalRef.value) {
+          contactCreateModalRef.value.openModal({
+            id: contactDetails.id,
+            name: contactDetails.name,
+            nickname: contactDetails.nickname,
+            email: contactDetails.email,
+            address: contactDetails.address,
+            country: contactDetails.country,
+            phone1: contactDetails.phones?.[0] || "",
+            phone2: contactDetails.phones?.[1] || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching contact details:", error);
+        toast.error(t("error.fetchContactDetails"));
       }
     };
 
-    // حذف جهة اتصال
     const removeContact = async (id) => {
       try {
         const result = await Swal.fire({
@@ -308,29 +331,52 @@ export default {
       await fetchData(currentPage.value, rowsPerPage.value);
       loading.value = false;
     };
-    // تطبيق الفلاتر
     const applyFilters = async (filters) => {
       try {
         loading.value = true;
 
-        // التحقق من صحة التواريخ
-        if (filters.created_at_from > filters.created_at_to) {
-          toast.error(t("error.invalidDateRange"));
-          return;
+        if (filters.created_at_from && filters.created_at_to) {
+          if (
+            new Date(filters.created_at_from) > new Date(filters.created_at_to)
+          ) {
+            toast.error(t("error.invalidDateRange"));
+            return;
+          }
         }
 
-        await fetchData(filters);
-        toast.success(t("success.filterSuccess"));
+        const filterParams = {
+          page: currentPage.value + 1,
+          per_page: rowsPerPage.value,
+          ...filters,
+        };
+
+        if (search.value.trim()) {
+          filterParams.search = search.value.trim();
+        }
+
+        const response = await getContacts(filterParams);
+        const data = response.data;
+
+        if (data && data.data) {
+          rows.value = data.data;
+          totalRows.value = data.meta.total;
+          currentPage.value = 0;
+          toast.success(t("success.filterSuccess"));
+        } else {
+          rows.value = [];
+          totalRows.value = 0;
+          toast.info(t("info.noFilterResults"));
+        }
       } catch (error) {
         console.error("Filter application failed:", error);
         toast.error(t("error.filterFailed"));
-        tableData.value = [];
+        rows.value = [];
+        totalRows.value = 0;
       } finally {
         loading.value = false;
       }
     };
 
-    // إعادة تعيين الفلاتر
     const resetFilters = async () => {
       try {
         loading.value = true;
@@ -385,9 +431,45 @@ export default {
       { deep: true, immediate: true }
     );
 
-    watch(search, () => {
-      fetchData();
-    });
+    // تعديل دالة البحث
+    const handleSearch = async () => {
+      try {
+        loading.value = true;
+        const searchParams = {
+          page: currentPage.value + 1,
+          per_page: rowsPerPage.value,
+        };
+
+        if (search.value.trim()) {
+          searchParams.search = search.value.trim();
+        }
+
+        const response = await getContacts(searchParams);
+        const data = response.data;
+
+        if (data && data.data) {
+          rows.value = data.data;
+          totalRows.value = data.meta.total;
+          currentPage.value = 0;
+        } else {
+          rows.value = [];
+          totalRows.value = 0;
+          toast.info(t("info.noSearchResults"));
+        }
+      } catch (error) {
+        console.error("Error searching data:", error);
+        toast.error(t("error.searchFailed"));
+        rows.value = [];
+        totalRows.value = 0;
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const resetSearch = async () => {
+      search.value = "";
+      await fetchData(currentPage.value, rowsPerPage.value);
+    };
 
     return {
       // headers,
@@ -416,16 +498,52 @@ export default {
       rowsPerPage,
       // columns,
       onPageChange,
+      handleSearch,
+      resetSearch,
     };
   },
 };
 </script>
 
 <style scoped>
-.inputSearch input:focus {
+.inputSearch {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  z-index: 2;
+}
+
+.clear-icon {
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.2s;
+  font-size: 12px !important;
+}
+
+.clear-icon:hover {
+  color: #dc3545;
+}
+
+.form-control {
+  padding-right: 35px !important;
+}
+
+.form-control:focus {
   box-shadow: none;
   border: 1px solid #333;
 }
+
 .fs-6 {
   font-size: 14px !important;
 }
