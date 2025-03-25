@@ -388,8 +388,11 @@ export default {
     const resetFilters = async () => {
       try {
         loading.value = true;
-        tableData.value = [];
-        await fetchData();
+        search.value = "";
+        currentPage.value = 0;
+
+        await fetchData(0, rowsPerPage.value);
+
         toast.success(t("success.filterReset"));
       } catch (error) {
         console.error("Reset filters failed:", error);

@@ -92,6 +92,7 @@ export default {
         };
         emit("reset-filters");
         modalInstance.value.hide();
+        toast.success(t("success.filtersCleared"));
       } catch (error) {
         console.error("Error resetting filters:", error);
         toast.error(t("error.resetFilters"));
