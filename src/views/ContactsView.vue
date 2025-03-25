@@ -119,6 +119,7 @@
     <!-- Modals -->
     <CreateContact
       ref="contactCreateModalRef"
+      :rows="rows"
       @contact-updated="updateContactList"
     />
     <FilterContact
@@ -165,11 +166,11 @@ export default {
     const tableData = ref([]);
     const loading = ref(false);
     const totalRows = ref(0);
-    const currentPage = ref(1);
+    const currentPage = ref(0);
     const rowsPerPage = ref(10);
     const perPage = ref(10);
     const sortBy = ref("id");
-    const sortType = ref("asc");
+    const sortType = ref("desc");
     const rows = ref([]);
 
     // const columns = [
@@ -261,8 +262,15 @@ export default {
       }
     };
 
-    const updateContactList = async () => {
-      await refreshTable();
+    const updateContactList = async (newContact) => {
+      if (newContact) {
+        if (sortType.value === "desc") {
+          rows.value.unshift(newContact);
+        } else {
+          rows.value.push(newContact);
+        }
+        totalRows.value += 1;
+      }
     };
 
     // Modal Functions
@@ -318,12 +326,12 @@ export default {
 
         if (result.isConfirmed) {
           await deleteContact(id);
-          await refreshTable();
+          rows.value = rows.value.filter((item) => item.id !== id);
+          totalRows.value -= 1;
           toast.success(t("success.deleteSuccess"));
         }
       } catch (error) {
         toast.error(t("error.deleteFailed"));
-        console.error("Delete Contact Failed:", error);
       }
     };
     const refreshTable = async () => {
@@ -431,7 +439,6 @@ export default {
       { deep: true, immediate: true }
     );
 
-    // تعديل دالة البحث
     const handleSearch = async () => {
       try {
         loading.value = true;
@@ -492,6 +499,7 @@ export default {
       perPage,
       sortBy,
       sortType,
+      refreshTable,
       handleOptionsUpdate,
       fetchData,
       rows,

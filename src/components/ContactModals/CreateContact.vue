@@ -206,6 +206,12 @@ import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 export default {
   name: "ContactForm",
+  props: {
+    rows: {
+      type: Array,
+      required: true,
+    },
+  },
   emits: ["contact-updated"],
   setup(props, { emit }) {
     const { t } = useI18n();
@@ -317,8 +323,15 @@ export default {
 
         if (isEditing.value) {
           response = await updateContact(formData.value.id, submitData);
+          const index = props.rows.findIndex(
+            (item) => item.id === formData.value.id
+          );
+          if (index !== -1) {
+            emit("contact-updated", response.data.data);
+          }
         } else {
           response = await createContact(submitData);
+          emit("contact-updated", response.data.data);
         }
 
         if (
@@ -326,7 +339,6 @@ export default {
           response.status === 200 ||
           response.status === 201
         ) {
-          emit("contact-updated", response.data.data);
           modalInstance.value.hide();
           resetForm();
           toast.success(
@@ -335,9 +347,7 @@ export default {
                 ? "success.contactUpdated"
                 : "success.contactAdded"
             ),
-            {
-              timeout: 3000,
-            }
+            { timeout: 3000 }
           );
         }
       } catch (error) {
