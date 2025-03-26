@@ -133,3 +133,6 @@ export const showContact = async (id) => {
 export const getBackgroundImages = async () => {
   return await axios.get("/bg-images");
 };
+export const saveBackgroundId = async (id) => {
+  return await axios.patch(`/bg-images/${id}`);
+};

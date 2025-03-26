@@ -33,7 +33,7 @@
               <div
                 class="background-thumbnail position-relative"
                 :style="{ backgroundImage: `url(${image.url})` }"
-                @click="selectBackground(image.url)"
+                @click="selectBackground(image.url, image.id)"
               >
                 <div class="selected-overlay" v-if="isSelected(image.url)">
                   <i class="fas fa-check"></i>
@@ -62,7 +62,10 @@ import { ref, onMounted, computed } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
-import { getBackgroundImages } from "@/plugins/services/authService";
+import {
+  getBackgroundImages,
+  saveBackgroundId,
+} from "@/plugins/services/authService";
 
 export default {
   name: "CustomBackground",
@@ -114,7 +117,7 @@ export default {
       document.body.classList.remove("modal-open");
     };
 
-    const selectBackground = (imageUrl) => {
+    const selectBackground = (imageUrl, imageId) => {
       try {
         // Set background
         document.body.style.backgroundImage = `url(${imageUrl})`;
@@ -122,6 +125,18 @@ export default {
         document.body.style.backgroundPosition = "center";
 
         localStorage.setItem("backgroundImage", imageUrl);
+
+        // Save the background ID
+        saveBackgroundId(imageId)
+          .then(() => {
+            console.log("Background ID saved successfully:", imageId);
+          })
+          .catch((error) => {
+            console.error("Error saving background ID:", error);
+            toast.error(t("error.saveBackgroundId"), {
+              timeout: 3000,
+            });
+          });
 
         toast.success(t("backgroundPicker.success"), {
           timeout: 3000,
