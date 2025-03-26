@@ -262,14 +262,17 @@ export default {
       }
     };
 
-    const updateContactList = async (newContact) => {
-      if (newContact) {
-        if (sortType.value === "desc") {
-          rows.value.unshift(newContact);
+    const updateContactList = async (updatedContact) => {
+      if (updatedContact) {
+        const index = rows.value.findIndex(
+          (item) => item.id === updatedContact.id
+        );
+
+        if (index !== -1) {
+          rows.value.splice(index, 1, updatedContact);
         } else {
-          rows.value.push(newContact);
+          toast.error("There item not found");
         }
-        totalRows.value += 1;
       }
     };
 

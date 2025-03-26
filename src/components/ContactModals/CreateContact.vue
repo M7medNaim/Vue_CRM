@@ -323,12 +323,7 @@ export default {
 
         if (isEditing.value) {
           response = await updateContact(formData.value.id, submitData);
-          const index = props.rows.findIndex(
-            (item) => item.id === formData.value.id
-          );
-          if (index !== -1) {
-            emit("contact-updated", response.data.data);
-          }
+          emit("contact-updated", response.data.data);
         } else {
           response = await createContact(submitData);
           emit("contact-updated", response.data.data);
