@@ -59,6 +59,7 @@
   <ChangePassword ref="changePasswordModal" />
   <ChangeLang ref="changeLangModal" />
   <CalenderModal ref="CalenderModal" />
+  <CustomBackground />
 </template>
 <script>
 import Cookies from "js-cookie";
@@ -68,8 +69,10 @@ import EditProfile from "@/components/modals/EditProfile.vue";
 import ChangePassword from "@/components/modals/ChangePassword.vue";
 import ChangeLang from "@/components/modals/ChangeLang.vue";
 import CalenderModal from "@/components/modals/CalenderModal.vue";
+import CustomBackground from "@/components/headers/sub-menu/profileMenuItems/CustmBackground.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { Modal } from "bootstrap";
 
 export default {
   name: "MenuProfile",
@@ -79,6 +82,7 @@ export default {
     ChangePassword,
     ChangeLang,
     CalenderModal,
+    CustomBackground,
   },
   setup() {
     const toast = useToast();
@@ -126,28 +130,8 @@ export default {
       }
     },
     changeBackground() {
-      try {
-        const randomImage =
-          this.images[Math.floor(Math.random() * this.images.length)];
-
-        document.body.style.backgroundImage = `url(${randomImage})`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-
-        localStorage.setItem("backgroundImage", randomImage);
-
-        this.toast.success(this.t("topHeader.backgroundChangeSuccess"), {
-          timeout: 3000,
-          id: "background-change",
-          singleton: true,
-        });
-      } catch (error) {
-        this.toast.error(this.t("topHeader.backgroundChangeError"), {
-          timeout: 3000,
-          id: "background-error",
-          singleton: true,
-        });
-      }
+      const modal = new Modal(document.getElementById("customBackgroundModal"));
+      modal.show();
     },
     openEditProfileModal() {
       this.$refs.editProfileModal.openEditProfile();

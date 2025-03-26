@@ -129,3 +129,7 @@ export const getTranslations = (locale) => {
 export const showContact = async (id) => {
   return await axios.get(`/contacts/${id}`);
 };
+
+export const getBackgroundImages = async () => {
+  return await axios.get("/bg-images");
+};
