@@ -116,16 +116,6 @@ export const updateContact = (contactId, formData) =>
 export const deleteContact = (contactId) =>
   axios.delete(`/contacts/${contactId}`);
 
-// Get All Translations
-export const getTranslations = (locale) => {
-  const token = Cookies.get("authToken");
-  return axios.get(`/translations/all?locale=${locale}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-
 export const showContact = async (id) => {
   return await axios.get(`/contacts/${id}`);
 };
@@ -135,4 +125,25 @@ export const getBackgroundImages = async () => {
 };
 export const saveBackgroundId = async (id) => {
   return await axios.patch(`/bg-images/${id}`);
+};
+// Get All Translations
+export const getTranslations = (locale) => {
+  const token = Cookies.get("authToken");
+  return axios.get(`/translations/all?locale=${locale}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const saveUserLanguage = async (locale) => {
+  const token = Cookies.get("authToken");
+  return await axios.patch(
+    "/translations/locale/",
+    { locale },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };

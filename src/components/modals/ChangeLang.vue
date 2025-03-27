@@ -48,6 +48,7 @@ import { changeLanguage } from "@/i18n";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { saveUserLanguage } from "@/plugins/services/authService";
 
 export default {
   name: "ChangeLang",
@@ -75,47 +76,34 @@ export default {
       }
     };
 
-    const submitForm = async () => {
+    const handleLanguageChange = async () => {
       try {
-        if (!selectedLang.value) {
-          toast.error(t("error.selectLang"), {
-            timeout: 3000,
-            id: "change-lang-validation",
-            singleton: true,
-          });
-          return;
-        }
-
-        // تأكد من إزالة خلفية المودال وتنظيف DOM
-        document.querySelector(".modal-backdrop")?.remove();
-        document.body.classList.remove("modal-open");
-        document.body.style.overflow = "";
-        document.body.style.paddingRight = "";
-
-        // بدء التحميل
         loadingStore.startLoading();
 
         await changeLanguage(selectedLang.value);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const response = await saveUserLanguage(selectedLang.value);
+        if (response.status === 200) {
+          localStorage.setItem("locale", selectedLang.value);
+          toast.success(t("languageChanged"), { timeout: 3000 });
+        } else {
+          throw new Error("Failed to save language in API");
+        }
       } catch (error) {
-        toast.error(t("error.changeLang"), {
-          timeout: 3000,
-          id: "change-lang-submit-error",
-          singleton: true,
-        });
+        console.error("Error changing language:", error);
+        toast.error(t("error.savingLanguage"), { timeout: 3000 });
       } finally {
         loadingStore.stopLoading();
       }
     };
 
     const changeLang = () => {
-      submitForm();
+      handleLanguageChange();
     };
 
     return {
       selectedLang,
       openChangeLang,
-      submitForm,
       changeLang,
       t,
     };

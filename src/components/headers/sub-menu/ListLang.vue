@@ -24,6 +24,7 @@
 <script>
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { saveUserLanguage } from "@/plugins/services/authService";
 
 export default {
   name: "ListLang",
@@ -33,14 +34,28 @@ export default {
   },
   methods: {
     async handleLanguageChange(lang) {
+      // ✅ تجنب تنفيذ العملية إذا لم تتغير اللغة
+      if (lang === localStorage.getItem("locale")) {
+        this.toast.info("تم تحديد هذه اللغة بالفعل!", { timeout: 2000 });
+        return;
+      }
+
       try {
         this.loadingStore.startLoading();
 
         await changeLanguage(lang);
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const response = await saveUserLanguage(lang);
+        if (response.status === 200) {
+          localStorage.setItem("locale", lang);
+
+          this.toast.success("تم تغيير اللغة بنجاح!", { timeout: 3000 });
+        } else {
+          throw new Error("فشل حفظ اللغة في API");
+        }
       } catch (error) {
         console.error("Error changing language:", error);
+        this.toast.error("حدث خطأ أثناء حفظ اللغة!", { timeout: 3000 });
       } finally {
         this.loadingStore.stopLoading();
       }

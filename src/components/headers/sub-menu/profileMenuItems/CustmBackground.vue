@@ -49,7 +49,7 @@
             data-bs-dismiss="modal"
             @click="closeModal"
           >
-            close
+            {{ t("backgroundPicker.close") }}
           </button>
         </div>
       </div>
@@ -86,18 +86,8 @@ export default {
     const fetchImages = async () => {
       try {
         loading.value = true;
-        const savedImages = localStorage.getItem("backgroundImages");
-        if (savedImages) {
-          images.value = JSON.parse(savedImages);
-        } else {
-          const response = await getBackgroundImages();
-          images.value = response.data.data;
-
-          localStorage.setItem(
-            "backgroundImages",
-            JSON.stringify(images.value)
-          );
-        }
+        const response = await getBackgroundImages();
+        images.value = response.data.data;
       } catch (error) {
         console.error("Error fetching background images:", error);
         toast.error(t("error.fetchBackgroundImages"), {
@@ -117,38 +107,48 @@ export default {
       document.body.classList.remove("modal-open");
     };
 
-    const selectBackground = (imageUrl, imageId) => {
+    const selectBackground = async (imageUrl, imageId) => {
       try {
-        // Set background
         document.body.style.backgroundImage = `url(${imageUrl})`;
         document.body.style.backgroundSize = "cover";
         document.body.style.backgroundPosition = "center";
 
         localStorage.setItem("backgroundImage", imageUrl);
 
-        // Save the background ID
-        saveBackgroundId(imageId)
-          .then(() => {
-            console.log("Background ID saved successfully:", imageId);
-          })
-          .catch((error) => {
-            console.error("Error saving background ID:", error);
-            toast.error(t("error.saveBackgroundId"), {
-              timeout: 3000,
-            });
-          });
+        const response = await saveBackgroundId(imageId);
+        console.log("API response:", response);
 
-        toast.success(t("backgroundPicker.success"), {
-          timeout: 3000,
-        });
+        if (response.status === 200 || response.status === 201) {
+          toast.success(t("backgroundPicker.success"), {
+            timeout: 3000,
+          });
+        } else {
+          toast.error(t("backgroundPicker2.error"), {
+            timeout: 3000,
+          });
+        }
       } catch (error) {
-        toast.error(t("backgroundPicker.error"), {
+        console.error("Error saving background ID:", error);
+        toast.error(t("backgroundPicker1.error"), {
           timeout: 3000,
         });
       }
     };
 
+    const openModal = () => {
+      const modal = new Modal(document.getElementById("customBackgroundModal"));
+      modal.show();
+      fetchImages();
+    };
+
     onMounted(() => {
+      const savedBackground = localStorage.getItem("backgroundImage");
+      if (savedBackground) {
+        document.body.style.backgroundImage = `url(${savedBackground})`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+      }
+
       fetchImages();
     });
 
@@ -158,12 +158,12 @@ export default {
       selectBackground,
       isSelected,
       closeModal,
+      openModal,
       t,
     };
   },
 };
 </script>
-
 <style scoped>
 .background-thumbnail {
   width: 100%;
