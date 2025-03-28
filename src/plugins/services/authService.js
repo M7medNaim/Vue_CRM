@@ -147,3 +147,34 @@ export const saveUserLanguage = async (locale) => {
     }
   );
 };
+
+// export const getDocuments = async () => {
+//   const token = Cookies.get("authToken");
+//   return await axios.get("/documents", {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+// };
+export const getDocuments = async () => {
+  return await axios.get("/documents");
+};
+
+export const createDocuments = async (formData) => {
+  try {
+    const response = await axios.post("/documents", formData);
+
+    console.log("📥 استجابة السيرفر بعد إنشاء المجلد:", response.data);
+
+    return response;
+  } catch (error) {
+    console.error("❌ خطأ أثناء إنشاء المجلد:", error);
+    throw error;
+  }
+};
+// update contact
+export const updateDocuments = (documentsId, formData) =>
+  axios.put(`/documents/${documentsId}`, formData);
+
+export const deleteDocuments = (documentsId) =>
+  axios.delete(`/documents/${documentsId}`);
