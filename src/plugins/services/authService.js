@@ -156,16 +156,19 @@ export const saveUserLanguage = async (locale) => {
 //     },
 //   });
 // };
+
 export const getDocuments = async () => {
   return await axios.get("/documents");
+};
+
+export const getDocumentsFolder = async () => {
+  return await axios.get("/documents/folderApi");
 };
 
 export const createDocuments = async (formData) => {
   try {
     const response = await axios.post("/documents", formData);
-
     console.log("📥 استجابة السيرفر بعد إنشاء المجلد:", response.data);
-
     return response;
   } catch (error) {
     console.error("❌ خطأ أثناء إنشاء المجلد:", error);
