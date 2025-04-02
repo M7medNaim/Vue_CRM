@@ -164,10 +164,12 @@ import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
 import { useI18n } from "vue-i18n";
 import {
-  createDocuments,
+  // createDocuments,
   deleteFiles,
   showDocuments,
   uploadFiles,
+  deleteDocuments,
+  getDocuments,
 } from "@/plugins/services/authService";
 
 export default {
@@ -199,30 +201,37 @@ export default {
 
     const fetchFiles = async () => {
       try {
-        const folderName = route.params.folderName;
-        const response = await showDocuments(folderName);
+        const folderPath = route.params.folderName || route.params.fullPath;
+        if (!folderPath) {
+          throw new Error("المسار غير صالح");
+        }
 
+        const response = await showDocuments(folderPath);
         if (response.data) {
           folderName.value = response.data.parent.name;
           folders.value = response.data.folders || [];
           files.value = response.data.files || [];
+
+          const parentId = response.data.parent.id;
+          console.log("parent_id للمجلد المفتوح:", parentId);
         }
 
-        console.log("Fetched folder contents:", folders.value, files.value);
+        // console.log("Fetched folder contents:", folders.value, files.value);
       } catch (error) {
         console.error("Error fetching folder contents:", error);
-        toast.error(t("error.fetchFailed"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.fetchFailed"), { timeout: 3000 });
       }
     };
+
     const handleClick = (event) => {
       if (event.target.tagName !== "BUTTON") {
         fileInput.value.click();
       }
     };
     const uploadFile = async (file) => {
-      const parentId = route.params.folderId || 1;
+      const folderPath = route.params.folderName || route.params.fullPath;
+      const response = await showDocuments(folderPath);
+      const parentId = response.data.parent.id;
 
       const formData = new FormData();
       formData.append("file", file);
@@ -340,43 +349,43 @@ export default {
       }
     };
 
-    const handleFolderSubmit = async (folderData) => {
-      if (!folderData.name?.trim()) {
-        toast.error(t("error.required"), { timeout: 3000 });
-        return;
-      }
+    // const handleFolderSubmit = async (folderData) => {
+    //   if (!folderData.name?.trim()) {
+    //     toast.error(t("error.required"), { timeout: 3000 });
+    //     return;
+    //   }
 
-      try {
-        const parentId = route.params.folderId || null;
-        const response = await createDocuments({
-          name: folderData.name,
-          parent_id: parentId,
-        });
+    //   try {
+    //     const parentId = route.params.folderId || null;
+    //     const response = await createDocuments({
+    //       name: folderData.name,
+    //       parent_id: parentId,
+    //     });
 
-        if (response && response.data.result) {
-          folders.value.unshift({
-            id: response.data.result.id,
-            name: response.data.result.name,
-            parentId: parentId,
-            created_at: new Date().toLocaleDateString("ar-EG"),
-          });
-          folderName.value = response.data.result.name;
-          toast.success(t("success.saved"), {
-            timeout: 3000,
-          });
-        } else {
-          throw new Error("❌ استجابة غير صالحة من السيرفر");
-        }
+    //     if (response && response.data.result) {
+    //       folders.value.unshift({
+    //         id: response.data.result.id,
+    //         name: response.data.result.name,
+    //         parentId: parentId,
+    //         created_at: new Date().toLocaleDateString("ar-EG"),
+    //       });
+    //       folderName.value = response.data.result.name;
+    //       toast.success(t("success.saved"), {
+    //         timeout: 3000,
+    //       });
+    //     } else {
+    //       throw new Error("❌ استجابة غير صالحة من السيرفر");
+    //     }
 
-        folderFormModal.value.hide();
-        selectedFolder.value = null;
-      } catch (error) {
-        console.error("Error creating folder:", error);
-        toast.error(t("error.saveFailed"), {
-          timeout: 3000,
-        });
-      }
-    };
+    //     folderFormModal.value.hide();
+    //     selectedFolder.value = null;
+    //   } catch (error) {
+    //     console.error("Error creating folder:", error);
+    //     toast.error(t("error.saveFailed"), {
+    //       timeout: 3000,
+    //     });
+    //   }
+    // };
 
     const openNewFolderModal = () => {
       selectedFolder.value = null;
@@ -414,7 +423,10 @@ export default {
         });
 
         if (result.isConfirmed) {
-          folders.value = folders.value.filter((f) => f.id !== folderId);
+          await deleteDocuments(folderId);
+          folders.value = folders.value.filter(
+            (folder) => folder.id !== folderId
+          );
           toast.success(t("success.deleteSuccess"), {
             timeout: 3000,
           });
@@ -423,33 +435,46 @@ export default {
         toast.error(t("error.deleteFailed"), {
           timeout: 3000,
         });
-        console.error("Error deleting folder:", error);
+        console.error("Error deleting file:", error);
       }
     };
 
-    const navigateToFolder = (folderId, event) => {
+    const navigateToFolder = async (folderId, event) => {
       if (event?.target?.closest("button")) {
         return;
       }
 
-      const folder = folders.value.find((f) => f.id === folderId);
-      if (folder && folder.full_path) {
-        const cleanPath = folder.full_path.startsWith("/")
-          ? folder.full_path.substring(1)
-          : folder.full_path;
+      try {
+        const response = await getDocuments();
+        const foldersData = response.data.folders;
 
-        router.push({
-          path: `/documents/${cleanPath}`,
-          state: {
-            folderId: folder.id,
-            folderName: folder.name,
-            folderPath: folder.full_path,
-          },
-        });
-      } else {
-        toast.warning(t("error.invalidFolderPath"), {
-          timeout: 3000,
-        });
+        const currentFolder = foldersData.find(
+          (folder) => folder.id === folderId
+        );
+
+        if (currentFolder && currentFolder.full_path) {
+          const cleanPath = currentFolder.full_path
+            .replace(/,/g, "/")
+            .replace(/^\/+/, "");
+
+          router
+            .push({
+              path: `/documents/${cleanPath}`,
+              state: {
+                folderId: currentFolder.id,
+                folderName: currentFolder.name,
+                folderPath: currentFolder.full_path,
+              },
+            })
+            .then(() => {
+              fetchFiles();
+            });
+        } else {
+          toast.warning(t("error.invalidFolderPath"));
+        }
+      } catch (error) {
+        toast.error(t("error.fetchFailed"));
+        console.error("❌ Error navigating to folder:", error);
       }
     };
 
@@ -493,7 +518,7 @@ export default {
       fileInput,
       selectedFolder,
       openNewFolderModal,
-      handleFolderSubmit,
+      // handleFolderSubmit,
       deleteFolder,
       getFileIcon,
       viewFile,
