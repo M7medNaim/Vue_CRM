@@ -161,9 +161,9 @@ export const getDocuments = async () => {
   return await axios.get("/documents");
 };
 
-export const getDocumentsFolder = async () => {
-  return await axios.get("/documents/folderApi");
-};
+// export const getDocumentsFolder = async () => {
+//   return await axios.get("/documents/folderApi");
+// };
 
 export const createDocuments = async (formData) => {
   try {

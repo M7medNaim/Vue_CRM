@@ -293,12 +293,31 @@ export default {
         return;
       }
 
-      const files = await fetchFolderFiles(item.id);
-      router.push({
-        name: "FolderFiles",
-        params: { folderId: item.id },
-        state: { files },
-      });
+      try {
+        const response = await getDocuments();
+        const folders = response.data.folders;
+
+        const currentFolder = folders.find((folder) => folder.id === item.id);
+
+        if (currentFolder && currentFolder.full_path) {
+          const cleanPath = currentFolder.full_path.startsWith("/")
+            ? currentFolder.full_path.substring(1)
+            : currentFolder.full_path;
+
+          router.push({
+            path: `/documents/folders/${cleanPath}`,
+            state: {
+              folderId: currentFolder.id,
+              folderName: currentFolder.name,
+              folderPath: currentFolder.full_path,
+            },
+          });
+        } else {
+          toast.warning("invalidFolderPath");
+        }
+      } catch (error) {
+        toast.error("Error navigating to folder");
+      }
     };
 
     const handleRightClick = (event) => {
@@ -342,6 +361,7 @@ export default {
       handleFolderImport,
       handleRowClick,
       downloadFolder,
+      fetchFolderFiles,
       t,
     };
   },
