@@ -91,11 +91,11 @@ export default {
           source_id: this.formData.source_id,
           responsible_user_id: this.formData.responsible_user_id,
           rating: this.formData.rating,
-          contact: {
-            name: this.formData.contact.name,
-            email: this.formData.contact.email,
-            phones: phones,
-          },
+          // contact: {
+          name: this.formData.contact.name,
+          email: this.formData.contact.email,
+          phones: phones,
+          // },
         };
 
         const response = await createDeal(dealData);

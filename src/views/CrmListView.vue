@@ -139,10 +139,9 @@
 
     <ActionsDeal
       :selected-rows="selectedRows"
-      @update-stage="handleUpdateStage"
-      @update-supervisor="handleUpdateSupervisor"
-      @update-representative="handleUpdateRepresentative"
-      @update-source="handleUpdateSource"
+      @update-stage="(value) => handleBulkUpdate('stage_id', value)"
+      @update-user="(value) => handleBulkUpdate('user_id', value)"
+      @update-source="(value) => handleBulkUpdate('source_id', value)"
     />
   </div>
   <!-- filter modal -->
@@ -166,13 +165,11 @@ import Column from "primevue/column";
 import {
   getDeals,
   showDeal,
-  updateDealsStage,
-  updateDealsSupervisor,
-  updateDealsRepresentative,
-  updateDealsSource,
   deleteDeals,
   getSources,
   getStages,
+  bulkUpdateDeals,
+  bulkDeleteDeals,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
@@ -238,17 +235,17 @@ const executeAction = () => {
       }
       break;
 
-    case "assignSalesSupervisor":
-      modalElement = document.getElementById("assignSupervisorModal");
-      if (modalElement) {
-        modal = new Modal(modalElement, {
-          backdrop: true,
-          keyboard: true,
-          focus: true,
-        });
-        modal.show();
-      }
-      break;
+    // case "assignSalesSupervisor":
+    //   modalElement = document.getElementById("assignSupervisorModal");
+    //   if (modalElement) {
+    //     modal = new Modal(modalElement, {
+    //       backdrop: true,
+    //       keyboard: true,
+    //       focus: true,
+    //     });
+    //     modal.show();
+    //   }
+    //   break;
 
     case "assignUser":
       modalElement = document.getElementById("assignUser");
@@ -275,17 +272,7 @@ const executeAction = () => {
       break;
 
     case "delete":
-      deleteItem();
-
-      // if (
-      //   confirm(
-      //     `${t("error.deleteTitle")} ${selectedRows.value.length} ${t(
-      //       "error.deleteText"
-      //     )}`
-      //   )
-      // ) {
-      //   deleteItem();
-      // }
+      bulkDeleteItems();
       break;
   }
 };
@@ -445,110 +432,6 @@ const openDealModal = () => {
 //     console.error("Error fetching user data for new deal:", error);
 //   }
 // };
-
-const handleUpdateStage = async (newStage) => {
-  try {
-    const selectedIds = selectedRows.value.map((row) => row.id);
-    await updateDealsStage(selectedIds, newStage);
-
-    rows.value = rows.value.map((item) => {
-      if (selectedIds.includes(item.id)) {
-        return { ...item, stage: newStage };
-      }
-      return item;
-    });
-
-    selectedRows.value = [];
-    selectedAction.value = "";
-
-    toast.success(t("success.updated"), {
-      timeout: 3000,
-    });
-  } catch (error) {
-    toast.error(t("error.updateFailed"), {
-      timeout: 3000,
-    });
-    console.error("Error updating stage:", error);
-  }
-};
-
-const handleUpdateSupervisor = async (newSupervisor) => {
-  try {
-    const selectedIds = selectedRows.value.map((row) => row.id);
-    await updateDealsSupervisor(selectedIds, newSupervisor);
-
-    rows.value = rows.value.map((item) => {
-      if (selectedIds.includes(item.id)) {
-        return { ...item, supervisor: newSupervisor };
-      }
-      return item;
-    });
-
-    selectedRows.value = [];
-    selectedAction.value = "";
-
-    toast.success(t("success.updated"), {
-      timeout: 3000,
-    });
-  } catch (error) {
-    toast.error(t("error.updateFailed"), {
-      timeout: 3000,
-    });
-    console.error("Error assigning supervisor:", error);
-  }
-};
-
-const handleUpdateRepresentative = async (newRepresentative) => {
-  try {
-    const selectedIds = selectedRows.value.map((row) => row.id);
-    await updateDealsRepresentative(selectedIds, newRepresentative);
-
-    rows.value = rows.value.map((item) => {
-      if (selectedIds.includes(item.id)) {
-        return { ...item, representative: newRepresentative };
-      }
-      return item;
-    });
-
-    selectedRows.value = [];
-    selectedAction.value = "";
-
-    toast.success(t("success.updated"), {
-      timeout: 3000,
-    });
-  } catch (error) {
-    toast.error(t("error.updateFailed"), {
-      timeout: 3000,
-    });
-    console.error("Error assigning representative:", error);
-  }
-};
-
-const handleUpdateSource = async (newSource) => {
-  try {
-    const selectedIds = selectedRows.value.map((row) => row.id);
-    await updateDealsSource(selectedIds, newSource);
-
-    rows.value = rows.value.map((item) => {
-      if (selectedIds.includes(item.id)) {
-        return { ...item, source: newSource };
-      }
-      return item;
-    });
-
-    selectedRows.value = [];
-    selectedAction.value = "";
-
-    toast.success(t("success.updated"), {
-      timeout: 3000,
-    });
-  } catch (error) {
-    toast.error(t("error.updateFailed"), {
-      timeout: 3000,
-    });
-    console.error("Error updating source:", error);
-  }
-};
 
 // Filtered items search and filters
 const filteredItems = computed(() => {
@@ -738,6 +621,110 @@ const loadCarsLazy = async (event) => {
   } catch (error) {
     console.error("Error fetching lazy data:", error);
     toast.error(t("error.fetchFailed"));
+  }
+};
+
+const handleBulkUpdate = async (key, value) => {
+  try {
+    const selectedIds = selectedRows.value.map((row) => row.id);
+
+    if (selectedIds.length === 0) {
+      toast.error(t("error.noItemsSelected"), { timeout: 3000 });
+      return;
+    }
+
+    const response = await bulkUpdateDeals(
+      selectedIds,
+      String(key),
+      String(value)
+    );
+
+    if (
+      response.data.success ||
+      response.data.message === "Deals updated successfully"
+    ) {
+      await fetchData();
+      selectedRows.value = [];
+      selectedAction.value = "";
+
+      let modalElement;
+      let modal;
+
+      switch (key) {
+        case "stage_id":
+          modalElement = document.getElementById("changeStageModal");
+          break;
+        case "user_id":
+          modalElement = document.getElementById("assignUser");
+          break;
+        case "source_id":
+          modalElement = document.getElementById("changeSourceModal");
+          break;
+      }
+
+      if (modalElement) {
+        modal = Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+      }
+
+      toast.success(t("success.bulkUpdateSuccess"), { timeout: 3000 });
+    } else {
+      console.error(
+        "Error updating stage:",
+        response.data.message || "Unknown error"
+      );
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message || t("error.bulkUpdateFailed"), {
+      timeout: 3000,
+    });
+    console.error("Bulk Update Error:", error);
+  }
+};
+
+const bulkDeleteItems = async () => {
+  try {
+    const ids = selectedRows.value.map((row) => row.id);
+
+    if (ids.length === 0) {
+      toast.error(t("error.noItemsSelected"), { timeout: 3000 });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: t("error.deleteTitle"),
+      text: t("error.deleteText"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("success.deleteConfirm"),
+      cancelButtonText: t("error.deleteCancel"),
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      console.log("IDs to delete:", ids);
+      const response = await bulkDeleteDeals(ids);
+      console.log("Delete response:", response);
+
+      if (response.status === 204 || response.data?.success) {
+        rows.value = rows.value.filter((item) => !ids.includes(item.id));
+        selectedRows.value = [];
+        selectedAction.value = "";
+
+        toast.success(t("success.deleteSuccess"), { timeout: 3000 });
+      } else {
+        throw new Error(response.data.message || t("error.deleteFailed"));
+      }
+    }
+  } catch (error) {
+    console.error("Bulk Delete Error:", error);
+    toast.error(error.response?.data?.message || t("error.deleteFailed"), {
+      timeout: 3000,
+    });
   }
 };
 

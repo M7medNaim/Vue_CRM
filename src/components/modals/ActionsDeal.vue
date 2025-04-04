@@ -125,7 +125,7 @@
               :key="option.value"
               :value="option.value"
             >
-              {{ option.label }}
+              {{ option.name }}
             </option>
           </select>
         </div>
@@ -210,7 +210,11 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { Modal } from "bootstrap";
-import { getStages, getSources } from "@/plugins/services/authService";
+import {
+  getStages,
+  getSources,
+  getAllUsers,
+} from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const props = defineProps({
@@ -236,6 +240,7 @@ const newUser = ref("");
 const newSource = ref("");
 const stageOptions = ref([]);
 const sourceOptions = ref([]);
+const userOptions = ref([]);
 // Options for dropdowns
 const fetchStages = async () => {
   try {
@@ -258,11 +263,11 @@ const fetchStages = async () => {
 //   { value: "sup", label: "Sup Sup" },
 // ];
 
-const userOptions = [
-  { value: "rep1", label: "user 1" },
-  { value: "rep2", label: "user 2" },
-  { value: "rep3", label: "user 3" },
-];
+// const userOptions = [
+//   { value: "rep1", label: "user 1" },
+//   { value: "rep2", label: "user 2" },
+//   { value: "rep3", label: "user 3" },
+// ];
 
 const fetchSources = async () => {
   try {
@@ -277,8 +282,23 @@ const fetchSources = async () => {
     console.error("Error fetching sources:", error);
   }
 };
+const fetchUsers = async () => {
+  try {
+    const response = await getAllUsers();
+    if (response.status === 200) {
+      userOptions.value = response.data.data.map((user) => ({
+        value: user.id,
+        name: user.name,
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching sources:", error);
+  }
+};
 onMounted(async () => {
-  await Promise.all([fetchStages(), fetchSources()]);
+  await fetchStages();
+  await fetchSources();
+  await fetchUsers();
 });
 
 // Methods
@@ -294,7 +314,7 @@ const closeModal = (modalId) => {
 const confirmChangeStage = async () => {
   try {
     isLoading.value = true;
-    await emits("update-stage", newStage.value);
+    emits("update-stage", String(newStage.value));
     closeModal("changeStageModal");
     newStage.value = "";
   } catch (error) {
@@ -320,7 +340,7 @@ const confirmChangeStage = async () => {
 const confirmAssignUser = async () => {
   try {
     isLoading.value = true;
-    await emits("update-user", newUser.value);
+    emits("update-user", String(newUser.value));
     closeModal("assignUser");
     newUser.value = "";
   } catch (error) {
@@ -333,7 +353,7 @@ const confirmAssignUser = async () => {
 const confirmChangeSource = async () => {
   try {
     isLoading.value = true;
-    await emits("update-source", newSource.value);
+    emits("update-source", String(newSource.value));
     closeModal("changeSourceModal");
     newSource.value = "";
   } catch (error) {

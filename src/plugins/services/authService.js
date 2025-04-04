@@ -63,25 +63,37 @@ export const createDeal = (formData) => {
   return axios.post("/deals", formData);
 };
 
-// Add these functions to your service file
-export const updateDealsStage = async (ids, stage) => {
-  return await axios.post("/deals/update-stage", { ids, stage });
-};
-
-export const updateDealsSupervisor = async (ids, supervisor) => {
-  return await axios.post("/deals/update-supervisor", { ids, supervisor });
-};
-
-export const updateDealsRepresentative = async (ids, representative) => {
-  return await axios.post("/deals/update-representative", {
+// action deals updated
+export const bulkUpdateDeals = async (ids, key, value) => {
+  return await axios.patch("/deals/bulk-update", {
     ids,
-    representative,
+    key: String(key),
+    value: String(value),
   });
 };
-
-export const updateDealsSource = async (ids, source) => {
-  return await axios.post("/deals/update-source", { ids, source });
+export const bulkDeleteDeals = async (ids) => {
+  return await axios.delete("/deals/bulk-delete", {
+    data: { ids },
+  });
 };
+// export const updateDealsStage = async (ids, stage) => {
+//   return await axios.post("/deals/update-stage", { ids, stage });
+// };
+
+// export const updateDealsSupervisor = async (ids, supervisor) => {
+//   return await axios.post("/deals/update-supervisor", { ids, supervisor });
+// };
+
+// export const updateDealsRepresentative = async (ids, representative) => {
+//   return await axios.post("/deals/update-representative", {
+//     ids,
+//     representative,
+//   });
+// };
+
+// export const updateDealsSource = async (ids, source) => {
+//   return await axios.post("/deals/update-source", { ids, source });
+// };
 
 export const deleteDeals = (ids) => axios.delete(`/deals/${ids}`);
 
@@ -165,6 +177,9 @@ export const saveUserLanguage = async (locale) => {
 
 export const getDocuments = async () => {
   return await axios.get("/documents");
+};
+export const getAllUsers = async () => {
+  return await axios.get("/users/all");
 };
 
 // export const getDocumentsFolder = async () => {
