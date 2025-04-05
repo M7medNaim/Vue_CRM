@@ -91,10 +91,10 @@ export default {
           source_id: this.formData.source_id,
           responsible_user_id: this.formData.responsible_user_id,
           rating: this.formData.rating,
-          // contact: {
           name: this.formData.contact.name,
           email: this.formData.contact.email,
-          phones: phones,
+          phones: this.formData.contact.phones,
+          // contact: {
           // },
         };
 
@@ -108,6 +108,7 @@ export default {
           this.clearForm();
           this.closeDealModal();
         }
+        console.log("dealData being sent:", JSON.stringify(dealData, null, 2));
       } catch (error) {
         this.toast.error(
           error.response?.data?.message || this.t("error.createDeal"),

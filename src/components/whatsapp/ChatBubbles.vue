@@ -11,9 +11,14 @@
     :class="message.type"
   >
     <div
-      class="textMessage position-relative text-start px-3 py-2 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
+      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
     >
-      {{ message.text }} <br />
+      <div v-if="message.isImage">
+        <img :src="message.text" alt="صورة مرسلة" class="img-fluid" />
+      </div>
+      <div class="" v-else>
+        {{ message.text }}
+      </div>
       <button
         class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
         @click.stop="toggleMenu(index)"
@@ -33,7 +38,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="copyMessage(message)"
-              >{{ $t("whatsapp.copy") }}</a
+              >Copy</a
             >
           </li>
           <li>
@@ -41,7 +46,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="replyToMessage(message)"
-              >{{ $t("whatsapp.reply") }}</a
+              >Replay</a
             >
           </li>
           <li>
@@ -49,7 +54,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="deleteMessage(index)"
-              >{{ $t("whatsapp.delete") }}</a
+              >Delete</a
             >
           </li>
         </ul>
@@ -58,7 +63,7 @@
         v-if="message.isCopied"
         class="copy-message position-absolute bg-secondary-subtle py-1 px-2 rounded-1 bottom-100 text-center"
       >
-        {{ $t("whatsapp.messageCopied") }}
+        Message Copied!
       </div>
     </div>
   </div>
@@ -142,6 +147,10 @@ export default {
 .right-side .chatBx .msg .textMessage {
   max-width: 65%;
   background: #dcf8c6;
+}
+.right-side .chatBx .msg .textMessage img {
+  max-width: 300px;
+  height: 300px;
 }
 
 .right-side .chatBx .msg-me .textMessage::before {

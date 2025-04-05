@@ -148,12 +148,19 @@ export default {
           pinned: false,
           label: "",
           messages: [
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
+            {
+              type: "msg-me",
+              text: "https://picsum.photos/1000/1000",
+              time: "12:15",
+              isCopied: false,
+              isImage: true,
+            },
             {
               type: "msg-frnd",
-              text: "أهلاً بك",
+              text: "https://picsum.photos/1000/1000",
               time: "12:16",
               isCopied: false,
+              isImage: true,
             },
             { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
             {

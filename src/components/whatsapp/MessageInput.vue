@@ -20,16 +20,16 @@
             class="emoji-picker bg-white rounded-2 border border-1 border-dark-subtle p-1 d-flex flex-wrap gap-2 w-25 position-absolute fs-5 text-center start-0 bottom-100"
           >
             <div class="row">
-              <div class="col-1 ms-2">
+              <div class="col-1 ms-1">
                 <span @click="addEmoji('😀')">😀</span>
               </div>
-              <div class="col-1 ms-2">
+              <div class="col-1 ms-1">
                 <span @click="addEmoji('😍')">😍</span>
               </div>
-              <div class="col-1 ms-2">
+              <div class="col-1 ms-1">
                 <span @click="addEmoji('😅')">😅</span>
               </div>
-              <div class="col-1 ms-2">
+              <div class="col-1 ms-1">
                 <span @click="addEmoji('😊')">😊</span>
               </div>
               <div class="col-1 ms-2">
@@ -74,7 +74,10 @@
               class="file-upload position-relative d-none"
               autocomplete="off"
               aria-label="uploadFile"
+              multiple
+              @change="handleFileUpload"
             />
+            <!-- accept="image/*" -->
           </form>
         </div>
         <div class="Clipboard">
@@ -185,6 +188,20 @@ export default {
     },
     closeClipboard() {
       this.isClipboardVisible = false;
+    },
+    handleFileUpload(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          console.log("Selected file:", files[i]);
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imagePreview = e.target.result;
+            console.log("Preview Image Base64:", imagePreview);
+          };
+          reader.readAsDataURL(files[i]);
+        }
+      }
     },
   },
   directives: {

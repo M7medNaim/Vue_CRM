@@ -197,12 +197,19 @@ export default {
       this.scrollToBottom();
     },
     scrollToBottom() {
+      // this.$nextTick(() => {
+      //   const chatMessages = this.$refs.chatBox.querySelectorAll(".msg");
+      //   const lastMessage = chatMessages[chatMessages.length - 1];
+      //   if (lastMessage) {
+      //     lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+      //   }
+      // });
       this.$nextTick(() => {
-        const chatMessages = this.$refs.chatBox.querySelectorAll(".msg");
-        const lastMessage = chatMessages[chatMessages.length - 1];
-        if (lastMessage) {
-          lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
-        }
+        const chatBox = this.$refs.chatBox;
+        chatBox.scrollTo({
+          top: chatBox.scrollHeight,
+          behavior: "smooth",
+        });
       });
     },
 
@@ -314,7 +321,7 @@ input::placeholder {
 /* chat box */
 
 .right-side .chatBx {
-  height: 92vh;
+  height: 90vh;
 }
 .right-side .chatBx .menu {
   top: 8vh;
@@ -341,7 +348,7 @@ input::placeholder {
 }
 /* scroll style */
 .right-side .chatBx::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 .right-side .chatBx::-webkit-scrollbar-track {

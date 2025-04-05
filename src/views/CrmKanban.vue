@@ -25,6 +25,7 @@ import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
 export default {
   name: "CrmKanban",
   components: {
@@ -124,6 +125,12 @@ export default {
         // toast.success("تم تحميل لوحة كانبان بنجاح", {
         //   timeout: 3000,
         // });
+        // initialize WebSocket connection
+        await initializeWebSocket();
+        // listen for WebSocket events
+        window.Echo.channel("super-admin").listen("DealEvent", (data) => {
+          console.log(data.message);
+        });
       } catch (error) {
         console.error("Error mounting component:", error);
         toast.error(t("error.loadKanban"), {
@@ -134,6 +141,9 @@ export default {
 
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
+      // Close WebSocket connection
+      window.Echo.leave("super-admin");
+      closeWebSocket();
     });
 
     return {

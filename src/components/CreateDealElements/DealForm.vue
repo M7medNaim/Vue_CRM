@@ -175,8 +175,10 @@ export default {
       rating: props.formData.rating || 0,
       contact: {
         ...props.formData.contact,
+        // phones: [props.formData.contact.phone1, props.formData.contact.phone2],
         phone1: props.formData.contact.phone1 || "",
         phone2: props.formData.contact.phone2 || "",
+        phones: [],
       },
     });
     const showPhone2 = ref(false);
@@ -219,6 +221,19 @@ export default {
       fetchSources();
       fetchStages();
     });
+    watch(
+      () => [
+        localFormData.value.contact.phone1,
+        localFormData.value.contact.phone2,
+      ],
+      ([newPhone1, newPhone2]) => {
+        const phones = [];
+        if (newPhone1) phones.push(newPhone1);
+        if (newPhone2) phones.push(newPhone2);
+        localFormData.value.contact.phones = phones;
+      },
+      { deep: true }
+    );
     watch(
       localFormData,
       (newValue) => {
