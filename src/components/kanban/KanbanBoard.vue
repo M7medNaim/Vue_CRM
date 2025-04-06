@@ -67,7 +67,8 @@
       </div>
     </div>
   </div>
-  <DealDataCard :deal="selectedDeal" />
+  <DealDataCard :deal="deal" :logs="logs" :comments="comments" :tasks="tasks" />
+  <!-- selectedDeal -->
   <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
 </template>
 
@@ -81,6 +82,7 @@ import { useRoute } from "vue-router";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";
+import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
 
 export default {
   name: "KanbanBoard",
@@ -108,6 +110,9 @@ export default {
     const showLeft = ref(false);
     const showRight = ref(true);
     const selectedStage = ref(null);
+    const logs = ref([]);
+    const comments = ref([]);
+    const tasks = ref([]);
 
     const isTasksView = computed(() => route.path === "/crm-tasks");
 
@@ -177,13 +182,160 @@ export default {
         stages.value[stageIndex].color = updatedStage.color;
       }
     };
-    onMounted(() => {
+
+    const handleDealEvent = (event) => {
+      const { action, data } = event;
+
+      if (!data || !data.stage_id) return;
+
+      const stageIndex = stages.value.findIndex(
+        (stage) => stage.id === data.stage_id
+      );
+
+      if (stageIndex === -1) return;
+
+      const stage = stages.value[stageIndex];
+      if (action === "create") {
+        stage.deals.push(data);
+        // deals.value.push({
+        //   id: data.id,
+        //   text: data.note,
+        //   date: new Date().toLocaleString(),
+        // });
+      } else if (action === "update") {
+        const dealIndex = stage.deals.findIndex((deal) => deal.id === data.id);
+        if (dealIndex !== -1) {
+          stage.deals[dealIndex] = { ...stage.deals[dealIndex], ...data };
+          // stage.value[dealIndex].text = data.note;
+        } else {
+          stage.deals.push(data);
+        }
+      } else if (action === "delete") {
+        stage.deals = stage.deals.filter((deal) => deal.id !== data.id);
+      }
+    };
+    const handleTaskEvent = (event) => {
+      const { action, data } = event;
+
+      if (action === "create") {
+        tasks.value.push(data);
+        // tasks.value.push({
+        //   id: data.id,
+        //   text: data.note,
+        //   date: new Date().toLocaleString(),
+        // });
+      } else if (action === "update") {
+        const index = tasks.value.findIndex((t) => t.id === data.id);
+        if (index !== -1) {
+          tasks.value[index] = { ...tasks.value[index], ...data };
+          // tasks.value[index].text = data.note;
+        } else {
+          tasks.value.push(data);
+        }
+      } else if (action === "delete") {
+        tasks.value = tasks.value.filter((t) => t.id !== data.id);
+      }
+    };
+
+    const handleCommentEvent = (event) => {
+      const { action, data } = event;
+
+      if (action === "create") {
+        comments.value.push(data);
+        // comments.value.push({
+        //   id: data.id,
+        //   text: data.note,
+        //   date: new Date().toLocaleString(),
+        // });
+      } else if (action === "update") {
+        const index = comments.value.findIndex((c) => c.id === data.id);
+        if (index !== -1) {
+          comments.value[index] = { ...comments.value[index], ...data };
+          // comments.value[index].text = data.note;
+        } else {
+          comments.value.push(data);
+        }
+      } else if (action === "delete") {
+        comments.value = comments.value.filter((c) => c.id !== data.id);
+      }
+    };
+
+    const handleLogEvent = (event) => {
+      const { action, data } = event;
+
+      if (action === "create") {
+        logs.value.push(data);
+        // logs.value.push({
+        //   id: data.id,
+        //   text: data.note,
+        //   date: new Date().toLocaleString(),
+        // });
+      } else if (action === "update") {
+        const logIndex = logs.value.findIndex((log) => log.id === data.id);
+        if (logIndex !== -1) {
+          logs.value[logIndex] = { ...logs.value[logIndex], ...data };
+          // logs.value[logIndex].text = data.note;
+        } else {
+          logs.value.push(data);
+        }
+      } else if (action === "delete") {
+        logs.value = logs.value.filter((log) => log.id !== data.id);
+      }
+    };
+
+    onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
       document.addEventListener("mouseleave", stopScrolling);
       updateArrowVisibility();
-    });
 
+      try {
+        // Initialize WebSocket connection
+        await initializeWebSocket();
+        const user_id = 1;
+        const userRole = "sales";
+
+        let userChannel;
+        switch (userRole) {
+          case "super-admin":
+            userChannel = "super-admin";
+            break;
+          case "company":
+            userChannel = `company-${user_id}`;
+            break;
+          case "supervisor":
+            userChannel = `supervisor-${user_id}`;
+            break;
+          case "sales":
+            userChannel = `sales-${user_id}`;
+            break;
+          default:
+            console.error("Unknown user role:", userRole);
+            return;
+        }
+
+        // Listen to the appropriate channel
+        window.Echo.channel(userChannel)
+          .listen("DealEvent", (event) => {
+            console.log("DealEvent received:", event);
+            handleDealEvent(event);
+          })
+          .listen("TaskEvent", (event) => {
+            console.log("TaskEvent received:", event);
+            handleTaskEvent(event);
+          })
+          .listen("CommentEvent", (event) => {
+            console.log("CommentEvent received:", event);
+            handleCommentEvent(event);
+          })
+          .listen("LogEvent", (event) => {
+            console.log("LogEvent received:", event);
+            handleLogEvent(event);
+          });
+      } catch (error) {
+        console.error("Error mounting component:", error);
+      }
+    });
     onUnmounted(() => {
       if (dealsContainer.value) {
         dealsContainer.value.removeEventListener(
@@ -193,6 +345,34 @@ export default {
       }
       document.removeEventListener("mouseup", stopScrolling);
       document.removeEventListener("mouseleave", stopScrolling);
+
+      const user_id = 1;
+      const userRole = "sales";
+
+      let userChannel;
+      switch (userRole) {
+        case "super-admin":
+          userChannel = "super-admin";
+          break;
+        case "company":
+          userChannel = `company-${user_id}`;
+          break;
+        case "supervisor":
+          userChannel = `supervisor-${user_id}`;
+          break;
+        case "sales":
+          userChannel = `sales-${user_id}`;
+          break;
+        default:
+          console.error("Unknown user role:", userRole);
+          return;
+      }
+
+      // Leave the WebSocket channel
+      window.Echo.leave(userChannel);
+
+      // Close the WebSocket connection
+      closeWebSocket();
     });
     return {
       // stages,
@@ -209,6 +389,9 @@ export default {
       isTasksView,
       selectedStage,
       handleStageUpdate,
+      logs,
+      comments,
+      tasks,
     };
   },
 };

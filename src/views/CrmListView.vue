@@ -107,20 +107,20 @@
       <Column :header="t('crmlist-table-header-action')">
         <template #body="slotProps">
           <div class="d-flex gap-2">
-            <button
+          <button
               class="btn btn-sm btn-primary"
               @click="handleShowDeal(slotProps.data.id)"
-            >
+          >
               <i class="fas fa-eye"></i>
-            </button>
-            <button
+          </button>
+          <button
               class="btn btn-sm btn-danger"
               @click="deleteItem(slotProps.data.id)"
-            >
+          >
               <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </template>
+          </button>
+        </div>
+      </template>
       </Column>
 
       <template #loading>
@@ -644,8 +644,8 @@ const handleBulkUpdate = async (key, value) => {
       response.data.message === "Deals updated successfully"
     ) {
       await fetchData();
-      selectedRows.value = [];
-      selectedAction.value = "";
+    selectedRows.value = [];
+    selectedAction.value = "";
 
       let modalElement;
       let modal;

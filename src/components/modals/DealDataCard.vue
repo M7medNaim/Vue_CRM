@@ -359,11 +359,17 @@
                 </div>
               </div>
               <div class="history ps-2 mt-2">
-                <div class="row bg-light pt-2 text-secondary border border-top">
+                <div
+                  v-for="log in logs"
+                  :key="log.id"
+                  class="row bg-light pt-2 text-secondary border border-top"
+                >
                   <div class="col-3">
-                    <p>Wed Feb 19 2025 10:14 ص</p>
+                    <p>{{ log.date }}</p>
                   </div>
                   <div class="col-9">
+                    <!-- <p>{{ log.message }}</p> -->
+                    <p>{{ log.note }}</p>
                     <p>
                       Super Admin moved the deal from "Processing" to "Not
                       Responding 2" stage.
@@ -604,6 +610,20 @@ import { useI18n } from "vue-i18n";
 export default {
   name: "DealDataCard",
   components: { RatingStars, ViewReport, WhatsappModal },
+  props: {
+    logs: {
+      type: Array,
+      required: true,
+    },
+    comments: {
+      type: Array,
+      required: true,
+    },
+    tasks: {
+      type: Array,
+      required: true,
+    },
+  },
   setup() {
     const { t } = useI18n();
     const toast = useToast();
@@ -870,7 +890,6 @@ export default {
         });
       }
     };
-
     const openQuestionsModal = () => {
       try {
         const modal = new Modal(document.getElementById("questionsModal"));
@@ -886,44 +905,44 @@ export default {
       }
     };
 
-    const comments = ref([
-      {
-        user: "Admin",
-        text: "اتصال + فويس",
-        date: "19/2/2025 11:44 ص",
-        isAdmin: true,
-      },
-      {
-        user: "Sales Name",
-        text: "اتصال + فويس",
-        date: "19/2/2025 11:44 ص",
-        isAdmin: false,
-      },
-      {
-        user: "Sales Name",
-        text: "اتصال + فويس",
-        date: "19/2/2025 11:44 ص",
-        isAdmin: false,
-      },
-      {
-        user: "Sales Name",
-        text: "اتصال + فويس",
-        date: "19/2/2025 11:44 ص",
-        isAdmin: false,
-      },
-      {
-        user: "Admin",
-        text: "اتصال + فويس",
-        date: "19/2/2025 11:44 ص",
-        isAdmin: true,
-      },
-      {
-        user: "Admin",
-        text: "اتصال + فويس",
-        date: "19/2/2025 11:44 ص",
-        isAdmin: true,
-      },
-    ]);
+    // const comments = ref([
+    //   {
+    //     user: "Admin",
+    //     text: "اتصال + فويس",
+    //     date: "19/2/2025 11:44 ص",
+    //     isAdmin: true,
+    //   },
+    //   {
+    //     user: "Sales Name",
+    //     text: "اتصال + فويس",
+    //     date: "19/2/2025 11:44 ص",
+    //     isAdmin: false,
+    //   },
+    //   {
+    //     user: "Sales Name",
+    //     text: "اتصال + فويس",
+    //     date: "19/2/2025 11:44 ص",
+    //     isAdmin: false,
+    //   },
+    //   {
+    //     user: "Sales Name",
+    //     text: "اتصال + فويس",
+    //     date: "19/2/2025 11:44 ص",
+    //     isAdmin: false,
+    //   },
+    //   {
+    //     user: "Admin",
+    //     text: "اتصال + فويس",
+    //     date: "19/2/2025 11:44 ص",
+    //     isAdmin: true,
+    //   },
+    //   {
+    //     user: "Admin",
+    //     text: "اتصال + فويس",
+    //     date: "19/2/2025 11:44 ص",
+    //     isAdmin: true,
+    //   },
+    // ]);
 
     const toggleEditMode = () => {
       isEditMode.value = !isEditMode.value;
@@ -951,6 +970,7 @@ export default {
         });
       }
     };
+
     return {
       stages,
       currentStage,
@@ -958,7 +978,7 @@ export default {
       newComment,
       newTask,
       taskDate,
-      tasks,
+      // tasks,
       changeStage,
       startCall,
       startWhatsapp,
@@ -979,7 +999,6 @@ export default {
       handleStageLeave,
       getStageClasses,
       openQuestionsModal,
-      comments,
       toggleEditMode,
       handleDoubleClick,
       isEditMode,
