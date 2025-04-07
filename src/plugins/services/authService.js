@@ -41,7 +41,7 @@ export const getRoles = () => axios.get("/roles");
 // Get All Deals
 export const getDeals = async (params = {}) => {
   const token = Cookies.get("authToken");
-  console.log("Fetching getDeals with params:", params);
+  // console.log("Fetching getDeals with params:", params);
 
   return axios.get("/deals", {
     params: {
@@ -116,7 +116,7 @@ export const getStages = () => axios.get("/stages");
 // export const getContacts = () => axios.get("/contacts");
 export const getContacts = async (params = {}) => {
   const token = Cookies.get("authToken");
-  console.log("Fetching contacts with params:", params);
+  // console.log("Fetching contacts with params:", params);
 
   return axios.get("/contacts", {
     params: {

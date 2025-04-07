@@ -52,15 +52,6 @@
                 />
               </div> -->
               <div class="mb-3">
-                <label class="form-label">Rating</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  :value="dealData?.rating || 'No rating'"
-                  disabled
-                />
-              </div>
-              <div class="mb-3">
                 <label class="form-label">Note</label>
                 <input
                   type="text"
@@ -116,6 +107,25 @@
                   :value="dealData?.phone"
                   disabled
                 />
+              </div>
+              <div class="mb-3 fs-5">
+                <label class="form-label me-2">Rating :</label>
+                <!-- <input
+                  type="text"
+                  class="form-control"
+                  :value="dealData?.rating || 'No rating'"
+                  disabled
+                /> -->
+                <template v-for="index in 7" :key="index">
+                  <i
+                    class="fa-solid fa-star"
+                    :class="
+                      index <= (dealData?.rating || 0)
+                        ? 'text-gold'
+                        : 'text-lightgray'
+                    "
+                  ></i>
+                </template>
               </div>
             </div>
           </div>
@@ -212,5 +222,12 @@ h6 {
 .form-control:disabled {
   background-color: #f8f9fa;
   cursor: not-allowed;
+}
+.text-gold {
+  color: #ffd700;
+}
+
+.text-lightgray {
+  color: #d3d3d3;
 }
 </style>

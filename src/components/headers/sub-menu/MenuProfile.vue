@@ -1,9 +1,9 @@
 <template>
   <div class="dropdown-menu my-2 position-absolute d-block end-0 border-0">
     <div
-      class="image my-2 d-flex justify-content-start align-items-center w-100 p-2"
+      class="image my-2 d-flex justify-content-start align-items-center w-100 p-2 px-1"
     >
-      <div class="profileImage me-2 border border-2 rounded-5">
+      <div class="profileImage me-1 border border-2 rounded-5">
         <img
           :src="userImage || require('@/assets/default-user-image.jpg')"
           class="img-fluid rounded-5"
@@ -13,7 +13,7 @@
       <div class="data">
         <span class="">{{ name }}</span
         ><br />
-        <span class="text-secondary">{{ userEmail }}</span>
+        <span class="text-secondary userEmail">{{ userEmail }}</span>
       </div>
     </div>
     <hr />
@@ -165,5 +165,8 @@ export default {
 }
 .dropdown-item {
   cursor: pointer;
+}
+.userEmail {
+  font-size: 14px;
 }
 </style>

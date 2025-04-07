@@ -107,20 +107,20 @@
       <Column :header="t('crmlist-table-header-action')">
         <template #body="slotProps">
           <div class="d-flex gap-2">
-          <button
+            <button
               class="btn btn-sm btn-primary"
               @click="handleShowDeal(slotProps.data.id)"
-          >
+            >
               <i class="fas fa-eye"></i>
-          </button>
-          <button
+            </button>
+            <button
               class="btn btn-sm btn-danger"
               @click="deleteItem(slotProps.data.id)"
-          >
+            >
               <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </template>
+            </button>
+          </div>
+        </template>
       </Column>
 
       <template #loading>
@@ -192,6 +192,9 @@ const search = ref("");
 const selectedRows = ref([]);
 const selectedAction = ref("");
 const selectedStatuses = ref([]);
+const sources = ref([]);
+const stages = ref([]);
+
 const filters = ref({
   source: "",
   stage: "",
@@ -281,12 +284,17 @@ const fetchData = async () => {
   try {
     loading.value = true;
 
-    const [stagesRes, sourcesRes] = await Promise.all([
-      getStages(),
-      getSources(),
-    ]);
-    stages.value = stagesRes.data.data;
-    sources.value = sourcesRes.data.data;
+    if (stages.value.length === 0 || sources.value.length === 0) {
+      await fetchStagesAndSources();
+    }
+    // if (stages.value.length === 0 || sources.value.length === 0) {
+    //   const [stagesRes, sourcesRes] = await Promise.all([
+    //     getStages(),
+    //     getSources(),
+    //   ]);
+    //   stages.value = stagesRes.data.data;
+    //   sources.value = sourcesRes.data.data;
+    // }
 
     const dealsRes = await getDeals({
       page: currentPage.value + 1,
@@ -295,6 +303,9 @@ const fetchData = async () => {
       sort_order: "desc",
     });
 
+    if (!Array.isArray(dealsRes?.data?.data)) {
+      toast.info(t("noDealsFound"));
+    }
     rows.value = dealsRes.data.data.map((deal) => {
       const matchedStage = stages.value.find(
         (stage) => stage.id === deal.stage_id
@@ -305,14 +316,14 @@ const fetchData = async () => {
 
       return {
         id: deal.id,
-        name: deal.contact?.name || "unassigned",
+        name: deal.name || "unassigned",
         // phone1: deal.contact.phones?.[0] || "",
         // phone2: deal.contact.phones?.[1] || "",
-        phone: deal.contact?.phone,
+        phone: deal.phone,
         note: deal.note || "unassigned",
         created_at: deal.created_at.split("T")[0],
         stage: matchedStage ? matchedStage.name : "null",
-        responsible: "Null",
+        responsible: deal.responsible_user.name || "Null",
         source: matchedSource ? matchedSource.name : "Null",
       };
     });
@@ -374,7 +385,7 @@ const handleShowDeal = async (dealId) => {
       address: deal.contact?.address || "unassigned",
       country: deal.contact?.country || "unassigned",
       email: deal.contact?.email || "unassigned",
-      phone: deal.contact?.phone || "unassigned",
+      phone: deal.contact?.phones?.[0]?.phone || "unassigned",
       note: deal.note || "unassigned",
       rating: deal.rating || "unassigned",
       created_at: deal.created_at
@@ -591,18 +602,16 @@ const handleRightClick = (event) => {
     }
   });
 };
-
-const sources = ref([]);
-const stages = ref([]);
-
 const fetchStagesAndSources = async () => {
   try {
-    const [stagesRes, sourcesRes] = await Promise.all([
-      getStages(),
-      getSources(),
-    ]);
-    stages.value = stagesRes.data.data;
-    sources.value = sourcesRes.data.data;
+    if (stages.value.length === 0 || sources.value.length === 0) {
+      const [stagesRes, sourcesRes] = await Promise.all([
+        getStages(),
+        getSources(),
+      ]);
+      stages.value = stagesRes.data.data;
+      sources.value = sourcesRes.data.data;
+    }
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
   }
@@ -644,8 +653,8 @@ const handleBulkUpdate = async (key, value) => {
       response.data.message === "Deals updated successfully"
     ) {
       await fetchData();
-    selectedRows.value = [];
-    selectedAction.value = "";
+      selectedRows.value = [];
+      selectedAction.value = "";
 
       let modalElement;
       let modal;
@@ -729,8 +738,8 @@ const bulkDeleteItems = async () => {
 };
 
 onMounted(async () => {
+  // await fetchStagesAndSources();
   await fetchData();
-  await fetchStagesAndSources();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {

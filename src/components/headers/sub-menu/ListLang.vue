@@ -34,7 +34,6 @@ export default {
   },
   methods: {
     async handleLanguageChange(lang) {
-      // ✅ تجنب تنفيذ العملية إذا لم تتغير اللغة
       if (lang === localStorage.getItem("locale")) {
         this.toast.info("تم تحديد هذه اللغة بالفعل!", { timeout: 2000 });
         return;

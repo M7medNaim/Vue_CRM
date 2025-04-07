@@ -8,8 +8,12 @@
   </div>
   <div class="watsappIcon position-absolute z-3">
     <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
-      <p class="position-absolute">{{ $t("kanban-modal-edit-whatsapp") }}</p>
-      <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
+      <p class="position-absolute textWhats">
+        {{ $t("kanban-modal-edit-whatsapp") }}
+      </p>
+      <div class="text-white">
+        <i class="fa-brands fa-whatsapp"></i>
+      </div>
     </button>
   </div>
   <KanbanBoard :stages="stages" defaultColor="#333" />
@@ -246,7 +250,9 @@ export default {
   bottom: 4%;
   right: 3%;
 }
-
+.textWhats {
+  font-size: 16px;
+}
 button {
   border: 2px solid #25d366;
   width: 6.8em;
@@ -256,8 +262,8 @@ button {
 }
 
 button p {
-  top: 0.2em;
-  left: 1.15em;
+  top: 0.4em;
+  left: 1.5em;
   transition: 0.5s;
   color: #25d366;
 }
@@ -272,7 +278,7 @@ button i {
 }
 
 button:hover p {
-  left: 0.5em;
+  left: 0.8em;
   color: #fff;
 }
 
