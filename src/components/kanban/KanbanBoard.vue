@@ -84,6 +84,7 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { updateDealStage } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
+import Cookies from "js-cookie";
 
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
@@ -333,9 +334,10 @@ export default {
       try {
         // Initialize WebSocket connection
         await initializeWebSocket();
-        const user_id = 1;
-        const userRole = "sales";
-
+        // const user_id = 1;
+        // const userRole = "sales";
+        const userRole = Cookies.get("user_role");
+        const user_id = Cookies.get("user_id");
         let userChannel;
         switch (userRole) {
           case "super-admin":

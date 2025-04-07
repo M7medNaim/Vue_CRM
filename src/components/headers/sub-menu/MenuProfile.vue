@@ -117,6 +117,8 @@ export default {
         Cookies.remove("name");
         Cookies.remove("image");
         Cookies.remove("email");
+        Cookies.remove("user_role");
+        Cookies.remove("user_id");
 
         delete axiosInstance.defaults.headers["Authorization"];
 

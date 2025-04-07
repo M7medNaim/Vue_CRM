@@ -123,8 +123,8 @@ export default {
           Cookies.set("name", response.data.user.name, cookieOptions);
           Cookies.set("email", response.data.user.email, cookieOptions);
           Cookies.set("image", response.data.user.image || "", cookieOptions);
-
-          // تحميل الترجمات بعد تسجيل الدخول
+          Cookies.set("user_role", response.data.user.role, cookieOptions);
+          Cookies.set("user_id", response.data.user.id, cookieOptions);
           const locale = localStorage.getItem("locale") || "en";
           await initializeTranslations(locale);
 
