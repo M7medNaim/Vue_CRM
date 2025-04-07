@@ -20,12 +20,13 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
-import { kanbanStages } from "@/plugins/stages";
+// import { kanbanStages } from "@/plugins/stages";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 // import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
+import { getDealsKanban } from "@/plugins/services/authService";
 export default {
   name: "CrmKanban",
   components: {
@@ -36,7 +37,8 @@ export default {
   setup() {
     const { t } = useI18n();
     const toast = useToast();
-    const stages = ref(kanbanStages);
+    // const stages = ref(kanbanStages);
+    const stages = ref([]);
     const whatsappModalRef = ref(null);
 
     const filters = ref({
@@ -51,7 +53,28 @@ export default {
       modifiedEnd: "",
       status: [],
     });
+    const fetchStages = async () => {
+      try {
+        const response = await getDealsKanban();
+        console.log(response.data);
 
+        if (Array.isArray(response.data.data)) {
+          stages.value = response.data.data.map((stage) => ({
+            id: stage.id,
+            name: stage.name,
+            description: stage.description || null,
+            color_code: stage.color_code,
+            deals: stage.deals || [],
+          }));
+          toast.success(t("success.loadKanban"));
+        } else {
+          toast.error(t("error.loadKanban"));
+        }
+      } catch (error) {
+        console.error("Error fetching stages:", error);
+        toast.error(t("error.loadKanban"));
+      }
+    };
     const applyFilters = async (newFilters) => {
       try {
         filters.value = { ...newFilters };
@@ -157,6 +180,7 @@ export default {
     // };
     onMounted(async () => {
       try {
+        await fetchStages();
         window.addEventListener("contextmenu", handleRightClick);
         // toast.success("تم تحميل لوحة كانبان بنجاح", {
         //   timeout: 3000,

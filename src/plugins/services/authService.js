@@ -96,6 +96,14 @@ export const bulkDeleteDeals = async (ids) => {
 // };
 
 export const deleteDeals = (ids) => axios.delete(`/deals/${ids}`);
+// export const updateDealStage = async (dealId, newStageId) =>{
+//   return await axios.put(`/deals/${dealId}`, stage_id: newStageId);
+// }
+export const updateDealStage = (dealId, stageId) => {
+  return axios.put(`/deals/${dealId}`, {
+    stage_id: stageId,
+  });
+};
 
 // Get All Sources
 export const getSources = () => axios.get("/sources");
@@ -222,4 +230,8 @@ export const uploadFiles = async (formData) => {
       "Content-Type": "multipart/form-data",
     },
   });
+};
+//getDealsKanban
+export const getDealsKanban = async () => {
+  return await axios.get("/kanban/deals");
 };

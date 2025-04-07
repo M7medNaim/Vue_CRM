@@ -54,7 +54,7 @@
       <Column :header="'#'">
         <template #body="slotProps">
           {{ slotProps.index + 1 + currentPage * rowsPerPage }}
-      </template>
+        </template>
       </Column>
       <Column
         field="name"
@@ -81,7 +81,7 @@
               ? slotProps.data.phones
               : "N/A"
           }}
-      </template>
+        </template>
       </Column>
       <Column :header="t('contacts-table-header-actions')">
         <template #body="slotProps">
@@ -90,16 +90,16 @@
               class="btn btn-sm btn-primary"
               @click="editItem(slotProps.data)"
             >
-            <i class="fas fa-edit"></i>
-          </button>
+              <i class="fas fa-edit"></i>
+            </button>
             <button
               class="btn btn-sm btn-danger"
               @click="removeContact(slotProps.data.id)"
             >
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </template>
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </template>
       </Column>
 
       <template #loading>
@@ -295,7 +295,7 @@ export default {
         const response = await showContact(item.id);
         const contactDetails = response.data.data;
 
-      if (contactCreateModalRef.value) {
+        if (contactCreateModalRef.value) {
           contactCreateModalRef.value.openModal({
             id: contactDetails.id,
             name: contactDetails.name,

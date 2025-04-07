@@ -9,10 +9,12 @@
             :key="stage.id"
             class="stage-header position-relative"
             @click="openUpdateStage(stage)"
+            :title="stage.description || stage.name"
           >
+            <!-- :style="{ backgroundColor: stage.color || defaultColor }" -->
             <div
               class="stageName py-1 p-0 text-white"
-              :style="{ backgroundColor: stage.color || defaultColor }"
+              :style="{ backgroundColor: stage.color_code }"
             >
               {{ stage.name }}
             </div>
@@ -34,6 +36,7 @@
               class="deal-list"
               @start="drag = true"
               @end="handleDragEnd"
+              @change="handleDragChange($event, stage.id)"
             >
               <template #item="{ element: deal }">
                 <CustomerCard :deal="deal" @click="openDealDataCard" />
@@ -78,6 +81,9 @@ import draggable from "vuedraggable";
 import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
+import { useToast } from "vue-toastification";
+import { updateDealStage } from "@/plugins/services/authService";
+import { useI18n } from "vue-i18n";
 
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
@@ -113,10 +119,45 @@ export default {
     const logs = ref([]);
     const comments = ref([]);
     const tasks = ref([]);
+    const toast = useToast();
+    const { t } = useI18n();
 
     const isTasksView = computed(() => route.path === "/crm-tasks");
 
     const moveSound = new Audio(moveCardSound);
+
+    const handleDragChange = async (event, newStageId) => {
+      if (event.added) {
+        const deal = event.added.element;
+        const oldStageId = deal.stage_id;
+
+        try {
+          console.log("Updating deal:", deal.id, "to stage:", newStageId);
+          await updateDealStage(deal.id, newStageId);
+
+          deal.stage_id = newStageId;
+          toast.success(t("success.dealMoved"));
+        } catch (error) {
+          console.error("Error updating deal stage:", error.response?.data);
+
+          const oldStage = props.stages.find((s) => s.id === oldStageId);
+          if (oldStage) {
+            const currentStage = props.stages.find((s) => s.id === newStageId);
+            if (currentStage) {
+              const dealIndex = currentStage.deals.findIndex(
+                (d) => d.id === deal.id
+              );
+              if (dealIndex !== -1) {
+                const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
+                oldStage.deals.push(removedDeal);
+              }
+            }
+          }
+
+          toast.error(t("error.dealMoveFailed"));
+        }
+      }
+    };
 
     const handleDragEnd = (evt) => {
       if (evt.from !== evt.to) {
@@ -392,6 +433,7 @@ export default {
       logs,
       comments,
       tasks,
+      handleDragChange,
     };
   },
 };

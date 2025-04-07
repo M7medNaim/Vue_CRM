@@ -18,7 +18,7 @@
       <div
         class="col-12 d-flex justify-content-between align-i tems-center fs-7 mb-1 p-0"
       >
-        <span class="fw-normal text-secondary">{{ deal.phone }}</span>
+        <span class="fw-normal text-secondary">{{ deal.phone.phone }}</span>
         <svg
           style="width: 14px; padding-bottom: 3px"
           xmlns="http://www.w3.org/2000/svg"
@@ -29,22 +29,31 @@
             fill="green"
           />
         </svg>
+        {{ deal.source_id }}
       </div>
 
       <!-- النجوم -->
       <div class="col-12 fs-8 mb-1 p-0">
-        <i class="fa-solid fa-star text-gold"></i>
+        <!-- <i class="fa-solid fa-star text-gold"></i>
         <i class="fa-solid fa-star text-gold"></i>
         <i class="fa-solid fa-star text-gold"></i>
         <i class="fa-solid fa-star text-gold"></i>
         <i class="fa-solid fa-star text-gold"></i>
         <i class="fa-solid fa-star text-lightgray"></i>
-        <i class="fa-solid fa-star text-lightgray"></i>
+        <i class="fa-solid fa-star text-lightgray"></i> -->
+        <template v-for="index in 7" :key="index">
+          <i
+            class="fa-solid fa-star"
+            :class="
+              index <= (deal.rating || 0) ? 'text-gold' : 'text-lightgray'
+            "
+          ></i>
+        </template>
       </div>
     </div>
 
     <!-- ملاحظة إدارية -->
-    <div v-if="deal.attention" class="col-12 pt-1">
+    <div v-if="deal.note" class="col-12 pt-1">
       <div class="notes">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <span class="px-2">{{ t("kanban-deal-alert-attention") }}</span>
@@ -57,17 +66,17 @@
       <span class="text-success fs-7 pe-1"
         >{{ t("kanban-deal-label-createdat") }}:</span
       >
-      <p class="fs-7">{{ deal.created_at }}</p>
+      <p class="fs-7">{{ formatDate(deal.phone?.created_at) }}</p>
     </div>
     <div class="col-12 d-flex">
       <span class="text-black-50 fs-7 pe-1"
         >{{ t("kanban-deal-label-updatedat") }}:</span
       >
-      <p class="fs-7">{{ deal.last_updated }}</p>
+      <p class="fs-7">{{ formatDate(deal.phone?.updated_at) }}</p>
     </div>
 
     <div class="col-12">
-      <span class="fs-7 fw-medium">{{ deal.representative }}</span>
+      <span class="fs-7 fw-medium">{{ deal.responsible_user.name }}</span>
     </div>
   </div>
 </template>
@@ -79,7 +88,18 @@ export default {
   name: "CustomerCard",
   setup() {
     const { t } = useI18n();
-    return { t };
+    const formatDate = (dateString) => {
+      if (!dateString) return "";
+
+      const date = new Date(dateString);
+
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+
+      return `${day}/${month}/${year}`;
+    };
+    return { t, formatDate };
   },
   props: {
     deal: {
