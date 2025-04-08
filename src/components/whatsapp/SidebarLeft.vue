@@ -31,21 +31,21 @@
               @click="clearSearch"
               class="btnCloseSearch bg-transparent border-0 position-absolute text-danger d-flex justify-content-center align-items-center gap-1 fs-5"
             >
-              <span>{{ $t("whatsapp.closeSearch") }}</span>
+              <span>Close</span>
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
         </div>
       </div>
-      <div class="chat-list position-relative overflow-auto h-100">
+      <div class="chat-list position-relative overflow-auto">
         <div
-          class="chat d-flex justify-content-end align-items-center position-relative w-100 px-3 pt-2 pb-3 border-1 border-bottom border-secondary-subtle cursor-pointer"
+          class="chat d-flex justify-content-end align-items-center position-relative w-100 px-3 pt-2 border-1 border-bottom border-secondary-subtle cursor-pointer"
           v-for="(chat, index) in filteredChats"
           :key="index"
           @click="openChat(chat, index)"
           :class="{ active: chat.isActive }"
         >
-          <div class="imgBx position-relative overflow-hidden h-25 me-2">
+          <div class="imgBx position-relative overflow-hidden h-25 me-2 mb-4">
             <img
               :src="chat.img"
               alt="user image"
@@ -54,7 +54,7 @@
           </div>
           <div class="details position-relative w-100">
             <div class="head pe-2 d-flex justify-content-between">
-              <h4 class="name fs-6 fw-medium text-black pt-2">
+              <h4 class="name fs-6 fw-medium text-black">
                 {{ chat.name }}
               </h4>
               <span class="time text-success fst-normal">{{ chat.time }}</span>
@@ -62,8 +62,8 @@
             <div
               class="msgs d-flex justify-content-between align-items-center text-secondary"
             >
-              <p class="msg pe-2 overflow-hidden fst-normal text-truncate">
-                {{ chat.message }}
+              <p class="msg pe-2 text-truncate" :title="chat.message">
+                {{ truncatedMessage(chat.message) }}
               </p>
               <div class="d-flex align-items-center gap-3">
                 <b
@@ -83,209 +83,25 @@
           </div>
         </div>
       </div>
-      <div ref="labelModal" class="modal fade" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="row pt-2">
-              <div class="col-6">
-                <h5 class="modal-title text-end">Label Chat</h5>
-              </div>
-              <div class="col-6 text-start">
-                <button
-                  type="button"
-                  class="btn-close border-0 bg-transparent"
-                  @click="hideBootstrapModal"
-                ></button>
-              </div>
-            </div>
-            <div class="modal-body">
-              <input
-                v-model="newLabel"
-                type="text"
-                class="form-control"
-                style="outline: none"
-              />
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary border-0"
-                @click="hideBootstrapModal"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                class="btn btn-success border-0"
-                @click="setLabel"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { Modal } from "bootstrap";
+import {
+  getconversations,
+  getMessageConv,
+} from "@/plugins/services/authService";
 export default {
   name: "SidebarLeft",
   data() {
     return {
       searchQuery: "",
-      chats: [
-        {
-          img: require("@/assets/whatsappImage/img6.jpg"),
-          name: "Ahmed Samy",
-          time: "09:25",
-          message: "مساء الخير",
-          unread: true,
-          unreadCount: 3,
-          isActive: false,
-          pinned: false,
-          label: "",
-          messages: [
-            {
-              type: "msg-me",
-              text: "https://picsum.photos/1000/1000",
-              time: "12:15",
-              isCopied: false,
-              isImage: true,
-            },
-            {
-              type: "msg-frnd",
-              text: "https://picsum.photos/1000/1000",
-              time: "12:16",
-              isCopied: false,
-              isImage: true,
-            },
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
-            {
-              type: "msg-frnd",
-              text: "أهلاً بك",
-              time: "12:16",
-              isCopied: false,
-            },
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
-            {
-              type: "msg-frnd",
-              text: "أهلاً بك",
-              time: "12:16",
-              isCopied: false,
-            },
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
-            {
-              type: "msg-frnd",
-              text: "أهلاً بك",
-              time: "12:16",
-              isCopied: false,
-            },
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
-            {
-              type: "msg-frnd",
-              text: "أهلاً بك",
-              time: "12:16",
-              isCopied: false,
-            },
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
-            {
-              type: "msg-frnd",
-              text: "أهلاً بك",
-              time: "12:16",
-              isCopied: false,
-            },
-            { type: "msg-me", text: "مرحباً!", time: "12:15", isCopied: false },
-            {
-              type: "msg-frnd",
-              text: "أهلاً بك",
-              time: "12:16",
-              isCopied: false,
-            },
-          ],
-          selectedChat: null,
-          newLabel: "",
-          modalInstance: null,
-        },
-        {
-          img: require("@/assets/whatsappImage/img1.jpg"),
-          name: "Ibrahem Ali",
-          time: "10:00",
-          message: "كيف حالك؟",
-          unread: false,
-          unreadCount: 0,
-          isActive: false,
-          pinned: false,
-          label: "",
-          messages: [
-            {
-              type: "msg-me",
-              text: "كيف حالك؟",
-              time: "10:30",
-              isCopied: false,
-            },
-            {
-              type: "msg-frnd",
-              text: "أنا بخير",
-              time: "10:31",
-              isCopied: false,
-            },
-            {
-              type: "msg-me",
-              text: "كيف حالك؟",
-              time: "10:30",
-              isCopied: false,
-            },
-            {
-              type: "msg-frnd",
-              text: "أنا بخير",
-              time: "10:31",
-              isCopied: false,
-            },
-            {
-              type: "msg-me",
-              text: "كيف حالك؟",
-              time: "10:30",
-              isCopied: false,
-            },
-            {
-              type: "msg-frnd",
-              text: "أنا بخير",
-              time: "10:31",
-              isCopied: false,
-            },
-            {
-              type: "msg-me",
-              text: "كيف حالك؟",
-              time: "10:30",
-              isCopied: false,
-            },
-            {
-              type: "msg-frnd",
-              text: "أنا بخير",
-              time: "10:31",
-              isCopied: false,
-            },
-            {
-              type: "msg-me",
-              text: "كيف حالك؟",
-              time: "10:30",
-              isCopied: false,
-            },
-            {
-              type: "msg-frnd",
-              text: "أنا بخير",
-              time: "10:31",
-              isCopied: false,
-            },
-          ],
-          selectedChat: null,
-          newLabel: "",
-          modalInstance: null,
-        },
-      ],
+      chats: [],
+      selectedChat: null,
+      newLabel: "",
+      modalInstance: null,
     };
   },
   computed: {
@@ -301,7 +117,10 @@ export default {
       return this.chats
         .filter((chat) => {
           const lowerQuery = this.searchQuery.toLowerCase();
-          return chat.name.toLowerCase().includes(lowerQuery);
+          return (
+            chat.name.toLowerCase().includes(lowerQuery) ||
+            chat.message.toLowerCase().includes(lowerQuery)
+          );
         })
         .sort((a, b) => {
           if (a.pinned && !b.pinned) return -1;
@@ -311,23 +130,90 @@ export default {
     },
   },
   methods: {
-    openChat(chat, index) {
-      if (index >= 0 && index < this.chats.length) {
-        this.chats.forEach((item) => {
-          item.isActive = false;
+    async fetchConversations() {
+      try {
+        const response = await getconversations();
+        console.log("API conversations response:", response.data);
+
+        this.chats = response.data.data.map((conversation) => {
+          const lastMessage = conversation.last_message;
+          return {
+            id: conversation.id,
+            created_at: conversation.created_at,
+            img: conversation.img || require("@/assets/whatsappImage/img6.jpg"),
+            name: conversation.name || conversation.contact?.name,
+            time: lastMessage
+              ? new Date(lastMessage.created_at).toLocaleTimeString("ar-EG", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                  timeZone: "UTC",
+                })
+              : "",
+            created_at_last_message: lastMessage?.created_at || "",
+            message: lastMessage?.text_body || "",
+            sender: lastMessage?.conversation_member?.name || "",
+            unread: false,
+            unreadCount: 0,
+            isActive: false,
+            pinned: false,
+            label: "",
+            messages: [],
+            conversation_id: conversation.id,
+          };
         });
+        console.log("Mapped chats:", this.chats);
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      }
+    },
+    async fetchMessages(conversationId, chatObj) {
+      try {
+        const response = await getMessageConv(conversationId);
+        console.log("Messages response:", response.data);
+        if (response.data && response.data.data) {
+          chatObj.messages = response.data.data.map((msg) => ({
+            id: msg.id,
+            type: msg.status === "sent" ? "msg-me" : "msg-frnd",
+            text: msg.text_body,
+            time: new Date(msg.created_at).toLocaleTimeString("ar-EG", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "UTC",
+            }),
+            created_at: msg.created_at,
+            sender: msg.conversation_member?.name || "",
+            isCopied: false,
+            isImage: msg.type === "media",
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        chatObj.messages = [];
+      }
+    },
 
-        this.chats[index].isActive = true;
+    async openChat(chat, index) {
+      try {
+        if (index >= 0 && index < this.chats.length) {
+          console.log("Opening chat:", chat);
+          console.log("Chat ID:", chat.id);
+          this.chats.forEach((item) => {
+            item.isActive = false;
+          });
 
-        this.selectedChat = this.chats[index];
-        this.newLabel = this.selectedChat.name;
+          this.chats[index].isActive = true;
 
-        this.chats[index].unread = false;
-        this.chats[index].unreadCount = 0;
-
-        this.$emit("select-chat", chat);
-      } else {
-        console.error("The chat does not exist");
+          this.$emit("select-chat", {
+            ...chat,
+            id: chat.id,
+            isActive: true,
+            messages: [],
+          });
+        }
+      } catch (error) {
+        console.error("Error opening chat:", error);
       }
     },
     markAsUnread(chat) {
@@ -365,32 +251,6 @@ export default {
         chat.isActive = true;
       }
     },
-    openLabelModal() {
-      if (this.selectedChat) {
-        this.newLabel = this.selectedChat.name;
-        this.showBootstrapModal();
-      }
-    },
-    setLabel() {
-      if (this.selectedChat) {
-        this.selectedChat.name = this.newLabel;
-        this.hideBootstrapModal();
-      }
-    },
-    showBootstrapModal() {
-      const modalElement = this.$refs.labelModal;
-      if (modalElement) {
-        const modal = new Modal(modalElement);
-        modal.show();
-      }
-    },
-    hideBootstrapModal() {
-      const modalElement = this.$refs.labelModal;
-      if (modalElement) {
-        const modal = Modal.getInstance(modalElement);
-        modal.hide();
-      }
-    },
     deleteChat() {
       const activeChat = this.chats.find((chat) => chat.isActive);
       if (activeChat) {
@@ -406,8 +266,17 @@ export default {
     clearSearch() {
       this.searchQuery = "";
     },
+    truncatedMessage(message) {
+      if (!message) return "";
+      const maxLength = 40;
+      if (message.length > maxLength) {
+        return message.substring(0, maxLength) + "...";
+      }
+      return message;
+    },
   },
   mounted() {
+    this.fetchConversations();
     if (this.$refs.labelModal) {
       this.modalInstance = new Modal(this.$refs.labelModal);
     }
@@ -458,7 +327,12 @@ export default {
   -o-border-radius: 8px;
 }
 /* end scroll style */
-
+.left-side .chat-list {
+  height: 92vh;
+}
+.left-side .chat-list .chat {
+  cursor: pointer;
+}
 .left-side .chat-list .chat.active {
   background: #ebebeb;
 }
@@ -487,5 +361,27 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 0.75rem;
+}
+.message-truncate {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.message-truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.2em;
+  max-height: 2.4em;
+}
+
+.message-truncate:hover {
+  cursor: pointer;
 }
 </style>

@@ -2,12 +2,13 @@
   <p
     class="date fs-6 text-center bg-secondary text-white py-1 px-3 rounded-3 position-sticky start-50 z-3"
   >
-    {{ $t("whatsapp.date") }}
+    <!-- {{ formatMessageDate(messages[0]?.created_at) }} -->
+    {{ currentDate }}
   </p>
   <div
     class="msg position-relative w-100 d-flex my-1 pb-2"
-    v-for="(message, index) in filteredMessages"
-    :key="index"
+    v-for="(message, index) in messages"
+    :key="message.id"
     :class="message.type"
   >
     <div
@@ -75,6 +76,7 @@ export default {
     messages: {
       type: Array,
       required: true,
+      default: () => [],
     },
     searchQuery: {
       type: String,
@@ -84,6 +86,8 @@ export default {
   data() {
     return {
       activeMenu: null,
+      currentDate: "",
+      observer: null,
     };
   },
   computed: {
@@ -120,6 +124,66 @@ export default {
     closeMenu() {
       this.activeMenu = null;
     },
+    formatMessageDate(dateString) {
+      if (!dateString) return "";
+
+      const date = new Date(dateString);
+      return date.toLocaleDateString("ar-EG", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        timeZone: "UTC",
+      });
+    },
+    setupIntersectionObserver() {
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const messageIndex = this.$refs.messageElements.findIndex(
+                (el) => el === entry.target
+              );
+              if (messageIndex !== -1) {
+                this.currentDate = this.formatMessageDate(
+                  this.messages[messageIndex].created_at
+                );
+              }
+            }
+          });
+        },
+        {
+          threshold: 1.0,
+          root: this.$parent.$refs.chatBox,
+        }
+      );
+
+      this.$nextTick(() => {
+        if (this.$refs.messageElements) {
+          this.$refs.messageElements.forEach((element) => {
+            this.observer.observe(element);
+          });
+        }
+      });
+    },
+    handleScroll() {
+      if (this.$refs.messageElements && this.$refs.messageElements.length) {
+        const chatBox = this.$parent.$refs.chatBox;
+        const scrollTop = chatBox.scrollTop;
+        const elements = this.$refs.messageElements;
+
+        for (let i = 0; i < elements.length; i++) {
+          const element = elements[i];
+          const elementTop = element.offsetTop;
+
+          if (elementTop >= scrollTop) {
+            this.currentDate = this.formatMessageDate(
+              this.messages[i].created_at
+            );
+            break;
+          }
+        }
+      }
+    },
   },
   directives: {
     clickOutside: {
@@ -134,6 +198,36 @@ export default {
       unmounted(el) {
         document.body.removeEventListener("click", el.clickOutsideEvent);
       },
+    },
+  },
+  mounted() {
+    if (this.messages.length > 0) {
+      this.currentDate = this.formatMessageDate(this.messages[0].created_at);
+    }
+
+    this.$parent.$refs.chatBox.addEventListener("scroll", this.handleScroll);
+
+    this.setupIntersectionObserver();
+  },
+  beforeUnmount() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    this.$parent.$refs.chatBox.removeEventListener("scroll", this.handleScroll);
+  },
+  watch: {
+    messages: {
+      handler() {
+        this.$nextTick(() => {
+          if (this.messages.length > 0) {
+            this.currentDate = this.formatMessageDate(
+              this.messages[0].created_at
+            );
+            this.setupIntersectionObserver();
+          }
+        });
+      },
+      immediate: true,
     },
   },
 };

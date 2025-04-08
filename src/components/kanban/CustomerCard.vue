@@ -29,7 +29,7 @@
             fill="green"
           />
         </svg>
-        {{ deal.source_id }}
+        <!-- {{ deal.source_id }} -->
       </div>
 
       <!-- النجوم -->

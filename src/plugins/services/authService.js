@@ -235,3 +235,26 @@ export const uploadFiles = async (formData) => {
 export const getDealsKanban = async () => {
   return await axios.get("/kanban/deals");
 };
+// Get Conversations
+export const getconversations = () => axios.get("/whatsapp");
+// Get message by Conversation id
+export const getMessageConv = async (id) => {
+  return await axios.get(`/whatsapp/${id}`);
+};
+// send message
+// export const sendMessage = (formData) => {
+//   return axios.post("/whatsapp/send", formData);
+// };
+export const sendMessage = (messageData) => {
+  const formData = new FormData();
+
+  formData.append("text_body", messageData.text_body);
+
+  if (messageData.conversation_id) {
+    formData.append("conversation_id", messageData.conversation_id);
+  } else {
+    formData.append("to", messageData.to || "971557893319");
+  }
+
+  return axios.post("/whatsapp/send", formData);
+};

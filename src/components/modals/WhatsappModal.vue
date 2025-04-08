@@ -27,31 +27,87 @@
               v-if="selectedChat"
               @mark-as-unread="handleMarkAsUnread"
               @pin-chat="pinActiveChat"
-              :chats="chats"
               @open-label="handleOpenLabel"
               @delete-chat="handleDeleteChat"
+              @new-message="handleNewMessage"
             />
           </div>
         </div>
       </div>
     </div>
   </div>
+  <LabelModal
+    ref="labelModal"
+    :chat-name="selectedChat?.name"
+    @save-label="handleSaveLabel"
+  />
 </template>
 
 <script>
 import SidebarLeft from "@/components/whatsapp/SidebarLeft.vue";
 import SidebarRight from "@/components/whatsapp/SidebarRight.vue";
+import { getMessageConv } from "@/plugins/services/authService";
+import LabelModal from "@/components/whatsapp/labelWhatsapp.vue";
 export default {
   name: "WhatsappModal",
-  components: { SidebarLeft, SidebarRight },
+  components: { SidebarLeft, SidebarRight, LabelModal },
   data() {
     return {
       selectedChat: null,
     };
   },
   methods: {
-    setSelectedChat(chat) {
-      this.selectedChat = chat;
+    handleNewMessage(newMessage) {
+      if (this.selectedChat) {
+        this.selectedChat = {
+          ...this.selectedChat,
+          messages: [...(this.selectedChat.messages || []), newMessage],
+        };
+      }
+    },
+    async setSelectedChat(chat) {
+      try {
+        console.log("Selected chat:", chat);
+        const chatId = chat.id || chat.conversation_id;
+
+        if (!chatId) {
+          console.error("No chat ID found!");
+          return;
+        }
+
+        console.log("Fetching messages for chat ID:", chatId);
+        const response = await getMessageConv(chatId);
+        console.log("Messages API Response:", response.data);
+
+        if (response.data && response.data.data) {
+          const messages = response.data.data.map((msg) => ({
+            id: msg.id,
+            type: msg.status === "sent" ? "msg-me" : "msg-frnd",
+            text: msg.text_body,
+            time: new Date(msg.created_at).toLocaleTimeString("ar-EG", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "UTC",
+            }),
+            created_at: msg.created_at,
+            sender: msg.conversation_member?.name || "",
+            isCopied: false,
+            isImage: msg.type === "media",
+          }));
+
+          this.selectedChat = {
+            ...chat,
+            id: chatId,
+            messages,
+          };
+
+          console.log("Updated selectedChat:", this.selectedChat);
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        this.selectedChat = chat;
+      }
     },
     handleMarkAsUnread() {
       const activeChat = this.$refs.leftSidebar.chats.find(
@@ -69,12 +125,18 @@ export default {
         this.$refs.leftSidebar.pinChat(activeChat);
       }
     },
-    handleOpenLabel() {
-      this.$refs.leftSidebar.openLabelModal();
-    },
+
     handleDeleteChat() {
       this.$refs.leftSidebar.deleteChat();
       this.selectedChat = null;
+    },
+    handleOpenLabel() {
+      this.$refs.labelModal.showModal();
+    },
+    handleSaveLabel(newName) {
+      if (this.selectedChat) {
+        this.selectedChat.name = newName;
+      }
     },
   },
 };

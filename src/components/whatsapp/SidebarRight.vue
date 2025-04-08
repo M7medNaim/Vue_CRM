@@ -71,7 +71,7 @@
         ref="chatBox"
       >
         <ChatBubbles
-          :messages="filteredMessages"
+          :messages="chatMessages"
           :searchQuery="searchQuery"
           @delete-message="handleDeleteMessage"
         />
@@ -82,45 +82,30 @@
           :class="{ 'show-list': showListVisible }"
         >
           <ul class="list-unstyled p-0">
-            <li>
-              <a
-                class="text-primary text-decoration-none"
-                href="#"
-                @click="handleArchiveChat"
-                >{{ $t("whatsapp.archiveChat") }}</a
-              >
+            <li @click="handleArchiveChat">
+              <a class="text-primary text-decoration-none" href="#">{{
+                $t("whatsapp.archiveChat")
+              }}</a>
             </li>
-            <li>
-              <a
-                class="text-primary text-decoration-none"
-                href="#"
-                @click="handlePinChat"
-                >{{ $t("whatsapp.pinChat") }}</a
-              >
+            <li @click="handlePinChat">
+              <a class="text-primary text-decoration-none" href="#">{{
+                $t("whatsapp.pinChat")
+              }}</a>
             </li>
-            <li>
-              <a
-                class="text-primary text-decoration-none"
-                href="#"
-                @click="handleLabelClick"
-                >{{ $t("whatsapp.labelChat") }}</a
-              >
+            <li @click="handleLabelClick">
+              <a class="text-primary text-decoration-none" href="#">{{
+                $t("whatsapp.labelChat")
+              }}</a>
             </li>
-            <li>
-              <a
-                class="text-primary text-decoration-none"
-                href="#"
-                @click="$emit('mark-as-unread', chat)"
-                >{{ $t("whatsapp.markAsUnread") }}</a
-              >
+            <li @click="$emit('mark-as-unread', chat)">
+              <a class="text-primary text-decoration-none" href="#">{{
+                $t("whatsapp.markAsUnread")
+              }}</a>
             </li>
-            <li>
-              <a
-                class="text-primary text-decoration-none"
-                href="#"
-                @click="handleDeleteChat"
-                >{{ $t("whatsapp.deleteChat") }}</a
-              >
+            <li @click="handleDeleteChat">
+              <a class="text-primary text-decoration-none" href="#">{{
+                $t("whatsapp.deleteChat")
+              }}</a>
             </li>
           </ul>
         </div>
@@ -130,6 +115,7 @@
         <MessageInput
           @send-message="receiveMessage"
           @scroll-to-bottom="scrollToBottom"
+          :conversation-id="selectedChat.id"
         />
       </div>
     </div>
@@ -139,71 +125,119 @@
 <script>
 import MessageInput from "@/components/whatsapp/MessageInput.vue";
 import ChatBubbles from "@/components/whatsapp/ChatBubbles.vue";
+import { sendMessage } from "@/plugins/services/authService";
 export default {
-  emits: ["mark-as-unread", "pin-chat", "open-label", "delete-chat"],
+  emits: [
+    "mark-as-unread",
+    "pin-chat",
+    "open-label",
+    "delete-chat",
+    "new-message",
+  ],
   components: {
     MessageInput,
     ChatBubbles,
   },
   name: "SidebarRight",
   props: {
-    selectedChat: Object,
+    selectedChat: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       isSearchBarVisible: false,
       showListVisible: false,
-      newMessage: "",
       searchQuery: "",
-      localSelectedChat: { ...this.selectedChat },
     };
+  },
+  computed: {
+    chatMessages() {
+      return this.selectedChat?.messages || [];
+    },
   },
   watch: {
     selectedChat: {
-      handler(newVal) {
-        this.localSelectedChat = { ...newVal };
+      immediate: true,
+      handler(newChat) {
+        if (newChat) {
+          console.log("Selected chat in SidebarRight:", newChat);
+          console.log("Messages:", newChat.messages);
+        }
+      },
+    },
+    "selectedChat.messages": {
+      handler() {
+        this.$nextTick(() => {
+          this.scrollToBottom();
+        });
       },
       immediate: true,
     },
   },
-  computed: {
-    messages() {
-      return this.localSelectedChat?.messages || [];
-    },
-    filteredMessages() {
-      if (!this.searchQuery) {
-        return this.messages;
+  methods: {
+    // receiveMessage(message) {
+    //   if (this.selectedChat) {
+    //     const newMessage = {
+    //       id: Date.now(),
+    //       type: "msg-me",
+    //       text: message,
+    //       time: new Date().toLocaleTimeString([], {
+    //         hour: "2-digit",
+    //         minute: "2-digit",
+    //       }),
+    //       sender: "You",
+    //       isCopied: false,
+    //     };
+
+    //     this.$emit("new-message", newMessage);
+    //     this.scrollToBottom();
+    //   }
+    // },
+    async receiveMessage(messageData) {
+      if (!messageData.text_body) {
+        alert("نص الرسالة مطلوب");
+        return;
       }
 
-      return this.messages.filter((message) => {
-        return message.text
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase());
-      });
-    },
-  },
-  methods: {
-    receiveMessage(message) {
-      const newMessage = {
-        type: "msg-me",
-        text: message,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
+      if (this.selectedChat) {
+        try {
+          const messageToSend = {
+            ...messageData,
+            conversation_id: this.selectedChat.id || null,
+          };
 
-      this.localSelectedChat.messages.push(newMessage);
-      this.scrollToBottom();
+          if (!messageToSend.conversation_id) {
+            messageToSend.to = "971557893319";
+            delete messageToSend.conversation_id;
+          }
+
+          const response = await sendMessage(messageToSend);
+
+          const newMessage = {
+            id: response.data.id || Date.now(),
+            type: "msg-me",
+            text: messageData.text_body,
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            created_at: new Date().toISOString(),
+            sender: "You",
+            isCopied: false,
+            conversation_id: this.selectedChat.id,
+          };
+
+          this.$emit("new-message", newMessage);
+          this.scrollToBottom();
+        } catch (error) {
+          console.error("Error sending message:", error);
+          alert("فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.");
+        }
+      }
     },
     scrollToBottom() {
-      // this.$nextTick(() => {
-      //   const chatMessages = this.$refs.chatBox.querySelectorAll(".msg");
-      //   const lastMessage = chatMessages[chatMessages.length - 1];
-      //   if (lastMessage) {
-      //     lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
-      //   }
-      // });
       this.$nextTick(() => {
         const chatBox = this.$refs.chatBox;
         chatBox.scrollTo({
@@ -223,14 +257,6 @@ export default {
       this.showListVisible = false;
     },
 
-    setActiveChat(index) {
-      this.activeChat = index;
-      const chat = this.chats[index];
-      if (chat.unread) {
-        chat.unread = false;
-        chat.unreadCount = 0;
-      }
-    },
     handlePinChat() {
       this.$emit("pin-chat");
     },
@@ -241,7 +267,7 @@ export default {
       this.$emit("delete-chat");
     },
     handleDeleteMessage(index) {
-      this.localSelectedChat.messages.splice(index, 1);
+      this.$emit("delete-message", index);
     },
   },
   directives: {
@@ -286,7 +312,9 @@ export default {
   pointer-events: none;
   z-index: 1;
 }
-
+li {
+  cursor: pointer;
+}
 .right-side .message-input {
   position: sticky;
   bottom: 2%;

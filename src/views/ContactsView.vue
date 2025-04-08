@@ -64,21 +64,27 @@
         field="nickname"
         :header="t('contacts-table-header-nickname')"
       ></Column> -->
-      <Column field="email" :header="t('contacts-table-header-email')"></Column>
+      <Column field="email" :header="t('contacts-table-header-email')">
+        <template #body="{ data }">
+          {{ data.email || "no-email" }}
+        </template></Column
+      >
       <!-- <Column
         field="address"
         :header="t('contacts-table-header-address')"
       ></Column> -->
-      <Column
-        field="country"
-        :header="t('contacts-table-header-country')"
-      ></Column>
+      <Column field="country" :header="t('contacts-table-header-country')">
+        <template #body="{ data }">
+          {{ data.country || "null" }}
+        </template></Column
+      >
 
       <Column :header="t('contacts-table-header-phone')">
         <template #body="slotProps">
           {{
-            slotProps.data.phones && slotProps.data.phones.length > 0
-              ? slotProps.data.phones
+            slotProps.data.phones?.[0]?.phone &&
+            slotProps.data.phones?.[0]?.phone.length > 0
+              ? slotProps.data.phones?.[0]?.phone
               : "N/A"
           }}
         </template>

@@ -162,11 +162,30 @@ export default {
     };
   },
   methods: {
-    sendMessage() {
+    // sendMessage() {
+    //   if (this.newMessage.trim() !== "") {
+    //     this.$emit("send-message", this.newMessage);
+    //     this.newMessage = "";
+    //     this.$emit("scroll-to-bottom");
+    //   }
+    // },
+    async sendMessage() {
       if (this.newMessage.trim() !== "") {
-        this.$emit("send-message", this.newMessage);
-        this.newMessage = "";
-        this.$emit("scroll-to-bottom");
+        try {
+          const messageData = {
+            text_body: this.newMessage.trim(),
+          };
+
+          if (this.$attrs.conversationId) {
+            messageData.conversation_id = this.$attrs.conversationId;
+          }
+
+          await this.$emit("send-message", messageData);
+          this.newMessage = "";
+          this.$emit("scroll-to-bottom");
+        } catch (error) {
+          console.error("Error preparing message:", error);
+        }
       }
     },
     toggleEmoji() {
