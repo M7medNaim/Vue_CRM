@@ -18,7 +18,7 @@
           <div class="col-12">
             <input
               type="text"
-              :placeholder="$t('whatsapp.searchConversation')"
+              placeholder="Search Here.."
               v-model="searchQuery"
               style="outline: none"
               class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
@@ -39,7 +39,7 @@
       </div>
       <div class="chat-list position-relative overflow-auto">
         <div
-          class="chat d-flex justify-content-end align-items-center position-relative w-100 px-3 pt-2 border-1 border-bottom border-secondary-subtle cursor-pointer"
+          class="chat d-flex justify-content-end align-items-center position-relative w-100 px-lg-3 pt-2 border-1 border-bottom border-secondary-subtle cursor-pointer"
           v-for="(chat, index) in filteredChats"
           :key="index"
           @click="openChat(chat, index)"
@@ -293,6 +293,13 @@ export default {
   top: 50%;
   transform: translate(0%, -50%);
 }
+@media (max-width: 850px) {
+  .left-side .inputSearch .searchIcon {
+    left: 8%;
+    top: 50%;
+    transform: translate(0%, -50%);
+  }
+}
 .left-side .inputSearch .btnCloseSearch {
   right: 5%;
   top: 50%;
@@ -345,6 +352,11 @@ export default {
   width: 70px;
 }
 
+@media (max-width: 850px) {
+  .left-side .chat-list .chat .details .head h4.name {
+    font-size: 12px !important;
+  }
+}
 .left-side .chat-list .chat .details .msg {
   display: -webkit-box;
   -webkit-line-clamp: 1;

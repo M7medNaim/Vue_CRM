@@ -11,8 +11,8 @@
     </div>
 
     <div v-else class="app overflow-hidden">
-      <div v-if="!$route.meta.hideNavigation" class="row">
-        <div :class="sidebarClass">
+      <div v-if="!$route.meta.hideNavigation" class="row g-0 flex-nowrap">
+        <div :class="['sidebar', sidebarClass, isSidebarCollapsed]">
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
 
@@ -66,10 +66,18 @@ export default {
 
   computed: {
     sidebarClass() {
-      return this.isSidebarCollapsed ? "col-1" : "col-2";
+      // return this.isSidebarCollapsed ? "col-1" : "col-2";
+      if (this.isSidebarCollapsed) {
+        return "col-auto";
+      }
+      return "col-sm-3 col-lg-auto";
     },
     headerClass() {
-      return this.isSidebarCollapsed ? "col-11" : "col-10";
+      // return this.isSidebarCollapsed ? "col-11" : "col-10";
+      if (this.isSidebarCollapsed) {
+        return "col";
+      }
+      return "col-sm-9 col-lg";
     },
     showNewsBar() {
       return (
@@ -93,6 +101,8 @@ export default {
       Cookies.remove("name");
       Cookies.remove("image");
       Cookies.remove("email");
+      Cookies.remove("user_role");
+      Cookies.remove("user_id");
       this.isLoggedIn = false;
       this.$router.push("/login");
     },

@@ -156,17 +156,30 @@ export default {
 <style scoped>
 .dropdown-menu {
   top: 40px;
-  left: -105px;
+  left: -90px;
   width: fit-content !important;
 }
 .profileImage img {
-  width: 55px;
-  height: 55px;
+  min-width: 45px;
+  width: 45px;
+  min-height: 45px;
+  height: 45px;
 }
 .dropdown-item {
   cursor: pointer;
 }
 .userEmail {
   font-size: 14px;
+}
+@media (max-width: 900px) {
+  .userEmail {
+    font-size: 12px;
+  }
+  .profileImage img {
+    min-width: 45px;
+    width: 45px;
+    min-height: 45px;
+    height: 45px;
+  }
 }
 </style>

@@ -237,6 +237,13 @@ export default {
   top: -8%;
   width: fit-content;
 }
+@media (max-width: 850px) {
+  .right-side .chatBx p.date {
+    top: -3%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
 
 .right-side .chatBx .msg .textMessage {
   max-width: 65%;

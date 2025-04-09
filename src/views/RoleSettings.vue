@@ -2,7 +2,7 @@
   <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
     <!-- Search and Add Role Section -->
     <div class="row mb-3">
-      <div class="col-6 col-md-4">
+      <div class="col-6 col-lg-4">
         <div class="position-relative inputSearch d-flex">
           <input
             type="text"
@@ -15,7 +15,7 @@
           ></i>
         </div>
       </div>
-      <div class="col-6 col-md-8">
+      <div class="col-6 col-lg-8">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal()">
             <span>{{ $t("settings-role-button-add-role") }}</span>

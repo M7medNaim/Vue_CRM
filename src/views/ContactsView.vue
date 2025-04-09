@@ -1,8 +1,8 @@
 <template>
-  <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
+  <div class="mt-4 pe-3 bg-white rounded-3 p-3 pb-0 me-2">
     <!-- Search and Filter Section -->
     <div class="row">
-      <div class="col-6 col-md-4">
+      <div class="col-8 col-md-7 col-lg-4">
         <div class="mb-3 position-relative inputSearch d-flex">
           <input
             type="text"
@@ -30,7 +30,7 @@
           </button>
         </div>
       </div>
-      <div class="col-6 col-md-8 mb-3">
+      <div class="col-4 col-md-5 col-lg-8 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
             <span>{{ t("contacts-button-add") }}</span>

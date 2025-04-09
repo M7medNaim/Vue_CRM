@@ -3,7 +3,7 @@
     class="sidebar vh-100 overflow-hidden text-white"
     :class="{ 'sidebar-collapsed': isCollapsed }"
   >
-    <div class="d-flex justify-content-start align-items-center p-2">
+    <div class="d-flex justify-content-start align-items-center ps-3">
       <div class="imgLogo me-2">
         <img
           src="@/assets/new-nokta-logo.png"
@@ -11,9 +11,9 @@
           alt=""
         />
       </div>
-      <span class="fw-bold" v-if="!isCollapsed">{{
-        $t("sidebar-heading")
-      }}</span>
+      <span class="pe-1" v-if="!isCollapsed"
+        >{{ $t("sidebar-heading") }}:
+      </span>
     </div>
     <div class="sidebar-items overflow-auto">
       <div
@@ -175,14 +175,24 @@ export default {
 
 <style scoped>
 .sidebar {
-  width: 250px;
+  width: 100%;
   transition: width 0.3s ease;
+  position: relative;
+  z-index: 1000;
 }
 
 .sidebar-collapsed {
   width: 70px;
 }
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
 
+[class^="col-"] {
+  padding-left: 0;
+  padding-right: 0;
+}
 .toggle-icon {
   cursor: pointer;
 }

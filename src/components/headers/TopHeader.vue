@@ -2,7 +2,7 @@
   <div class="top-bar pe-1 position-relative">
     <div class="row">
       <div
-        class="col-2 col-md-4 d-flex align-items-center text-white fs-6 pt-3"
+        class="col-2 col-md-3 d-flex align-items-center text-white fs-6 pt-1"
       >
         <span>{{ pageTitle }}</span>
         <router-link
@@ -11,7 +11,7 @@
             permissionStore.hasPermission(PERMISSIONS.ROLES_SETTINGS)
           "
           to="/role-settings"
-          class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
+          class="text-decoration-none ms-3 border-3 border-start border-white"
         >
           <span class="text-white px-3">{{
             $t("header-subnav-item-settings-role")
@@ -20,7 +20,7 @@
         <router-link
           v-if="$route.path === '/role-settings'"
           to="/general-setting"
-          class="text-decoration-none ms-3 border-3 border-start border-white pt-1"
+          class="text-decoration-none ms-3 border-3 border-start border-white"
         >
           <span class="text-white px-3">{{
             $t("header-subnav-item-settings-general")
@@ -28,7 +28,7 @@
         </router-link>
       </div>
       <div
-        class="col-4 col-md-4 d-flex justify-content-center align-items-center g-3"
+        class="col-4 col-md-4 d-flex justify-content-center align-items-center g-3 pt-0 mt-0"
       >
         <span class="fs-2 text-white">{{ currentTime }}</span>
         <button
@@ -45,7 +45,7 @@
           </transition>
         </button>
       </div>
-      <div class="col-6 col-md-4 d-flex justify-content-end align-items-center">
+      <div class="col-6 col-md-5 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
@@ -257,7 +257,10 @@ export default {
   height: 60px;
 }
 .user-img {
+  min-height: 40px;
+  min-width: 40px;
   height: 40px;
+  width: 40px;
 }
 .fade-enter-active,
 .fade-leave-active {

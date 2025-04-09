@@ -1,6 +1,6 @@
 <template>
   <div class="position-relative">
-    <div class="kanban-wrapper mt-4" ref="dealsContainer">
+    <div class="kanban-wrapper mt-3" ref="dealsContainer">
       <div class="kanban-board">
         <!-- Fixed Stages Header -->
         <div class="stages-header d-flex">
@@ -444,7 +444,7 @@ export default {
 <style scoped>
 .kanban-wrapper {
   width: 100%;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 150px);
   overflow-x: auto;
 }
 .kanban-board {
@@ -496,7 +496,8 @@ export default {
   width: 300px;
   min-width: 300px;
   height: 100%;
-  padding: 1rem 1rem 0 0;
+  padding: 0.5rem 1rem 0 0;
+  border-right: 2px dashed #eee;
 }
 
 .deal-list {

@@ -1,8 +1,7 @@
 <template>
-  <div class="mt-4 pe-3">
-    <!-- حقل البحث -->
+  <div class="mt-2 pe-2">
     <div class="row">
-      <div class="col-6">
+      <div class="col-8 col-md-8 col-lg-8">
         <div class="mb-3 position-relative inputSearch d-flex">
           <input
             type="text"
@@ -23,7 +22,7 @@
           </button>
         </div>
       </div>
-      <div class="col-6 mb-3">
+      <div class="col-4 col-md-4 col-lg-4 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
             {{ t("users-button-add-user") }}

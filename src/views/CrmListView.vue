@@ -1,8 +1,8 @@
 <template>
-  <div class="crm-container mt-3 me-2 bg-white rounded-3 p-3">
+  <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0">
     <div class="controls mb-3">
       <div class="row">
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-lg">
           <div class="input-group">
             <select
               v-model="selectedAction"
@@ -20,7 +20,7 @@
               </option>
             </select>
             <button
-              class="btn btn-primary input-group-text"
+              class="btn-actions btn btn-primary input-group-text"
               @click="executeAction"
               :disabled="!selectedAction || !selectedRows.length"
             >
@@ -30,7 +30,7 @@
             </button>
           </div>
         </div>
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-lg">
           <div class="input-group">
             <input
               type="text"
@@ -48,11 +48,17 @@
             </button>
           </div>
         </div>
-        <div class="col-sm-6 col-lg-4 text-end">
-          <button class="btn btn-primary rounded-2 me-2" @click="openDealModal">
+        <div class="col-sm-12 mt-2 mt-lg-0 col-lg text-end">
+          <button
+            class="btn btn-primary rounded-2 me-2 fs-7"
+            @click="openDealModal"
+          >
             <span>{{ t("kanban-button-add-deal") }}</span>
           </button>
-          <button class="btn btn-primary rounded-2" @click="openImportModal">
+          <button
+            class="btn btn-primary rounded-2 fs-7"
+            @click="openImportModal"
+          >
             <i class="fa-solid fa-upload me-2"></i>
             <span>{{ t("crmlist-button-import") }}</span>
           </button>
@@ -72,6 +78,7 @@
       @page="onPageChange"
       v-model:selection="selectedRows"
       selectionMode="multiple"
+      responsive="true"
     >
       <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
       <Column :header="'#'">
@@ -94,7 +101,11 @@
         </template>
       </Column> -->
       <Column field="note" :header="t('crmlist-table-header-notes')"></Column>
-      <Column field="created_at" :header="t('created at')"></Column>
+      <Column
+        class="d-none d-lg-table-cell"
+        field="created_at"
+        :header="t('created at')"
+      ></Column>
       <Column
         field="source"
         :header="t('crmlist-table-header-source')"
@@ -755,9 +766,15 @@ onUnmounted(() => {
 });
 </script>
 <style scoped>
+.crm-container {
+  width: 100%;
+}
 input:focus {
   box-shadow: none;
   border: 1px solid #333;
+}
+.btn-actions {
+  font-size: 14px;
 }
 select {
   border: 2px solid #eee;
@@ -765,12 +782,19 @@ select {
 select:focus {
   box-shadow: none;
   border: 2px solid #eee;
+  font-size: 14px;
 }
 :deep(.custom-table) {
   --easy-table-row-height: 45px;
   --easy-table-header-height: 30px;
   --easy-table-body-row-font-size: 15px;
   --easy-table-header-font-size: 13px;
+}
+/* media query for small screens */
+@media (max-width: 850px) {
+  .create-at-column {
+    display: none;
+  }
 }
 
 /* Better padding for action buttons */
@@ -843,5 +867,10 @@ select:focus {
 
 :deep(.p-datatable tbody td) {
   text-align: left;
+}
+@media (max-width: 850px) {
+  .fs-7 {
+    font-size: 14px;
+  }
 }
 </style>

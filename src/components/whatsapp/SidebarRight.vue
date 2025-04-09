@@ -5,7 +5,7 @@
         class="header position-relative px-2 border-1 border-end bg-success rounded-3"
       >
         <div class="row h-100">
-          <div class="col-4 h-100 pe-4">
+          <div class="col-5 col-lg-4 h-100">
             <div
               class="user-details d-flex justify-content-start align-items-center gap-2 h-100"
             >
@@ -16,11 +16,11 @@
                   class="img-fluid rounded-circle"
                 />
               </div>
-              <h6 class="my-auto text-white">{{ selectedChat.name }} <br /></h6>
+              <span class="my-auto text-white">{{ selectedChat.name }}</span>
             </div>
           </div>
           <div
-            class="col-8 search_list d-flex justify-content-end align-items-center ps-4 gap-2 fs-6 h-100"
+            class="col-7 col-lg-8 search_list d-flex justify-content-end align-items-center ps-4 gap-2 fs-6 h-100"
           >
             <div id="bxSearch" class="d-flex">
               <div
@@ -33,7 +33,7 @@
                   id="searchChat"
                   class="ms-3 border-0 text-white py-1 px-2 fs-6 w-100 ms-5 bg-transparent border-1 border-bottom border-white"
                   v-model="searchQuery"
-                  :placeholder="$t('whatsapp.searchChat')"
+                  placeholder="Search Here.."
                   style="outline: none"
                 />
               </div>
@@ -327,10 +327,16 @@ li {
   width: 98%;
   margin: 0 auto;
 }
-
+@media (max-width: 850px) {
+  .right-side .header {
+    height: 5vh;
+  }
+}
 .right-side .header .user-details .user-imgBx {
   width: 40px;
+  min-width: 40px;
   height: 40px;
+  min-height: 40px;
 }
 input::placeholder {
   color: white;

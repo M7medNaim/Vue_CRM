@@ -3,26 +3,24 @@
     <nav class="container-fluid p-0 pe-2">
       <div class="row">
         <div class="col-12">
-          <div
-            class="d-flex flex-wrap align-items-center justify-content-between"
-          >
+          <div class="d-flex flex-wrap align-items-center">
             <!-- Buttons Group -->
-            <div class="col-12 col-md-4 col-xl-auto mb-3 mb-xl-0">
+            <div class="col-md-auto mb-2 mb-xl-0">
               <button
-                class="btn btn-light px-4 py-2 fw-semibold me-2"
+                class="btn btn-light px-2 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
                 {{ t("kanban-button-add-deal") }}
               </button>
               <button
-                class="btn btn-light px-4 py-2 fw-semibold"
+                class="btn btn-light px-2 py-2 fw-semibold"
                 @click="openCrmKanban"
                 v-if="$route.name !== 'CrmKanban'"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-light px-4 py-2 fw-semibold"
+                class="btn btn-light px-2 py-2 fw-semibold"
                 @click="openCrmTasks"
                 v-if="
                   $route.name !== 'CrmTasks' &&
@@ -34,9 +32,7 @@
             </div>
 
             <!-- Search Form -->
-            <div
-              class="col-12 col-md-4 col-xl-auto flex-xl-grow-1 mx-xl-3 mb-3 mb-xl-0"
-            >
+            <div class="col-md-auto mb-2 mb-xl-0 mx-2 flex-grow-1">
               <div class="input-group">
                 <button class="btn btn-primary">
                   <i class="fa-solid fa-magnifying-glass"></i>
@@ -57,9 +53,9 @@
             </div>
 
             <!-- Tasks Status -->
-            <div class="col-12 col-md-7 col-lg-auto mb-3 mb-md-0 mb-lg-0 me-3">
+            <div class="col-md-auto mb-2 mb-md-0 me-2">
               <div class="btn-group w-100">
-                <div class="btn btn-light px-1">
+                <div class="btn btn-light px-0 px-lg-1">
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
                     >99+</span
@@ -68,14 +64,14 @@
                     t("kanban-task-status-overdue")
                   }}</span>
                 </div>
-                <div class="btn btn-light px-1">
+                <div class="btn btn-light px-0 px-lg-1">
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
                     >15</span
                   >
                   <span class="ms-1">{{ t("kanban-task-status-today") }}</span>
                 </div>
-                <div class="btn btn-light px-1">
+                <div class="btn btn-light px-0 px-lg-1">
                   <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
                     >4</span
                   >
@@ -83,7 +79,7 @@
                     t("kanban-task-status-tomorrow")
                   }}</span>
                 </div>
-                <div class="btn btn-light px-1">
+                <div class="btn btn-light px-1 px-lg-1">
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
                     >99+</span
@@ -95,20 +91,20 @@
               </div>
             </div>
             <!-- Import/Export Buttons -->
-            <div class="col-12 col-md-5 col-xl-auto d-flex gap-2 ms-1">
+            <div class="col-md-auto d-flex align-items-center gap-2">
               <button
                 class="btn btn-light flex-fill py-2"
                 @click="openImportModal"
               >
-                <span>{{ t("kanban-button-import") }}</span>
-                <i class="fa-solid fa-upload ms-1"></i>
+                <span class="fs-7">{{ t("kanban-button-import") }}</span>
+                <i class="fa-solid fa-upload ms-1 fs-7"></i>
               </button>
               <button
                 class="btn btn-light flex-fill py-2"
                 @click="openExportModal"
               >
-                <span>{{ t("kanban-button-export") }}</span>
-                <i class="fa-solid fa-download ms-1"></i>
+                <span class="fs-7">{{ t("kanban-button-export") }}</span>
+                <i class="fa-solid fa-download ms-1 fs-7"></i>
               </button>
             </div>
           </div>
@@ -231,6 +227,14 @@ input:focus {
 @media (max-width: 1200px) {
   .btn-group {
     display: flex !important;
+  }
+}
+@media (max-width: 850px) {
+  .btn-group .btn span {
+    font-size: 12px;
+  }
+  .fs-7 {
+    font-size: 12px;
   }
 }
 .btn {
