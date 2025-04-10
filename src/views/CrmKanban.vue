@@ -247,7 +247,7 @@ export default {
 
 <style scoped>
 .watsappIcon {
-  bottom: 4%;
+  bottom: 3.7%;
   right: 3%;
 }
 .textWhats {

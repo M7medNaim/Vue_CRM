@@ -17,19 +17,6 @@
     </div>
     <div class="sidebar-items overflow-auto">
       <div
-        v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
-        :title="$t('sidebar-nav-item-dashboard')"
-      >
-        <router-link to="/dashboard" class="text-decoration-none text-white">
-          <i class="fa-solid fa-house fs-5 me-2"></i>
-          <!-- <i class="fa-solid fa-chart-line"></i> -->
-          <span v-if="!isCollapsed">{{
-            $t("sidebar-nav-item-dashboard")
-          }}</span>
-        </router-link>
-      </div>
-      <div
         v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
         class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
         :title="$t('sidebar-nav-item-kanban')"
@@ -93,6 +80,20 @@
           }}</span>
         </div>
       </router-link>
+      <div
+        v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
+        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        :title="$t('sidebar-nav-item-dashboard')"
+      >
+        <router-link to="/dashboard" class="text-decoration-none text-white">
+          <!-- <i class="fa-solid fa-house fs-5 me-2"></i> -->
+          <i class="fa-solid fa-chart-pie fs-5 me-2"></i>
+          <!-- <i class="fa-solid fa-chart-line fs-5 me-2"></i> -->
+          <span v-if="!isCollapsed">{{
+            $t("sidebar-nav-item-dashboard")
+          }}</span>
+        </router-link>
+      </div>
       <router-link
         v-if="permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)"
         to="/general-setting"

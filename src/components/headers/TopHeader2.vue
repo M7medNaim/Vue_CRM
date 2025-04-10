@@ -7,20 +7,20 @@
             <!-- Buttons Group -->
             <div class="col-md-auto mb-2 mb-xl-0">
               <button
-                class="btn btn-light px-2 py-2 fw-semibold me-2"
+                class="btn btn-header text-white px-2 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
                 {{ t("kanban-button-add-deal") }}
               </button>
               <button
-                class="btn btn-light px-2 py-2 fw-semibold"
+                class="btn btn-header text-white px-2 py-2 fw-semibold"
                 @click="openCrmKanban"
                 v-if="$route.name !== 'CrmKanban'"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-light px-2 py-2 fw-semibold"
+                class="btn btn-header text-white px-2 py-2 fw-semibold"
                 @click="openCrmTasks"
                 v-if="
                   $route.name !== 'CrmTasks' &&
@@ -34,8 +34,8 @@
             <!-- Search Form -->
             <div class="col-md-auto mb-2 mb-xl-0 mx-2 flex-grow-1">
               <div class="input-group">
-                <button class="btn btn-primary">
-                  <i class="fa-solid fa-magnifying-glass"></i>
+                <button class="btn btn-header">
+                  <i class="fa-solid fa-magnifying-glass text-white"></i>
                 </button>
                 <input
                   type="text"
@@ -43,11 +43,11 @@
                   :placeholder="t('crmlist-placeholder-search')"
                 />
                 <button
-                  class="btn btn-primary"
+                  class="btn btn-header"
                   :title="t('kanban-modal-filter-heading')"
                   @click="openFilterModal"
                 >
-                  <i class="fa-solid fa-filter"></i>
+                  <i class="fa-solid fa-filter text-white"></i>
                 </button>
               </div>
             </div>
@@ -55,36 +55,38 @@
             <!-- Tasks Status -->
             <div class="col-md-auto mb-2 mb-md-0 me-2">
               <div class="btn-group w-100">
-                <div class="btn btn-light px-0 px-lg-1">
+                <div class="btn btn-header px-0 px-lg-1">
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
                     >99+</span
                   >
-                  <span class="ms-1">{{
+                  <span class="ms-1 text-white">{{
                     t("kanban-task-status-overdue")
                   }}</span>
                 </div>
-                <div class="btn btn-light px-0 px-lg-1">
+                <div class="btn btn-header px-0 px-lg-1">
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
                     >15</span
                   >
-                  <span class="ms-1">{{ t("kanban-task-status-today") }}</span>
+                  <span class="ms-1 text-white">{{
+                    t("kanban-task-status-today")
+                  }}</span>
                 </div>
-                <div class="btn btn-light px-0 px-lg-1">
+                <div class="btn btn-header px-0 px-lg-1">
                   <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
                     >4</span
                   >
-                  <span class="ms-1">{{
+                  <span class="ms-1 text-white">{{
                     t("kanban-task-status-tomorrow")
                   }}</span>
                 </div>
-                <div class="btn btn-light px-1 px-lg-1">
+                <div class="btn btn-header px-1 px-lg-1">
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
                     >99+</span
                   >
-                  <span class="ms-1">{{
+                  <span class="ms-1 text-white">{{
                     t("kanban-task-status-notasks")
                   }}</span>
                 </div>
@@ -93,18 +95,22 @@
             <!-- Import/Export Buttons -->
             <div class="col-md-auto d-flex align-items-center gap-2">
               <button
-                class="btn btn-light flex-fill py-2"
+                class="btn btn-header flex-fill py-2"
                 @click="openImportModal"
               >
-                <span class="fs-7">{{ t("kanban-button-import") }}</span>
-                <i class="fa-solid fa-upload ms-1 fs-7"></i>
+                <span class="fs-7 text-white">{{
+                  t("kanban-button-import")
+                }}</span>
+                <i class="fa-solid fa-upload ms-1 fs-7 text-white"></i>
               </button>
               <button
-                class="btn btn-light flex-fill py-2"
+                class="btn btn-header flex-fill py-2"
                 @click="openExportModal"
               >
-                <span class="fs-7">{{ t("kanban-button-export") }}</span>
-                <i class="fa-solid fa-download ms-1 fs-7"></i>
+                <span class="fs-7 text-white">{{
+                  t("kanban-button-export")
+                }}</span>
+                <i class="fa-solid fa-download ms-1 fs-7 text-white"></i>
               </button>
             </div>
           </div>
@@ -239,5 +245,8 @@ input:focus {
 }
 .btn {
   font-size: 14px;
+}
+.btn-header {
+  background-color: rgba(128, 128, 128, 0.8) !important;
 }
 </style>

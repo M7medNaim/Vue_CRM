@@ -444,7 +444,7 @@ export default {
 <style scoped>
 .kanban-wrapper {
   width: 100%;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 125px);
   overflow-x: auto;
 }
 .kanban-board {

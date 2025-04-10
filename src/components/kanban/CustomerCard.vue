@@ -18,7 +18,7 @@
       <div
         class="col-12 d-flex justify-content-between align-i tems-center fs-7 mb-1 p-0"
       >
-        <span class="fw-normal text-secondary">{{ deal.phone.phone }}</span>
+        <span class="fw-normal text-secondary">{{ deal.phone }}</span>
         <svg
           style="width: 14px; padding-bottom: 3px"
           xmlns="http://www.w3.org/2000/svg"
@@ -64,15 +64,17 @@
     <!-- التواريخ -->
     <div class="col-12 mt-2 d-flex">
       <span class="text-success fs-7 pe-1"
-        >{{ t("kanban-deal-label-createdat") }}:</span
+        ><i class="fa-regular fa-clock"></i>
+        {{ t("kanban-deal-label-createdat") }}:</span
       >
-      <p class="fs-7">{{ formatDate(deal.phone?.created_at) }}</p>
+      <span class="fs-7"> {{ formatDate(deal.created_at) }}</span>
     </div>
-    <div class="col-12 d-flex">
+    <div class="col-12 d-flex pt-1">
       <span class="text-black-50 fs-7 pe-1"
-        >{{ t("kanban-deal-label-updatedat") }}:</span
+        ><i class="fa-regular fa-clock"></i>
+        {{ t("kanban-deal-label-updatedat") }}:</span
       >
-      <p class="fs-7">{{ formatDate(deal.phone?.updated_at) }}</p>
+      <span class="fs-7">{{ formatDate(deal.updated_at) }}</span>
     </div>
 
     <div class="col-12">

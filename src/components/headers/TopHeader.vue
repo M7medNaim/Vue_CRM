@@ -54,7 +54,7 @@
               @click="toggleMenu('lang', $refs.langButton)"
             >
               <i class="fa-solid fa-globe"></i>
-              <span class="fs-6">{{ $t("language") }}</span>
+              <span class="fs-6">{{ currentLanguage }}</span>
               <i class="fa-solid fa-chevron-down"></i>
               <transition name="fade">
                 <ListLang v-if="activeMenu === 'lang'" :style="listLangStyle" />
@@ -249,6 +249,12 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+  },
+  computed: {
+    currentLanguage() {
+      const locale = localStorage.getItem("locale") || "en";
+      return locale === "ar" ? "العربية" : "English";
+    },
   },
 };
 </script>
