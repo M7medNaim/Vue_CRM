@@ -15,7 +15,11 @@
       class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
     >
       <div v-if="message.isImage">
-        <img :src="message.text" alt="صورة مرسلة" class="img-fluid rounded-2" />
+        <img
+          :src="message.imageUrl"
+          alt="صورة مرسلة"
+          class="img-fluid rounded-2"
+        />
       </div>
       <div class="" v-else>
         {{ message.text }}

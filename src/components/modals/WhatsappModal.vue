@@ -48,6 +48,7 @@ import SidebarLeft from "@/components/whatsapp/SidebarLeft.vue";
 import SidebarRight from "@/components/whatsapp/SidebarRight.vue";
 import { getMessageConv } from "@/plugins/services/authService";
 import LabelModal from "@/components/whatsapp/labelWhatsapp.vue";
+import Cookies from "js-cookie";
 export default {
   name: "WhatsappModal",
   components: { SidebarLeft, SidebarRight, LabelModal },
@@ -77,12 +78,15 @@ export default {
 
         console.log("Fetching messages for chat ID:", chatId);
         const response = await getMessageConv(chatId);
-        console.log("Messages API Response:", response.data);
 
         if (response.data && response.data.data) {
           const messages = response.data.data.map((msg) => ({
             id: msg.id,
-            type: msg.status === "sent" ? "msg-me" : "msg-frnd",
+            type:
+              msg.conversation_member.type === "User" &&
+              msg.conversation_member.id == Cookies.get("user_id")
+                ? "msg-me"
+                : "msg-frnd",
             text: msg.text_body,
             time: new Date(msg.created_at).toLocaleTimeString("ar-EG", {
               hour: "2-digit",
@@ -93,7 +97,8 @@ export default {
             created_at: msg.created_at,
             sender: msg.conversation_member?.name || "",
             isCopied: false,
-            isImage: msg.type === "media",
+            isImage: msg.type === "image",
+            imageUrl: msg.file ? msg.file.url : null,
           }));
 
           this.selectedChat = {
