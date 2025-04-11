@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
 
 export const PERMISSIONS = {
-  DASHBOARD: "dashboard",
-  DEALS_KANBAN: "deals-kanban",
-  DEALS_LIST: "deals-list",
-  USERS: "users",
-  CONTACTS: "contacts",
-  DOCUMENTS: "documents",
-  GENERAL_SETTINGS: "general-settings",
-  TASKS_KANBAN: "tasks-kanban",
-  ROLES_SETTINGS: "roles-settings",
+  DASHBOARD: "view-dashboard-page",
+  DEALS_KANBAN: "view-deals-kanban-page",
+  DEALS_LIST: "view-deals-list-page",
+  USERS: "view-users-page",
+  CONTACTS: "view-contacts-page",
+  DOCUMENTS: "view-documents-page",
+  GENERAL_SETTINGS: "view-general-settings-page",
+  TASKS_KANBAN: "view-tasks-kanban-page",
+  ROLES_SETTINGS: "view-roles-settings-page",
 };
 
 export const usePermissionStore = defineStore("permissions", {
