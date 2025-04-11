@@ -407,7 +407,7 @@ const handleShowDeal = async (dealId) => {
         : "",
       stage_name: matchedStage?.name || "Unassigned",
       source_name: matchedSource?.name || "Unassigned",
-      responsablePerson: deal.user || "unassigned",
+      responsablePerson: deal.responsible_user.name || "unassigned",
     };
 
     showDataModal.value?.openShowData();
