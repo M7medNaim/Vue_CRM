@@ -136,12 +136,10 @@ export default {
           this.email = "";
           this.password = "";
           this.loginSuccess = true;
-          const redirect = this.$route.query.redirect || "/dashboard";
+          const redirect = this.$route.query.redirect || "/crm-kanban";
+          this.permissionStore.setPermissions(response.data.user.permissions);
           this.$router.replace(redirect);
           this.$emit("loginSuccess");
-          if (response.data.permissions) {
-            this.permissionStore.setPermissions(response.data.permissions);
-          }
           let bg_fetch = await getBackgroundImageById(
             response.data.user.bg_image_id
           );
