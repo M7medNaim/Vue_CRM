@@ -44,7 +44,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { logout } from "@/plugins/services/authService";
+import { getBackgroundImageById, logout } from "@/plugins/services/authService";
 
 export default {
   name: "App",
@@ -115,12 +115,23 @@ export default {
     },
 
     loadSavedBackground() {
-      const savedImage = localStorage.getItem("backgroundImage");
-      if (savedImage) {
-        document.body.style.backgroundImage = `url(${savedImage})`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-      }
+      let savedImage = localStorage.getItem("backgroundImage");
+      fetch(savedImage, { method: "HEAD" })
+        .then((response) => async () => {
+          if (!response.ok) {
+            let bg_fetch = await getBackgroundImageById(
+              response.data.user.bg_image_id
+            );
+            savedImage = bg_fetch.data.data.url;
+            localStorage.setItem("backgroundImage", savedImage);
+          }
+          document.body.style.backgroundImage = `url(${savedImage})`;
+          document.body.style.backgroundSize = "cover";
+          document.body.style.backgroundPosition = "center";
+        })
+        .catch((error) => {
+          console.error("Error checking background image URL:", error);
+        });
     },
 
     checkAuthStatus() {
