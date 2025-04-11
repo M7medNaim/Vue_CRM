@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-100">
     <div
       class="toggle-button position-fixed arrowColor text-white p-1 cursor-pointer"
       :style="toggleButtonStyle"
@@ -10,7 +10,7 @@
     <transition name="slide">
       <div
         v-if="isNewsBarVisible"
-        class="marquee-container bg-body-secondary text-primary fw-bold position-fixed bottom-0 left-0 right-0 overflow-hidden"
+        class="marquee-container bg-body-secondary text-primary fw-bold position-fixed bottom-0 left-0 right-0 overflow-hidden w-100"
       >
         <div
           ref="marquee"
@@ -91,7 +91,7 @@ export default {
 
     const toggleButtonStyle = computed(() => {
       return {
-        bottom: isNewsBarVisible.value ? "30px" : "0",
+        bottom: isNewsBarVisible.value ? "28px" : "0",
         left: "0",
         transition: "bottom 0.5s ease",
       };
@@ -123,7 +123,7 @@ export default {
 .marquee_margin {
   margin-right: 20px;
   margin-left: 20px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .important {

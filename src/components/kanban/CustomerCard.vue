@@ -78,18 +78,27 @@
     </div>
 
     <div class="col-12">
-      <span class="fs-7 fw-medium">{{ deal.responsible_user.name }}</span>
+      <!-- <span class="fs-7 fw-medium">{{ deal.responsible_user }}</span> -->
     </div>
   </div>
 </template>
 
 <script>
 import { useI18n } from "vue-i18n";
-
+// import { ref, onMounted } from "vue";
+// import { getUser } from "@/plugins/services/authService";
 export default {
   name: "CustomerCard",
+  props: {
+    deal: {
+      type: Object,
+      required: true,
+    },
+  },
   setup() {
     const { t } = useI18n();
+    // const responsibleUserName = ref("...");
+
     const formatDate = (dateString) => {
       if (!dateString) return "";
 
@@ -101,13 +110,21 @@ export default {
 
       return `${day}/${month}/${year}`;
     };
+    // onMounted(async () => {
+    //   try {
+    //     const response = await getUser(props.deal.responsible_user);
+    //     console.log("Response:", response);
+    //     if (!response.ok) throw new Error("Failed to fetch user");
+    //     const userData = await response.data.data;
+    //     console.log("User Data:", userData);
+    //     responsibleUserName.value = userData.name;
+    //   } catch (error) {
+    //     responsibleUserName.value = "غير معروف";
+    //     console.error("Error fetching user:", error);
+    //   }
+    // });
+    // responsibleUserName
     return { t, formatDate };
-  },
-  props: {
-    deal: {
-      type: Object,
-      required: true,
-    },
   },
   methods: {},
 };

@@ -32,7 +32,7 @@
             </div>
 
             <!-- Search Form -->
-            <div class="col-md-auto mb-2 mb-xl-0 mx-2 flex-grow-1">
+            <div class="col-md-2 mb-2 mb-xl-0 mx-2 flex-grow-1">
               <div class="input-group">
                 <button class="btn btn-header">
                   <i class="fa-solid fa-magnifying-glass text-white"></i>
@@ -53,7 +53,9 @@
             </div>
 
             <!-- Tasks Status -->
-            <div class="col-md-auto mb-2 mb-md-0 me-2">
+            <div
+              class="col-md-auto mb-2 mb-md-0 me-2 d-flex align-items-center"
+            >
               <div class="btn-group w-100">
                 <div class="btn btn-header px-0 px-lg-1">
                   <span
@@ -91,6 +93,32 @@
                   }}</span>
                 </div>
               </div>
+              <div class="watsappIcon me-2">
+                <button
+                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 py-2 fs-7 ms-2"
+                  @click="openWhatsappModal"
+                  style="background-color: #25d365cc"
+                >
+                  <span class="text-white fs-7">{{
+                    $t("kanban-modal-edit-whatsapp")
+                  }}</span>
+                  <i class="fa-brands fa-whatsapp text-white fs-5"></i>
+                </button>
+              </div>
+              <div class="documents btn btn-header">
+                <!-- v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)" -->
+                <router-link
+                  to="/documents"
+                  class="text-decoration-none text-white"
+                >
+                  <div class="" :title="$t('sidebar-nav-item-documents')">
+                    <i class="fa-regular fa-folder-open fs-5"></i>
+                    <!-- <span v-if="!isCollapsed">{{
+                    $t("sidebar-nav-item-documents")
+                  }}</span> -->
+                  </div>
+                </router-link>
+              </div>
             </div>
             <!-- Import/Export Buttons -->
             <div class="col-md-auto d-flex align-items-center gap-2">
@@ -125,6 +153,7 @@
     <ImportModal ref="importModalRef" />
     <ExportModal ref="exportModalRef" />
     <CreateDealModal ref="createDealModalRef" />
+    <WhatsappModal ref="whatsappModalRef" />
   </header>
 </template>
 
@@ -138,6 +167,7 @@ import { Modal } from "bootstrap";
 import CreateDealModal from "../kanban/CreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
+import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 
 export default {
   name: "TopHeader2",
@@ -146,6 +176,7 @@ export default {
     ImportModal,
     ExportModal,
     CreateDealModal,
+    WhatsappModal,
   },
   props: {
     initialFilters: {
@@ -169,6 +200,15 @@ export default {
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
+    const whatsappModalRef = ref(null);
+    const openWhatsappModal = () => {
+      try {
+        const modal = new Modal(document.getElementById("whatsappModal"));
+        modal.show();
+      } catch (error) {
+        console.error("Error opening WhatsApp modal:", error);
+      }
+    };
     watch(
       () => props.initialFilters,
       (newFilters) => {
@@ -220,6 +260,8 @@ export default {
       permissionStore,
       PERMISSIONS,
       t,
+      whatsappModalRef,
+      openWhatsappModal,
     };
   },
 };
