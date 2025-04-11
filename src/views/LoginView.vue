@@ -74,7 +74,7 @@ import Cookies from "js-cookie";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useRouter } from "vue-router";
 import { initializeTranslations } from "@/i18n";
-import { getBackgroundImageById } from "@/plugins/services/authService";
+import { saveBackgroundId } from "@/plugins/services/authService";
 import { useLoadingStore } from "@/plugins/loadingStore";
 // import axiosInstance from "@/plugins/axios";
 
@@ -145,10 +145,9 @@ export default {
           this.permissionStore.setPermissions(response.data.user.permissions);
           this.$router.replace(redirect);
           this.$emit("loginSuccess");
-          let bg_fetch = await getBackgroundImageById(
+          let bg_fetch = await saveBackgroundId(
             response.data.user.bg_image_id
           );
-          console.log("Image URL:", bg_fetch);
           let imageUrl = bg_fetch.data.data.url;
           localStorage.setItem("backgroundImage", imageUrl);
           document.body.style.backgroundImage = `url(${imageUrl})`;

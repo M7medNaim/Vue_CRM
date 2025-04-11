@@ -44,7 +44,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { getBackgroundImageById, logout } from "@/plugins/services/authService";
+import { saveBackgroundId, logout } from "@/plugins/services/authService";
 
 export default {
   name: "App",
@@ -119,7 +119,7 @@ export default {
       fetch(savedImage, { method: "HEAD" })
         .then((response) => async () => {
           if (!response.ok) {
-            let bg_fetch = await getBackgroundImageById(
+            let bg_fetch = await saveBackgroundId(
               response.data.user.bg_image_id
             );
             savedImage = bg_fetch.data.data.url;
