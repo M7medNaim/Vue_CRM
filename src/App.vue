@@ -116,12 +116,10 @@ export default {
 
     loadSavedBackground() {
       let savedImage = localStorage.getItem("backgroundImage");
-      fetch(savedImage, { method: "HEAD" })
+      saveBackgroundId(Cookies.get("background_id"))
         .then((response) => async () => {
           if (!response.ok) {
-            let bg_fetch = await saveBackgroundId(
-              response.data.user.bg_image_id
-            );
+            let bg_fetch = await saveBackgroundId(Cookies.get("background_id"));
             savedImage = bg_fetch.data.data.url;
             localStorage.setItem("backgroundImage", savedImage);
           }
