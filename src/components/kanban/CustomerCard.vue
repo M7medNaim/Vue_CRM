@@ -78,7 +78,7 @@
     </div>
 
     <div class="col-12">
-      <span class="fs-7 fw-medium">{{ deal.responsible_user.name }}</span>
+      <span class="fs-7 fw-medium">{{ deal.name }}</span>
     </div>
   </div>
 </template>
