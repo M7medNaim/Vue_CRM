@@ -163,7 +163,7 @@
     :selectedStatuses="selectedStatuses"
   />
   <!-- @add-deal="addNewDeal" -->
-  <DealModal />
+  <DealModal @add-deal="addNewDeal" ref="dealModal" />
   <ImportModal />
   <ShowData :formData="dealData" ref="showDataModal" />
 </template>
@@ -745,6 +745,31 @@ const bulkDeleteItems = async () => {
     toast.error(error.response?.data?.message || t("error.deleteFailed"), {
       timeout: 3000,
     });
+  }
+};
+
+const addNewDeal = (newDeal) => {
+  try {
+    const formattedDeal = {
+      id: newDeal.id,
+      name: newDeal.name,
+      phones: newDeal.phone,
+      email: newDeal.email,
+      note: newDeal.note,
+      created_at: new Date().toISOString().split("T")[0],
+      source_id: newDeal.source_id,
+      stage_id: newDeal.stage_id,
+      responsible_user: newDeal.responsible_user,
+      rating: newDeal.rating,
+    };
+
+    rows.value = [...rows.value, formattedDeal];
+    const modal = Modal.getInstance(document.getElementById("dealModal"));
+    if (modal) {
+      modal.hide();
+    }
+  } catch (error) {
+    console.error("Error fetching user data for new deal:", error);
   }
 };
 
