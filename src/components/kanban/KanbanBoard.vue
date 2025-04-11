@@ -338,24 +338,7 @@ export default {
         // const userRole = "sales";
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
-        let userChannel;
-        switch (userRole) {
-          case "super-admin":
-            userChannel = "super-admin";
-            break;
-          case "company":
-            userChannel = `company-${user_id}`;
-            break;
-          case "supervisor":
-            userChannel = `supervisor-${user_id}`;
-            break;
-          case "sales":
-            userChannel = `sales-${user_id}`;
-            break;
-          default:
-            console.error("Unknown user role:", userRole);
-            return;
-        }
+        let userChannel = `${userRole}-${user_id}`;
 
         // Listen to the appropriate channel
         window.Echo.channel(userChannel)
@@ -392,24 +375,8 @@ export default {
       const user_id = 1;
       const userRole = "sales";
 
-      let userChannel;
-      switch (userRole) {
-        case "super-admin":
-          userChannel = "super-admin";
-          break;
-        case "company":
-          userChannel = `company-${user_id}`;
-          break;
-        case "supervisor":
-          userChannel = `supervisor-${user_id}`;
-          break;
-        case "sales":
-          userChannel = `sales-${user_id}`;
-          break;
-        default:
-          console.error("Unknown user role:", userRole);
-          return;
-      }
+      let userChannel =
+        userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
 
       // Leave the WebSocket channel
       window.Echo.leave(userChannel);
