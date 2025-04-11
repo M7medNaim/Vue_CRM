@@ -179,7 +179,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.path === "/login" && token) {
-    next({ path: "/dashboard", replace: true });
+    next({ path: "/crm-kanban", replace: true });
     return;
   }
 

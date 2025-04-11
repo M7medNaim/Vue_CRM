@@ -149,6 +149,8 @@ export default {
           document.body.style.backgroundImage = `url(${imageUrl})`;
           document.body.style.backgroundSize = "cover";
           document.body.style.backgroundPosition = "center";
+        } else {
+          this.errors.message = "Invalid email or password.";
         }
       } catch (error) {
         console.error("Login failed:", error);
