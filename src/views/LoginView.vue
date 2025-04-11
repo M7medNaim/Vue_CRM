@@ -186,7 +186,7 @@ export default {
     },
     mounted() {
       if (Cookies.get("authToken")) {
-        this.$router.push("/dashboard");
+        this.$router.push("/crm-kanban");
       }
     },
   },
