@@ -5,7 +5,14 @@ export const login = (credentials) => {
   return axios.post("/login", credentials);
 };
 // logout
-export const logout = () => axios.post("/logout");
+export const logout = () => {
+  const token = Cookies.get("authToken");
+  axios.post("/logout", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 // get All users
 export const getUser = (filters) => {
   const token = Cookies.get("authToken");
@@ -153,7 +160,7 @@ export const saveBackgroundId = async (id) => {
   return await axios.patch(`/bg-images/${id}`);
 };
 export const getBackgroundImageById = async (id) => {
-  return await axios.patch(`/bg-images/${id}`);
+  return await axios.get(`/bg-images/${id}`);
 };
 // Get All Translations
 export const getTranslations = (locale) => {

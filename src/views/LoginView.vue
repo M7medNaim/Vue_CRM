@@ -75,6 +75,7 @@ import { usePermissionStore } from "@/stores/permissionStore";
 import { useRouter } from "vue-router";
 import { initializeTranslations } from "@/i18n";
 import { getBackgroundImageById } from "@/plugins/services/authService";
+import { useLoadingStore } from "@/plugins/loadingStore";
 // import axiosInstance from "@/plugins/axios";
 
 export default {
@@ -82,10 +83,12 @@ export default {
   setup() {
     const permissionStore = usePermissionStore();
     const router = useRouter();
+    const loadingStore = useLoadingStore();
 
     return {
       permissionStore,
       router,
+      loadingStore,
     };
   },
   data() {
@@ -104,6 +107,7 @@ export default {
   methods: {
     async handleLogin() {
       try {
+        this.loadingStore.startLoading();
         this.resetErrors();
         if (!this.validateInputs()) {
           return;
@@ -138,10 +142,15 @@ export default {
           if (response.data.permissions) {
             this.permissionStore.setPermissions(response.data.permissions);
           }
-          let imageUrl = await getBackgroundImageById(
+          let bg_fetch = await getBackgroundImageById(
             response.data.user.bg_image_id
-          ).data.data.url;
+          );
+          console.log("Image URL:", bg_fetch);
+          let imageUrl = bg_fetch.data.data.url;
           localStorage.setItem("backgroundImage", imageUrl);
+          document.body.style.backgroundImage = `url(${imageUrl})`;
+          document.body.style.backgroundSize = "cover";
+          document.body.style.backgroundPosition = "center";
         }
       } catch (error) {
         console.error("Login failed:", error);
@@ -149,6 +158,7 @@ export default {
         this.email = "";
         this.password = "";
       }
+      this.loadingStore.stopLoading();
     },
 
     resetErrors() {

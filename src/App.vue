@@ -36,6 +36,7 @@
 
 <script>
 // import { ref, onMounted } from "vue";
+import axiosInstance from "@/plugins/axios";
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
@@ -43,6 +44,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { logout } from "@/plugins/services/authService";
 
 export default {
   name: "App",
@@ -96,14 +98,19 @@ export default {
       this.$router.push("/dashboard");
     },
 
-    handleLogout() {
+    async handleLogout() {
+      await logout();
       Cookies.remove("authToken");
       Cookies.remove("name");
       Cookies.remove("image");
       Cookies.remove("email");
       Cookies.remove("user_role");
       Cookies.remove("user_id");
+      localStorage.removeItem("backgroundImage");
+      localStorage.removeItem("locale");
+      localStorage.removeItem("userPermissions");
       this.isLoggedIn = false;
+      delete axiosInstance.defaults.headers["Authorization"];
       this.$router.push("/login");
     },
 
