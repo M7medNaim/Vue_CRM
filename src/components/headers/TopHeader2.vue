@@ -7,6 +7,10 @@
             <!-- Buttons Group -->
             <div class="col-md-auto mb-2 mb-xl-0">
               <button
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN) &&
+                  permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
+                "
                 class="btn btn-header text-white px-2 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
