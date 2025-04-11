@@ -334,7 +334,7 @@ const fetchData = async () => {
         note: deal.note || "unassigned",
         created_at: deal.created_at.split("T")[0],
         stage: matchedStage ? matchedStage.name : "null",
-        responsible: deal.responsible_user.name || "Null",
+        responsible: deal.name || "Null",
         source: matchedSource ? matchedSource.name : "Null",
       };
     });

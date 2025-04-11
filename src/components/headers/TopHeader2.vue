@@ -97,7 +97,10 @@
               </div>
             </div>
             <!-- Import/Export Buttons -->
-            <div class="col-md-auto d-flex align-items-center gap-2">
+            <div
+              v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
+              class="col-md-auto d-flex align-items-center gap-2"
+            >
               <button
                 class="btn btn-header flex-fill py-2"
                 @click="openImportModal"
