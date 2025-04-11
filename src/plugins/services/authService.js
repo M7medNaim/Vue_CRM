@@ -100,7 +100,7 @@ export const deleteDeals = (ids) => axios.delete(`/deals/${ids}`);
 //   return await axios.put(`/deals/${dealId}`, stage_id: newStageId);
 // }
 export const updateDealStage = (dealId, stageId) => {
-  return axios.put(`/deals/${dealId}/stage_id`, {
+  return axios.patch(`/deals/${dealId}`, {
     stage_id: stageId,
   });
 };
@@ -150,6 +150,9 @@ export const getBackgroundImages = async () => {
   return await axios.get("/bg-images");
 };
 export const saveBackgroundId = async (id) => {
+  return await axios.patch(`/bg-images/${id}`);
+};
+export const getBackgroundImageById = async (id) => {
   return await axios.patch(`/bg-images/${id}`);
 };
 // Get All Translations

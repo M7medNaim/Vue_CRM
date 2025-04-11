@@ -73,6 +73,7 @@ import CustomBackground from "@/components/headers/sub-menu/profileMenuItems/Cus
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
+import { logout } from "@/plugins/services/authService";
 
 export default {
   name: "MenuProfile",
@@ -121,7 +122,7 @@ export default {
         Cookies.remove("user_id");
 
         delete axiosInstance.defaults.headers["Authorization"];
-
+        await logout();
         this.$emit("logout");
         this.$router.push("/login");
       } catch (error) {
