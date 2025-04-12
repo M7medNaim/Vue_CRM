@@ -225,45 +225,64 @@ export default {
     };
 
     const handleDealEvent = (event) => {
-      const response = event.data;
-      const action = response.action;
-      const message = response.message;
-      const data = response.data;
-
-      if (!data || !data.stage_id) return;
-
-      const stageIndex = stages.value.findIndex(
-        (stage) => stage.id === data.stage_id
-      );
-
-      if (stageIndex === -1) {
-        toast.error("Stage not found");
-        return;
-      }
-
-      const stage = stages.value[stageIndex];
+      const action = event.action;
       if (action === "create") {
-        stage.deals.push(data);
+        return;
       } else if (action === "update") {
-        dealUpdateEvent(data);
-        toast.success(message);
+        dealUpdateEvent(event.data, event.message);
       }
     };
 
-    const dealUpdateEvent = (data) => {
-      let ids = data.ids;
+    const dealUpdateEvent = (data, message) => {
+      let stages = ref(props.stages);
+      console.log("Deal update event data:", data);
+      const id = data.id;
+      console.log("Deal ID:", id);
+      console.log("stage id:", data.stage_id);
+      const updatedData = data.updated_data;
+      console.log("Updated data:", updatedData);
+      console.log("Stages:", stages.value);
       const stageIndex = stages.value.findIndex(
-        (stage) => stage.id === data.stage_id
+        (stage) => stage.id == data.stage_id
       );
-      const stage = stages.value[stageIndex];
-      ids.forEach((id) => {
-        const dealIndex = stage.deals.findIndex((deal) => deal.id === id);
-        if (dealIndex !== -1) {
-          stage.deals[dealIndex] = { ...stage.deals[dealIndex], ...data };
-        } else {
-          stage.deals.push(data);
-        }
-      });
+      console.log("Stage id, index:", [data.stage_id, stageIndex]);
+      const dealIndex = stages.value[stageIndex].deals.findIndex(
+        (deal) => deal.id == id
+      );
+      console.log("indexes:", [dealIndex, stageIndex]);
+      if (stageIndex === -1) {
+        console.error("Stage not found");
+        return;
+      }
+      if (dealIndex === -1) {
+        console.error("Deal not found");
+        return;
+      }
+
+      let deal = stages.value[stageIndex].deals[dealIndex];
+      deal.name = updatedData.name ?? deal.name;
+      deal.description = updatedData.description ?? deal.description;
+      deal.stage_id = updatedData.stage_id ?? deal.stage_id;
+      deal.responsible_user =
+        updatedData.responsible_user ?? deal.responsible_user;
+      deal.updated_at = updatedData.updated_at;
+
+      const newStageIndex = stages.value.findIndex(
+        (stage) => stage.id == updatedData.stage_id
+      );
+      // Update the deal in the UI
+      if (newStageIndex === stageIndex) {
+        console.log("Deal is in the same stage");
+        stages.value[stageIndex].deals[dealIndex] = deal;
+      } else if (newStageIndex !== -1) {
+        console.log("Deal moved to a new stage");
+        stages.value[newStageIndex].deals.push(deal);
+        stages.value[stageIndex].deals.splice(dealIndex, 1);
+      } else {
+        console.error("New stage not found");
+        stages.value[stageIndex].deals[dealIndex] = deal;
+      }
+      toast.success(message);
     };
 
     const handleTaskEvent = (event) => {
