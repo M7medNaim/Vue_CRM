@@ -49,7 +49,7 @@ import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { logout, getBackgroundId } from "@/plugins/services/authService";
 import { requirePermission } from "./router/guards";
-import { PERMISSIONS } from "./stores/permissionStore";
+import { PERMISSIONS, usePermissionStore } from "./stores/permissionStore";
 
 export default {
   name: "App",
@@ -57,8 +57,10 @@ export default {
 
   setup() {
     const loadingStore = useLoadingStore();
+    const permissionStore = usePermissionStore();
     return {
       loadingStore,
+      permissionStore,
     };
   },
 
@@ -93,7 +95,7 @@ export default {
     },
 
     showSidebar() {
-      return requirePermission(PERMISSIONS.VIEW_SIDEBAR);
+      return this.permissionStore.hasPermission(PERMISSIONS.VIEW_SIDEBAR);
     },
   },
 
