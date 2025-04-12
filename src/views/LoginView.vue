@@ -143,14 +143,13 @@ export default {
           this.loginSuccess = true;
           const redirect = this.$route.query.redirect || "/crm-kanban";
           this.permissionStore.setPermissions(response.data.user.permissions);
-          this.$router.replace(redirect);
           this.$emit("loginSuccess");
           let bg_fetch = await saveBackgroundId(response.data.user.bg_image_id);
           let imageUrl = bg_fetch.data.data.url;
-          localStorage.setItem("backgroundImage", imageUrl);
           document.body.style.backgroundImage = `url(${imageUrl})`;
           document.body.style.backgroundSize = "cover";
           document.body.style.backgroundPosition = "center";
+          this.$router.replace(redirect);
         } else {
           this.errors.message = "Invalid email or password.";
         }

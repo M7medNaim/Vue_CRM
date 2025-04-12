@@ -12,7 +12,10 @@
 
     <div v-else class="app overflow-hidden">
       <div v-if="!$route.meta.hideNavigation" class="row g-0 flex-nowrap">
-        <div :class="['sidebar', sidebarClass, isSidebarCollapsed]">
+        <div
+          :class="['sidebar', sidebarClass, isSidebarCollapsed]"
+          v-if="!hideSidebar"
+        >
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
 
@@ -44,7 +47,8 @@ import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { saveBackgroundId, logout } from "@/plugins/services/authService";
+import { logout, getBackgroundId } from "@/plugins/services/authService";
+import { requirePermission } from "./router/guards";
 
 export default {
   name: "App",
@@ -86,6 +90,10 @@ export default {
         this.$route.path === "/crm-kanban" || this.$route.path === "/crm-tasks"
       );
     },
+
+    hideSidebar() {
+      return requirePermission("read-navigations");
+    },
   },
 
   methods: {
@@ -95,7 +103,7 @@ export default {
 
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.$router.push("/dashboard");
+      this.$router.push("/crm-kanban");
     },
 
     async handleLogout() {
@@ -114,22 +122,20 @@ export default {
       this.$router.push("/login");
     },
 
-    loadSavedBackground() {
-      let savedImage = localStorage.getItem("backgroundImage");
-      saveBackgroundId(Cookies.get("background_id"))
-        .then((response) => async () => {
-          if (!response.ok) {
-            let bg_fetch = await saveBackgroundId(Cookies.get("background_id"));
-            savedImage = bg_fetch.data.data.url;
-            localStorage.setItem("backgroundImage", savedImage);
-          }
-          document.body.style.backgroundImage = `url(${savedImage})`;
-          document.body.style.backgroundSize = "cover";
-          document.body.style.backgroundPosition = "center";
-        })
-        .catch((error) => {
-          console.error("Error checking background image URL:", error);
-        });
+    async loadSavedBackground() {
+      try {
+        let response = await getBackgroundId(Cookies.get("background_id"));
+        if (!response) {
+          console.error("No background image found");
+          return;
+        }
+        const savedImage = response.data.data.url;
+        document.body.style.backgroundImage = `url(${savedImage})`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+      } catch (error) {
+        console.error("Error loading background image:", error);
+      }
     },
 
     checkAuthStatus() {

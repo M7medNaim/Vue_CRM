@@ -7,10 +7,7 @@
             <!-- Buttons Group -->
             <div class="col-md-auto mb-2 mb-xl-0">
               <button
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN) &&
-                  permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
-                "
+                v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
                 class="btn btn-header text-white px-2 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
@@ -19,7 +16,10 @@
               <button
                 class="btn btn-header text-white px-2 py-2 fw-semibold"
                 @click="openCrmKanban"
-                v-if="$route.name !== 'CrmKanban'"
+                v-if="
+                  $route.name !== 'CrmKanban' &&
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)
+                "
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>

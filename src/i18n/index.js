@@ -1,5 +1,6 @@
 import { createI18n } from "vue-i18n";
 import { getTranslations } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
 
 const i18n = createI18n({
   legacy: false,
@@ -14,6 +15,11 @@ const i18n = createI18n({
 
 async function loadTranslationsFromAPI(locale) {
   try {
+    const token = Cookies.get("authToken");
+    if (!token) {
+      console.log("Not authenticated.");
+      return null;
+    }
     const response = await getTranslations(locale);
 
     if (response.data && response.data.translations) {

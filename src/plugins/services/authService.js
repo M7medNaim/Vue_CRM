@@ -159,7 +159,7 @@ export const getBackgroundImages = async () => {
 export const saveBackgroundId = async (id) => {
   return await axios.patch(`/bg-images/${id}`);
 };
-export const getBackgroundImageById = async (id) => {
+export const getBackgroundId = async (id) => {
   return await axios.get(`/bg-images/${id}`);
 };
 // Get All Translations
