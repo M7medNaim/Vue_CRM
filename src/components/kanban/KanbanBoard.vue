@@ -225,7 +225,10 @@ export default {
     };
 
     const handleDealEvent = (event) => {
-      const { action, data } = event;
+      const response = event.data;
+      const action = response.action;
+      const message = response.message;
+      const data = response.data;
 
       if (!data || !data.stage_id) return;
 
@@ -233,28 +236,36 @@ export default {
         (stage) => stage.id === data.stage_id
       );
 
-      if (stageIndex === -1) return;
+      if (stageIndex === -1) {
+        toast.error("Stage not found");
+        return;
+      }
 
       const stage = stages.value[stageIndex];
       if (action === "create") {
         stage.deals.push(data);
-        // deals.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
-        const dealIndex = stage.deals.findIndex((deal) => deal.id === data.id);
+        dealUpdateEvent(data);
+        toast.success(message);
+      }
+    };
+
+    const dealUpdateEvent = (data) => {
+      let ids = data.ids;
+      const stageIndex = stages.value.findIndex(
+        (stage) => stage.id === data.stage_id
+      );
+      const stage = stages.value[stageIndex];
+      ids.forEach((id) => {
+        const dealIndex = stage.deals.findIndex((deal) => deal.id === id);
         if (dealIndex !== -1) {
           stage.deals[dealIndex] = { ...stage.deals[dealIndex], ...data };
-          // stage.value[dealIndex].text = data.note;
         } else {
           stage.deals.push(data);
         }
-      } else if (action === "delete") {
-        stage.deals = stage.deals.filter((deal) => deal.id !== data.id);
-      }
+      });
     };
+
     const handleTaskEvent = (event) => {
       const { action, data } = event;
 
