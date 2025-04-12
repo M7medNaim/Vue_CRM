@@ -345,23 +345,29 @@ export default {
         }
 
         // Listen to the appropriate channel
-        window.Echo.channel(userChannel)
-          .listen("DealEvent", (event) => {
-            console.log("DealEvent received:", event);
-            handleDealEvent(event);
-          })
-          .listen("TaskEvent", (event) => {
-            console.log("TaskEvent received:", event);
-            handleTaskEvent(event);
-          })
-          .listen("CommentEvent", (event) => {
-            console.log("CommentEvent received:", event);
-            handleCommentEvent(event);
-          })
-          .listen("LogEvent", (event) => {
-            console.log("LogEvent received:", event);
-            handleLogEvent(event);
-          });
+        if (window.Echo && userChannel) {
+          window.Echo.channel(userChannel)
+            .listen(".DealEvent", (event) => {
+              console.log("DealEvent received:", event);
+              handleDealEvent(event);
+            })
+            .listen(".TaskEvent", (event) => {
+              console.log("TaskEvent received:", event);
+              handleTaskEvent(event);
+            })
+            .listen(".CommentEvent", (event) => {
+              console.log("CommentEvent received:", event);
+              handleCommentEvent(event);
+            })
+            .listen(".LogEvent", (event) => {
+              console.log("LogEvent received:", event);
+              handleLogEvent(event);
+            });
+        } else {
+          console.error(
+            "WebSocket or userChannel is not initialized properly."
+          );
+        }
       } catch (error) {
         console.error("Error mounting component:", error);
       }
