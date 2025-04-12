@@ -95,6 +95,12 @@ export default {
     },
 
     showSidebar() {
+      console.log(
+        "showSidebar",
+        this.permissionStore.hasPermission(PERMISSIONS.VIEW_SIDEBAR)
+      );
+      console.log("this.permissionStore", this.permissionStore);
+      console.log("PERMISSIONS.VIEW_SIDEBAR", PERMISSIONS.VIEW_SIDEBAR);
       return this.permissionStore.hasPermission(PERMISSIONS.VIEW_SIDEBAR);
     },
   },
