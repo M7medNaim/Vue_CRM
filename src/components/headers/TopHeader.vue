@@ -1,9 +1,15 @@
 <template>
-  <div class="top-bar pe-1 position-relative">
+  <div class="top-bar pe-1 position-relative pt-2">
     <div class="row">
       <div
         class="col-2 col-md-3 d-flex align-items-center text-white fs-6 pt-1"
       >
+        <img
+          class="me-2"
+          src="@/assets/new-nokta-logo.png"
+          style="width: 40px; height: 40px"
+          alt=""
+        />
         <span>{{ pageTitle }}</span>
         <router-link
           v-if="
@@ -49,16 +55,18 @@
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
-              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-1 text-white position-relative"
-              ref="langButton"
-              @click="toggleMenu('lang', $refs.langButton)"
+              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-2 text-white position-relative"
+              @click="toggleLanguage"
             >
               <i class="fa-solid fa-globe"></i>
-              <span class="fs-6">{{ currentLanguage }}</span>
-              <i class="fa-solid fa-chevron-down"></i>
-              <transition name="fade">
-                <ListLang v-if="activeMenu === 'lang'" :style="listLangStyle" />
-              </transition>
+              <span class="fs-6">{{ nextLanguage.toUpperCase() }}</span>
+              <span class="dropdown-icon me-2 text-secondary flageImage">
+                <img
+                  :src="flagIcon"
+                  alt="English"
+                  style="width: 30px; height: 20px"
+                />
+              </span>
             </button>
           </div>
 
@@ -95,10 +103,13 @@
 </template>
 
 <script>
-import ListLang from "@/components/headers/sub-menu/ListLang.vue";
+// import ListLang from "@/components/headers/sub-menu/ListLang.vue";
 import MenuProfile from "@/components/headers/sub-menu/MenuProfile.vue";
 import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.vue";
 import Cookies from "js-cookie";
+import { changeLanguage } from "@/i18n";
+import { useLoadingStore } from "@/plugins/loadingStore";
+import { saveUserLanguage } from "@/plugins/services/authService";
 import {
   ref,
   onMounted,
@@ -113,7 +124,6 @@ import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 export default {
   name: "HeaderComponent",
   components: {
-    ListLang,
     MenuProfile,
     NotificationsHead,
   },
@@ -125,9 +135,11 @@ export default {
       listNotifiStyle: {},
       name: Cookies.get("name") || "User",
       userImage: Cookies.get("image") || "",
+      currentLanguage: localStorage.getItem("locale") || "en",
     };
   },
   setup() {
+    const loadingStore = useLoadingStore();
     const currentTime = ref("");
     const updateTime = () => {
       const now = new Date();
@@ -201,9 +213,34 @@ export default {
       showGeneralSettings,
       permissionStore,
       PERMISSIONS,
+      loadingStore,
     };
   },
   methods: {
+    async toggleLanguage() {
+      const newLang = this.currentLanguage === "en" ? "ar" : "en";
+
+      try {
+        this.loadingStore.startLoading();
+
+        await changeLanguage(newLang);
+
+        const response = await saveUserLanguage(newLang);
+        if (response.status === 200) {
+          localStorage.setItem("locale", newLang);
+          this.currentLanguage = newLang;
+
+          this.toast.success("تم تغيير اللغة بنجاح!", { timeout: 3000 });
+        } else {
+          throw new Error("فشل حفظ اللغة في API");
+        }
+      } catch (error) {
+        console.error("Error changing language:", error);
+        this.toast.error("حدث خطأ أثناء حفظ اللغة!", { timeout: 3000 });
+      } finally {
+        this.loadingStore.stopLoading();
+      }
+    },
     toggleMenu(menu) {
       if (this.activeMenu === menu) {
         this.activeMenu = null;
@@ -246,14 +283,23 @@ export default {
   },
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
+    this.currentLanguage = localStorage.getItem("locale") || "en";
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
   },
   computed: {
-    currentLanguage() {
-      const locale = localStorage.getItem("locale") || "en";
-      return locale === "ar" ? "العربية" : "English";
+    // currentLanguage() {
+    //   const locale = localStorage.getItem("locale") || "en";
+    //   return locale === "ar" ? "العربية" : "English";
+    // },
+    nextLanguage() {
+      return this.currentLanguage === "ar" ? "en" : "ar";
+    },
+    flagIcon() {
+      return this.currentLanguage === "ar"
+        ? require("@/assets/flag-usa.png")
+        : require("@/assets/Flag_of_Saudi_Arabia.svg");
     },
   },
 };

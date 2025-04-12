@@ -6,7 +6,7 @@
       @reset-filter="resetFilter"
     />
   </div>
-  <div class="watsappIcon position-absolute z-3">
+  <!-- <div class="watsappIcon position-absolute z-3">
     <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
       <p class="position-absolute textWhats">
         {{ $t("kanban-modal-edit-whatsapp") }}
@@ -15,9 +15,9 @@
         <i class="fa-brands fa-whatsapp"></i>
       </div>
     </button>
-  </div>
+  </div> -->
   <KanbanBoard :stages="stages" defaultColor="#333" />
-  <WhatsappModal ref="whatsappModalRef" />
+  <!-- <WhatsappModal ref="whatsappModalRef" /> -->
 </template>
 
 <script>
@@ -25,8 +25,8 @@ import { ref, onMounted, onUnmounted } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
 // import { kanbanStages } from "@/plugins/stages";
-import { Modal } from "bootstrap";
-import WhatsappModal from "@/components/modals/WhatsappModal.vue";
+// import { Modal } from "bootstrap";
+// import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 // import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
@@ -36,14 +36,14 @@ export default {
   components: {
     TopHeader2,
     KanbanBoard,
-    WhatsappModal,
+    // WhatsappModal,
   },
   setup() {
     const { t } = useI18n();
     const toast = useToast();
     // const stages = ref(kanbanStages);
     const stages = ref([]);
-    const whatsappModalRef = ref(null);
+    // const whatsappModalRef = ref(null);
 
     const filters = ref({
       source: "",
@@ -131,20 +131,20 @@ export default {
       });
     };
 
-    const openWhatsappModal = () => {
-      try {
-        const modal = new Modal(document.getElementById("whatsappModal"));
-        modal.show();
-        // toast.info("يمكنك إرسال رسالة واتساب", {
-        //   timeout: 3000,
-        // });
-      } catch (error) {
-        console.error("Error opening WhatsApp modal:", error);
-        toast.error(t("error.openWhatsappModal"), {
-          timeout: 3000,
-        });
-      }
-    };
+    // const openWhatsappModal = () => {
+    //   try {
+    //     const modal = new Modal(document.getElementById("whatsappModal"));
+    //     modal.show();
+    //     // toast.info("يمكنك إرسال رسالة واتساب", {
+    //     //   timeout: 3000,
+    //     // });
+    //   } catch (error) {
+    //     console.error("Error opening WhatsApp modal:", error);
+    //     toast.error(t("error.openWhatsappModal"), {
+    //       timeout: 3000,
+    //     });
+    //   }
+    // };
     // const handleDealEvent = (event) => {
     //   const { action, data } = event;
 
@@ -238,8 +238,8 @@ export default {
       filters,
       applyFilters,
       resetFilter,
-      openWhatsappModal,
-      whatsappModalRef,
+      // openWhatsappModal,
+      // whatsappModalRef,
     };
   },
 };

@@ -330,8 +330,9 @@ export default {
 }
 .message-warning {
   background-color: rgba(128, 128, 128, 0.961);
-  bottom: 47px;
-  left: 2%;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .file-upload {
   cursor: pointer;

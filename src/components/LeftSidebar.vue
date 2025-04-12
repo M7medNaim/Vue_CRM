@@ -3,11 +3,11 @@
     class="sidebar vh-100 overflow-hidden text-white"
     :class="{ 'sidebar-collapsed': isCollapsed }"
   >
-    <div class="d-flex justify-content-start align-items-center ps-3">
+    <div class="d-flex justify-content-start align-items-center ps-3 mt-3">
       <div class="imgLogo me-2">
         <img
           src="@/assets/new-nokta-logo.png"
-          style="width: 50px; height: 50px"
+          style="width: 35px; height: 35px"
           alt=""
         />
       </div>
