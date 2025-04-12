@@ -223,9 +223,7 @@ export default {
       try {
         this.loadingStore.startLoading();
 
-        await changeLanguage(newLang);
-
-        const response = await saveUserLanguage(newLang);
+        const response = await changeLanguage(newLang);
         if (response.status === 200) {
           localStorage.setItem("locale", newLang);
           this.currentLanguage = newLang;

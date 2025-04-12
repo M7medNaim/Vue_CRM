@@ -1,6 +1,7 @@
 import { createI18n } from "vue-i18n";
 import { getTranslations } from "@/plugins/services/authService";
 import Cookies from "js-cookie";
+import { saveUserLanguage } from "@/plugins/services/authService";
 
 const i18n = createI18n({
   legacy: false,
@@ -51,6 +52,7 @@ export async function changeLanguage(locale) {
     i18n.global.locale.value = locale;
     localStorage.setItem("locale", locale);
     document.documentElement.lang = locale;
+    await saveUserLanguage(locale);
 
     window.location.reload();
   } catch (error) {
