@@ -133,7 +133,6 @@ export default {
         const oldStageId = deal.stage_id;
 
         try {
-          console.log("Updating deal:", deal.id, "to stage:", newStageId);
           await updateDealStage(deal.id, newStageId);
 
           deal.stage_id = newStageId;

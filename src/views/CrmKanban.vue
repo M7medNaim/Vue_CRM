@@ -60,8 +60,6 @@ export default {
     const fetchStages = async () => {
       try {
         const response = await getDealsKanban();
-        console.log(response.data);
-
         if (Array.isArray(response.data.data)) {
           stages.value = response.data.data.map((stage) => ({
             id: stage.id,
