@@ -4,12 +4,12 @@
       <div
         class="col-2 col-md-3 d-flex align-items-center text-white fs-6 pt-1"
       >
-        <img
+        <!-- <img
           class="me-2"
           src="@/assets/new-nokta-logo.png"
           style="width: 40px; height: 40px"
           alt=""
-        />
+        /> -->
         <span>{{ pageTitle }}</span>
         <router-link
           v-if="
@@ -55,12 +55,12 @@
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
-              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-2 text-white position-relative"
+              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-2 text-white position-relative btn-header rounded-2 p-1 mt-1"
               @click="toggleLanguage"
             >
-              <i class="fa-solid fa-globe"></i>
+              <!-- <i class="fa-solid fa-globe"></i> -->
               <span class="fs-6">{{ nextLanguage.toUpperCase() }}</span>
-              <span class="dropdown-icon me-2 text-secondary flageImage">
+              <span class="dropdown-icon text-secondary flageImage">
                 <img
                   :src="flagIcon"
                   alt="English"
@@ -73,7 +73,7 @@
           <div class="profile ps-2">
             <button
               type="button"
-              class="border-0 bg-transparent d-flex justify-content-end align-items-center text-white position-relative"
+              class="border-0 bg-transparent d-flex justify-content-end align-items-center text-white position-relative p-0"
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >
@@ -323,5 +323,8 @@ export default {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(20px);
+}
+.btn-header {
+  background-color: rgba(128, 128, 128, 0.8) !important;
 }
 </style>

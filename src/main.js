@@ -12,7 +12,7 @@ import Aura from "@primeuix/themes/aura";
 
 // تعريف toastOptions
 const toastOptions = {
-  position: "top-left",
+  position: "bottom-right",
   timeout: 3000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
@@ -23,7 +23,8 @@ const toastOptions = {
   hideProgressBar: false,
   closeButton: "button",
   icon: true,
-  ltr: true,
+  rtl: true,
+  containerClassName: "custom-toast-container",
 };
 
 Swal.mixin({

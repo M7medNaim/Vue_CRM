@@ -18,7 +18,7 @@
     <div class="sidebar-items overflow-auto">
       <div
         v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        class="sidebar-item d-flex align-items-center"
         :title="$t('sidebar-nav-item-kanban')"
       >
         <router-link to="/crm-kanban" class="text-decoration-none text-white">
@@ -32,7 +32,7 @@
         class="text-decoration-none text-white"
       >
         <div
-          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          class="sidebar-item d-flex align-items-center"
           :title="$t('sidebar-nav-item-crmlist')"
         >
           <i class="fa-solid fa-table-list fs-5 me-2"></i>
@@ -45,7 +45,7 @@
         class="text-decoration-none text-white"
       >
         <div
-          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          class="sidebar-item d-flex align-items-center"
           :title="$t('sidebar-nav-item-users')"
         >
           <i class="fa-solid fa-users fs-5 me-2"></i>
@@ -58,7 +58,7 @@
         class="text-decoration-none text-white"
       >
         <div
-          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          class="sidebar-item d-flex align-items-center"
           :title="$t('sidebar-nav-item-contacts')"
         >
           <i class="fa-regular fa-address-book fs-5 me-2"></i>
@@ -71,7 +71,7 @@
         class="text-decoration-none text-white"
       >
         <div
-          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          class="sidebar-item d-flex align-items-center"
           :title="$t('sidebar-nav-item-documents')"
         >
           <i class="fa-regular fa-folder-open fs-5 me-2"></i>
@@ -80,27 +80,46 @@
           }}</span>
         </div>
       </router-link>
-      <div
+      <router-link
         v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
-        class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+        to="/dashboard"
+        class="text-decoration-none text-white"
+      >
+        <div
+          class="sidebar-item d-flex align-items-center"
+          :title="$t('sidebar-nav-item-dashboard')"
+        >
+          <i class="fa-solid fa-chart-pie fs-5 me-2 ps-1"></i>
+
+          <span v-if="!isCollapsed">{{
+            $t("sidebar-nav-item-dashboard")
+          }}</span>
+        </div>
+      </router-link>
+      <!-- <div
+        v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
+        class="sidebar-item d-flex align-items-center"
         :title="$t('sidebar-nav-item-dashboard')"
       >
-        <router-link to="/dashboard" class="text-decoration-none text-white">
-          <!-- <i class="fa-solid fa-house fs-5 me-2"></i> -->
+        <router-link
+          to="/dashboard"
+          class="text-decoration-none text-white d-flex align-items-center"
+        >
+          <i class="fa-solid fa-house fs-5 me-2"></i>
           <i class="fa-solid fa-chart-pie fs-5 me-2"></i>
-          <!-- <i class="fa-solid fa-chart-line fs-5 me-2"></i> -->
+          <i class="fa-solid fa-chart-line fs-5 me-2"></i>
           <span v-if="!isCollapsed">{{
             $t("sidebar-nav-item-dashboard")
           }}</span>
         </router-link>
-      </div>
+      </div> -->
       <router-link
         v-if="permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)"
         to="/general-setting"
         class="text-decoration-none text-white"
       >
         <div
-          class="sidebar-item d-flex align-items-center p-2 my-2 ps-3"
+          class="sidebar-item d-flex align-items-center"
           :title="$t('sidebar-nav-item-settings')"
         >
           <i class="fa-solid fa-cog fs-5 me-2"></i>
@@ -122,7 +141,7 @@
       </router-link> -->
 
       <div
-        class="sidebar-item d-flex justify-content-start align-items-center p-2 my-2 toggle-icon border-0 text-center fs-6 ps-3"
+        class="sidebar-item d-flex justify-content-start align-items-center toggle-icon border-0 text-center fs-6"
         @click="toggleSidebar"
         :title="$t('sidebar-nav-item-toggle')"
       >
@@ -170,7 +189,7 @@ export default {
 }
 
 .sidebar-collapsed {
-  width: 70px;
+  width: 55px;
 }
 .row {
   margin-left: 0;
@@ -193,15 +212,21 @@ export default {
 .sidebar-item {
   cursor: pointer;
   transition: background-color 0.3s ease;
-  padding: 10px;
+  padding: 3px 5px;
   margin: 5px 0;
   border-radius: 4px;
 }
-
+.sidebar-item i {
+  padding: 5px 5px 5px 5px;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+.sidebar-item i:hover {
+  background-color: #34495e;
+}
 .sidebar-item:hover {
   background-color: #34495e;
 }
-
 .sidebar-item span {
   white-space: nowrap;
   font-size: 14px;

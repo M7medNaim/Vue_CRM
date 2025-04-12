@@ -1,19 +1,19 @@
 <template>
-  <div class="mt-4">
+  <div class="">
     <TopHeader2
       :initial-filters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
     />
   </div>
-  <div class="watsappIcon position-absolute z-3">
+  <!-- <div class="watsappIcon position-absolute z-3">
     <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
       <p class="position-absolute">{{ $t("kanban-modal-edit-whatsapp") }}</p>
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
-  </div>
+  </div> -->
   <KanbanBoard :stages="stages" defaultColor="#333" />
-  <WhatsappModal ref="whatsappModalRef" />
+  <!-- <WhatsappModal ref="whatsappModalRef" /> -->
 </template>
 
 <script>
@@ -21,15 +21,15 @@ import { ref, onMounted, onUnmounted } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
 import { tasksStages } from "@/plugins/stages";
-import { Modal } from "bootstrap";
-import WhatsappModal from "@/components/modals/WhatsappModal.vue";
+// import { Modal } from "bootstrap";
+// import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 // import { useI18n } from "vue-i18n";
 export default {
   name: "CrmKanban",
   components: {
     TopHeader2,
     KanbanBoard,
-    WhatsappModal,
+    // WhatsappModal,
   },
   setup() {
     // const { t } = useI18n();
@@ -81,10 +81,10 @@ export default {
         }
       });
     };
-    const openWhatsappModal = () => {
-      const modal = new Modal(document.getElementById("whatsappModal"));
-      modal.show();
-    };
+    // const openWhatsappModal = () => {
+    //   const modal = new Modal(document.getElementById("whatsappModal"));
+    //   modal.show();
+    // };
 
     // upload data
     onMounted(async () => {
@@ -99,7 +99,7 @@ export default {
       filters,
       applyFilters,
       resetFilter,
-      openWhatsappModal,
+      // openWhatsappModal,
     };
   },
 };
