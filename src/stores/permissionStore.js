@@ -15,6 +15,7 @@ export const PERMISSIONS = {
   DELETE_DEAL: "delete-deal",
   READ_DEAL: "read-deal",
   READ_TASK: "read-task",
+  VIEW_SIDEBAR: "view-sidebar",
 };
 
 export const usePermissionStore = defineStore("permissions", {

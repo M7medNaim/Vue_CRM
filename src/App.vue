@@ -14,7 +14,7 @@
       <div v-if="!$route.meta.hideNavigation" class="row g-0 flex-nowrap">
         <div
           :class="['sidebar', sidebarClass, isSidebarCollapsed]"
-          v-if="!hideSidebar"
+          v-if="showSidebar"
         >
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
@@ -49,6 +49,7 @@ import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { logout, getBackgroundId } from "@/plugins/services/authService";
 import { requirePermission } from "./router/guards";
+import { PERMISSIONS } from "./stores/permissionStore";
 
 export default {
   name: "App",
@@ -91,8 +92,8 @@ export default {
       );
     },
 
-    hideSidebar() {
-      return requirePermission("read-navigations");
+    showSidebar() {
+      return requirePermission(PERMISSIONS.VIEW_SIDEBAR);
     },
   },
 
