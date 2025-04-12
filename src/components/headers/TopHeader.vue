@@ -109,7 +109,6 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { saveUserLanguage } from "@/plugins/services/authService";
 import {
   ref,
   onMounted,
