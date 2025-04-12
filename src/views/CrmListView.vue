@@ -111,10 +111,10 @@
         :header="t('crmlist-table-header-source')"
       ></Column>
       <Column field="stage" :header="t('crmlist-table-header-stage')"></Column>
-      <Column
+      <!-- <Column
         field="responsible"
         :header="t('crmlist-table-header-responsible')"
-      ></Column>
+      ></Column> -->
       <Column :header="t('crmlist-table-header-action')">
         <template #body="slotProps">
           <div class="d-flex gap-2">
@@ -334,7 +334,7 @@ const fetchData = async () => {
         note: deal.note || "unassigned",
         created_at: deal.created_at.split("T")[0],
         stage: matchedStage ? matchedStage.name : "null",
-        responsible: deal.responsible_user.name || "Null",
+        responsible: deal.responsible_user || "Null",
         source: matchedSource ? matchedSource.name : "Null",
       };
     });
