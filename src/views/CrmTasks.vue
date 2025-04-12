@@ -20,10 +20,10 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 import KanbanBoard from "@/components/kanban/KanbanBoard.vue";
-import { tasksStages } from "@/plugins/stages";
-// import { Modal } from "bootstrap";
-// import WhatsappModal from "@/components/modals/WhatsappModal.vue";
-// import { useI18n } from "vue-i18n";
+import { getTasksKanban } from "@/plugins/services/authService";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
+
 export default {
   name: "CrmKanban",
   components: {
@@ -32,8 +32,9 @@ export default {
     // WhatsappModal,
   },
   setup() {
-    // const { t } = useI18n();
-    const stages = ref(tasksStages);
+    const toast = useToast();
+    const { t } = useI18n();
+    const stages = ref([]);
     const filters = ref({
       source: "",
       stage: "",
@@ -81,6 +82,27 @@ export default {
         }
       });
     };
+    const fetchStages = async () => {
+      try {
+        const response = await getTasksKanban();
+        if (Array.isArray(response.data.data)) {
+          stages.value = response.data.data.map((stage) => ({
+            id: stage.id,
+            name: stage.name,
+            description: stage.description || null,
+            color_code: stage.color_code,
+            deals: stage.deals || [],
+          }));
+          toast.success(t("success.loadKanban"));
+        } else {
+          toast.error(t("error.loadKanban"));
+        }
+        console.table(stages.value);
+      } catch (error) {
+        console.error("Error fetching stages:", error);
+        toast.error(t("error.loadKanban"));
+      }
+    };
     // const openWhatsappModal = () => {
     //   const modal = new Modal(document.getElementById("whatsappModal"));
     //   modal.show();
@@ -88,6 +110,7 @@ export default {
 
     // upload data
     onMounted(async () => {
+      fetchStages();
       window.addEventListener("contextmenu", handleRightClick);
     });
     onUnmounted(() => {
@@ -99,6 +122,7 @@ export default {
       filters,
       applyFilters,
       resetFilter,
+      fetchStages,
       // openWhatsappModal,
     };
   },

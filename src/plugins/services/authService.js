@@ -241,6 +241,9 @@ export const uploadFiles = async (formData) => {
 export const getDealsKanban = async () => {
   return await axios.get("/kanban/deals");
 };
+export const getTasksKanban = async () => {
+  return await axios.get("/kanban/tasks");
+};
 // Get Conversations
 export const getconversations = () => axios.get("/whatsapp");
 // Get message by Conversation id
