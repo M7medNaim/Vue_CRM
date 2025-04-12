@@ -52,9 +52,9 @@ export async function changeLanguage(locale) {
     i18n.global.locale.value = locale;
     localStorage.setItem("locale", locale);
     document.documentElement.lang = locale;
-    await saveUserLanguage(locale);
-
-    window.location.reload();
+    await saveUserLanguage(locale).then(() => {
+      window.location.reload();
+    });
   } catch (error) {
     console.error("Error changing language:", error);
   }

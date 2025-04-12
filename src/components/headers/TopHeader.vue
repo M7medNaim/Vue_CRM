@@ -234,8 +234,6 @@ export default {
       } catch (error) {
         console.error("Error changing language:", error);
         this.toast.error("حدث خطأ أثناء حفظ اللغة!", { timeout: 3000 });
-      } finally {
-        this.loadingStore.stopLoading();
       }
     },
     toggleMenu(menu) {
