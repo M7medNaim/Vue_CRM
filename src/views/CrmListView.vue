@@ -111,10 +111,10 @@
         :header="t('crmlist-table-header-source')"
       ></Column>
       <Column field="stage" :header="t('crmlist-table-header-stage')"></Column>
-      <Column
+      <!-- <Column
         field="responsible"
         :header="t('crmlist-table-header-responsible')"
-      ></Column>
+      ></Column> -->
       <Column :header="t('crmlist-table-header-action')">
         <template #body="slotProps">
           <div class="d-flex gap-2">

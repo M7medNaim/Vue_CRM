@@ -7,9 +7,13 @@
           {{ t("documents-modal-importdocument-heading") }}
           <i class="fas fa-file-import me-1"></i>
         </button> -->
-        <button class="btn btn-primary" @click="openNewFolderModal">
+        <button class="btn btn-primary me-2" @click="openNewFolderModal">
           {{ t("documents-button-createfolder") }}
           <i class="fas fa-folder-plus me-1"></i>
+        </button>
+        <button class="btn btn-primary" @click="$router.back()">
+          <i class="fas fa-arrow-right pt-1"></i>
+          <span>{{ t("documents-button-back") }}</span>
         </button>
       </div>
     </div>
