@@ -1,6 +1,6 @@
 <template>
   <header>
-    <nav class="container-fluid p-0 pe-2">
+    <nav class="container-fluid p-0">
       <div class="row">
         <div class="col-12">
           <div class="d-flex flex-wrap align-items-center">
@@ -13,26 +13,21 @@
                 {{ t("kanban-button-add-deal") }}
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 fw-semibold"
+                class="btn btn-header text-white px-2 py-2 me-2 fw-semibold"
                 @click="openCrmKanban"
-                v-if="$route.name !== 'CrmKanban'"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
                 class="btn btn-header text-white px-2 py-2 fw-semibold"
                 @click="openCrmTasks"
-                v-if="
-                  $route.name !== 'CrmTasks' &&
-                  permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)
-                "
               >
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
             </div>
 
             <!-- Search Form -->
-            <div class="col-md-2 mb-2 mb-xl-0 mx-2 flex-grow-1">
+            <div class="col-md mb-2 mb-xl-0 mx-2 flex-grow-1">
               <div class="input-group">
                 <button class="btn btn-header">
                   <i class="fa-solid fa-magnifying-glass text-white"></i>
@@ -57,7 +52,9 @@
               class="col-md-auto mb-2 mb-md-0 me-2 d-flex align-items-center"
             >
               <div class="btn-group w-100">
-                <div class="btn btn-header px-0 px-lg-1">
+                <div
+                  class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
+                >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
                     >99+</span
@@ -66,7 +63,9 @@
                     t("kanban-task-status-overdue")
                   }}</span>
                 </div>
-                <div class="btn btn-header px-0 px-lg-1">
+                <div
+                  class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
+                >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
                     >15</span
@@ -75,7 +74,9 @@
                     t("kanban-task-status-today")
                   }}</span>
                 </div>
-                <div class="btn btn-header px-0 px-lg-1">
+                <div
+                  class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
+                >
                   <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
                     >4</span
                   >
@@ -83,7 +84,9 @@
                     t("kanban-task-status-tomorrow")
                   }}</span>
                 </div>
-                <div class="btn btn-header px-1 px-lg-1">
+                <div
+                  class="btn btn-header px-1 px-lg-1 d-flex align-items-center"
+                >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
                     >99+</span
@@ -95,27 +98,30 @@
               </div>
               <div class="watsappIcon me-2">
                 <button
-                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 py-2 fs-7 ms-2"
+                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 p-2 fs-7 ms-2 whatsappIpad"
                   @click="openWhatsappModal"
                   style="background-color: #25d365cc"
                 >
-                  <span class="text-white fs-7">{{
+                  <i class="fa-brands fa-whatsapp text-white fs-5"></i>
+                  <span class="text-white fs-7 removeIpad">{{
                     $t("kanban-modal-edit-whatsapp")
                   }}</span>
-                  <i class="fa-brands fa-whatsapp text-white fs-5"></i>
                 </button>
               </div>
-              <div class="documents btn btn-header">
+              <div class="documents btn btn-header p-2">
                 <!-- v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)" -->
                 <router-link
                   to="/documents"
                   class="text-decoration-none text-white"
                 >
-                  <div class="" :title="$t('sidebar-nav-item-documents')">
-                    <i class="fa-regular fa-folder-open fs-5"></i>
-                    <!-- <span v-if="!isCollapsed">{{
-                    $t("sidebar-nav-item-documents")
-                  }}</span> -->
+                  <div
+                    class="d-flex align-items-center justify-content-center gap-2 documentsIpad"
+                    :title="$t('sidebar-nav-item-documents')"
+                  >
+                    <i class="fa-regular fa-folder-open fs-6"></i>
+                    <span class="fs-7 removeIpad">{{
+                      $t("sidebar-nav-item-documents")
+                    }}</span>
                   </div>
                 </router-link>
               </div>
@@ -123,7 +129,7 @@
             <!-- Import/Export Buttons -->
             <div class="col-md-auto d-flex align-items-center gap-2">
               <button
-                class="btn btn-header flex-fill py-2"
+                class="btn btn-header flex-fill py-2 px-1"
                 @click="openImportModal"
               >
                 <span class="fs-7 text-white">{{
@@ -132,7 +138,7 @@
                 <i class="fa-solid fa-upload ms-1 fs-7 text-white"></i>
               </button>
               <button
-                class="btn btn-header flex-fill py-2"
+                class="btn btn-header flex-fill py-2 px-1"
                 @click="openExportModal"
               >
                 <span class="fs-7 text-white">{{
@@ -290,5 +296,23 @@ input:focus {
 }
 .btn-header {
   background-color: rgba(128, 128, 128, 0.8) !important;
+}
+@media (max-width: 1200px) {
+  .removeIpad {
+    display: none;
+  }
+  .whatsappIpad {
+    padding: 0.5rem 0.7rem !important;
+  }
+  .whatsappIpad i {
+    font-size: 1.5rem !important;
+  }
+  .documentsIpad {
+    padding: 0 !important;
+  }
+  .documentsIpad i {
+    font-size: 1.1rem !important;
+    padding: 0.1rem !important;
+  }
 }
 </style>

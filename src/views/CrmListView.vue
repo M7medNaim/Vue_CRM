@@ -102,7 +102,7 @@
       </Column> -->
       <Column field="note" :header="t('crmlist-table-header-notes')"></Column>
       <Column
-        class="d-none d-lg-table-cell"
+        class="d-lg-table-cell"
         field="created_at"
         :header="t('created at')"
       ></Column>

@@ -8,4 +8,8 @@ html[lang="en"] {
 
 body {
   direction: ltr;
-} 
+}
+/* .custom-toast-container {
+  margin-right: 0 !important;
+  margin-left: none !important;
+} */

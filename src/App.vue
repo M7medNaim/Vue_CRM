@@ -16,7 +16,7 @@
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
 
-        <div :class="headerClass">
+        <div :class="headerClass" class="mx-2">
           <TopHeader @logout="handleLogout" />
           <div class="content">
             <router-view />
@@ -142,11 +142,14 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 #app {
   font-family: "Alexandria", "Poppins", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+.Vue-Toastification__container {
+  max-width: 320px !important;
 }
 </style>
