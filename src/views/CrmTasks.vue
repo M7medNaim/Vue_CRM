@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="mt-2">
     <TopHeader2
       :initial-filters="filters"
       @filter-applied="applyFilters"
