@@ -173,15 +173,11 @@ export const getTranslations = (locale) => {
 };
 export const saveUserLanguage = async (locale) => {
   const token = Cookies.get("authToken");
-  return await axios.patch(
-    "/translations/locale/",
-    { locale },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await axios.patch(`/translations/locale/${locale}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 // export const getDocuments = async () => {
