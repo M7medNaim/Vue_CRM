@@ -338,7 +338,12 @@ export default {
         // const userRole = "sales";
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
-        let userChannel = `${userRole}-${user_id}`;
+        let userChannel;
+        if (userRole === "super-admin") {
+          userChannel = userRole;
+        } else {
+          userChannel = `${userRole}-${user_id}`;
+        }
 
         // Listen to the appropriate channel
         window.Echo.channel(userChannel)
