@@ -131,7 +131,7 @@
           v-if="showWarning"
           class="message-warning text-white position-absolute py-1 px-3 rounded-3 d-flex justify-content-between align-items-center"
         >
-          <span class="me-2"
+          <span class="me-2 w-100"
             >to send the message you must click on the send button
           </span>
           <button class="btn btn-sm text-end btnConfirm" @click="hideWarning">
@@ -333,6 +333,7 @@ export default {
   bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
+  width: 80% !important;
 }
 .file-upload {
   cursor: pointer;
