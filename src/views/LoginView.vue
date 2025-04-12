@@ -145,9 +145,7 @@ export default {
           this.permissionStore.setPermissions(response.data.user.permissions);
           this.$router.replace(redirect);
           this.$emit("loginSuccess");
-          let bg_fetch = await saveBackgroundId(
-            response.data.user.bg_image_id
-          );
+          let bg_fetch = await saveBackgroundId(response.data.user.bg_image_id);
           let imageUrl = bg_fetch.data.data.url;
           localStorage.setItem("backgroundImage", imageUrl);
           document.body.style.backgroundImage = `url(${imageUrl})`;
