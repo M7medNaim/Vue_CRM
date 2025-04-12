@@ -35,7 +35,7 @@
       />
       <ProfileMenuItem
         icon="fa-rotate"
-        :title="t('header-reload')"
+        :title="t('header-user-menu-item-refresh')"
         @click="reloadPage"
       />
       <ProfileMenuItem
