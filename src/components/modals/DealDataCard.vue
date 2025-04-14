@@ -574,7 +574,7 @@ import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
   createConversation,
-  fetchConversationByContactId,
+  fetchConversationByDealId,
   getSources,
   getStages,
 } from "@/plugins/services/authService";
@@ -612,9 +612,9 @@ export default {
     const stageColors = reactive({});
     const customerData = reactive({
       id: props.deal?.id,
-      name: props.deal?.contact.name || "Custome Name",
-      nickname: props.deal?.contact.nickname || "Custome Name",
-      phone: props.deal?.contact.phones[0].phone || "+964770028133",
+      name: props.deal?.contact.name || "",
+      nickname: props.deal?.contact.nickname || "",
+      phone: props.deal?.contact.phones[0].phone || "",
       email: props.deal?.contact.email || "",
       note: props.deal?.note || "",
       rating: props.deal?.rating || 0,
@@ -919,8 +919,10 @@ export default {
     };
     const openWhatsappModal = async (id) => {
       try {
-        let conversation = await fetchConversationByContactId(id);
-        if (!conversation.data.data) {
+        let conversation = null;
+        try {
+          conversation = await fetchConversationByDealId(id);
+        } catch (error) {
           conversation = await createConversation(id);
         }
         selected_conversation.value = conversation.data.data;

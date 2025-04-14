@@ -247,7 +247,7 @@ export const getTasksKanban = async () => {
 // Get Conversations
 export const getconversations = () => axios.get("/whatsapp");
 // Get Conversation by contact id
-export const fetchConversationByContactId = (id) =>
+export const fetchConversationByDealId = (id) =>
   axios.get(`/whatsapp/conversation/${id}`);
 // Create Conversation by contact id
 export const createConversation = (contact_id) => {
