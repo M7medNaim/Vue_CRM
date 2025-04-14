@@ -73,8 +73,8 @@
       </div>
     </div>
   </div>
+  <!-- :key="selectedDeal?.id" -->
   <DealDataCard
-    :key="selectedDeal?.id"
     :deal="selectedDeal"
     :logs="logs"
     :comments="comments"

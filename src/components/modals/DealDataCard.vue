@@ -443,7 +443,12 @@
                       v-model="customerData.comment"
                       :placeholder="t('kanban-modal-edit-comment-placeholder')"
                     />
-                    <button class="btn btn-primary py-1 px-4" type="submit">
+                    <button
+                      class="btn btn-primary py-1 px-2"
+                      style="font-size: 14px"
+                      type="submit"
+                      @click="handleAddComment"
+                    >
                       {{ t("kanban-modal-edit-comment-button-submit") }}
                     </button>
                   </div>
@@ -503,7 +508,11 @@
                       v-model="customerData.date"
                       :placeholder="t('modals.selectDate')"
                     />
-                    <button class="btn btn-primary py-1 px-4" type="submit">
+                    <button
+                      class="btn btn-primary py-1 px-4"
+                      type="submit"
+                      @click="handleAddTask"
+                    >
                       {{ t("kanban-modal-edit-tasks-button-add") }}
                     </button>
                   </div>
@@ -524,17 +533,19 @@
                   </div>
                   <!-- data Tasks -->
                   <div
-                    v-for="task in customerData.tasks"
+                    v-for="task in activeTasks"
                     :key="task.id"
                     class="row text-secondary mt-2 align-items-center border-light-subtle pb-2 border-bottom"
                     :class="{ 'delete-animation': task.toDelete }"
                   >
-                    <div class="col-5">{{ task.description }}</div>
+                    <div class="col-5">
+                      {{ task.description }}
+                    </div>
                     <div class="col-5">
                       <input
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
-                        v-model="task.created_at"
+                        v-model="task.duedate"
                         :placeholder="t('modals.selectDate')"
                       />
                     </div>
@@ -543,7 +554,7 @@
                         type="checkbox"
                         class="custom-checkbox"
                         v-model="task.status"
-                        @change="() => handleTaskCompletion(index)"
+                        @change="() => handleTaskCompletion(task.id)"
                       />
                     </div>
                   </div>
@@ -577,6 +588,9 @@ import {
   fetchConversationByDealId,
   getSources,
   getStages,
+  createComment,
+  createTask,
+  updateTask,
 } from "@/plugins/services/authService";
 
 export default {
@@ -658,62 +672,62 @@ export default {
     const newComment = ref("");
     const newTask = ref("");
     const taskDate = ref("");
-    const tasks = ref([
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-      {
-        id: 1,
-        description: "Description",
-        date: "2025-02-22",
-        status: "Pending",
-      },
-    ]);
+    // const tasks = ref([
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    //   {
+    //     id: 1,
+    //     description: "Description",
+    //     date: "2025-02-22",
+    //     status: "Pending",
+    //   },
+    // ]);
     const rating = ref(0);
     const showNickName = ref(false);
     const toggleNickName = () => {
@@ -872,20 +886,27 @@ export default {
       }
     };
 
-    const handleTaskCompletion = (index) => {
+    const handleTaskCompletion = async (taskId) => {
       try {
-        if (tasks.value[index].status) {
-          tasks.value[index].toDelete = true;
-          setTimeout(() => {
-            tasks.value.splice(index, 1);
-            toast.success(t("success.completeTask"), {
-              timeout: 3000,
-            });
-          }, 500);
+        const task = customerData.tasks.find((t) => t.id === taskId);
+        const formData = {
+          status: "completed",
+          duedate: task.duedate,
+        };
+        const response = await updateTask(task.id, formData);
+        if (response.data) {
+          task.status = "completed";
+          toast.success(t("success.taskCompleted"), {
+            timeout: 3000,
+          });
+        } else {
+          toast.error(t("error.completingTask"), {
+            timeout: 3000,
+          });
         }
       } catch (error) {
         console.error("Error completing task:", error);
-        toast.error(t("error.completeTask"), {
+        toast.error(t("error.completingTask"), {
           timeout: 3000,
         });
       }
@@ -935,6 +956,49 @@ export default {
         });
       }
     };
+    const handleAddComment = async () => {
+      try {
+        const formData = {
+          text_body: customerData.comment,
+          deal_id: props.deal?.id,
+        };
+        console.log(formData);
+        const response = await createComment(formData);
+        if (response.data) {
+          toast.success(t("success.commentAdded"));
+          customerData.comment = "";
+        } else {
+          toast.error(t("error.addingComment"));
+        }
+      } catch (error) {
+        console.error("Error adding comment:", error);
+        toast.error(t("error.addingComment"));
+      }
+    };
+    const handleAddTask = async () => {
+      try {
+        const formData = {
+          description: customerData.task,
+          duedate: customerData.date,
+          deal_id: props.deal?.id,
+        };
+        console.log(formData);
+        const response = await createTask(formData);
+        if (response.data) {
+          toast.success(t("success.taskAdded"));
+          customerData.task = "";
+          customerData.date = "";
+        } else {
+          toast.error(t("error.addingTask"));
+        }
+      } catch (error) {
+        console.error("Error adding task:", error);
+        toast.error(t("error.addingTask"));
+      }
+    };
+    const activeTasks = computed(() => {
+      return customerData.tasks.filter((task) => task.status === "active");
+    });
     onMounted(() => {
       fetchSources();
       fetchStages();
@@ -974,6 +1038,9 @@ export default {
       t,
       sourceName,
       stageColor,
+      handleAddComment,
+      handleAddTask,
+      activeTasks,
     };
   },
 };
