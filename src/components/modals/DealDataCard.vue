@@ -241,7 +241,7 @@
               </div>
 
               <!-- Company and Representative -->
-              <div class="row mb-3" @dblclick="handleDoubleClick">
+              <!-- <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-user"></i>
@@ -258,7 +258,7 @@
                     <option value="none">none</option>
                   </select>
                 </div>
-              </div>
+              </div> -->
 
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
@@ -273,7 +273,7 @@
                     v-model="customerData.representative"
                     :readonly="!isEditMode"
                   >
-                    <option value="">
+                    <option value="" disabled>
                       {{ t("kanban-modal-edit-placeholder-representative") }}
                     </option>
                   </select>
@@ -281,7 +281,7 @@
               </div>
 
               <!-- Packages -->
-              <div class="row mb-3" @dblclick="handleDoubleClick">
+              <!-- <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i>
@@ -327,7 +327,7 @@
                     +
                   </button>
                 </div>
-              </div>
+              </div> -->
               <!-- Deal Status -->
               <div class="row mb-3">
                 <div class="col-2">
@@ -466,7 +466,7 @@
                         width="45"
                         height="45"
                       />
-                      <span class="ms-2">{{ comment.user }}</span>
+                      <span class="ms-2">{{ comment.username }}</span>
                     </div>
                     <div class="col-9">
                       <div
@@ -478,9 +478,9 @@
                         ]"
                         style="width: fit-content"
                       >
-                        <span>{{ comment.text }}</span
+                        <span>{{ comment.text_body }}</span
                         ><br />
-                        <span>{{ comment.created_at }}</span>
+                        <span>{{ formatDate(comment.created_at) }}</span>
                       </div>
                     </div>
                   </div>
@@ -545,7 +545,7 @@
                       <input
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
-                        v-model="task.duedate"
+                        v-model="task.due_date"
                         :placeholder="t('modals.selectDate')"
                       />
                     </div>
@@ -591,6 +591,8 @@ import {
   createComment,
   createTask,
   updateTask,
+  updateDealStage,
+  updateDeal,
 } from "@/plugins/services/authService";
 
 export default {
@@ -626,17 +628,28 @@ export default {
     const stageColors = reactive({});
     const customerData = reactive({
       id: props.deal?.id,
-      name: props.deal?.contact.name || "",
-      nickname: props.deal?.contact.nickname || "",
-      phone: props.deal?.contact.phones[0].phone || "",
+      name: props.deal?.contact.name || "Custome Name",
+      nickname: props.deal?.contact.nickname || "Custome Name",
+      phone: props.deal?.contact.phones[0].phone || "+964770028133",
+      phone2: props.deal?.contact.phones[1]?.phone || "",
       email: props.deal?.contact.email || "",
       note: props.deal?.note || "",
       rating: props.deal?.rating || 0,
       source_id: props.deal?.source_id || "",
       stage_id: props.deal?.stage_id || "",
       tasks: props.deal?.tasks || [],
-      comments: props.deal?.comments || [],
+      comments:
+        props.deal?.comments.map((comment) => ({
+          id: comment.id,
+          text_body: comment.comment || "No text",
+          created_at: comment.created_at || "No date",
+          username: comment.user.name || "No user ID",
+          isAdmin: comment.isAdmin || false,
+        })) || [],
     });
+    const formatDate = (dateString) => {
+      return dateString ? dateString.split("T")[0] : "No date";
+    };
     const fetchSources = async () => {
       try {
         const response = await getSources();
@@ -746,7 +759,7 @@ export default {
       hoveredStage.value = null;
     };
 
-    const changeStage = (stageId) => {
+    const changeStage = async (stageId) => {
       try {
         currentStageId.value = stageId;
         const stageIndex = stages.value.findIndex((s) => s.id === stageId);
@@ -760,9 +773,16 @@ export default {
           }
         });
 
-        toast.success(`${t("success.stageChanged")} ${stageName}`, {
-          timeout: 3000,
-        });
+        const response = await updateDealStage(props.deal.id, stageId);
+        if (response.data) {
+          toast.success(`${t("success.stageChanged")} ${stageName}`, {
+            timeout: 3000,
+          });
+        } else {
+          toast.error(t("error.changingStage"), {
+            timeout: 3000,
+          });
+        }
       } catch (error) {
         console.error("Error changing stage:", error);
         toast.error(t("error.changingStage"), {
@@ -816,14 +836,37 @@ export default {
         timeout: 3000,
       });
     };
-
-    const confirm = () => {
+    const confirm = async () => {
       try {
-        // Implement save functionality
-        toast.success(t("success.saveChanges"), {
-          timeout: 3000,
-        });
-        isEditMode.value = false;
+        const phones = [customerData.phone];
+        if (customerData.phone2) {
+          phones.push(customerData.phone2);
+        }
+
+        const formData = {
+          name: customerData.name,
+          nickname: customerData.nickname || "",
+          phones: phones,
+          email: customerData.email || "",
+          note: customerData.note || "",
+          rating: customerData.rating || 0,
+          // source_id: customerData.source_id,
+          // stage_id: customerData.stage_id,
+          // tasks: customerData.tasks,
+          // comments: customerData.comments,
+        };
+
+        const response = await updateDeal(props.deal.id, formData);
+        if (response.data) {
+          toast.success(t("success.saveChanges"), {
+            timeout: 3000,
+          });
+          isEditMode.value = false;
+        } else {
+          toast.error(t("error.saveChanges"), {
+            timeout: 3000,
+          });
+        }
       } catch (error) {
         console.error("Error saving changes:", error);
         toast.error(t("error.saveChanges"), {
@@ -1041,6 +1084,7 @@ export default {
       handleAddComment,
       handleAddTask,
       activeTasks,
+      formatDate,
     };
   },
 };

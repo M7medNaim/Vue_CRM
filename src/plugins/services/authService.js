@@ -287,3 +287,6 @@ export const createTask = (formData) => {
 export const updateTask = async (id, formData) => {
   return await axios.patch(`/tasks/${id}`, formData);
 };
+// update deal
+export const updateDeal = (dealId, formData) =>
+  axios.put(`/deals/${dealId}`, formData);

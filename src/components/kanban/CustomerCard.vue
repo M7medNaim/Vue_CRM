@@ -65,14 +65,14 @@
     <div class="col-12 mt-2 d-flex">
       <span class="text-success fs-7 pe-1"
         ><i class="fa-regular fa-clock"></i>
-        {{ t("kanban-deal-label-createdat") }}</span
+        {{ t("kanban-deal-label-createdat") }}:</span
       >
       <span class="fs-7"> {{ formatDate(deal.created_at) }}</span>
     </div>
     <div class="col-12 d-flex pt-1">
       <span class="text-black-50 fs-7 pe-1"
         ><i class="fa-regular fa-clock"></i>
-        {{ t("kanban-deal-label-updatedat") }}</span
+        {{ t("kanban-deal-label-updatedat") }}:</span
       >
       <span class="fs-7">{{ formatDate(deal.updated_at) }}</span>
     </div>
