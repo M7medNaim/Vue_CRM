@@ -499,7 +499,7 @@ export default {
 <style scoped>
 .kanban-wrapper {
   width: 100%;
-  height: calc(100vh - 137px);
+  height: calc(100vh - 127px);
   overflow-x: auto;
 }
 .kanban-board {
@@ -518,8 +518,8 @@ export default {
 }
 
 .stage-header {
-  min-width: 290px;
-  width: 290px;
+  min-width: 285px;
+  width: 285px;
   margin-right: 10px;
   text-align: start;
   font-weight: 600;
@@ -548,8 +548,8 @@ export default {
 }
 
 .stage-column {
-  width: 300px;
-  min-width: 300px;
+  width: 295px;
+  min-width: 295px;
   height: 100%;
   padding: 0.5rem 1rem 0 0;
   border-right: 2px dashed #eee;
@@ -610,5 +610,10 @@ export default {
   border-bottom-right-radius: 50%;
   left: 0%;
   z-index: 9999;
+}
+@media (min-width: 1000px) and (max-width: 1200px) {
+  .kanban-wrapper {
+    height: calc(100vh - 130px);
+  }
 }
 </style>

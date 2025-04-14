@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="mt-2">
     <TopHeader2
       :initial-filters="filters"
       @filter-applied="applyFilters"
@@ -32,8 +32,7 @@ export default {
     // WhatsappModal,
   },
   setup() {
-    const toast = useToast();
-    const { t } = useI18n();
+    // const { t } = useI18n();
     const stages = ref([]);
     const filters = ref({
       source: "",
@@ -110,7 +109,7 @@ export default {
 
     // upload data
     onMounted(async () => {
-      fetchStages();
+      await fetchStages();
       window.addEventListener("contextmenu", handleRightClick);
     });
     onUnmounted(() => {
