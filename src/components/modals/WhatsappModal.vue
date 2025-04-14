@@ -166,3 +166,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+#whatsappModal {
+  z-index: 9999 !important;
+}
+</style>

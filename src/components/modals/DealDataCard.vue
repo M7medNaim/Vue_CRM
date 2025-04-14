@@ -544,7 +544,7 @@
                       <input
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
-                        v-model="task.due_date"
+                        v-model="task.duedate"
                         :placeholder="t('modals.selectDate')"
                       />
                     </div>
@@ -642,10 +642,15 @@ export default {
           id: comment.id,
           text_body: comment.comment || "No text",
           created_at: comment.created_at || "No date",
-          username: comment.user.name || "No user ID",
+          username: comment.user.name || "No user",
           isAdmin: comment.isAdmin || false,
         })) || [],
     });
+    const formatDateForInput = (dateString) => {
+      if (!dateString) return "";
+      const [day, month, year] = dateString.split("/");
+      return `${year}-${month}-${day}`;
+    };
     const formatDate = (dateString) => {
       return dateString ? dateString.split("T")[0] : "No date";
     };
@@ -1048,6 +1053,14 @@ export default {
         console.log(formData);
         const response = await createComment(formData);
         if (response.data) {
+          customerData.comments.unshift({
+            id: response.data.id,
+            text_body: customerData.comment,
+            created_at: new Date().toISOString(),
+            username: response.data.user?.name || "No user",
+            isAdmin: false,
+          });
+
           toast.success(t("success.commentAdded"));
           customerData.comment = "";
         } else {
@@ -1068,6 +1081,12 @@ export default {
         console.log(formData);
         const response = await createTask(formData);
         if (response.data) {
+          customerData.tasks.unshift({
+            id: response.data.id,
+            description: customerData.task,
+            duedate: customerData.date,
+            status: "active",
+          });
           toast.success(t("success.taskAdded"));
           customerData.task = "";
           customerData.date = "";
@@ -1126,6 +1145,7 @@ export default {
       activeTasks,
       formatDate,
       closeEditMode,
+      formatDateForInput,
     };
   },
 };
