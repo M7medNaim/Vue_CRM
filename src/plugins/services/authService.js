@@ -262,3 +262,14 @@ export const sendMessage = (messageData) => {
 
   return axios.post("/whatsapp/send", formData);
 };
+// create new comment
+export const createComment = (formData) => {
+  return axios.post("/comments", formData);
+};
+// create new task
+export const createTask = (formData) => {
+  return axios.post("/tasks", formData);
+};
+export const updateTask = async (id, formData) => {
+  return await axios.patch(`/tasks/${id}`, formData);
+};
