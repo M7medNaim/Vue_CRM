@@ -199,23 +199,24 @@ export default {
         if (dealData.data) {
           selectedDeal.value = dealData.data.data;
           await nextTick();
+          setTimeout(() => {
+            const modalEl = document.getElementById("dealDataCard");
+            const modal = new Modal(modalEl);
+            modal.show();
 
-          const modalEl = document.getElementById("dealDataCard");
-          const modal = new Modal(modalEl);
-          modal.show();
-
-          modalEl.addEventListener(
-            "hidden.bs.modal",
-            () => {
-              const backdrop = document.querySelector(".modal-backdrop");
-              if (backdrop) {
-                backdrop.remove();
-                document.body.classList.remove("modal-open");
-                document.body.style.paddingRight = null;
-              }
-            },
-            { once: true }
-          );
+            modalEl.addEventListener(
+              "hidden.bs.modal",
+              () => {
+                const backdrop = document.querySelector(".modal-backdrop");
+                if (backdrop) {
+                  backdrop.remove();
+                  document.body.classList.remove("modal-open");
+                  document.body.style.paddingRight = null;
+                }
+              },
+              { once: true }
+            );
+          }, 300);
         } else {
           console.error("No matching deal found for ID:", dealId);
         }

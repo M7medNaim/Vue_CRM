@@ -71,7 +71,6 @@
                 @mouseleave="handleStageLeave"
                 @click="changeStage(stage.id)"
                 :title="stage.name"
-                :disabled="!isEditMode"
                 :style="{
                   backgroundColor: getStageClasses(stage.id).backgroundColor,
                 }"
@@ -264,7 +263,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-users"></i>
-                    {{ t("kanban-modal-edit-label-representative") }}</label
+                    {{ t("kanban-modal-edit-label-assignedto") }}</label
                   >
                 </div>
                 <div class="col-10">
@@ -355,7 +354,7 @@
                   </button>
                   <button
                     class="btn btn-secondary px-4 py-2"
-                    data-bs-dismiss="modal"
+                    @click="closeEditMode"
                   >
                     {{ t("kanban-modal-edit-button-cancel") }}
                   </button>
@@ -925,7 +924,9 @@ export default {
         });
       }
     };
-
+    const closeEditMode = () => {
+      isEditMode.value = false;
+    };
     const updateRating = (newRating) => {
       try {
         rating.value = newRating;
@@ -1019,7 +1020,6 @@ export default {
         });
       }
     };
-
     // const comments = ref([
     //   {
     //     user: "Admin",
@@ -1171,6 +1171,7 @@ export default {
       handleAddTask,
       activeTasks,
       formatDate,
+      closeEditMode,
     };
   },
 };
@@ -1244,7 +1245,6 @@ textarea:focus {
   font-weight: bold;
 }
 
-/* تخصيص شريط التمرير */
 .stages-container::-webkit-scrollbar {
   height: 4px;
 }
@@ -1263,7 +1263,7 @@ textarea:focus {
   background: #555;
 }
 .history {
-  height: 200px;
+  height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 14px;
@@ -1288,15 +1288,15 @@ textarea:focus {
   display: none;
 }
 .showComments {
-  min-height: 200px;
-  max-height: 365px;
+  height: 302px;
+  max-height: 302px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 14px;
 }
 .showTasks {
-  min-height: 200px;
-  max-height: 365px;
+  height: 302px;
+  max-height: 302px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 14px;
@@ -1336,7 +1336,6 @@ label {
   display: none;
 }
 
-/* تطبيق نفس التنسيق على جميع العناصر التي تحتوي على سكرول */
 .showComments,
 .showTasks {
   scrollbar-width: thin;

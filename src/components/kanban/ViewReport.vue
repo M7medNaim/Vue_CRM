@@ -697,7 +697,7 @@
                 />
               </div>
             </div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
+            <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
               <button type="submit" class="btn btn-primary">
                 {{ t("buttons.submit") }}
               </button>
