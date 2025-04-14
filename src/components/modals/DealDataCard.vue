@@ -25,11 +25,14 @@
             </h5>
           </div>
           <div class="rating">
-            <RatingStars v-model="rating" />
+            <RatingStars v-model="customerData.rating" />
           </div>
           <div class="source">
             <i class="fa-solid fa-circle-exclamation me-1"></i>
-            <span>{{ t("kanban-modal-edit-source-heading") }}: Whatsapp</span>
+            <span
+              >{{ t("kanban-modal-edit-source-heading") }}:
+              {{ sourceName }}</span
+            >
           </div>
           <div class="d-flex justify-content-end align-items-center gap-2">
             <button class="btn border-none text-primary" @click="startCall">
@@ -95,7 +98,7 @@
                     <input
                       type="text"
                       class="form-control bg-light text-secondary py-2"
-                      v-model="customerData.fullName"
+                      v-model="customerData.name"
                       :placeholder="t('kanban-modal-edit-placeholder-fullname')"
                       :readonly="!isEditMode"
                     />
@@ -214,7 +217,7 @@
                   <textarea
                     class="form-control bg-light"
                     rows="4"
-                    v-model="customerData.notes"
+                    v-model="customerData.note"
                     :readonly="!isEditMode"
                   ></textarea>
                 </div>
@@ -334,9 +337,9 @@
                   >
                 </div>
                 <div class="col-10">
-                  <span class="fw-bolder" style="font-size: 14px"
-                    >Not Responding 2</span
-                  >
+                  <span class="fw-bolder" style="font-size: 14px">{{
+                    currentStage.name
+                  }}</span>
                 </div>
               </div>
               <div class="row">
@@ -447,8 +450,8 @@
                 </div>
                 <div class="col-12 mt-2 bg-light showComments py-2 rounded-3">
                   <div
-                    v-for="(comment, index) in comments"
-                    :key="index"
+                    v-for="comment in customerData.comments"
+                    :key="comment.id"
                     class="row mt-2"
                   >
                     <div class="col-3">
@@ -472,7 +475,7 @@
                       >
                         <span>{{ comment.text }}</span
                         ><br />
-                        <span>{{ comment.date }}</span>
+                        <span>{{ comment.created_at }}</span>
                       </div>
                     </div>
                   </div>
@@ -521,7 +524,7 @@
                   </div>
                   <!-- data Tasks -->
                   <div
-                    v-for="(task, index) in tasks"
+                    v-for="task in customerData.tasks"
                     :key="task.id"
                     class="row text-secondary mt-2 align-items-center border-light-subtle pb-2 border-bottom"
                     :class="{ 'delete-animation': task.toDelete }"
@@ -531,7 +534,7 @@
                       <input
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
-                        v-model="task.date"
+                        v-model="task.created_at"
                         :placeholder="t('modals.selectDate')"
                       />
                     </div>
@@ -600,17 +603,22 @@
 </template>
 
 <script>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import RatingStars from "../CreateDealElements/RatingStars.vue";
 import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { getSources, getStages } from "@/plugins/services/authService";
 export default {
   name: "DealDataCard",
   components: { RatingStars, ViewReport, WhatsappModal },
   props: {
+    deal: {
+      type: Object,
+      required: true,
+    },
     logs: {
       type: Array,
       required: true,
@@ -624,40 +632,78 @@ export default {
       required: true,
     },
   },
-  setup() {
+  setup(props) {
     const { t } = useI18n();
     const toast = useToast();
-    const stages = [
-      { id: "new", name: "New Deal", color: "#4CAF50" },
-      { id: "notResponding1", name: "Not Responding 1", color: "#FF5722" },
-      { id: "notResponding2", name: "Not Responding 2", color: "#F44336" },
-      { id: "notResponding3", name: "Not Responding 3", color: "#E91E63" },
-      { id: "notResponding4", name: "Not Responding 4", color: "#9C27B0" },
-      { id: "negotiation", name: "Negotiation", color: "#673AB7" },
-      { id: "contact", name: "Contact", color: "#3F51B5" },
-      { id: "willSend", name: "Will Send", color: "#2196F3" },
-      { id: "ticketSent", name: "Ticket Sent", color: "#03A9F4" },
-      { id: "processing", name: "Processing", color: "#00BCD4" },
-      { id: "done", name: "Done", color: "#009688" },
-      { id: "medicine", name: "Medicine", color: "#4CAF50" },
-      { id: "oldData", name: "Old Data", color: "#8BC34A" },
-      { id: "noResponse", name: "No Response", color: "#CDDC39" },
-      { id: "trash", name: "Trash", color: "#f00" },
-      { id: "reContact", name: "Re-Contact", color: "#607D8B" },
-    ];
+    const sources = ref([]);
+    const stages = ref([]);
+    const currentStageId = ref(props.deal?.stage_id || "");
+    // const stages = [
+    //   { id: "new", name: "New Deal", color: "#4CAF50" },
+    //   { id: "notResponding1", name: "Not Responding 1", color: "#FF5722" },
+    //   { id: "notResponding2", name: "Not Responding 2", color: "#F44336" },
+    //   { id: "notResponding3", name: "Not Responding 3", color: "#E91E63" },
+    //   { id: "notResponding4", name: "Not Responding 4", color: "#9C27B0" },
+    //   { id: "negotiation", name: "Negotiation", color: "#673AB7" },
+    //   { id: "contact", name: "Contact", color: "#3F51B5" },
+    //   { id: "willSend", name: "Will Send", color: "#2196F3" },
+    //   { id: "ticketSent", name: "Ticket Sent", color: "#03A9F4" },
+    //   { id: "processing", name: "Processing", color: "#00BCD4" },
+    //   { id: "done", name: "Done", color: "#009688" },
+    //   { id: "medicine", name: "Medicine", color: "#4CAF50" },
+    //   { id: "oldData", name: "Old Data", color: "#8BC34A" },
+    //   { id: "noResponse", name: "No Response", color: "#CDDC39" },
+    //   { id: "trash", name: "Trash", color: "#f00" },
+    //   { id: "reContact", name: "Re-Contact", color: "#607D8B" },
+    // ];
     const isEditMode = ref(false);
-    const currentStage = ref("notResponding3");
     const hoveredStage = ref(null);
     const stageColors = reactive({});
     const customerData = reactive({
-      fullName: "Custome Name",
-      phone: "+964770028133",
-      email: "",
-      notes: "",
-      company: "Eurasia Admin",
-      representative: "",
+      id: props.deal?.id,
+      name: props.deal?.contact.name || "Custome Name",
+      nickname: props.deal?.contact.nickname || "Custome Name",
+      phone: props.deal?.contact.phones[0].phone || "+964770028133",
+      email: props.deal?.contact.email || "",
+      note: props.deal?.note || "",
+      rating: props.deal?.rating || 0,
+      source_id: props.deal?.source_id || "",
+      stage_id: props.deal?.stage_id || "",
+      tasks: props.deal?.tasks || [],
+      comments: props.deal?.comments || [],
     });
-
+    const fetchSources = async () => {
+      try {
+        const response = await getSources();
+        sources.value = response.data.data;
+      } catch (error) {
+        console.error("Error fetching sources:", error);
+      }
+    };
+    const sourceName = computed(() => {
+      const source = sources.value.find((s) => s.id === props.deal?.source_id);
+      return source ? source.name : "";
+    });
+    const fetchStages = async () => {
+      try {
+        const response = await getStages();
+        stages.value = response.data.data;
+      } catch (error) {
+        console.error("Error fetching sources:", error);
+      }
+    };
+    const currentStage = computed(() => {
+      return (
+        stages.value.find((s) => s.id === currentStageId.value) || {
+          id: "",
+          name: "",
+          color_code: "#333",
+        }
+      );
+    });
+    const stageColor = computed(() => {
+      return currentStage.value.color_code;
+    });
     const newComment = ref("");
     const newTask = ref("");
     const taskDate = ref("");
@@ -737,13 +783,13 @@ export default {
 
     const changeStage = (stageId) => {
       try {
-        currentStage.value = stageId;
-        const stageIndex = stages.findIndex((s) => s.id === stageId);
-        const stageName = stages.find((s) => s.id === stageId)?.name;
+        currentStageId.value = stageId;
+        const stageIndex = stages.value.findIndex((s) => s.id === stageId);
+        const stageName = stages.value.find((s) => s.id === stageId)?.name;
 
-        stages.forEach((stage, index) => {
+        stages.value.forEach((stage, index) => {
           if (index <= stageIndex) {
-            stageColors[stage.id] = stages[stageIndex].color;
+            stageColors[stage.id] = stages.value[stageIndex].color_code;
           } else {
             stageColors[stage.id] = "";
           }
@@ -761,24 +807,26 @@ export default {
     };
 
     const getStageClasses = (stageId) => {
-      const stageIndex = stages.findIndex((s) => s.id === stageId);
+      const stageIndex = stages.value.findIndex((s) => s.id === stageId);
       const hoveredIndex = hoveredStage.value
-        ? stages.findIndex((s) => s.id === hoveredStage.value)
+        ? stages.value.findIndex((s) => s.id === hoveredStage.value)
         : -1;
-      const currentIndex = stages.findIndex((s) => s.id === currentStage.value);
+      const currentIndex = stages.value.findIndex(
+        (s) => s.id === currentStageId.value
+      );
 
       const classes = { "text-white": true };
       let backgroundColor = "";
 
       if (hoveredStage.value) {
         if (stageIndex <= hoveredIndex) {
-          backgroundColor = stages[hoveredIndex].color;
+          backgroundColor = stages.value[hoveredIndex].color_code;
         } else {
           classes["btn-secondary"] = true;
         }
       } else {
         if (stageIndex <= currentIndex) {
-          backgroundColor = stages[currentIndex].color;
+          backgroundColor = stages.value[currentIndex].color_code;
         } else {
           classes["btn-secondary"] = true;
         }
@@ -970,7 +1018,10 @@ export default {
         });
       }
     };
-
+    onMounted(() => {
+      fetchSources();
+      fetchStages();
+    });
     return {
       stages,
       currentStage,
@@ -1004,6 +1055,8 @@ export default {
       isEditMode,
       openWhatsappModal,
       t,
+      sourceName,
+      stageColor,
     };
   },
 };
@@ -1254,5 +1307,13 @@ label {
   100% {
     background-position: 0% 50%;
   }
+}
+
+.text-gold {
+  color: #ffd700;
+}
+
+.text-lightgray {
+  color: #d3d3d3;
 }
 </style>

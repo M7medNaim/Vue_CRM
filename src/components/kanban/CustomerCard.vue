@@ -1,5 +1,5 @@
 <template>
-  <div class="deal-card">
+  <div class="deal-card" @click="openDealDataCard">
     <div
       class="row"
       style="background: linear-gradient(to left, white, rgb(231, 227, 227))"
@@ -95,7 +95,7 @@ export default {
       required: true,
     },
   },
-  setup() {
+  setup(props, { emit }) {
     const { t } = useI18n();
     // const responsibleUserName = ref("...");
 
@@ -109,6 +109,9 @@ export default {
       const year = date.getFullYear();
 
       return `${day}/${month}/${year}`;
+    };
+    const openDealDataCard = () => {
+      emit("open-deal-data-card", props.deal.id);
     };
     // onMounted(async () => {
     //   try {
@@ -124,7 +127,7 @@ export default {
     //   }
     // });
     // responsibleUserName
-    return { t, formatDate };
+    return { t, formatDate, openDealDataCard };
   },
   methods: {},
 };

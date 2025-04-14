@@ -39,7 +39,10 @@
               @change="handleDragChange($event, stage.id)"
             >
               <template #item="{ element: deal }">
-                <CustomerCard :deal="deal" @click="openDealDataCard" />
+                <CustomerCard
+                  :deal="deal"
+                  @open-deal-data-card="openDealDataCard(deal.id)"
+                />
               </template>
             </draggable>
           </div>
@@ -70,13 +73,19 @@
       </div>
     </div>
   </div>
-  <DealDataCard :deal="deal" :logs="logs" :comments="comments" :tasks="tasks" />
+  <DealDataCard
+    :key="selectedDeal?.id"
+    :deal="selectedDeal"
+    :logs="logs"
+    :comments="comments"
+    :tasks="tasks"
+  />
   <!-- selectedDeal -->
   <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import draggable from "vuedraggable";
 import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
@@ -85,7 +94,7 @@ import { useToast } from "vue-toastification";
 import { updateDealStage } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
-
+import { showDeal } from "@/plugins/services/authService";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";
@@ -122,7 +131,7 @@ export default {
     const tasks = ref([]);
     const toast = useToast();
     const { t } = useI18n();
-
+    const selectedDeal = ref(null);
     const isTasksView = computed(() => route.path === "/crm-tasks");
 
     const moveSound = new Audio(moveCardSound);
@@ -169,9 +178,19 @@ export default {
       }
     };
     // open data deal modal
-    const openDealDataCard = () => {
-      const modal = new Modal(document.getElementById("dealDataCard"));
-      modal.show();
+    const openDealDataCard = async (dealId) => {
+      try {
+        const dealData = await showDeal(dealId);
+        if (dealData.data) {
+          selectedDeal.value = dealData.data.data;
+          const modal = new Modal(document.getElementById("dealDataCard"));
+          modal.show();
+        } else {
+          console.error("No matching deal found for ID:", dealId);
+        }
+      } catch (error) {
+        console.error("Error fetching deal data:", error);
+      }
     };
     const openUpdateStage = (stage) => {
       selectedStage.value = stage;
@@ -379,6 +398,26 @@ export default {
         console.error("Error mounting component:", error);
       }
     });
+    watch(selectedDeal, (newDeal) => {
+      if (newDeal) {
+        const modalEl = document.getElementById("dealDataCard");
+        const modal = new Modal(modalEl);
+        modal.show();
+
+        modalEl.addEventListener(
+          "hidden.bs.modal",
+          () => {
+            const backdrop = document.querySelector(".modal-backdrop");
+            if (backdrop) {
+              backdrop.remove();
+              document.body.classList.remove("modal-open");
+              document.body.style.paddingRight = null;
+            }
+          },
+          { once: true }
+        );
+      }
+    });
     onUnmounted(() => {
       if (dealsContainer.value) {
         dealsContainer.value.removeEventListener(
@@ -436,6 +475,7 @@ export default {
       comments,
       tasks,
       handleDragChange,
+      selectedDeal,
     };
   },
 };
