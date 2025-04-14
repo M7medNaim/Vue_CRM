@@ -102,9 +102,13 @@
       </Column> -->
       <Column field="note" :header="t('crmlist-table-header-notes')"></Column>
       <Column
+        field="responsible"
+        :header="t('crmlist-table-header-responsible')"
+      ></Column>
+      <Column
         class="d-lg-table-cell"
         field="created_at"
-        :header="t('created at')"
+        :header="t('crmlist-table-header-createdat')"
       ></Column>
       <Column
         field="source"
@@ -163,7 +167,7 @@
     :selectedStatuses="selectedStatuses"
   />
   <!-- @add-deal="addNewDeal" -->
-  <DealModal />
+  <DealModal @add-deal="addNewDeal" ref="dealModal" />
   <ImportModal />
   <ShowData :formData="dealData" ref="showDataModal" />
 </template>
@@ -222,10 +226,10 @@ const dealData = ref(null);
 const showDataModal = ref(null);
 // Actions operations
 const actions = ref([
-  { value: "changeStage", label: t("actions.changeStage") },
-  { value: "assignUser", label: t("actions.assignUser") },
-  { value: "changeSource", label: t("actions.changeSource") },
-  { value: "delete", label: t("actions.delete") },
+  { value: "changeStage", label: t("crmlist-action-changestage") },
+  { value: "assignUser", label: t("crmlist-action-assignto") },
+  { value: "changeSource", label: t("crmlist-action-changesource") },
+  { value: "delete", label: t("crmlist-action-delete") },
 ]);
 const executeAction = () => {
   if (!selectedAction.value || selectedRows.value.length === 0) {
@@ -334,7 +338,7 @@ const fetchData = async () => {
         note: deal.note || "unassigned",
         created_at: deal.created_at.split("T")[0],
         stage: matchedStage ? matchedStage.name : "null",
-        responsible: deal.responsible_user || "Null",
+        responsible: deal.responsible_user?.name || "Not Assigned",
         source: matchedSource ? matchedSource.name : "Null",
       };
     });
@@ -407,7 +411,7 @@ const handleShowDeal = async (dealId) => {
         : "",
       stage_name: matchedStage?.name || "Unassigned",
       source_name: matchedSource?.name || "Unassigned",
-      responsablePerson: deal.user || "unassigned",
+      responsablePerson: deal.responsible_user.name || "unassigned",
     };
 
     showDataModal.value?.openShowData();
@@ -433,27 +437,6 @@ const openDealModal = () => {
   const modal = new Modal(modalElement);
   modal.show();
 };
-// const addNewDeal = (newDeal) => {
-//   try {
-//     const formattedDeal = {
-//       id: newDeal.id,
-//       name: newDeal.contact.name,
-//       phones: newDeal.contact.phones.join(", "),
-//       email: newDeal.contact.email,
-//       note: newDeal.note,
-//       created_at: new Date().toISOString().split("T")[0],
-//       source: newDeal.source_id,
-//       stage: newDeal.stage_id,
-//       responsible: newDeal.responsible_user_id,
-//     };
-
-//     rows.value = [...rows.value, formattedDeal];
-//     const modal = new Modal(document.getElementById("dealModal"));
-//     modal.hide();
-//   } catch (error) {
-//     console.error("Error fetching user data for new deal:", error);
-//   }
-// };
 
 // Filtered items search and filters
 const filteredItems = computed(() => {
@@ -745,6 +728,31 @@ const bulkDeleteItems = async () => {
     toast.error(error.response?.data?.message || t("error.deleteFailed"), {
       timeout: 3000,
     });
+  }
+};
+
+const addNewDeal = (newDeal) => {
+  try {
+    const formattedDeal = {
+      id: newDeal.id,
+      name: newDeal.name,
+      phones: newDeal.phone,
+      email: newDeal.email,
+      note: newDeal.note,
+      created_at: new Date().toISOString().split("T")[0],
+      source_id: newDeal.source_id,
+      stage_id: newDeal.stage_id,
+      responsible_user: newDeal.responsible_user,
+      rating: newDeal.rating,
+    };
+
+    rows.value = [...rows.value, formattedDeal];
+    const modal = Modal.getInstance(document.getElementById("dealModal"));
+    if (modal) {
+      modal.hide();
+    }
+  } catch (error) {
+    console.error("Error fetching user data for new deal:", error);
   }
 };
 

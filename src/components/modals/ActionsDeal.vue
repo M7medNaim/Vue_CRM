@@ -5,8 +5,10 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ t("modals.changeStage") }} ({{ props.selectedRows.length }}
-            {{ t("modals.items") }})
+            {{ t("crmlist-action-changestage") }} ({{
+              props.selectedRows.length
+            }}
+            {{ t("crmlist-table-header-stage") }})
           </h5>
           <button
             type="button"
@@ -16,7 +18,9 @@
         </div>
         <div class="modal-body">
           <select v-model="newStage" class="form-select">
-            <option value="">{{ t("modals.selectStage") }}</option>
+            <option value="">
+              {{ t("crmlist-modal-filter-placeholder-stage") }}
+            </option>
             <option
               v-for="option in stageOptions"
               :key="option.value"
@@ -51,65 +55,13 @@
     </div>
   </div>
 
-  <!-- Assign Supervisor Modal -->
-  <!-- <div class="modal fade" id="assignSupervisorModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            Assign Supervisor ({{ props.selectedRows.length }} items)
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <select v-model="newSupervisor" class="form-select">
-            <option value="">Select Supervisor</option>
-            <option
-              v-for="option in supervisorOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="confirmAssignSupervisor"
-            :disabled="isLoading || !newSupervisor"
-          >
-            <span
-              v-if="isLoading"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
-            Apply
-          </button>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <!-- Assign Representative Modal -->
   <div class="modal fade" id="assignUser" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ t("modals.assignUser") }} ({{ selectedRows.length }}
-            {{ t("modals.items") }})
+            {{ t("crmlist-action-assignto") }} ({{ selectedRows.length }})
           </h5>
           <button
             type="button"
@@ -119,7 +71,9 @@
         </div>
         <div class="modal-body">
           <select v-model="newUser" class="form-select">
-            <option value="">{{ t("modals.selectUser") }}</option>
+            <option value="">
+              {{ t("crmlist-modal-import-placeholder-representative") }}
+            </option>
             <option
               v-for="option in userOptions"
               :key="option.value"
@@ -160,8 +114,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ t("modals.changeSource") }} ({{ selectedRows.length }}
-            {{ t("modals.items") }})
+            {{ t("crmlist-action-changesource") }} ({{ selectedRows.length }})
           </h5>
           <button
             type="button"
@@ -171,7 +124,9 @@
         </div>
         <div class="modal-body">
           <select v-model="newSource" class="form-select">
-            <option value="">{{ t("modals.selectSource") }}</option>
+            <option value="">
+              {{ t("crmlist-modal-import-placeholder-source") }}
+            </option>
             <option
               v-for="option in sourceOptions"
               :key="option.value"
@@ -187,7 +142,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            {{ t("buttons.cancel") }}
+            {{ t("users-modal-add-button-cancel") }}
           </button>
           <button
             type="button"
@@ -199,7 +154,7 @@
               v-if="isLoading"
               class="spinner-border spinner-border-sm me-2"
             ></span>
-            {{ t("buttons.apply") }}
+            {{ t("users-modal-add-button-submit") }}
           </button>
         </div>
       </div>

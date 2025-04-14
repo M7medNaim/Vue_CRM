@@ -35,7 +35,7 @@
       />
       <ProfileMenuItem
         icon="fa-rotate"
-        :title="t('header-reload')"
+        :title="t('header-user-menu-item-refresh')"
         @click="reloadPage"
       />
       <ProfileMenuItem
@@ -63,7 +63,6 @@
 </template>
 <script>
 import Cookies from "js-cookie";
-import axiosInstance from "@/plugins/axios";
 import ProfileMenuItem from "@/components/headers/sub-menu/profileMenuItems/ProfileMenuItem.vue";
 import EditProfile from "@/components/modals/EditProfile.vue";
 import ChangePassword from "@/components/modals/ChangePassword.vue";
@@ -113,17 +112,7 @@ export default {
   methods: {
     async handleLogout() {
       try {
-        Cookies.remove("authToken");
-        Cookies.remove("name");
-        Cookies.remove("image");
-        Cookies.remove("email");
-        Cookies.remove("user_role");
-        Cookies.remove("user_id");
-
-        delete axiosInstance.defaults.headers["Authorization"];
-
         this.$emit("logout");
-        this.$router.push("/login");
       } catch (error) {
         console.error("Error logging out:", error);
         this.toast.error(this.t("topHeader.logoutError"), {

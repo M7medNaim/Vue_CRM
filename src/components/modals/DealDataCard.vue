@@ -41,7 +41,7 @@
             </button>
             <button
               class="btn border-none text-primary"
-              @click="openWhatsappModal"
+              @click="openWhatsappModal(customerData.id)"
             >
               <i class="fab fa-whatsapp border-none text-primary fs-5"></i>
               {{ t("kanban-modal-edit-whatsapp") }}
@@ -559,44 +559,6 @@
                   </div>
                 </div>
               </div>
-              <!-- watsapp Chat -->
-              <!-- <div class="row">
-                <div class="col-6 m-auto my-4">
-                  <button class="btn btn-success px-4 py-3">
-                    <i class="fa-brands fa-whatsapp me-2 fs-5"></i>
-                    <span>Start Whatsapp Chat</span>
-                  </button>
-                </div>
-                <div class="col-12">
-                  <div class="input-group">
-                    <button class="btn btn-light text-secondary" type="submit">
-                      <i class="fa-solid fa-face-smile"></i>
-                    </button>
-                    <button
-                      class="btn btn-light text-secondary border-start"
-                      type="submit"
-                    >
-                      <i class="fa-solid fa-paperclip"></i>
-                    </button>
-                    <button
-                      class="btn btn-light text-secondary border-start"
-                      type="submit"
-                    >
-                      <i class="fa-solid fa-microphone"></i>
-                    </button>
-                    <input
-                      type="input"
-                      class="form-control bg-secondary-subtle text-secondary py-2"
-                      v-model="customerData.date"
-                      placeholder="Type Your Message Here"
-                    />
-                    <button class="btn btn-secondary px-4" type="submit">
-                      <i class="fa-solid fa-paper-plane me-2"></i>
-                      Send
-                    </button>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
         </div>
@@ -609,7 +571,7 @@
     </div>
   </div>
   <ViewReport ref="questionsModalRef" />
-  <WhatsappModal ref="whatsappModalRef" />
+  <WhatsappModal ref="whatsappModalRef" :conversation="selected_conversation" />
 </template>
 
 <script>
@@ -621,6 +583,8 @@ import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
+  createConversation,
+  fetchConversationByDealId,
   getSources,
   getStages,
   createComment,
@@ -629,6 +593,7 @@ import {
   updateDealStage,
   updateDeal,
 } from "@/plugins/services/authService";
+
 export default {
   name: "DealDataCard",
   components: { RatingStars, ViewReport, WhatsappModal },
@@ -651,29 +616,12 @@ export default {
     },
   },
   setup(props) {
+    const selected_conversation = ref(null);
     const { t } = useI18n();
     const toast = useToast();
     const sources = ref([]);
     const stages = ref([]);
     const currentStageId = ref(props.deal?.stage_id || "");
-    // const stages = [
-    //   { id: "new", name: "New Deal", color: "#4CAF50" },
-    //   { id: "notResponding1", name: "Not Responding 1", color: "#FF5722" },
-    //   { id: "notResponding2", name: "Not Responding 2", color: "#F44336" },
-    //   { id: "notResponding3", name: "Not Responding 3", color: "#E91E63" },
-    //   { id: "notResponding4", name: "Not Responding 4", color: "#9C27B0" },
-    //   { id: "negotiation", name: "Negotiation", color: "#673AB7" },
-    //   { id: "contact", name: "Contact", color: "#3F51B5" },
-    //   { id: "willSend", name: "Will Send", color: "#2196F3" },
-    //   { id: "ticketSent", name: "Ticket Sent", color: "#03A9F4" },
-    //   { id: "processing", name: "Processing", color: "#00BCD4" },
-    //   { id: "done", name: "Done", color: "#009688" },
-    //   { id: "medicine", name: "Medicine", color: "#4CAF50" },
-    //   { id: "oldData", name: "Old Data", color: "#8BC34A" },
-    //   { id: "noResponse", name: "No Response", color: "#CDDC39" },
-    //   { id: "trash", name: "Trash", color: "#f00" },
-    //   { id: "reContact", name: "Re-Contact", color: "#607D8B" },
-    // ];
     const isEditMode = ref(false);
     const hoveredStage = ref(null);
     const stageColors = reactive({});
@@ -878,7 +826,8 @@ export default {
     };
 
     const startWhatsapp = () => {
-      // Implement WhatsApp chat functionality
+      const modal = new Modal(document.getElementById("whatsappModal"));
+      modal.show();
     };
 
     const sendEmail = () => {
@@ -1020,6 +969,7 @@ export default {
         });
       }
     };
+
     // const comments = ref([
     //   {
     //     user: "Admin",
@@ -1071,13 +1021,17 @@ export default {
     const handleDoubleClick = () => {
       isEditMode.value = true;
     };
-    const openWhatsappModal = () => {
+    const openWhatsappModal = async (id) => {
       try {
+        let conversation = null;
+        try {
+          conversation = await fetchConversationByDealId(id);
+        } catch (error) {
+          conversation = await createConversation(id);
+        }
+        selected_conversation.value = conversation.data.data;
         const modal = new Modal(document.getElementById("whatsappModal"));
         modal.show();
-        // toast.info(t("success.openWhatsappModal"), {
-        //   timeout: 3000,
-        // });
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
         toast.error(t("error.openWhatsappModal"), {
@@ -1139,7 +1093,7 @@ export default {
       newComment,
       newTask,
       taskDate,
-      // tasks,
+      selected_conversation,
       changeStage,
       startCall,
       startWhatsapp,

@@ -133,7 +133,6 @@ export default {
     async fetchConversations() {
       try {
         const response = await getconversations();
-        console.log("API conversations response:", response.data);
 
         this.chats = response.data.data.map((conversation) => {
           const lastMessage = conversation.last_message;
@@ -162,7 +161,6 @@ export default {
             conversation_id: conversation.id,
           };
         });
-        console.log("Mapped chats:", this.chats);
       } catch (error) {
         console.error("Error fetching conversations:", error);
       }
