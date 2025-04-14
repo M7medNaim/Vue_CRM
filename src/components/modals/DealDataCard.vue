@@ -640,7 +640,7 @@ export default {
       comments:
         props.deal?.comments.map((comment) => ({
           id: comment.id,
-          text_body: comment.comment || "No text",
+          text_body: comment.text_body || "No text",
           created_at: comment.created_at || "No date",
           username: comment.user.name || "No user",
           isAdmin: comment.isAdmin || false,
