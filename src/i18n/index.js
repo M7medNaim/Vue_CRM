@@ -1,5 +1,7 @@
 import { createI18n } from "vue-i18n";
 import { getTranslations } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
+import { saveUserLanguage } from "@/plugins/services/authService";
 
 const i18n = createI18n({
   legacy: false,
@@ -14,6 +16,11 @@ const i18n = createI18n({
 
 async function loadTranslationsFromAPI(locale) {
   try {
+    const token = Cookies.get("authToken");
+    if (!token) {
+      console.log("Not authenticated.");
+      return null;
+    }
     const response = await getTranslations(locale);
 
     if (response.data && response.data.translations) {
@@ -45,8 +52,9 @@ export async function changeLanguage(locale) {
     i18n.global.locale.value = locale;
     localStorage.setItem("locale", locale);
     document.documentElement.lang = locale;
-
-    window.location.reload();
+    await saveUserLanguage(locale).then(() => {
+      window.location.reload();
+    });
   } catch (error) {
     console.error("Error changing language:", error);
   }

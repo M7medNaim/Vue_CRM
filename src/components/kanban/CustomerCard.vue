@@ -78,7 +78,7 @@
     </div>
 
     <div class="col-12">
-      <!-- <span class="fs-7 fw-medium">{{ deal.responsible_user }}</span> -->
+      <span class="fs-7 fw-medium">{{ deal.responsible_user?.name }}</span>
     </div>
   </div>
 </template>

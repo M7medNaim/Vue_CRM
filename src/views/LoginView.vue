@@ -74,6 +74,8 @@ import Cookies from "js-cookie";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useRouter } from "vue-router";
 import { initializeTranslations } from "@/i18n";
+import { saveBackgroundId } from "@/plugins/services/authService";
+import { useLoadingStore } from "@/plugins/loadingStore";
 // import axiosInstance from "@/plugins/axios";
 
 export default {
@@ -81,10 +83,12 @@ export default {
   setup() {
     const permissionStore = usePermissionStore();
     const router = useRouter();
+    const loadingStore = useLoadingStore();
 
     return {
       permissionStore,
       router,
+      loadingStore,
     };
   },
   data() {
@@ -103,6 +107,7 @@ export default {
   methods: {
     async handleLogin() {
       try {
+        this.loadingStore.startLoading();
         this.resetErrors();
         if (!this.validateInputs()) {
           return;
@@ -125,18 +130,28 @@ export default {
           Cookies.set("image", response.data.user.image || "", cookieOptions);
           Cookies.set("user_role", response.data.user.role, cookieOptions);
           Cookies.set("user_id", response.data.user.id, cookieOptions);
+          Cookies.set(
+            "background_id",
+            response.data.user.bg_image_id,
+            cookieOptions
+          );
           const locale = localStorage.getItem("locale") || "en";
           await initializeTranslations(locale);
 
           this.email = "";
           this.password = "";
           this.loginSuccess = true;
-          const redirect = this.$route.query.redirect || "/dashboard";
-          this.$router.replace(redirect);
+          const redirect = this.$route.query.redirect || "/crm-kanban";
+          this.permissionStore.setPermissions(response.data.user.permissions);
           this.$emit("loginSuccess");
-          if (response.data.permissions) {
-            this.permissionStore.setPermissions(response.data.permissions);
-          }
+          let bg_fetch = await saveBackgroundId(response.data.user.bg_image_id);
+          let imageUrl = bg_fetch.data.data.url;
+          document.body.style.backgroundImage = `url(${imageUrl})`;
+          document.body.style.backgroundSize = "cover";
+          document.body.style.backgroundPosition = "center";
+          this.$router.replace(redirect);
+        } else {
+          this.errors.message = "Invalid email or password.";
         }
       } catch (error) {
         console.error("Login failed:", error);
@@ -144,6 +159,7 @@ export default {
         this.email = "";
         this.password = "";
       }
+      this.loadingStore.stopLoading();
     },
 
     resetErrors() {
@@ -171,7 +187,7 @@ export default {
     },
     mounted() {
       if (Cookies.get("authToken")) {
-        this.$router.push("/dashboard");
+        this.$router.push("/crm-kanban");
       }
     },
   },

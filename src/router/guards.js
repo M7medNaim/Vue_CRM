@@ -12,3 +12,15 @@ export function requirePermission(permission) {
     }
   };
 }
+
+export function requireGuest() {
+  return (to, from, next) => {
+    const permissionStore = usePermissionStore();
+
+    if (!permissionStore.isAuthenticated) {
+      next();
+    } else {
+      next({ path: "/dashboard", replace: true });
+    }
+  };
+}

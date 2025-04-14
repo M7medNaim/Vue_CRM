@@ -5,7 +5,14 @@ export const login = (credentials) => {
   return axios.post("/login", credentials);
 };
 // logout
-export const logout = () => axios.post("/logout");
+export const logout = () => {
+  const token = Cookies.get("authToken");
+  axios.post("/logout", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 // get All users
 export const getUser = (filters) => {
   const token = Cookies.get("authToken");
@@ -152,6 +159,9 @@ export const getBackgroundImages = async () => {
 export const saveBackgroundId = async (id) => {
   return await axios.patch(`/bg-images/${id}`);
 };
+export const getBackgroundId = async (id) => {
+  return await axios.get(`/bg-images/${id}`);
+};
 // Get All Translations
 export const getTranslations = (locale) => {
   const token = Cookies.get("authToken");
@@ -163,15 +173,11 @@ export const getTranslations = (locale) => {
 };
 export const saveUserLanguage = async (locale) => {
   const token = Cookies.get("authToken");
-  return await axios.patch(
-    "/translations/locale/",
-    { locale },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return await axios.patch(`/translations/locale/${locale}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 // export const getDocuments = async () => {
@@ -235,12 +241,20 @@ export const uploadFiles = async (formData) => {
 export const getDealsKanban = async () => {
   return await axios.get("/kanban/deals");
 };
-//getTasksKanban
 export const getTasksKanban = async () => {
   return await axios.get("/kanban/tasks");
 };
 // Get Conversations
 export const getconversations = () => axios.get("/whatsapp");
+// Get Conversation by contact id
+export const fetchConversationByDealId = (id) =>
+  axios.get(`/whatsapp/conversation/${id}`);
+// Create Conversation by contact id
+export const createConversation = (contact_id) => {
+  return axios.post("/whatsapp/conversation", {
+    contact_id: contact_id,
+  });
+};
 // Get message by Conversation id
 export const getMessageConv = async (id) => {
   return await axios.get(`/whatsapp/${id}`);

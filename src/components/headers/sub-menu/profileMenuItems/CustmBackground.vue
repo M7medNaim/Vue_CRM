@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
@@ -140,17 +140,6 @@ export default {
       modal.show();
       fetchImages();
     };
-
-    onMounted(() => {
-      const savedBackground = localStorage.getItem("backgroundImage");
-      if (savedBackground) {
-        document.body.style.backgroundImage = `url(${savedBackground})`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-      }
-
-      fetchImages();
-    });
 
     return {
       images,

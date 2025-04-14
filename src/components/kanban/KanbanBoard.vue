@@ -143,7 +143,6 @@ export default {
         const oldStageId = deal.stage_id;
 
         try {
-          console.log("Updating deal:", deal.id, "to stage:", newStageId);
           await updateDealStage(deal.id, newStageId);
 
           deal.stage_id = newStageId;
@@ -276,36 +275,114 @@ export default {
     };
 
     const handleDealEvent = (event) => {
-      const { action, data } = event;
-
-      if (!data || !data.stage_id) return;
-
-      const stageIndex = stages.value.findIndex(
-        (stage) => stage.id === data.stage_id
-      );
-
-      if (stageIndex === -1) return;
-
-      const stage = stages.value[stageIndex];
+      const action = event.action;
       if (action === "create") {
-        stage.deals.push(data);
-        // deals.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
+        dealCreateEvent(event.data, event.message);
       } else if (action === "update") {
-        const dealIndex = stage.deals.findIndex((deal) => deal.id === data.id);
-        if (dealIndex !== -1) {
-          stage.deals[dealIndex] = { ...stage.deals[dealIndex], ...data };
-          // stage.value[dealIndex].text = data.note;
-        } else {
-          stage.deals.push(data);
-        }
+        dealUpdateEvent(event.data, event.message);
       } else if (action === "delete") {
-        stage.deals = stage.deals.filter((deal) => deal.id !== data.id);
+        dealDeleteEvent(event.data, event.message);
       }
     };
+
+    const dealCreateEvent = (data, message) => {
+      const stageIndex = stages.value.findIndex(
+        (stage) => stage.id == data.stage_id
+      );
+      if (stageIndex === -1) {
+        console.error("Stage not found");
+        return;
+      }
+      const deal = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        stage_id: data.stage_id,
+        responsible_user: data.responsible_user,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+      stages.value[stageIndex].deals.unshift(deal);
+      console.log(message);
+    };
+
+    const dealUpdateEvent = (data, message) => {
+      let stages = ref(props.stages);
+      const id = data.id;
+      const updatedData = data.updated_data;
+      const stageIndex = stages.value.findIndex(
+        (stage) => stage.id == data.stage_id
+      );
+      const dealIndex = stages.value[stageIndex].deals.findIndex(
+        (deal) => deal.id == id
+      );
+      if (stageIndex === -1) {
+        console.error("Stage not found");
+        return;
+      }
+      if (dealIndex === -1) {
+        const deal = {
+          id: data.id,
+          name: updatedData.name,
+          phone: updatedData.phone,
+          description: updatedData.description,
+          stage_id: updatedData.stage_id,
+          responsible_user: updatedData.responsible_user,
+          created_at: updatedData.created_at,
+          updated_at: updatedData.updated_at,
+          source_id: updatedData.source_id,
+        };
+        stages.value[stageIndex].deals.unshift(deal);
+        console.log("Deal not found in the new stage, creating one.");
+        return;
+      }
+
+      let deal = stages.value[stageIndex].deals[dealIndex];
+      deal.name = updatedData.name ?? deal.name;
+      deal.description = updatedData.description ?? deal.description;
+      deal.stage_id = updatedData.stage_id ?? deal.stage_id;
+      deal.responsible_user =
+        updatedData.responsible_user ?? deal.responsible_user;
+      deal.updated_at = updatedData.updated_at;
+
+      const newStageIndex = stages.value.findIndex(
+        (stage) => stage.id == updatedData.stage_id
+      );
+      // Update the deal in the UI
+      if (newStageIndex === stageIndex) {
+        console.log("Deal is in the same stage");
+        stages.value[stageIndex].deals[dealIndex] = deal;
+      } else if (newStageIndex !== -1) {
+        console.log("Deal moved to a new stage");
+        stages.value[newStageIndex].deals.unshift(deal);
+        stages.value[stageIndex].deals.splice(dealIndex, 1);
+      } else {
+        console.log("New stage not found");
+        stages.value[stageIndex].deals.splice(dealIndex, 1);
+      }
+      console.log(message);
+    };
+
+    const dealDeleteEvent = (deal, message) => {
+      let stages = ref(props.stages);
+      const deal_id = deal.id;
+      const stage_id = deal.stage_id;
+      const stageIndex = stages.value.findIndex(
+        (stage) => stage.id == stage_id
+      );
+      if (stageIndex == -1) {
+        console.error("Stage not found");
+        return;
+      }
+      const dealIndex = stages.value[stageIndex].deals.findIndex(
+        (d) => d.id == deal_id
+      );
+      if (dealIndex != -1) {
+        stages.value[stageIndex].deals.splice(dealIndex, 1);
+      }
+      console.log(message);
+    };
+
     const handleTaskEvent = (event) => {
       const { action, data } = event;
 
@@ -389,42 +466,36 @@ export default {
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
         let userChannel;
-        switch (userRole) {
-          case "super-admin":
-            userChannel = "super-admin";
-            break;
-          case "company":
-            userChannel = `company-${user_id}`;
-            break;
-          case "supervisor":
-            userChannel = `supervisor-${user_id}`;
-            break;
-          case "sales":
-            userChannel = `sales-${user_id}`;
-            break;
-          default:
-            console.error("Unknown user role:", userRole);
-            return;
+        if (userRole === "super-admin") {
+          userChannel = userRole;
+        } else {
+          userChannel = `${userRole}-${user_id}`;
         }
 
         // Listen to the appropriate channel
-        window.Echo.channel(userChannel)
-          .listen("DealEvent", (event) => {
-            console.log("DealEvent received:", event);
-            handleDealEvent(event);
-          })
-          .listen("TaskEvent", (event) => {
-            console.log("TaskEvent received:", event);
-            handleTaskEvent(event);
-          })
-          .listen("CommentEvent", (event) => {
-            console.log("CommentEvent received:", event);
-            handleCommentEvent(event);
-          })
-          .listen("LogEvent", (event) => {
-            console.log("LogEvent received:", event);
-            handleLogEvent(event);
-          });
+        if (window.Echo && userChannel) {
+          window.Echo.channel(userChannel)
+            .listen(".DealEvent", (event) => {
+              console.log("DealEvent received:", event);
+              handleDealEvent(event);
+            })
+            .listen(".TaskEvent", (event) => {
+              console.log("TaskEvent received:", event);
+              handleTaskEvent(event);
+            })
+            .listen(".CommentEvent", (event) => {
+              console.log("CommentEvent received:", event);
+              handleCommentEvent(event);
+            })
+            .listen(".LogEvent", (event) => {
+              console.log("LogEvent received:", event);
+              handleLogEvent(event);
+            });
+        } else {
+          console.error(
+            "WebSocket or userChannel is not initialized properly."
+          );
+        }
       } catch (error) {
         console.error("Error mounting component:", error);
       }
@@ -443,24 +514,8 @@ export default {
       const user_id = 1;
       const userRole = "sales";
 
-      let userChannel;
-      switch (userRole) {
-        case "super-admin":
-          userChannel = "super-admin";
-          break;
-        case "company":
-          userChannel = `company-${user_id}`;
-          break;
-        case "supervisor":
-          userChannel = `supervisor-${user_id}`;
-          break;
-        case "sales":
-          userChannel = `sales-${user_id}`;
-          break;
-        default:
-          console.error("Unknown user role:", userRole);
-          return;
-      }
+      let userChannel =
+        userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
 
       // Leave the WebSocket channel
       window.Echo.leave(userChannel);

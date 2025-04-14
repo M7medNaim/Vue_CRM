@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { requirePermission } from "./guards";
+import { requireGuest, requirePermission } from "./guards";
 import { PERMISSIONS } from "@/stores/permissionStore";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -28,6 +28,7 @@ const routes = [
       requiresAuth: false,
       hideNavigation: true,
     },
+    beforeEnter: requireGuest(),
   },
   // {
   //   path: "/unauthorized",
@@ -179,7 +180,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.path === "/login" && token) {
-    next({ path: "/dashboard", replace: true });
+    next({ path: "/crm-kanban", replace: true });
     return;
   }
 

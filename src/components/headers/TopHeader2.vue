@@ -7,6 +7,7 @@
             <!-- Buttons Group -->
             <div class="col-md-auto mb-2 mb-xl-0">
               <button
+                v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
                 class="btn btn-header text-white px-2 py-2 fw-semibold me-2"
                 @click="openCreateDealModal"
               >
@@ -15,12 +16,14 @@
               <button
                 class="btn btn-header text-white px-2 py-2 me-2 fw-semibold"
                 @click="openCrmKanban"
+                v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
                 class="btn btn-header text-white px-2 py-2 fw-semibold"
                 @click="openCrmTasks"
+                v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
@@ -127,7 +130,10 @@
               </div>
             </div>
             <!-- Import/Export Buttons -->
-            <div class="col-md-auto d-flex align-items-center gap-2">
+            <div
+              v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
+              class="col-md-auto d-flex align-items-center gap-2"
+            >
               <button
                 class="btn btn-header flex-fill py-2 px-1"
                 @click="openImportModal"

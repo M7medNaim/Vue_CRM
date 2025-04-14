@@ -109,7 +109,6 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { saveUserLanguage } from "@/plugins/services/authService";
 import {
   ref,
   onMounted,
@@ -223,9 +222,7 @@ export default {
       try {
         this.loadingStore.startLoading();
 
-        await changeLanguage(newLang);
-
-        const response = await saveUserLanguage(newLang);
+        const response = await changeLanguage(newLang);
         if (response.status === 200) {
           localStorage.setItem("locale", newLang);
           this.currentLanguage = newLang;
@@ -237,8 +234,6 @@ export default {
       } catch (error) {
         console.error("Error changing language:", error);
         this.toast.error("حدث خطأ أثناء حفظ اللغة!", { timeout: 3000 });
-      } finally {
-        this.loadingStore.stopLoading();
       }
     },
     toggleMenu(menu) {

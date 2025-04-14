@@ -12,7 +12,10 @@
 
     <div v-else class="app overflow-hidden">
       <div v-if="!$route.meta.hideNavigation" class="row g-0 flex-nowrap">
-        <div :class="['sidebar', sidebarClass, isSidebarCollapsed]">
+        <div
+          :class="['sidebar', sidebarClass, isSidebarCollapsed]"
+          v-if="showSidebar"
+        >
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
 
@@ -36,6 +39,7 @@
 
 <script>
 // import { ref, onMounted } from "vue";
+import axiosInstance from "@/plugins/axios";
 import TopHeader from "@/components/headers/TopHeader.vue";
 import LeftSidebar from "@/components/LeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
@@ -43,6 +47,8 @@ import Cookies from "js-cookie";
 import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { logout, getBackgroundId } from "@/plugins/services/authService";
+import { PERMISSIONS, usePermissionStore } from "./stores/permissionStore";
 
 export default {
   name: "App",
@@ -50,8 +56,10 @@ export default {
 
   setup() {
     const loadingStore = useLoadingStore();
+    const permissionStore = usePermissionStore();
     return {
       loadingStore,
+      permissionStore,
     };
   },
 
@@ -84,6 +92,10 @@ export default {
         this.$route.path === "/crm-kanban" || this.$route.path === "/crm-tasks"
       );
     },
+
+    showSidebar() {
+      return this.permissionStore.hasPermission(PERMISSIONS.VIEW_SIDEBAR);
+    },
   },
 
   methods: {
@@ -93,26 +105,38 @@ export default {
 
     handleLoginSuccess() {
       this.isLoggedIn = true;
-      this.$router.push("/dashboard");
+      this.$router.push("/crm-kanban");
     },
 
-    handleLogout() {
+    async handleLogout() {
+      await logout();
       Cookies.remove("authToken");
       Cookies.remove("name");
       Cookies.remove("image");
       Cookies.remove("email");
       Cookies.remove("user_role");
       Cookies.remove("user_id");
+      localStorage.removeItem("backgroundImage");
+      localStorage.removeItem("locale");
+      localStorage.removeItem("userPermissions");
       this.isLoggedIn = false;
+      delete axiosInstance.defaults.headers["Authorization"];
       this.$router.push("/login");
     },
 
-    loadSavedBackground() {
-      const savedImage = localStorage.getItem("backgroundImage");
-      if (savedImage) {
+    async loadSavedBackground() {
+      try {
+        let response = await getBackgroundId(Cookies.get("background_id"));
+        if (!response) {
+          console.error("No background image found");
+          return;
+        }
+        const savedImage = response.data.data.url;
         document.body.style.backgroundImage = `url(${savedImage})`;
         document.body.style.backgroundSize = "cover";
         document.body.style.backgroundPosition = "center";
+      } catch (error) {
+        console.error("Error loading background image:", error);
       }
     },
 

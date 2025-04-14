@@ -34,7 +34,7 @@
               id="phone1"
               class="form-control rounded-end-0"
               v-model="localFormData.contact.phone1"
-              :placeholder="t('contacts-placeholder-phone')"
+              :placeholder="t('users-modal-add-placeholder-phone')"
             />
             <button
               type="button"
@@ -52,33 +52,9 @@
             id="phone2"
             class="form-control"
             v-model="localFormData.contact.phone2"
-            :placeholder="t('contacts-placeholder-phone2')"
-          />
-        </div>
-        <!-- <div class="mb-3">
-          <label for="phone1" class="form-label">{{
-            t("users-modal-add-label-phone")
-          }}</label>
-          <input
-            type="text"
-            class="form-control"
-            id="phone1"
-            v-model="localFormData.contact.phone1"
             :placeholder="t('users-modal-add-placeholder-phone')"
           />
         </div>
-        <div class="mb-3">
-          <label for="phone2" class="form-label">{{
-            t("users-modal-add-label-phone")
-          }}</label>
-          <input
-            type="text"
-            class="form-control"
-            id="phone2"
-            v-model="localFormData.contact.phone2"
-            :placeholder="t('users-modal-add-placeholder-phone')"
-          />
-        </div> -->
         <div class="mb-3">
           <label for="note" class="form-label">{{
             t("kanban-modal-create-label-notes")
@@ -142,7 +118,11 @@
               {{ t("crmlist-table-header-responsible") }}
             </option>
             <option v-for="user in users" :key="user.id" :value="user.id">
-              {{ user.name }}
+              {{ user.name }} ({{
+                user.role
+                  .replace(/-/g, " ")
+                  .replace(/\b\w/g, (char) => char.toUpperCase())
+              }})
             </option>
           </select>
         </div>
@@ -156,7 +136,11 @@
 
 <script>
 import { ref, onMounted, watch } from "vue";
-import { getSources, getStages } from "@/plugins/services/authService";
+import {
+  getSources,
+  getStages,
+  getAllUsers,
+} from "@/plugins/services/authService";
 import RatingStars from "@/components/CreateDealElements/RatingStars.vue";
 import { useI18n } from "vue-i18n";
 export default {
@@ -184,6 +168,7 @@ export default {
     const showPhone2 = ref(false);
     const sources = ref([]);
     const stages = ref([]);
+    const users = ref([]);
     const fetchSources = async () => {
       try {
         const response = await getSources();
@@ -213,6 +198,20 @@ export default {
         console.error("Error fetching stages:", error);
       }
     };
+    const fetchUsers = async () => {
+      try {
+        const response = await getAllUsers();
+        if (response.status === 200) {
+          users.value = response.data.data.map((user) => ({
+            id: user.id,
+            name: user.name,
+            role: user.role,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
     const togglePhone2 = () => {
       showPhone2.value = !showPhone2.value;
     };
@@ -220,6 +219,7 @@ export default {
     onMounted(() => {
       fetchSources();
       fetchStages();
+      fetchUsers();
     });
     watch(
       () => [
@@ -248,7 +248,26 @@ export default {
       t,
       showPhone2,
       togglePhone2,
+      users,
     };
+  },
+  computed: {
+    owners() {
+      return this.users.filter((user) => {
+        return user.role === "company";
+      });
+    },
+
+    assign_by() {
+      return this.users.filter((user) => {
+        return user.role === "supervisor";
+      });
+    },
+    assigned_to() {
+      return this.users.filter((user) => {
+        return user.role === "sales";
+      });
+    },
   },
 };
 </script>

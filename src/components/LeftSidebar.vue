@@ -162,21 +162,8 @@ export default {
   emits: ["toggle"],
   setup(props, { emit }) {
     const isCollapsed = ref(true);
-    const permissionStore = usePermissionStore();
     const { t } = useI18n();
-
-    permissionStore.setPermissions([
-      "dashboard",
-      "deals-kanban",
-      "deals-list",
-      "users",
-      "contacts",
-      "tasks-kanban",
-      "documents",
-      "general-settings",
-      "roles-settings",
-    ]);
-
+    const permissionStore = usePermissionStore();
     const toggleSidebar = () => {
       isCollapsed.value = !isCollapsed.value;
       emit("toggle", isCollapsed.value);
