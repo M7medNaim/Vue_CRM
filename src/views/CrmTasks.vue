@@ -32,7 +32,8 @@ export default {
     // WhatsappModal,
   },
   setup() {
-    // const { t } = useI18n();
+    const toast = useToast();
+    const { t } = useI18n();
     const stages = ref([]);
     const filters = ref({
       source: "",
@@ -109,7 +110,7 @@ export default {
 
     // upload data
     onMounted(async () => {
-      await fetchStages();
+      fetchStages();
       window.addEventListener("contextmenu", handleRightClick);
     });
     onUnmounted(() => {
