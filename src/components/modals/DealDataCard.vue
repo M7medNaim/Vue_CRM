@@ -643,7 +643,8 @@ export default {
           text_body: comment.text_body || "No text",
           created_at: comment.created_at || "No date",
           username: comment.user.name || "No user",
-          isAdmin: comment.isAdmin || false,
+          isAdmin:
+            comment.user && comment.user.role === "super-admin" ? true : false,
         })) || [],
     });
     const formatDateForInput = (dateString) => {
@@ -1057,8 +1058,8 @@ export default {
             id: response.data.id,
             text_body: customerData.comment,
             created_at: new Date().toISOString(),
-            username: response.data.user?.name || "No user",
-            isAdmin: false,
+            username: response.data.data.user?.name || "No user",
+            isAdmin: response.data.data.user?.role === "super-admin",
           });
 
           toast.success(t("success.commentAdded"));
