@@ -75,6 +75,7 @@
   </div>
   <!-- :key="selectedDeal?.id" -->
   <DealDataCard
+    :key="selectedDeal?.id"
     :deal="selectedDeal"
     :logs="logs"
     :comments="comments"
@@ -85,7 +86,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
 import draggable from "vuedraggable";
 import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
@@ -178,13 +179,43 @@ export default {
       }
     };
     // open data deal modal
+    // const openDealDataCard = async (dealId) => {
+    //   try {
+    //     const dealData = await showDeal(dealId);
+    //     if (dealData.data) {
+    //       selectedDeal.value = dealData.data.data;
+    //       // const modal = new Modal(document.getElementById("dealDataCard"));
+    //       // modal.show();
+    //     } else {
+    //       console.error("No matching deal found for ID:", dealId);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching deal data:", error);
+    //   }
+    // };
     const openDealDataCard = async (dealId) => {
       try {
         const dealData = await showDeal(dealId);
         if (dealData.data) {
           selectedDeal.value = dealData.data.data;
-          const modal = new Modal(document.getElementById("dealDataCard"));
+          await nextTick();
+
+          const modalEl = document.getElementById("dealDataCard");
+          const modal = new Modal(modalEl);
           modal.show();
+
+          modalEl.addEventListener(
+            "hidden.bs.modal",
+            () => {
+              const backdrop = document.querySelector(".modal-backdrop");
+              if (backdrop) {
+                backdrop.remove();
+                document.body.classList.remove("modal-open");
+                document.body.style.paddingRight = null;
+              }
+            },
+            { once: true }
+          );
         } else {
           console.error("No matching deal found for ID:", dealId);
         }
@@ -398,26 +429,7 @@ export default {
         console.error("Error mounting component:", error);
       }
     });
-    watch(selectedDeal, (newDeal) => {
-      if (newDeal) {
-        const modalEl = document.getElementById("dealDataCard");
-        const modal = new Modal(modalEl);
-        modal.show();
 
-        modalEl.addEventListener(
-          "hidden.bs.modal",
-          () => {
-            const backdrop = document.querySelector(".modal-backdrop");
-            if (backdrop) {
-              backdrop.remove();
-              document.body.classList.remove("modal-open");
-              document.body.style.paddingRight = null;
-            }
-          },
-          { once: true }
-        );
-      }
-    });
     onUnmounted(() => {
       if (dealsContainer.value) {
         dealsContainer.value.removeEventListener(

@@ -100,7 +100,7 @@ export const deleteDeals = (ids) => axios.delete(`/deals/${ids}`);
 //   return await axios.put(`/deals/${dealId}`, stage_id: newStageId);
 // }
 export const updateDealStage = (dealId, stageId) => {
-  return axios.put(`/deals/${dealId}/stage_id`, {
+  return axios.patch(`/deals/${dealId}`, {
     stage_id: stageId,
   });
 };
@@ -273,3 +273,6 @@ export const createTask = (formData) => {
 export const updateTask = async (id, formData) => {
   return await axios.patch(`/tasks/${id}`, formData);
 };
+// update deal
+export const updateDeal = (dealId, formData) =>
+  axios.put(`/deals/${dealId}`, formData);
