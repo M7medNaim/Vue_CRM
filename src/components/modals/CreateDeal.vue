@@ -94,8 +94,6 @@ export default {
           name: this.formData.contact.name,
           email: this.formData.contact.email,
           phones: this.formData.contact.phones,
-          // contact: {
-          // },
         };
 
         const response = await createDeal(dealData);

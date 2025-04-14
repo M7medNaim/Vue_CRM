@@ -108,7 +108,7 @@
       <Column
         class="d-lg-table-cell"
         field="created_at"
-        :header="t('created at')"
+        :header="t('crmlist-table-header-createdat')"
       ></Column>
       <Column
         field="source"
@@ -437,27 +437,6 @@ const openDealModal = () => {
   const modal = new Modal(modalElement);
   modal.show();
 };
-// const addNewDeal = (newDeal) => {
-//   try {
-//     const formattedDeal = {
-//       id: newDeal.id,
-//       name: newDeal.contact.name,
-//       phones: newDeal.contact.phones.join(", "),
-//       email: newDeal.contact.email,
-//       note: newDeal.note,
-//       created_at: new Date().toISOString().split("T")[0],
-//       source: newDeal.source_id,
-//       stage: newDeal.stage_id,
-//       responsible: newDeal.responsible_user_id,
-//     };
-
-//     rows.value = [...rows.value, formattedDeal];
-//     const modal = new Modal(document.getElementById("dealModal"));
-//     modal.hide();
-//   } catch (error) {
-//     console.error("Error fetching user data for new deal:", error);
-//   }
-// };
 
 // Filtered items search and filters
 const filteredItems = computed(() => {

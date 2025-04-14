@@ -55,30 +55,6 @@
             :placeholder="t('users-modal-add-placeholder-phone')"
           />
         </div>
-        <!-- <div class="mb-3">
-          <label for="phone1" class="form-label">{{
-            t("users-modal-add-label-phone")
-          }}</label>
-          <input
-            type="text"
-            class="form-control"
-            id="phone1"
-            v-model="localFormData.contact.phone1"
-            :placeholder="t('users-modal-add-placeholder-phone')"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="phone2" class="form-label">{{
-            t("users-modal-add-label-phone")
-          }}</label>
-          <input
-            type="text"
-            class="form-control"
-            id="phone2"
-            v-model="localFormData.contact.phone2"
-            :placeholder="t('users-modal-add-placeholder-phone')"
-          />
-        </div> -->
         <div class="mb-3">
           <label for="note" class="form-label">{{
             t("kanban-modal-create-label-notes")
@@ -141,7 +117,7 @@
             <option value="" disabled selected>
               {{ t("crmlist-table-header-responsible") }}
             </option>
-            <option v-for="user in assigned_to" :key="user.id" :value="user.id">
+            <option v-for="user in users" :key="user.id" :value="user.id">
               {{ user.name }} ({{
                 user.role
                   .replace(/-/g, " ")
