@@ -52,6 +52,12 @@ import Cookies from "js-cookie";
 export default {
   name: "WhatsappModal",
   components: { SidebarLeft, SidebarRight, LabelModal },
+  props: {
+    conversation: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       selectedChat: null,
@@ -142,6 +148,20 @@ export default {
       if (this.selectedChat) {
         this.selectedChat.name = newName;
       }
+    },
+  },
+  watch: {
+    conversation: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.setSelectedChat({
+            ...newVal,
+            isActive: true,
+            messages: [],
+          });
+        }
+      },
     },
   },
 };

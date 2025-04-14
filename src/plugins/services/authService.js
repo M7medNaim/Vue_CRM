@@ -246,6 +246,15 @@ export const getTasksKanban = async () => {
 };
 // Get Conversations
 export const getconversations = () => axios.get("/whatsapp");
+// Get Conversation by contact id
+export const fetchConversationByContactId = (id) =>
+  axios.get(`/whatsapp/conversation/${id}`);
+// Create Conversation by contact id
+export const createConversation = (contact_id) => {
+  return axios.post("/whatsapp/conversation", {
+    contact_id: contact_id,
+  });
+};
 // Get message by Conversation id
 export const getMessageConv = async (id) => {
   return await axios.get(`/whatsapp/${id}`);
