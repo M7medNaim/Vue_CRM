@@ -8,6 +8,7 @@
               v-model="selectedAction"
               class="text-secondary form-control"
             >
+              []
               <option value="" disabled>
                 {{ t("crmlist-placeholder-action") }}
               </option>
