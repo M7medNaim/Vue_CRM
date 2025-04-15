@@ -5,23 +5,26 @@
         <div class="col-12">
           <div class="d-flex flex-wrap align-items-center">
             <!-- Buttons Group -->
-            <div class="col-md-auto mb-2 mb-xl-0">
+            <div class="col-md-auto">
               <button
                 v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
-                class="btn btn-header text-white px-2 py-2 fw-semibold me-2"
+                class="btn btn-header text-white px-2 py-2 fw-semibold me-2 btnAddKanban"
                 @click="openCreateDealModal"
               >
-                {{ t("kanban-button-add-deal") }}
+                <span class="textAddKanban">{{
+                  t("kanban-button-add-deal")
+                }}</span>
+                <span class="iconAddKanban d-none">+</span>
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 me-2 fw-semibold"
+                class="btn btn-header text-white px-2 py-2 me-2 fw-semibold btnKanban"
                 @click="openCrmKanban"
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 fw-semibold"
+                class="btn btn-header text-white px-2 py-2 fw-semibold btnKanban"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
               >
@@ -30,18 +33,21 @@
             </div>
 
             <!-- Search Form -->
-            <div class="col-md mb-2 mb-xl-0 mx-2 flex-grow-1">
+            <div :class="lgIpadClass">
               <div class="input-group">
-                <button class="btn btn-header">
+                <button
+                  class="btn btn-header btnSearchIpad"
+                  @click="openSearchModalIpad"
+                >
                   <i class="fa-solid fa-magnifying-glass text-white"></i>
                 </button>
                 <input
                   type="text"
-                  class="form-control bg-light border-light py-2"
+                  class="form-control bg-light border-light py-2 inputSearchIpad"
                   :placeholder="t('crmlist-placeholder-search')"
                 />
                 <button
-                  class="btn btn-header"
+                  class="btn btn-header py-2 btnFilterIpad"
                   :title="t('kanban-modal-filter-heading')"
                   @click="openFilterModal"
                 >
@@ -135,19 +141,19 @@
               class="col-md-auto d-flex align-items-center gap-2"
             >
               <button
-                class="btn btn-header flex-fill py-2 px-1"
+                class="btn btn-header flex-fill py-2 px-1 btnImport"
                 @click="openImportModal"
               >
-                <span class="fs-7 text-white">{{
+                <span class="fs-7 text-white textImport">{{
                   t("kanban-button-import")
                 }}</span>
                 <i class="fa-solid fa-upload ms-1 fs-7 text-white"></i>
               </button>
               <button
-                class="btn btn-header flex-fill py-2 px-1"
+                class="btn btn-header flex-fill py-2 px-1 btnExport"
                 @click="openExportModal"
               >
-                <span class="fs-7 text-white">{{
+                <span class="fs-7 text-white textExport">{{
                   t("kanban-button-export")
                 }}</span>
                 <i class="fa-solid fa-download ms-1 fs-7 text-white"></i>
@@ -166,11 +172,12 @@
     <ExportModal ref="exportModalRef" />
     <CreateDealModal ref="createDealModalRef" />
     <WhatsappModal ref="whatsappModalRef" />
+    <SearchModalIpad ref="searchModalIpadRef" />
   </header>
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
@@ -180,6 +187,7 @@ import CreateDealModal from "../kanban/CreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
+import SearchModalIpad from "@/components/headers/SearchModalIpad.vue";
 
 export default {
   name: "TopHeader2",
@@ -189,6 +197,7 @@ export default {
     ExportModal,
     CreateDealModal,
     WhatsappModal,
+    SearchModalIpad,
   },
   props: {
     initialFilters: {
@@ -259,6 +268,28 @@ export default {
     const openCrmKanban = () => {
       router.push({ name: "CrmKanban" });
     };
+    const isSmallScreen = ref(window.innerWidth < 1050);
+    const handleResize = () => {
+      isSmallScreen.value = window.innerWidth < 1050;
+    };
+    onMounted(() => {
+      window.addEventListener("resize", handleResize);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("resize", handleResize);
+    });
+    const openSearchModalIpad = () => {
+      if (isSmallScreen.value) {
+        const modal = new Modal(document.getElementById("searchIpadModal"));
+        modal.show();
+      }
+    };
+    const lgIpadClass = computed(() => {
+      return isSmallScreen.value
+        ? "col-md-auto mx-2"
+        : "col-md mx-2 flex-grow-1";
+    });
     return {
       filterData,
       openFilterModal,
@@ -274,6 +305,8 @@ export default {
       t,
       whatsappModalRef,
       openWhatsappModal,
+      openSearchModalIpad,
+      lgIpadClass,
     };
   },
 };
@@ -308,17 +341,63 @@ input:focus {
     display: none;
   }
   .whatsappIpad {
-    padding: 0.5rem 0.7rem !important;
+    padding: 0.35rem 0.7rem !important;
   }
   .whatsappIpad i {
-    font-size: 1.5rem !important;
+    font-size: 1.7rem !important;
   }
   .documentsIpad {
-    padding: 0 !important;
+    padding: 0px 7px !important;
   }
   .documentsIpad i {
-    font-size: 1.1rem !important;
-    padding: 0.1rem !important;
+    font-size: 1.3rem !important;
+  }
+  .textAddKanban {
+    display: none;
+  }
+  .iconAddKanban {
+    display: inline-block !important;
+    font-size: 1.6rem !important;
+    padding: 0 5px !important;
+  }
+  .btnAddKanban {
+    padding: 0px 10px !important;
+  }
+  .textImport {
+    display: none;
+  }
+  .textExport {
+    display: none;
+  }
+  .btnImport {
+    /* padding-right: 8px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important; */
+    padding: 4px 13px 4px 10px !important;
+    font-size: 1.2rem !important;
+  }
+  .btnExport {
+    padding: 4px 13px 4px 10px !important;
+    font-size: 1.2rem !important;
+  }
+  @media screen and (max-width: 1050px) {
+    .inputSearchIpad {
+      display: none;
+    }
+    .input-group {
+      gap: 0.5rem;
+    }
+    .btnFilterIpad {
+      border-radius: 0.35rem !important;
+      font-size: 0.9rem !important;
+    }
+    .btnSearchIpad {
+      border-radius: 0.35rem !important;
+      font-size: 1rem !important;
+    }
+    .btnKanban {
+      padding: 9px 10px !important;
+    }
   }
 }
 </style>

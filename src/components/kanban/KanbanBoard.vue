@@ -251,12 +251,22 @@ export default {
       scrollInterval = requestAnimationFrame(animate);
     };
 
+    let firstLoad = true;
     const updateArrowVisibility = () => {
       if (!dealsContainer.value) return;
+
       const { scrollLeft, scrollWidth, clientWidth } = dealsContainer.value;
+
       showLeft.value = scrollLeft > 0;
-      showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
+
+      if (firstLoad) {
+        showRight.value = true;
+        firstLoad = false;
+      } else {
+        showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
+      }
     };
+
     const stopScrolling = () => {
       if (scrollInterval) {
         cancelAnimationFrame(scrollInterval);
