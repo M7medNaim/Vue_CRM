@@ -1030,9 +1030,8 @@ export default {
     const openWhatsappModal = async (id) => {
       try {
         let conversation = null;
-        try {
-          conversation = await fetchConversationByDealId(id);
-        } catch (error) {
+        conversation = await fetchConversationByDealId(id);
+        if (!conversation.data?.data) {
           conversation = await createConversation(id);
         }
         selected_conversation.value = conversation.data.data;
