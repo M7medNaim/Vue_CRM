@@ -169,7 +169,7 @@
   />
   <!-- @add-deal="addNewDeal" -->
   <DealModal @add-deal="addNewDeal" ref="dealModal" />
-  <ImportModal />
+  <ImportModal @import-complete="fetchData" />
   <ShowData :formData="dealData" ref="showDataModal" />
 </template>
 <script setup>

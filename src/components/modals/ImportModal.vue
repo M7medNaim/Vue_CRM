@@ -22,7 +22,7 @@
           ></button>
         </div>
         <form @submit.prevent="submitImports">
-          <ImportForm />
+          <ImportForm ref="importFormRef" />
           <ImportButtons
             @close-modal="closeImportModal"
             @submit="submitImports"
@@ -40,14 +40,17 @@ import ImportForm from "../importElements/ImportForm.vue";
 import ImportButtons from "../importElements/ImportButtons.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { importDeals } from "@/plugins/services/authService";
+
 export default {
   name: "ImportModal",
   components: { ImportButtons, ImportForm },
 
-  setup() {
+  setup(props, { emit }) {
     const toast = useToast();
     const { t } = useI18n();
     const importModalRef = ref(null);
+    const importFormRef = ref(null); // Reference to ImportForm
     let modalInstance = null;
 
     const openImportModal = () => {
@@ -69,6 +72,7 @@ export default {
 
     const closeImportModal = () => {
       try {
+        importFormRef.value.$emit("import-complete");
         if (modalInstance) {
           modalInstance.hide();
         }
@@ -82,7 +86,26 @@ export default {
 
     const submitImports = async () => {
       try {
-        // هنا يمكنك إضافة منطق استيراد البيانات
+        if (importFormRef.value) {
+          console.log("ImportForm Data:", importFormRef.value);
+          // Access fields from ImportForm
+          const fields = {
+            file: importFormRef.value.fileInput,
+            source: importFormRef.value.source,
+            name: importFormRef.value.name,
+            description: importFormRef.value.description,
+            phone: importFormRef.value.phone,
+            comment: importFormRef.value.comment,
+            email: importFormRef.value.email,
+          };
+          const response = await importDeals(fields);
+          if (response.status === 200) {
+            toast.success(t("success.importModalSuccess"), {
+              timeout: 3000,
+            });
+            emit("import-complete");
+          }
+        }
         toast.success(t("success.importModalSuccess"), {
           timeout: 3000,
         });
@@ -100,6 +123,7 @@ export default {
 
     return {
       importModalRef,
+      importFormRef, // Return the ref
       openImportModal,
       closeImportModal,
       submitImports,

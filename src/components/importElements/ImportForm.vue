@@ -181,6 +181,7 @@ export default {
     const address = ref("");
     const email = ref("");
     const options = ref([]);
+    const fileInput = ref(null);
     // get sources api
     const fetchSources = async () => {
       try {
@@ -223,6 +224,7 @@ export default {
         }
 
         try {
+          fileInput.value = file;
           const headers = await getFileHeaders(file);
           options.value = headers;
           fileError.value = "";
@@ -277,6 +279,7 @@ export default {
     });
 
     return {
+      fileInput,
       fileError,
       isFileValid,
       sources,
