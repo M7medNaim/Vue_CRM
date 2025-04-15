@@ -8,11 +8,12 @@
             <span>{{ t("crmlist-modal-filter-label-status") }}</span>
           </div>
           <div class="col-9">
-            <div class="mb-3 d-flex justify-content-center flex-wrap gap-2">
+            <div class="mb-3 d-flex justify-content-center flex-nowrap gap-2">
               <button
                 v-for="status in statuses"
                 :key="status.value"
                 type="button"
+                class="p-2"
                 @click.prevent="toggleStatus(status.value)"
                 :class="[
                   'btn',

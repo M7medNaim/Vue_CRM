@@ -575,7 +575,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, reactive, computed, onMounted, nextTick } from "vue";
 import RatingStars from "../CreateDealElements/RatingStars.vue";
 import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
@@ -665,7 +665,7 @@ export default {
     };
     const sourceName = computed(() => {
       const source = sources.value.find((s) => s.id === props.deal?.source_id);
-      return source ? source.name : "";
+      return source ? source.name : "null";
     });
     const fetchStages = async () => {
       try {
@@ -1027,14 +1027,41 @@ export default {
     const handleDoubleClick = () => {
       isEditMode.value = true;
     };
+    // const openWhatsappModal = async (id) => {
+    //   try {
+    //     let conversation = null;
+    //     conversation = await fetchConversationByDealId(id);
+    //     if (!conversation.data?.data) {
+    //       conversation = await createConversation(id);
+    //     }
+    //     selected_conversation.value = conversation.data.data;
+    //     const modal = new Modal(document.getElementById("whatsappModal"));
+    //     modal.show();
+    //   } catch (error) {
+    //     console.error("Error opening WhatsApp modal:", error);
+    //     toast.error(t("error.openWhatsappModal"), {
+    //       timeout: 3000,
+    //     });
+    //   }
+    // };
     const openWhatsappModal = async (id) => {
       try {
-        let conversation = null;
-        await sendInitMessage(id);
-        conversation = await fetchConversationByDealId(id);
+        let conversation = await fetchConversationByDealId(id);
+        if (!conversation.data?.data) {
+          conversation = await createConversation(id);
+        }
+
         selected_conversation.value = conversation.data.data;
-        const modal = new Modal(document.getElementById("whatsappModal"));
-        modal.show();
+
+        await nextTick();
+
+        const modalElement = document.getElementById("whatsappModal");
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
+        } else {
+          console.warn("Modal element not found in DOM.");
+        }
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
         toast.error(t("error.openWhatsappModal"), {
