@@ -169,7 +169,7 @@
   />
   <!-- @add-deal="addNewDeal" -->
   <DealModal @add-deal="addNewDeal" ref="dealModal" />
-  <ImportModal />
+  <ImportModal @import-complete="fetchData" />
   <ShowData :formData="dealData" ref="showDataModal" />
 </template>
 <script setup>
@@ -734,16 +734,22 @@ const bulkDeleteItems = async () => {
 
 const addNewDeal = (newDeal) => {
   try {
+    const matchedStage = stages.value.find(
+      (stage) => stage.id === newDeal.stage_id
+    );
+    const matchedSource = sources.value.find(
+      (source) => source.id === newDeal.source_id
+    );
     const formattedDeal = {
       id: newDeal.id,
       name: newDeal.name,
-      phones: newDeal.phone,
+      phone: newDeal.phone,
       email: newDeal.email,
       note: newDeal.note,
       created_at: new Date().toISOString().split("T")[0],
-      source_id: newDeal.source_id,
-      stage_id: newDeal.stage_id,
-      responsible_user: newDeal.responsible_user,
+      source: matchedSource ? matchedSource.name : "Null",
+      stage: matchedStage ? matchedStage.name : "null",
+      responsible: newDeal.responsible_user?.name || "Not Assigned",
       rating: newDeal.rating,
     };
 

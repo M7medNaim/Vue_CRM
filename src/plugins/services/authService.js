@@ -250,9 +250,9 @@ export const getconversations = () => axios.get("/whatsapp");
 export const fetchConversationByDealId = (id) =>
   axios.get(`/whatsapp/conversation/${id}`);
 // Create Conversation by contact id
-export const createConversation = (contact_id) => {
+export const createConversation = (deal_id) => {
   return axios.post("/whatsapp/conversation", {
-    contact_id: contact_id,
+    deal_id: deal_id,
   });
 };
 // Get message by Conversation id
@@ -290,3 +290,11 @@ export const updateTask = async (id, formData) => {
 // update deal
 export const updateDeal = (dealId, formData) =>
   axios.put(`/deals/${dealId}`, formData);
+
+export const importDeals = (formData) => {
+  return axios.post("/deals/import", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

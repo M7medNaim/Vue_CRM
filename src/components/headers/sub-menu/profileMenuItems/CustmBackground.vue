@@ -9,7 +9,9 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exportModalLabel">Picker Image</h5>
+          <h5 class="modal-title" id="exportModalLabel">
+            {{ t("header-user-menu-item-background") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -19,12 +21,12 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div v-if="loading" class="text-center">
+          <div v-show="loading" class="text-center">
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-          <div v-else class="row">
+          <div v-show="!loading" class="row">
             <div
               class="col-4 mb-3"
               v-for="(image, index) in images"
@@ -49,7 +51,7 @@
             data-bs-dismiss="modal"
             @click="closeModal"
           >
-            {{ t("backgroundPicker.close") }}
+            {{ t("kanban-modal-import-button-close") }}
           </button>
         </div>
       </div>
@@ -58,7 +60,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
@@ -87,7 +89,7 @@ export default {
       try {
         loading.value = true;
         const response = await getBackgroundImages();
-        images.value = response.data.data;
+        images.value = [...response.data.data]; // Ensure reactivity by spreading the array
       } catch (error) {
         console.error("Error fetching background images:", error);
         toast.error(t("error.fetchBackgroundImages"), {
@@ -136,10 +138,15 @@ export default {
     };
 
     const openModal = () => {
+      fetchImages();
+      console.log("images fetching");
       const modal = new Modal(document.getElementById("customBackgroundModal"));
       modal.show();
-      fetchImages();
     };
+
+    onMounted(() => {
+      fetchImages();
+    });
 
     return {
       images,

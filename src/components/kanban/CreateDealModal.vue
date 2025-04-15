@@ -97,26 +97,8 @@
             <div class="row mb-3">
               <div class="col-4">
                 <label>
-                  <i class="fa-solid fa-user"></i>
-                  {{ t("kanban-modal-create-label-company") }}
-                </label>
-              </div>
-              <div class="col-8 text-end">
-                <select
-                  class="form-select border-0 bg-light text-secondary"
-                  v-model="form.company"
-                >
-                  <option value="any">
-                    {{ t("kanban-modal-create-placeholder-company") }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-4">
-                <label>
                   <i class="fa-solid fa-users"></i>
-                  {{ t("kanban-modal-create-label-representative") }}
+                  {{ t("kanban-modal-create-label-assignedto") }}
                 </label>
               </div>
               <div class="col-8 text-end">
@@ -130,7 +112,7 @@
                 </select>
               </div>
             </div>
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <div class="col-4">
                 <label>
                   <i class="fa-solid fa-cubes"></i>
@@ -196,7 +178,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
             <div class="modal-footer d-flex justify-content-between">
               <button
                 type="button"

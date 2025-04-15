@@ -4,12 +4,13 @@
       <div
         class="col-2 col-md-3 d-flex align-items-center text-white fs-6 pt-1"
       >
-        <!-- <img
+        <img
+          v-show="user_role === 'sales'"
           class="me-2"
           src="@/assets/new-nokta-logo.png"
           style="width: 40px; height: 40px"
           alt=""
-        /> -->
+        />
         <span>{{ pageTitle }}</span>
         <router-link
           v-if="
@@ -138,6 +139,7 @@ export default {
     };
   },
   setup() {
+    const user_role = Cookies.get("user_role");
     const loadingStore = useLoadingStore();
     const currentTime = ref("");
     const updateTime = () => {
@@ -213,6 +215,7 @@ export default {
       permissionStore,
       PERMISSIONS,
       loadingStore,
+      user_role,
     };
   },
   methods: {
