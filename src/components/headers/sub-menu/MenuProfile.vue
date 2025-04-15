@@ -1,7 +1,7 @@
 <template>
   <div class="dropdown-menu my-2 position-absolute d-block end-0 border-0">
     <div
-      class="image my-2 d-flex justify-content-start align-items-center w-100 p-2 px-1"
+      class="image mt-1 d-flex justify-content-start align-items-center w-100 px-1"
     >
       <div class="profileImage me-1 border border-2 rounded-5">
         <img
@@ -16,7 +16,7 @@
         <span class="text-secondary userEmail">{{ userEmail }}</span>
       </div>
     </div>
-    <hr />
+    <hr class="my-2" />
     <ul class="list-unstyled mb-0 lh-lg">
       <ProfileMenuItem
         icon="fa-user"
@@ -145,7 +145,7 @@ export default {
 <style scoped>
 .dropdown-menu {
   top: 40px;
-  left: -90px;
+  left: -97px;
   width: fit-content !important;
 }
 .profileImage img {

@@ -135,6 +135,8 @@ export default {
         document.body.style.backgroundImage = `url(${savedImage})`;
         document.body.style.backgroundSize = "cover";
         document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.backgroundAttachment = "fixed";
       } catch (error) {
         console.error("Error loading background image:", error);
       }
