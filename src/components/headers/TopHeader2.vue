@@ -171,7 +171,11 @@
     <ImportModal ref="importModalRef" />
     <ExportModal ref="exportModalRef" />
     <CreateDealModal ref="createDealModalRef" />
-    <WhatsappModal ref="whatsappModalRef" :conversation="conversation" />
+    <WhatsappModal
+      ref="whatsappModalRef"
+      :conversation="conversation"
+      :new_message="new_message"
+    />
     <SearchModalIpad ref="searchModalIpadRef" />
   </header>
 </template>
@@ -220,10 +224,16 @@ export default {
       type: Object,
       default: null,
     },
+
+    new_message: {
+      type: Object,
+      default: null,
+    },
   },
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
     const conversation = ref(null);
+    const new_message = ref(null);
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
@@ -299,6 +309,9 @@ export default {
     const setConversation = (data) => {
       conversation.value = data;
     };
+    const setNewMessage = (data) => {
+      new_message.value = data;
+    };
     return {
       filterData,
       openFilterModal,
@@ -318,15 +331,22 @@ export default {
       lgIpadClass,
       conversation,
       setConversation,
+      setNewMessage,
     };
   },
 
   watch: {
     selected_conversation(newValue) {
       if (newValue) {
-        console.log("top header2", newValue);
+        console.log("top header2 set conversation", newValue);
         this.openWhatsappModal();
         this.setConversation(newValue);
+      }
+    },
+    new_message(newValue) {
+      if (newValue) {
+        console.log("top header2 new message", newValue);
+        this.setNewMessage(newValue);
       }
     },
   },

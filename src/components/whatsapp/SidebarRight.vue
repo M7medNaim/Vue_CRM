@@ -177,24 +177,6 @@ export default {
     },
   },
   methods: {
-    // receiveMessage(message) {
-    //   if (this.selectedChat) {
-    //     const newMessage = {
-    //       id: Date.now(),
-    //       type: "msg-me",
-    //       text: message,
-    //       time: new Date().toLocaleTimeString([], {
-    //         hour: "2-digit",
-    //         minute: "2-digit",
-    //       }),
-    //       sender: "You",
-    //       isCopied: false,
-    //     };
-
-    //     this.$emit("new-message", newMessage);
-    //     this.scrollToBottom();
-    //   }
-    // },
     async receiveMessage(messageData) {
       if (!messageData.text_body) {
         alert("نص الرسالة مطلوب");

@@ -57,6 +57,10 @@ export default {
       type: Object,
       default: null,
     },
+    new_message: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -149,6 +153,29 @@ export default {
         this.selectedChat.name = newName;
       }
     },
+    receiveNewMessage(new_message) {
+      if (
+        this.selectedChat &&
+        this.selectedChat.id === new_message.conversation_id
+      ) {
+        console.log("chat opened", this.selectedChat, new_message);
+        this.handleNewMessage({
+          id: new_message.id || Date.now(),
+          type: "msg-frnd",
+          text: new_message.text_body,
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          created_at: new_message.created_at,
+          sender: new_message.sender_name || new_message.sender,
+          isCopied: false,
+          conversation_id: new_message.conversation_id,
+        });
+      } else {
+        console.log("chat not opened", this.selectedChat, new_message);
+      }
+    },
   },
   watch: {
     conversation: {
@@ -162,6 +189,15 @@ export default {
             isActive: true,
             messages: [],
           });
+        }
+      },
+    },
+    new_message: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          console.log("New message in Whatsapp Modal:", newVal);
+          this.receiveNewMessage(newVal);
         }
       },
     },
