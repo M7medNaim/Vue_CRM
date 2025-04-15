@@ -32,13 +32,22 @@
           </div>
         </div>
         <div class="col-sm-6 col-lg">
-          <div class="input-group">
+          <div class="input-group position-relative">
             <input
               type="text"
               class="form-control"
               :placeholder="t('crmlist-placeholder-search')"
-              v-model="search"
+              v-model="searchInput"
+              @keyup.enter="search = searchInput"
             />
+            <i
+              v-if="searchInput"
+              class="fas fa-times clear-icon p-2 rounded-2"
+              @click="clearSearch"
+              title="Clear Search"
+            >
+              CLR
+            </i>
             <button
               :title="t('buttons.filter')"
               type="button"
@@ -205,6 +214,7 @@ const totalRows = ref(0);
 const currentPage = ref(0);
 const rowsPerPage = ref(10);
 const search = ref("");
+const searchInput = ref("");
 const selectedRows = ref([]);
 const selectedAction = ref("");
 const selectedStatuses = ref([]);
@@ -497,6 +507,11 @@ const filteredItems = computed(() => {
     );
   });
 });
+const clearSearch = () => {
+  searchInput.value = "";
+  search.value = "";
+};
+
 // Opening and closing modals
 const resetFilter = () => {
   filters.value = {
@@ -887,5 +902,23 @@ select:focus {
   .fs-7 {
     font-size: 14px;
   }
+}
+.clear-icon {
+  position: absolute;
+  right: 70px;
+  top: 50%;
+  transform: translateY(-50%) translateX(50%);
+  color: #6c757d;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.2s;
+  font-size: 12px !important;
+  z-index: 1000;
+  transition: all 0.2s ease-in-out;
+}
+
+.clear-icon:hover {
+  color: #fff;
+  background: red;
 }
 </style>
