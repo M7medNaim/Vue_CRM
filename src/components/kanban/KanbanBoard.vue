@@ -287,6 +287,7 @@ export default {
     };
 
     const dealCreateEvent = (data, message) => {
+      let stages = ref(props.stages);
       const stageIndex = stages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );

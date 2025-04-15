@@ -583,7 +583,6 @@ import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
-  createConversation,
   fetchConversationByDealId,
   getSources,
   getStages,
@@ -592,6 +591,7 @@ import {
   updateTask,
   updateDealStage,
   updateDeal,
+  sendInitMessage,
 } from "@/plugins/services/authService";
 
 export default {
@@ -1030,10 +1030,8 @@ export default {
     const openWhatsappModal = async (id) => {
       try {
         let conversation = null;
+        await sendInitMessage(id);
         conversation = await fetchConversationByDealId(id);
-        if (!conversation.data?.data) {
-          conversation = await createConversation(id);
-        }
         selected_conversation.value = conversation.data.data;
         const modal = new Modal(document.getElementById("whatsappModal"));
         modal.show();

@@ -272,7 +272,38 @@ export default {
       }
       return message;
     },
+
+    addNewChat(chat) {
+      const processed_chat = {
+        id: chat.id,
+        created_at: chat.created_at,
+        img: chat.img || require("@/assets/whatsappImage/img6.jpg"),
+        name: chat.name || chat.contact?.name,
+        time: chat.lastMessage
+          ? new Date(chat.lastMessage.created_at).toLocaleTimeString("ar-EG", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "UTC",
+            })
+          : "",
+        created_at_last_message: chat.lastMessage?.created_at || "",
+        message: chat.lastMessage?.text_body || "",
+        sender: chat.lastMessage?.conversation_member?.name || "",
+        unread: false,
+        unreadCount: 0,
+        isActive: false,
+        pinned: false,
+        label: "",
+        messages: [],
+        conversation_id: chat.id,
+      };
+      console.log("Processed chat:", processed_chat);
+      this.chats.push(processed_chat);
+      this.openChat(processed_chat, this.chats.length - 1);
+    },
   },
+
   mounted() {
     this.fetchConversations();
     if (this.$refs.labelModal) {

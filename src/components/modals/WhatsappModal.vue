@@ -155,6 +155,7 @@ export default {
       immediate: true,
       handler(newVal) {
         if (newVal) {
+          this.$refs.leftSidebar.addNewChat(newVal);
           this.setSelectedChat({
             ...newVal,
             isActive: true,
