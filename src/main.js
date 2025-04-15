@@ -50,7 +50,9 @@ app.use(pinia);
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
-    dark: false, // Disable dark mode
+    options: {
+      darkModeSelector: false || "none",
+    },
   },
 });
 
