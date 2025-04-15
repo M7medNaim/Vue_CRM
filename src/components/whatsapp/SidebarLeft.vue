@@ -40,7 +40,7 @@
       <div class="chat-list position-relative overflow-auto">
         <div
           class="chat d-flex justify-content-end align-items-center position-relative w-100 px-lg-3 pt-2 border-1 border-bottom border-secondary-subtle cursor-pointer"
-          v-for="(chat, index) in filteredChats"
+          v-for="(chat, index) in chats"
           :key="index"
           @click="openChat(chat, index)"
           :class="{ active: chat.isActive }"

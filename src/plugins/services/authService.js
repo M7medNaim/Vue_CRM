@@ -277,8 +277,8 @@ export const sendMessage = (messageData) => {
   return axios.post("/whatsapp/send", formData);
 };
 
-export const sendInitMessage = (phone) => {
-  return axios.post("/whatsapp/send-init", { to: phone });
+export const sendInitMessage = (id) => {
+  return axios.post("/whatsapp/send-init", { deal_id: id });
 };
 // create new comment
 export const createComment = (formData) => {
