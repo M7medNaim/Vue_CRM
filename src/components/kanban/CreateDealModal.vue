@@ -112,7 +112,7 @@
                 </select>
               </div>
             </div>
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <div class="col-4">
                 <label>
                   <i class="fa-solid fa-cubes"></i>
@@ -178,7 +178,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
             <div class="modal-footer d-flex justify-content-between">
               <button
                 type="button"
