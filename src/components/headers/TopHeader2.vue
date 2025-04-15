@@ -171,7 +171,7 @@
     <ImportModal ref="importModalRef" />
     <ExportModal ref="exportModalRef" />
     <CreateDealModal ref="createDealModalRef" />
-    <WhatsappModal ref="whatsappModalRef" />
+    <WhatsappModal ref="whatsappModalRef" :conversation="conversation" />
     <SearchModalIpad ref="searchModalIpadRef" />
   </header>
 </template>
@@ -215,9 +215,15 @@ export default {
         status: [],
       }),
     },
+
+    selected_conversation: {
+      type: Object,
+      default: null,
+    },
   },
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
+    const conversation = ref(null);
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
@@ -290,6 +296,9 @@ export default {
         ? "col-md-auto mx-2"
         : "col-md mx-2 flex-grow-1";
     });
+    const setConversation = (data) => {
+      conversation.value = data;
+    };
     return {
       filterData,
       openFilterModal,
@@ -307,7 +316,19 @@ export default {
       openWhatsappModal,
       openSearchModalIpad,
       lgIpadClass,
+      conversation,
+      setConversation,
     };
+  },
+
+  watch: {
+    selected_conversation(newValue) {
+      if (newValue) {
+        console.log("top header2", newValue);
+        this.openWhatsappModal();
+        this.setConversation(newValue);
+      }
+    },
   },
 };
 </script>

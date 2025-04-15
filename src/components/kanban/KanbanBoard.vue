@@ -80,6 +80,7 @@
     :logs="logs"
     :comments="comments"
     :tasks="tasks"
+    @open-whatsapp-modal="openWhatsappModal"
   />
   <!-- selectedDeal -->
   <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
@@ -119,7 +120,7 @@ export default {
       default: "#333",
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const route = useRoute();
     const dealsContainer = ref(null);
     let scrollInterval = null;
@@ -464,6 +465,11 @@ export default {
       }
     };
 
+    const openWhatsappModal = (conversation) => {
+      console.log("Kanban", conversation);
+      emit("open-whatsapp-modal", conversation);
+    };
+
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -555,6 +561,7 @@ export default {
       tasks,
       handleDragChange,
       selectedDeal,
+      openWhatsappModal,
     };
   },
 };

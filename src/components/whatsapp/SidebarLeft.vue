@@ -193,6 +193,7 @@ export default {
     },
 
     async openChat(chat, index) {
+      console.log("Open chat with chat and index:", chat, index);
       try {
         if (index >= 0 && index < this.chats.length) {
           console.log("Opening chat:", chat);
@@ -274,33 +275,45 @@ export default {
     },
 
     addNewChat(chat) {
-      const processed_chat = {
-        id: chat.id,
-        created_at: chat.created_at,
-        img: chat.img || require("@/assets/whatsappImage/img6.jpg"),
-        name: chat.name || chat.contact?.name,
-        time: chat.lastMessage
-          ? new Date(chat.lastMessage.created_at).toLocaleTimeString("ar-EG", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-              timeZone: "UTC",
-            })
-          : "",
-        created_at_last_message: chat.lastMessage?.created_at || "",
-        message: chat.lastMessage?.text_body || "",
-        sender: chat.lastMessage?.conversation_member?.name || "",
-        unread: false,
-        unreadCount: 0,
-        isActive: false,
-        pinned: false,
-        label: "",
-        messages: [],
-        conversation_id: chat.id,
-      };
-      console.log("Processed chat:", processed_chat);
-      this.chats.push(processed_chat);
-      this.openChat(processed_chat, this.chats.length - 1);
+      let chatIndex = this.chats.findIndex((c) => c.id === chat.id);
+      let processed_chat = null;
+      if (chatIndex === -1) {
+        const processed_chat = {
+          id: chat.id,
+          created_at: chat.created_at,
+          img: chat.img || require("@/assets/whatsappImage/img6.jpg"),
+          name: chat.name || chat.contact?.name,
+          time: chat.lastMessage
+            ? new Date(chat.lastMessage.created_at).toLocaleTimeString(
+                "ar-EG",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                  timeZone: "UTC",
+                }
+              )
+            : "",
+          created_at_last_message: chat.lastMessage?.created_at || "",
+          message: chat.lastMessage?.text_body || "",
+          sender: chat.lastMessage?.conversation_member?.name || "",
+          unread: false,
+          unreadCount: 0,
+          isActive: false,
+          pinned: false,
+          label: "",
+          messages: [],
+          conversation_id: chat.id,
+        };
+        console.log("Processed chat:", processed_chat);
+        this.chats.push(processed_chat);
+        chatIndex = this.chats.length - 1;
+      } else {
+        processed_chat = this.chats[chatIndex];
+        console.log("Chat already exists:", processed_chat);
+      }
+      console.log("final processed chat and index", processed_chat, chatIndex);
+      this.openChat(processed_chat, chatIndex);
     },
   },
 

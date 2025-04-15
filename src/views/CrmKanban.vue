@@ -4,20 +4,14 @@
       :initial-filters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
+      :selected_conversation="selected_conversation"
     />
   </div>
-  <!-- <div class="watsappIcon position-absolute z-3">
-    <button class="position-relative fs-5 rounded-2" @click="openWhatsappModal">
-      <p class="position-absolute textWhats">
-        {{ $t("kanban-modal-edit-whatsapp") }}
-      </p>
-      <div class="text-white">
-        <i class="fa-brands fa-whatsapp"></i>
-      </div>
-    </button>
-  </div> -->
-  <KanbanBoard :stages="stages" defaultColor="#333" />
-  <!-- <WhatsappModal ref="whatsappModalRef" /> -->
+  <KanbanBoard
+    :stages="stages"
+    defaultColor="#333"
+    @open-whatsapp-modal="openWhatsappModal"
+  />
 </template>
 
 <script>
@@ -44,7 +38,7 @@ export default {
     // const stages = ref(kanbanStages);
     const stages = ref([]);
     // const whatsappModalRef = ref(null);
-
+    const selected_conversation = ref(null);
     const filters = ref({
       source: "",
       stage: "",
@@ -127,6 +121,11 @@ export default {
           }
         }
       });
+    };
+
+    const openWhatsappModal = (conversation) => {
+      console.log("CrmKanban", conversation);
+      selected_conversation.value = conversation;
     };
 
     // const openWhatsappModal = () => {
@@ -236,8 +235,8 @@ export default {
       filters,
       applyFilters,
       resetFilter,
-      // openWhatsappModal,
-      // whatsappModalRef,
+      openWhatsappModal,
+      selected_conversation,
     };
   },
 };
