@@ -102,7 +102,7 @@ export default {
           this.toast.success(this.t("success.createDeal"), {
             timeout: 3000,
           });
-          this.$emit("add-deal", response.data.data);
+          this.$emit("add-deal", response.data);
           this.clearForm();
           this.closeDealModal();
         }
