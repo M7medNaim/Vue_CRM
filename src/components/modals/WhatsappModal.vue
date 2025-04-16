@@ -154,9 +154,11 @@ export default {
       }
     },
     receiveNewMessage(new_message) {
+      console.log("selectedChat id", this.selectedChat.id);
+      console.log("new_message id", new_message.conversation_id);
       if (
         this.selectedChat &&
-        this.selectedChat.id === new_message.conversation_id
+        this.selectedChat.id == new_message.conversation_id
       ) {
         console.log("chat opened", this.selectedChat, new_message);
         this.handleNewMessage({

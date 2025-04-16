@@ -174,7 +174,7 @@
     <WhatsappModal
       ref="whatsappModalRef"
       :conversation="conversation"
-      :new_message="new_message"
+      :new_message="local_new_message"
     />
     <SearchModalIpad ref="searchModalIpadRef" />
   </header>
@@ -233,7 +233,7 @@ export default {
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
     const conversation = ref(null);
-    const new_message = ref(null);
+    const local_new_message = ref(null);
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
@@ -310,7 +310,7 @@ export default {
       conversation.value = data;
     };
     const setNewMessage = (data) => {
-      new_message.value = data;
+      local_new_message.value = data;
     };
     return {
       filterData,
@@ -332,6 +332,7 @@ export default {
       conversation,
       setConversation,
       setNewMessage,
+      local_new_message,
     };
   },
 

@@ -155,6 +155,7 @@ export default {
       openWhatsappModal,
       selected_conversation,
       receiveWhatsappMessage,
+      new_message,
     };
   },
 };
