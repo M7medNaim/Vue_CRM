@@ -239,26 +239,6 @@
                 </div>
               </div>
 
-              <!-- Company and Representative -->
-              <!-- <div class="row mb-3" @dblclick="handleDoubleClick">
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-user"></i>
-                    {{ t("kanban-modal-edit-label-company") }}</label
-                  >
-                </div>
-                <div class="col-10">
-                  <select
-                    class="form-select bg-light text-secondary py-2"
-                    v-model="customerData.company"
-                    :readonly="!isEditMode"
-                  >
-                    <option value="Eurasia Admin">Eurasia Admin</option>
-                    <option value="none">none</option>
-                  </select>
-                </div>
-              </div> -->
-
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
@@ -571,7 +551,6 @@
     </div>
   </div>
   <ViewReport ref="questionsModalRef" />
-  <WhatsappModal ref="whatsappModalRef" :conversation="selected_conversation" />
 </template>
 
 <script>
@@ -579,11 +558,9 @@ import { ref, reactive, computed, onMounted, nextTick } from "vue";
 import RatingStars from "../CreateDealElements/RatingStars.vue";
 import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
-import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
-  createConversation,
   fetchConversationByDealId,
   getSources,
   getStages,
@@ -592,11 +569,12 @@ import {
   updateTask,
   updateDealStage,
   updateDeal,
+  sendInitMessage,
 } from "@/plugins/services/authService";
 
 export default {
   name: "DealDataCard",
-  components: { RatingStars, ViewReport, WhatsappModal },
+  components: { RatingStars, ViewReport },
   props: {
     deal: {
       type: Object,
@@ -615,7 +593,7 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const selected_conversation = ref(null);
     const { t } = useI18n();
     const toast = useToast();
@@ -690,62 +668,6 @@ export default {
     const newComment = ref("");
     const newTask = ref("");
     const taskDate = ref("");
-    // const tasks = ref([
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    //   {
-    //     id: 1,
-    //     description: "Description",
-    //     date: "2025-02-22",
-    //     status: "Pending",
-    //   },
-    // ]);
     const rating = ref(0);
     const showNickName = ref(false);
     const toggleNickName = () => {
@@ -976,45 +898,6 @@ export default {
       }
     };
 
-    // const comments = ref([
-    //   {
-    //     user: "Admin",
-    //     text: "اتصال + فويس",
-    //     date: "19/2/2025 11:44 ص",
-    //     isAdmin: true,
-    //   },
-    //   {
-    //     user: "Sales Name",
-    //     text: "اتصال + فويس",
-    //     date: "19/2/2025 11:44 ص",
-    //     isAdmin: false,
-    //   },
-    //   {
-    //     user: "Sales Name",
-    //     text: "اتصال + فويس",
-    //     date: "19/2/2025 11:44 ص",
-    //     isAdmin: false,
-    //   },
-    //   {
-    //     user: "Sales Name",
-    //     text: "اتصال + فويس",
-    //     date: "19/2/2025 11:44 ص",
-    //     isAdmin: false,
-    //   },
-    //   {
-    //     user: "Admin",
-    //     text: "اتصال + فويس",
-    //     date: "19/2/2025 11:44 ص",
-    //     isAdmin: true,
-    //   },
-    //   {
-    //     user: "Admin",
-    //     text: "اتصال + فويس",
-    //     date: "19/2/2025 11:44 ص",
-    //     isAdmin: true,
-    //   },
-    // ]);
-
     const toggleEditMode = () => {
       isEditMode.value = !isEditMode.value;
       if (isEditMode.value) {
@@ -1027,32 +910,17 @@ export default {
     const handleDoubleClick = () => {
       isEditMode.value = true;
     };
-    // const openWhatsappModal = async (id) => {
-    //   try {
-    //     let conversation = null;
-    //     conversation = await fetchConversationByDealId(id);
-    //     if (!conversation.data?.data) {
-    //       conversation = await createConversation(id);
-    //     }
-    //     selected_conversation.value = conversation.data.data;
-    //     const modal = new Modal(document.getElementById("whatsappModal"));
-    //     modal.show();
-    //   } catch (error) {
-    //     console.error("Error opening WhatsApp modal:", error);
-    //     toast.error(t("error.openWhatsappModal"), {
-    //       timeout: 3000,
-    //     });
-    //   }
-    // };
     const openWhatsappModal = async (id) => {
+      console.log("deal data modal emit start");
       try {
         let conversation = await fetchConversationByDealId(id);
         if (!conversation.data?.data) {
-          conversation = await createConversation(id);
+          conversation = await sendInitMessage(id);
         }
+        console.log("conversation", conversation);
 
         selected_conversation.value = conversation.data.data;
-
+        console.log("selected_conversation.value", selected_conversation.value);
         await nextTick();
 
         const modalElement = document.getElementById("whatsappModal");
@@ -1062,6 +930,7 @@ export default {
         } else {
           console.warn("Modal element not found in DOM.");
         }
+        emit("open-whatsapp-modal", selected_conversation.value);
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
         toast.error(t("error.openWhatsappModal"), {

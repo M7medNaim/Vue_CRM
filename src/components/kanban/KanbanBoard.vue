@@ -80,6 +80,7 @@
     :logs="logs"
     :comments="comments"
     :tasks="tasks"
+    @open-whatsapp-modal="openWhatsappModal"
   />
   <!-- selectedDeal -->
   <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
@@ -119,7 +120,7 @@ export default {
       default: "#333",
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const route = useRoute();
     const dealsContainer = ref(null);
     let scrollInterval = null;
@@ -177,21 +178,7 @@ export default {
           .catch((error) => console.log("Failed to play sound:", error));
       }
     };
-    // open data deal modal
-    // const openDealDataCard = async (dealId) => {
-    //   try {
-    //     const dealData = await showDeal(dealId);
-    //     if (dealData.data) {
-    //       selectedDeal.value = dealData.data.data;
-    //       // const modal = new Modal(document.getElementById("dealDataCard"));
-    //       // modal.show();
-    //     } else {
-    //       console.error("No matching deal found for ID:", dealId);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching deal data:", error);
-    //   }
-    // };
+
     const openDealDataCard = async (dealId) => {
       try {
         const dealData = await showDeal(dealId);
@@ -296,7 +283,17 @@ export default {
       }
     };
 
+    const handleWhatsappEvent = (event) => {
+      const action = event.action;
+      if (action === "create") {
+        handleWhatsappMessageEvent(event.data, event.message);
+      } else if (action == "update") {
+        console.log("Whatsapp Message Status Updated:", event);
+      }
+    };
+
     const dealCreateEvent = (data, message) => {
+      let stages = ref(props.stages);
       const stageIndex = stages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );
@@ -463,6 +460,17 @@ export default {
       }
     };
 
+    const handleWhatsappMessageEvent = (data, message) => {
+      console.log("Whatsapp Message Event:", data);
+      emit("receive-whatsapp-message", data);
+      toast.success(message);
+    };
+
+    const openWhatsappModal = (conversation) => {
+      console.log("Kanban", conversation);
+      emit("open-whatsapp-modal", conversation);
+    };
+
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -501,6 +509,10 @@ export default {
             .listen(".LogEvent", (event) => {
               console.log("LogEvent received:", event);
               handleLogEvent(event);
+            })
+            .listen(".WhatsappEvent", (event) => {
+              console.log("WhatsappEvent received:", event);
+              handleWhatsappEvent(event);
             });
         } else {
           console.error(
@@ -554,6 +566,7 @@ export default {
       tasks,
       handleDragChange,
       selectedDeal,
+      openWhatsappModal,
     };
   },
 };

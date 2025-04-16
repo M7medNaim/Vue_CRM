@@ -57,6 +57,10 @@ export default {
       type: Object,
       default: null,
     },
+    new_message: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -149,17 +153,55 @@ export default {
         this.selectedChat.name = newName;
       }
     },
+    receiveNewMessage(new_message) {
+      console.log("selectedChat id", this.selectedChat.id);
+      console.log("new_message id", new_message.conversation_id);
+      if (
+        this.selectedChat &&
+        this.selectedChat.id == new_message.conversation_id
+      ) {
+        console.log("chat opened", this.selectedChat, new_message);
+        this.handleNewMessage({
+          id: new_message.id || Date.now(),
+          type: "msg-frnd",
+          text: new_message.text_body,
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          created_at: new_message.created_at,
+          sender: new_message.sender_name || new_message.sender,
+          isCopied: false,
+          isImage: new_message.type === "image",
+          imageUrl: new_message.file ? new_message.file.url : null,
+          conversation_id: new_message.conversation_id,
+        });
+      } else {
+        console.log("chat not opened", this.selectedChat, new_message);
+      }
+    },
   },
   watch: {
     conversation: {
       immediate: true,
       handler(newVal) {
         if (newVal) {
+          console.log("Whatsapp Modal:", newVal);
+          this.$refs.leftSidebar.addNewChat(newVal);
           this.setSelectedChat({
             ...newVal,
             isActive: true,
             messages: [],
           });
+        }
+      },
+    },
+    new_message: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          console.log("New message in Whatsapp Modal:", newVal);
+          this.receiveNewMessage(newVal);
         }
       },
     },

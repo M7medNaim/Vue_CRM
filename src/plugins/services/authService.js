@@ -276,6 +276,10 @@ export const sendMessage = (messageData) => {
 
   return axios.post("/whatsapp/send", formData);
 };
+
+export const sendInitMessage = (id) => {
+  return axios.post("/whatsapp/send-init", { deal_id: id });
+};
 // create new comment
 export const createComment = (formData) => {
   return axios.post("/comments", formData);
