@@ -173,6 +173,7 @@ export default {
           sender: new_message.sender_name || new_message.sender,
           isCopied: false,
           isImage: new_message.type === "image",
+          imageUrl: new_message.file ? new_message.file.url : null,
           conversation_id: new_message.conversation_id,
         });
       } else {
