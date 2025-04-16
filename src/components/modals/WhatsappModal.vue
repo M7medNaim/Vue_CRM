@@ -172,6 +172,7 @@ export default {
           created_at: new_message.created_at,
           sender: new_message.sender_name || new_message.sender,
           isCopied: false,
+          isImage: new_message.type === "image",
           conversation_id: new_message.conversation_id,
         });
       } else {
