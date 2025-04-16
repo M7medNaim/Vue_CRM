@@ -135,7 +135,7 @@ export default {
         const response = await getconversations();
 
         this.chats = response.data.data.map((conversation) => {
-          const lastMessage = conversation.last_message;
+          const lastMessage = conversation.last_message[0];
           return {
             id: conversation.id,
             created_at: conversation.created_at,

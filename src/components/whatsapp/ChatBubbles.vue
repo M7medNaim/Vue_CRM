@@ -19,6 +19,18 @@
           :src="message.imageUrl"
           alt="صورة مرسلة"
           class="img-fluid rounded-2"
+          @click="openFullScreenImage(message.imageUrl)"
+        />
+      </div>
+      <div
+        v-if="isFullScreenImageOpen"
+        class="full-screen-image-modal"
+        @click="closeFullScreenImage"
+      >
+        <img
+          :src="fullScreenImageUrl"
+          alt="صورة كاملة الشاشة"
+          class="full-screen-image"
         />
       </div>
       <div class="" v-else>
@@ -92,6 +104,8 @@ export default {
       activeMenu: null,
       currentDate: "",
       observer: null,
+      isFullScreenImageOpen: false,
+      fullScreenImageUrl: "",
     };
   },
   computed: {
@@ -188,6 +202,14 @@ export default {
         }
       }
     },
+    openFullScreenImage(imageUrl) {
+      this.fullScreenImageUrl = imageUrl;
+      this.isFullScreenImageOpen = true;
+    },
+    closeFullScreenImage() {
+      this.isFullScreenImageOpen = false;
+      this.fullScreenImageUrl = "";
+    },
   },
   directives: {
     clickOutside: {
@@ -254,8 +276,13 @@ export default {
   background: #dcf8c6;
 }
 .right-side .chatBx .msg .textMessage img {
-  max-width: 300px;
-  height: 300px;
+  max-width: 400px;
+  object-fit: cover;
+}
+@media (max-width: 1100px) {
+  .right-side .chatBx .msg .textMessage img {
+    max-width: 100%;
+  }
 }
 
 .right-side .chatBx .msg-me .textMessage::before {
@@ -318,5 +345,23 @@ export default {
   border-left: 10px solid #fff;
   border-bottom: 10px solid transparent;
   border-right: 10px solid transparent;
+}
+.full-screen-image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.078);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.full-screen-image {
+  max-width: 90% !important;
+  max-height: 90% !important;
+  border-radius: 8px;
 }
 </style>
