@@ -139,7 +139,9 @@ export default {
           return {
             id: conversation.id,
             created_at: conversation.created_at,
-            img: conversation.img || require("@/assets/whatsappImage/img6.jpg"),
+            img:
+              conversation.img ||
+              require("@/assets/whatsappImage/default-userImage.jpg"),
             name: conversation.name || conversation.contact?.name,
             time: lastMessage
               ? new Date(lastMessage.created_at).toLocaleTimeString("ar-EG", {
@@ -281,7 +283,8 @@ export default {
         const processed_chat = {
           id: chat.id,
           created_at: chat.created_at,
-          img: chat.img || require("@/assets/whatsappImage/img6.jpg"),
+          img:
+            chat.img || require("@/assets/whatsappImage/default-userImage.jpg"),
           name: chat.name || chat.contact?.name,
           time: chat.lastMessage
             ? new Date(chat.lastMessage.created_at).toLocaleTimeString(
