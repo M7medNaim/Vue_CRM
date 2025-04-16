@@ -3,7 +3,7 @@
     class="sidebar vh-100 overflow-hidden text-white"
     :class="{ 'sidebar-collapsed': isCollapsed }"
   >
-    <div class="d-flex justify-content-start align-items-center ps-3 mt-3">
+    <div class="d-flex justify-content-start align-items-center ps-2 mt-3">
       <div class="imgLogo me-2">
         <img
           src="@/assets/Mediceva-Logo.png"
