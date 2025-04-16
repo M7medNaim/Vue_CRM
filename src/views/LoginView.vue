@@ -6,7 +6,7 @@
           <form class="card-body" @submit.prevent="handleLogin">
             <div class="mb-3 text-center">
               <img
-                src="../../public/images/new-nokta-logo.png"
+                src="../../public/images/medicevaLogo.png"
                 class="img-fluid profile-image-pic"
                 alt="logo"
               />

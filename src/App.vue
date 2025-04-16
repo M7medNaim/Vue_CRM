@@ -65,7 +65,7 @@ export default {
 
   data() {
     return {
-      loaderImage: "/images/new-nokta-logo.png",
+      loaderImage: "/images/medicevaLogo.png",
       loaderColor: "#9e2929",
       isLoggedIn: false,
       isSidebarCollapsed: true,
