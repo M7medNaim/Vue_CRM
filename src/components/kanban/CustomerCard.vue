@@ -1,5 +1,14 @@
 <template>
-  <div class="deal-card" @click="openDealDataCard">
+  <div
+    class="deal-card"
+    @click="openDealDataCard"
+    :style="{
+      borderLeft:
+        deal.responsible_user && getUserColor(deal.responsible_user.id)
+          ? `4px solid ${getUserColor(deal.responsible_user.id)}`
+          : '',
+    }"
+  >
     <div
       class="row"
       style="background: linear-gradient(to left, white, rgb(231, 227, 227))"
@@ -77,8 +86,17 @@
       <span class="fs-7">{{ formatDate(deal.updated_at) }}</span>
     </div>
 
-    <div class="col-12">
-      <span class="fs-7 fw-medium">{{ deal.responsible_user?.name }}</span>
+    <div class="col-12 mt-1">
+      <span
+        class="badge fw-medium text-white py-1 px-2"
+        :style="{
+          backgroundColor:
+            deal.responsible_user && getUserColor(deal.responsible_user.id)
+              ? getUserColor(deal.responsible_user.id)
+              : '#292929',
+        }"
+        >{{ deal.responsible_user?.name }}</span
+      >
     </div>
   </div>
 </template>
@@ -127,7 +145,13 @@ export default {
     //   }
     // });
     // responsibleUserName
-    return { t, formatDate, openDealDataCard };
+    const getUserColor = (userId) => {
+      return localStorage.getItem(`user_${userId}_color`) || "#292929";
+    };
+    const borderRight = (userId) => {
+      return localStorage.getItem(`user_${userId}_color`) || "#292929";
+    };
+    return { t, formatDate, openDealDataCard, getUserColor, borderRight };
   },
   methods: {},
 };

@@ -8,7 +8,7 @@
             <div class="col-md-auto">
               <button
                 v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
-                class="btn btn-header text-white px-2 py-2 fw-semibold me-2 btnAddKanban"
+                class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnAddKanban"
                 @click="openCreateDealModal"
               >
                 <span class="textAddKanban">{{
@@ -17,14 +17,14 @@
                 <span class="iconAddKanban d-none">+</span>
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 me-2 fw-semibold btnKanban"
+                class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnKanban"
                 @click="openCrmKanban"
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 fw-semibold btnKanban"
+                class="btn btn-header text-white px-2 py-2 fs-7 btnKanban"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
               >
@@ -107,12 +107,12 @@
               </div>
               <div class="watsappIcon me-2">
                 <button
-                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 p-2 fs-7 ms-2 whatsappIpad"
+                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 fs-7 ms-2 whatsappIpad"
                   @click="openWhatsappModal"
-                  style="background-color: #25d365cc"
+                  style="background-color: #25d365cc; padding: 0.6rem 0.6rem"
                 >
                   <i class="fa-brands fa-whatsapp text-white fs-5"></i>
-                  <span class="text-white fs-7 removeIpad">{{
+                  <span class="text-white removeIpad" style="font-size: 14px">{{
                     $t("kanban-modal-edit-whatsapp")
                   }}</span>
                 </button>
@@ -124,7 +124,7 @@
                   class="text-decoration-none text-white"
                 >
                   <div
-                    class="d-flex align-items-center justify-content-center gap-2 documentsIpad"
+                    class="d-flex align-items-center fs-7 justify-content-center gap-2 documentsIpad"
                     :title="$t('sidebar-nav-item-documents')"
                   >
                     <i class="fa-regular fa-folder-open fs-6"></i>

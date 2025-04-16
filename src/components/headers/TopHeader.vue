@@ -56,16 +56,20 @@
         <div class="user-info d-flex justify-content-end align-items-center">
           <div class="lang">
             <button
-              class="border-0 bg-transparent d-flex align-items-center justify-content-end gap-2 text-white position-relative btn-header rounded-2 p-1 mt-1"
+              class="btnLang border-0 bg-transparent d-flex align-items-center justify-content-center gap-2 text-white position-relative rounded-2 mt-1"
               @click="toggleLanguage"
             >
               <!-- <i class="fa-solid fa-globe"></i> -->
-              <span class="fs-6">{{ nextLanguage.toUpperCase() }}</span>
+              <span
+                class=""
+                style="font-size: 14px; padding-top: 4px; padding-bottom: 3px"
+                >{{ nextLanguage.toUpperCase() }}</span
+              >
               <span class="dropdown-icon text-secondary flageImage">
                 <img
                   :src="flagIcon"
                   alt="English"
-                  style="width: 30px; height: 20px"
+                  style="width: 26px; height: 16px"
                 />
               </span>
             </button>
@@ -324,5 +328,8 @@ export default {
 }
 .btn-header {
   background-color: rgba(128, 128, 128, 0.8) !important;
+}
+.btnLang {
+  background-color: hsla(0, 0%, 100%, 0.322) !important;
 }
 </style>

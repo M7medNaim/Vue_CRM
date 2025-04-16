@@ -91,7 +91,7 @@ export default {
 
     const toggleButtonStyle = computed(() => {
       return {
-        bottom: isNewsBarVisible.value ? "28px" : "0",
+        bottom: isNewsBarVisible.value ? "29px" : "0",
         left: "0",
         transition: "bottom 0.5s ease",
       };
@@ -123,7 +123,7 @@ export default {
 .marquee_margin {
   margin-right: 20px;
   margin-left: 20px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .important {

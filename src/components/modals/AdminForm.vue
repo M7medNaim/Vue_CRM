@@ -118,6 +118,17 @@
                 :placeholder="t('users-modal-add-placeholder-reportto')"
                 :searchable="true"
               />
+              <div class="mb-3">
+                <label for="color" class="form-label">
+                  {{ t("users-modal-add-label-color") }}
+                </label>
+                <input
+                  type="color"
+                  class="form-control"
+                  id="color"
+                  v-model="formData.color"
+                />
+              </div>
             </div>
             <div class="mb-3">
               <label for="image" class="form-label">
@@ -198,6 +209,7 @@ export default {
         reportTo: "",
         phoneNumber: "",
         image: null,
+        color: "#292929",
       },
       users: [],
       roles: [],
@@ -242,6 +254,7 @@ export default {
           reportTo: user.reportTo?.id || user.reportTo,
           phoneNumber: user.phoneNumber,
           image: null,
+          color: user.color || "#292929",
         };
       } else {
         this.isEditMode = false;
@@ -255,6 +268,7 @@ export default {
           reportTo: "",
           phoneNumber: "",
           image: null,
+          color: "#292929",
         };
       }
 
@@ -301,7 +315,9 @@ export default {
         }
 
         if (response.data) {
-          this.$emit("user-updated", response.data.data || response.data);
+          const user = response.data.data || response.data;
+          localStorage.setItem(`user_${user.id}_color`, this.formData.color);
+          this.$emit("user-updated", user);
           setTimeout(() => {
             this.clearForm();
             this.closeModal();
@@ -331,6 +347,7 @@ export default {
         reportTo: "",
         phoneNumber: "",
         image: null,
+        color: "#292929",
       };
     },
 

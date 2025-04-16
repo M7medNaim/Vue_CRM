@@ -13,10 +13,26 @@
           >
             <!-- :style="{ backgroundColor: stage.color || defaultColor }" -->
             <div
-              class="stageName py-1 p-0 text-white"
-              :style="{ backgroundColor: stage.color_code }"
+              class="stageName py-1 p-0"
+              :style="{
+                backgroundColor: stage.color_code,
+              }"
             >
-              {{ stage.name }}
+              <span
+                class="me-2"
+                :style="{ color: getContrastColor(stage.color_code) }"
+                >{{ stage.name }}</span
+              >
+              <span
+                class="badge"
+                style="font-size: 14px"
+                :style="{
+                  backgroundColor: getContrastColor(stage.color_code),
+                  color: stage.color_code,
+                }"
+              >
+                {{ stage.deals.length }}
+              </span>
             </div>
             <button
               class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
@@ -470,6 +486,13 @@ export default {
       console.log("Kanban", conversation);
       emit("open-whatsapp-modal", conversation);
     };
+    const getContrastColor = (hexColor) => {
+      const r = parseInt(hexColor.slice(1, 3), 16);
+      const g = parseInt(hexColor.slice(3, 5), 16);
+      const b = parseInt(hexColor.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 170 ? "#000000" : "#FFFFFF";
+    };
 
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
@@ -567,6 +590,7 @@ export default {
       handleDragChange,
       selectedDeal,
       openWhatsappModal,
+      getContrastColor,
     };
   },
 };
@@ -598,7 +622,6 @@ export default {
   width: 285px;
   margin-right: 10px;
   text-align: start;
-  font-weight: 600;
   padding-left: 3px;
   transition: all 0.5s;
   cursor: pointer;
