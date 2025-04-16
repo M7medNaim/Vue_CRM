@@ -31,7 +31,7 @@
                   color: stage.color_code,
                 }"
               >
-                {{ stage.deals.length }}
+                {{ stage.deal_count ?? 0 }}
               </span>
             </div>
             <button
@@ -53,6 +53,7 @@
               @start="drag = true"
               @end="handleDragEnd"
               @change="handleDragChange($event, stage.id)"
+              @scroll="handleDealContainerScroll($event, stage.id)"
             >
               <template #item="{ element: deal }">
                 <CustomerCard
@@ -109,7 +110,10 @@ import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { updateDealStage } from "@/plugins/services/authService";
+import {
+  updateDealStage,
+  fetchAdditionalDealsByStageId,
+} from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
 import { showDeal } from "@/plugins/services/authService";
@@ -151,7 +155,7 @@ export default {
     const { t } = useI18n();
     const selectedDeal = ref(null);
     const isTasksView = computed(() => route.path === "/crm-tasks");
-
+    const reachedBottom = ref(false);
     const moveSound = new Audio(moveCardSound);
 
     const handleDragChange = async (event, newStageId) => {
@@ -494,6 +498,39 @@ export default {
       return brightness > 170 ? "#000000" : "#FFFFFF";
     };
 
+    const handleDealContainerScroll = async (event, id) => {
+      console.log("reachedBottom", reachedBottom.value);
+      if (reachedBottom.value) return;
+      const scrollTop = event.target.scrollTop;
+      const scrollHeight = event.target.scrollHeight;
+      const clientHeight = event.target.clientHeight;
+      const stages = ref(props.stages);
+      const stageIndex = stages.value.findIndex((s) => s.id === id);
+      if (scrollTop + clientHeight >= scrollHeight - 1) {
+        reachedBottom.value = true;
+        fetchAdditionalDealsByStageId(
+          id,
+          10,
+          stages.value[stageIndex].deals.length,
+          []
+        )
+          .then((additional_deals) => {
+            console.log("Fetched additional deals:", additional_deals.data);
+            if (additional_deals.data) {
+              if (stageIndex !== -1) {
+                stages.value[stageIndex].deals.push(
+                  ...additional_deals.data.data
+                );
+                console.log("Deals updated in the UI", stages.value);
+              }
+            }
+          })
+          .finally(() => {
+            reachedBottom.value = false;
+          });
+      }
+    };
+
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -591,6 +628,8 @@ export default {
       selectedDeal,
       openWhatsappModal,
       getContrastColor,
+      handleDealContainerScroll,
+      reachedBottom,
     };
   },
 };

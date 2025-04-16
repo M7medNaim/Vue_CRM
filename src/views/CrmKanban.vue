@@ -59,6 +59,7 @@ export default {
             name: stage.name,
             description: stage.description || null,
             color_code: stage.color_code,
+            deal_count: stage.deal_count,
             deals: stage.deals || [],
           }));
           toast.success(t("success.loadKanban"));

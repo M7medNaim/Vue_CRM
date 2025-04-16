@@ -63,6 +63,22 @@ export const getDeals = async (params = {}) => {
     },
   });
 };
+
+export const fetchAdditionalDealsByStageId = (
+  stageId,
+  limit,
+  offset,
+  filters
+) => {
+  return axios.get(`/deals/get-more`, {
+    params: {
+      stage_id: stageId,
+      limit: limit,
+      offset: offset,
+      filters: filters,
+    },
+  });
+};
 // Show Deal id
 export const showDeal = (dealId) => axios.get(`/deals/${dealId}`);
 // Create New Deal
