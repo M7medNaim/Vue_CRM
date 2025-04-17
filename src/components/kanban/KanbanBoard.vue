@@ -199,8 +199,25 @@ export default {
       try {
         const dealData = await showDeal(dealId);
         if (dealData.data) {
-          selectedDeal.value = dealData.data.data;
+          const deal = dealData.data.data;
+
+          const checkStageLoaded = () => {
+            return props.stages.some((stage) => stage.id === deal.stage_id);
+          };
+
+          const waitForStage = () => {
+            return new Promise((resolve) => {
+              if (checkStageLoaded()) {
+                resolve();
+              }
+            });
+          };
+
+          await waitForStage();
+
+          selectedDeal.value = deal;
           await nextTick();
+
           setTimeout(() => {
             const modalEl = document.getElementById("dealDataCard");
             const modal = new Modal(modalEl);
@@ -226,6 +243,7 @@ export default {
         console.error("Error fetching deal data:", error);
       }
     };
+
     const openUpdateStage = (stage) => {
       selectedStage.value = stage;
       const modal = new Modal(document.getElementById("updateStage"));
