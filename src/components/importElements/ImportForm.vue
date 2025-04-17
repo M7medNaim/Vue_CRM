@@ -13,9 +13,7 @@
             @change="handleFileChange"
             accept=".xlsx,.xls,.csv"
           />
-          <small class="text-muted">
-            Allowed file types: .xlsx, .xls, .csv
-          </small>
+          <small class="text-muted"> Allowed file types: .xlsx </small>
           <div v-if="fileError" class="text-danger mt-1">
             {{ fileError }}
           </div>
@@ -199,9 +197,9 @@ export default {
       const file = event.target.files[0];
       if (file) {
         const allowedTypes = [
-          "application/vnd.ms-excel",
+          // "application/vnd.ms-excel",
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          "text/csv",
+          // "text/csv",
         ];
 
         if (!allowedTypes.includes(file.type)) {
