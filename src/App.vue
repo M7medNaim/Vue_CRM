@@ -3,7 +3,7 @@
     <Loader
       :is-loading="loadingStore.isLoading"
       :loader-image="loaderImage"
-      :loader-color="loaderColor"
+      :loader-colors="loaderColors"
     />
 
     <div v-if="!isLoggedIn">
@@ -66,7 +66,7 @@ export default {
   data() {
     return {
       loaderImage: "/images/medicevaLogo.png",
-      loaderColor: "#9e2929",
+      loaderColors: ["#dd3636", "#3d3d3d", "#595959", "#8c8c8c"],
       isLoggedIn: false,
       isSidebarCollapsed: true,
     };

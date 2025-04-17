@@ -13,8 +13,9 @@
       >
         <div
           class="circle d-flex justify-content-center align-items-center position-relative rounded-5"
-          v-for="n in 4"
+          v-for="(color, n) in loaderColors"
           :key="n"
+          :style="{ '--color': color }"
         >
           <div class="dot position-absolute rounded-5"></div>
           <div class="outline position-absolute rounded-5"></div>
@@ -29,7 +30,7 @@ import { defineProps } from "vue";
 defineProps({
   isLoading: Boolean,
   loaderImage: String,
-  loaderColor: String,
+  loaderColors: Array,
 });
 </script>
 <style scoped>
@@ -47,8 +48,8 @@ defineProps({
   margin-bottom: 25px;
 }
 .loader .img img {
-  width: 70px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   animation: imgScales 2s linear infinite;
   -webkit-animation: imgScales 2s linear infinite;
 }
