@@ -141,7 +141,7 @@
         <input
           type="text"
           ref="messageInput"
-          :placeholder="$t('whatsapp.typeOfMessage')"
+          placeholder="Type a message"
           id="inputMassege"
           class="rounded-5 fs-6 border-0 py-2 px-4 w-100"
           style="outline: none; height: 45px"

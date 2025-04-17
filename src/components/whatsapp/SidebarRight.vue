@@ -218,7 +218,7 @@ export default {
           this.scrollToBottom();
         } catch (error) {
           console.error("Error sending message:", error);
-          alert("فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.");
+          alert("Failed to send message. Please try again.");
         }
       }
     },
