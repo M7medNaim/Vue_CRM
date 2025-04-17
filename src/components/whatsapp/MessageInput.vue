@@ -254,23 +254,27 @@ export default {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
 
-          console.log("تم اختيار الملف:", file.name);
-          console.log("حجم الملف:", file.size, "بايت");
-          console.log("نوع الملف:", file.type);
+          console.log("File Name:", file.name);
+          console.log("File size:", file.size, "بايت");
+          console.log("File Type:", file.type);
 
-          if (file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const imagePreview = e.target.result;
-              console.log(
-                "تم رفع الصورة بنجاح. المعاينة Base64:",
-                imagePreview
-              );
-            };
-            reader.readAsDataURL(file);
-          } else {
-            console.log("تم رفع ملف غير صورة:", file.name);
-          }
+          // if (file.type.startsWith("image/")) {
+          //   const reader = new FileReader();
+          //   reader.onload = (e) => {
+          //     const imagePreview = e.target.result;
+          //     console.log(
+          //       "تم رفع الصورة بنجاح. المعاينة Base64:",
+          //       imagePreview
+          //     );
+          //   };
+          //   reader.readAsDataURL(file);
+          // } else {
+          //   console.log("تم رفع ملف غير صورة:", file.name);
+          // }
+          const messageData = {
+            file: file,
+          };
+          this.$emit("send-message", messageData);
         }
       } else {
         console.log("لم يتم تحديد أي ملفات.");

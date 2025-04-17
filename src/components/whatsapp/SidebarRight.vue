@@ -178,7 +178,8 @@ export default {
   },
   methods: {
     async receiveMessage(messageData) {
-      if (!messageData.text_body) {
+      console.log("Received message data:", messageData);
+      if (!messageData.text_body && !messageData.file) {
         alert("نص الرسالة مطلوب");
         return;
       }
@@ -209,6 +210,8 @@ export default {
             sender: "You",
             isCopied: false,
             conversation_id: this.selectedChat.id,
+            isImage: messageData.file ? true : false,
+            imageUrl: messageData.file ? messageData.file.url : null,
           };
 
           this.$emit("new-message", newMessage);

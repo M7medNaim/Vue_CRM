@@ -290,16 +290,17 @@ export const getMessageConv = async (id) => {
 // };
 export const sendMessage = (messageData) => {
   const formData = new FormData();
-
   formData.append("text_body", messageData.text_body);
+  formData.append("file", messageData.file); // Assuming messageData.file is a Blob
+  formData.append("conversation_id", messageData.conversation_id);
 
-  if (messageData.conversation_id) {
-    formData.append("conversation_id", messageData.conversation_id);
-  } else {
-    formData.append("to", messageData.to || "971557893319");
-  }
+  console.log("FormData before sending:", formData);
 
-  return axios.post("/whatsapp/send", formData);
+  return axios.post("/whatsapp/send", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 export const sendInitMessage = (id) => {
