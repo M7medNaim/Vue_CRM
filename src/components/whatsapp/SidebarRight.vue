@@ -19,7 +19,12 @@
                   class="img-fluid rounded-circle"
                 />
               </div>
-              <span class="my-auto text-white">{{ selectedChat.name }}</span>
+              <div class="">
+                <p class="my-auto text-white ps-1">{{ selectedChat.name }}</p>
+                <p class="my-auto text-white" style="font-size: 14px">
+                  {{ selectedChat.phone.phone }}
+                </p>
+              </div>
             </div>
           </div>
           <div
@@ -308,7 +313,7 @@ li {
 }
 
 .right-side .header {
-  height: 7vh;
+  height: 7.5vh;
   width: 98%;
   margin: 0 auto;
 }

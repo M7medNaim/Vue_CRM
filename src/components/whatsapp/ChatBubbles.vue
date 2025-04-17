@@ -260,12 +260,12 @@ export default {
 </script>
 <style scoped>
 .right-side .chatBx p.date {
-  top: -7%;
+  top: -6%;
   width: fit-content;
 }
 @media (max-width: 850px) {
   .right-side .chatBx p.date {
-    top: -3%;
+    top: -4%;
     left: 50%;
     transform: translateX(-50%);
   }
@@ -279,7 +279,7 @@ export default {
   max-width: 400px;
   object-fit: cover;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .right-side .chatBx .msg .textMessage img {
     max-width: 100%;
   }
