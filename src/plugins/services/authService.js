@@ -79,6 +79,15 @@ export const fetchAdditionalDealsByStageId = (
     },
   });
 };
+
+export const fetchTasksCountByStageName = async (stageName) => {
+  const token = Cookies.get("authToken");
+  return await axios.get(`/tasks/count/${stageName}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 // Show Deal id
 export const showDeal = (dealId) => axios.get(`/deals/${dealId}`);
 // Create New Deal

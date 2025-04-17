@@ -66,7 +66,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
-                    >99+</span
+                    >{{ overdue_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-overdue")
@@ -77,7 +77,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
-                    >15</span
+                    >{{ today_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-today")
@@ -86,8 +86,9 @@
                 <div
                   class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
                 >
-                  <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
-                    >4</span
+                  <span
+                    class="badge bg-secondary-subtle text-info fw-bold fs-6"
+                    >{{ tomorrow_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-tomorrow")
@@ -98,7 +99,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
-                    >99+</span
+                    >{{ notasks_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-notasks")
@@ -192,6 +193,7 @@ import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import SearchModalIpad from "@/components/headers/SearchModalIpad.vue";
+import { fetchTasksCountByStageName } from "@/plugins/services/authService";
 
 export default {
   name: "TopHeader2",
@@ -238,6 +240,10 @@ export default {
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
     const whatsappModalRef = ref(null);
+    const overdue_count = ref(0);
+    const today_count = ref(0);
+    const tomorrow_count = ref(0);
+    const notasks_count = ref(0);
     const openWhatsappModal = () => {
       try {
         const modal = new Modal(document.getElementById("whatsappModal"));
@@ -312,6 +318,13 @@ export default {
     const setNewMessage = (data) => {
       local_new_message.value = data;
     };
+    const fetchTasksCounter = async () => {
+      // Simulate fetching data from an API
+      overdue_count.value = await fetchTasksCountByStageName("overdue"); // Example value
+      today_count.value = await fetchTasksCountByStageName("today"); // Example value
+      tomorrow_count.value = await fetchTasksCountByStageName("tomorrow"); // Example value
+      notasks_count.value = await fetchTasksCountByStageName("notask"); // Example value
+    };
     return {
       filterData,
       openFilterModal,
@@ -333,6 +346,11 @@ export default {
       setConversation,
       setNewMessage,
       local_new_message,
+      overdue_count,
+      today_count,
+      tomorrow_count,
+      notasks_count,
+      fetchTasksCounter,
     };
   },
 
