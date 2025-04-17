@@ -332,7 +332,7 @@ export default {
   height: 40px;
 }
 .message-warning {
-  bottom: 60px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   width: 80% !important;
