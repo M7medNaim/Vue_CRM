@@ -11,7 +11,10 @@
             >
               <div class="user-imgBx">
                 <img
-                  :src="selectedChat.img"
+                  :src="
+                    selectedChat.img ||
+                    require('@/assets/whatsappImage/default-userImage.jpg')
+                  "
                   alt="user image"
                   class="img-fluid rounded-circle"
                 />
