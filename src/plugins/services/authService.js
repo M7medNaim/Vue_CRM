@@ -80,9 +80,9 @@ export const fetchAdditionalDealsByStageId = (
   });
 };
 
-export const fetchTasksCountByStageName = async (stageName) => {
+export const fetchTasksCountByStageName = (stageName) => {
   const token = Cookies.get("authToken");
-  return await axios.get(`/tasks/count/${stageName}`, {
+  return axios.get(`/tasks/count/${stageName}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

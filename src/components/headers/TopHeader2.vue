@@ -296,6 +296,7 @@ export default {
     };
     onMounted(() => {
       window.addEventListener("resize", handleResize);
+      fetchTasksCounter();
     });
 
     onUnmounted(() => {
@@ -320,10 +321,23 @@ export default {
     };
     const fetchTasksCounter = async () => {
       // Simulate fetching data from an API
-      overdue_count.value = await fetchTasksCountByStageName("overdue"); // Example value
-      today_count.value = await fetchTasksCountByStageName("today"); // Example value
-      tomorrow_count.value = await fetchTasksCountByStageName("tomorrow"); // Example value
-      notasks_count.value = await fetchTasksCountByStageName("notask"); // Example value
+      try {
+        const overdueResponse = await fetchTasksCountByStageName("Overdue");
+        overdue_count.value = overdueResponse?.data?.data || 0;
+
+        const todayResponse = await fetchTasksCountByStageName("Due Today");
+        today_count.value = todayResponse?.data?.data || 0;
+
+        const tomorrowResponse = await fetchTasksCountByStageName(
+          "Due Tomorrow"
+        );
+        tomorrow_count.value = tomorrowResponse?.data?.data || 0;
+
+        const noTasksResponse = await fetchTasksCountByStageName("No Task");
+        notasks_count.value = noTasksResponse?.data?.data || 0;
+      } catch (error) {
+        console.error("Error fetching task counts:", error);
+      }
     };
     return {
       filterData,
