@@ -75,7 +75,7 @@
               autocomplete="off"
               aria-label="uploadFile"
               multiple
-              accept="image/*, .pdf, .doc, .txt"
+              accept="*/*"
               @change="handleFileUpload"
             />
           </form>

@@ -115,7 +115,11 @@ export default {
             sender: msg.conversation_member?.name || "",
             isCopied: false,
             isImage: msg.type === "image",
+            isDocument: msg.type === "document",
+            isAudio: msg.type === "audio",
+            isVideo: msg.type === "video",
             imageUrl: msg.file ? msg.file.url : null,
+            fileUrl: msg.file ? msg.file.url : null,
           }));
 
           this.selectedChat = {
