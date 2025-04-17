@@ -68,6 +68,13 @@ export default {
     };
   },
   methods: {
+    loadConversations(conversations) {
+      if (this.$refs.leftSidebar) {
+        this.$refs.leftSidebar.chats = conversations;
+      } else {
+        console.warn("LeftSidebar ref not found");
+      }
+    },
     handleNewMessage(newMessage) {
       if (this.selectedChat) {
         this.selectedChat = {

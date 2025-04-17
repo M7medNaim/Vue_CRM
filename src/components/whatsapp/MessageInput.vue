@@ -63,7 +63,7 @@
           </div>
         </div>
         <!-- upload_file Icon -->
-        <div class="upload_file cursor-pointer d-block position-relative">
+        <div class="upload_file cursor-pointer d-block position-relative pe-1">
           <form action="">
             <label for="file" class="upload-label">
               <i class="fa-solid fa-paperclip upload-icon fs-6 text-dark"></i>
@@ -80,7 +80,7 @@
             />
           </form>
         </div>
-        <div class="Clipboard">
+        <!-- <div class="Clipboard">
           <button
             @click="toggleClipboard"
             v-click-outside="closeClipboard"
@@ -123,25 +123,28 @@
               <span>hi</span>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="flex-grow-1 position-relative">
         <!-- message warning -->
         <div
           v-if="showWarning"
-          class="message-warning text-white position-absolute py-1 px-3 rounded-3 d-flex justify-content-between align-items-center"
+          class="message-warning bg-white text-dark position-absolute py-1 px-3 rounded-3 d-flex justify-content-between align-items-center"
         >
           <span class="me-2 w-100"
             >to send the message you must click on the send button
           </span>
-          <button class="btn btn-sm text-end btnConfirm" @click="hideWarning">
+          <button
+            class="btn btn-sm text-end btnConfirm bg-success fw-bold text-white"
+            @click="hideWarning"
+          >
             Confirm
           </button>
         </div>
         <input
           type="text"
           ref="messageInput"
-          :placeholder="$t('whatsapp.typeOfMessage')"
+          placeholder="Start typing..."
           id="inputMassege"
           class="rounded-5 fs-6 border-0 py-2 px-4 w-100"
           style="outline: none; height: 45px"
@@ -333,8 +336,7 @@ export default {
   height: 40px;
 }
 .message-warning {
-  background-color: rgba(128, 128, 128, 0.961);
-  bottom: 50px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   width: 80% !important;
@@ -343,13 +345,6 @@ export default {
   cursor: pointer;
 }
 .btnConfirm {
-  background-color: #cec5c5f5;
   padding: 0px 10px;
-  color: #000;
-}
-.btnConfirm:hover {
-  background-color: #2c2727;
-  padding: 0px 10px;
-  color: #fff;
 }
 </style>

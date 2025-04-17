@@ -195,7 +195,10 @@ import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import SearchModalIpad from "@/components/headers/SearchModalIpad.vue";
-import { fetchTasksCountByStageName } from "@/plugins/services/authService";
+import {
+  fetchTasksCountByStageName,
+  getconversations,
+} from "@/plugins/services/authService";
 
 export default {
   name: "TopHeader2",
@@ -247,8 +250,21 @@ export default {
     const tomorrow_count = ref(0);
     const notasks_count = ref(0);
     const searchText = ref("");
-    const openWhatsappModal = () => {
+    // const openWhatsappModal = () => {
+    //   try {
+    //     const modal = new Modal(document.getElementById("whatsappModal"));
+    //     modal.show();
+    //   } catch (error) {
+    //     console.error("Error opening WhatsApp modal:", error);
+    //   }
+    // };
+
+    const openWhatsappModal = async () => {
       try {
+        const response = await getconversations();
+        const conversations = response.data.data;
+        whatsappModalRef.value.loadConversations(conversations);
+
         const modal = new Modal(document.getElementById("whatsappModal"));
         modal.show();
       } catch (error) {

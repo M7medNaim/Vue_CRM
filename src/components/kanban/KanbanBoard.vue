@@ -112,11 +112,11 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import {
   updateDealStage,
+  showDeal,
   fetchAdditionalDealsByStageId,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
-import { showDeal } from "@/plugins/services/authService";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";

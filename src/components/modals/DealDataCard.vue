@@ -423,8 +423,7 @@
                       :placeholder="t('kanban-modal-edit-comment-placeholder')"
                     />
                     <button
-                      class="btn btn-primary py-1 px-2"
-                      style="font-size: 14px"
+                      class="btn btn-primary py-1 px-4"
                       type="submit"
                       @click="handleAddComment"
                     >

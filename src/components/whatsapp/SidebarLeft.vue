@@ -47,7 +47,10 @@
         >
           <div class="imgBx position-relative overflow-hidden h-25 me-2 mb-4">
             <img
-              :src="chat.img"
+              :src="
+                chat.img ||
+                require('@/assets/whatsappImage/default-userImage.jpg')
+              "
               alt="user image"
               class="rounded-circle w-100 h-100"
             />

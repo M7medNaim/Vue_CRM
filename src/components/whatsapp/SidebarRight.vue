@@ -11,7 +11,10 @@
             >
               <div class="user-imgBx">
                 <img
-                  :src="selectedChat.img"
+                  :src="
+                    selectedChat.img ||
+                    require('@/assets/whatsappImage/default-userImage.jpg')
+                  "
                   alt="user image"
                   class="img-fluid rounded-circle"
                 />
@@ -83,29 +86,29 @@
         >
           <ul class="list-unstyled p-0">
             <li @click="handleArchiveChat">
-              <a class="text-primary text-decoration-none" href="#">{{
-                $t("whatsapp.archiveChat")
-              }}</a>
+              <a class="text-primary text-decoration-none" href="#">
+                Archive Chat
+              </a>
             </li>
             <li @click="handlePinChat">
-              <a class="text-primary text-decoration-none" href="#">{{
-                $t("whatsapp.pinChat")
-              }}</a>
+              <a class="text-primary text-decoration-none" href="#">
+                Pin Chat
+              </a>
             </li>
             <li @click="handleLabelClick">
-              <a class="text-primary text-decoration-none" href="#">{{
-                $t("whatsapp.labelChat")
-              }}</a>
+              <a class="text-primary text-decoration-none" href="#">
+                Label Chat
+              </a>
             </li>
             <li @click="$emit('mark-as-unread', chat)">
-              <a class="text-primary text-decoration-none" href="#">{{
-                $t("whatsapp.markAsUnread")
-              }}</a>
+              <a class="text-primary text-decoration-none" href="#">
+                Mark as Unread
+              </a>
             </li>
             <li @click="handleDeleteChat">
-              <a class="text-primary text-decoration-none" href="#">{{
-                $t("whatsapp.deleteChat")
-              }}</a>
+              <a class="text-primary text-decoration-none" href="#">
+                Delete Chat
+              </a>
             </li>
           </ul>
         </div>
@@ -220,7 +223,7 @@ export default {
           this.scrollToBottom();
         } catch (error) {
           console.error("Error sending message:", error);
-          alert("فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.");
+          alert("Failed to send message. Please try again.");
         }
       }
     },
@@ -278,7 +281,7 @@ export default {
 <style scoped>
 .right-side {
   position: relative;
-  background-image: url(../../assets/whatsappImage/background.jpg);
+  background-image: url(../../assets/whatsappImage/Default\ WhatsApp\ background.jpg);
   background-size: contain;
   background-position: center;
 }

@@ -260,7 +260,7 @@ export default {
 </script>
 <style scoped>
 .right-side .chatBx p.date {
-  top: -8%;
+  top: -7%;
   width: fit-content;
 }
 @media (max-width: 850px) {
