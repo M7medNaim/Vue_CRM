@@ -4,6 +4,7 @@
       :initial-filters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
+      @search="HandleSearch"
       :selected_conversation="selected_conversation"
       :new_message="new_message"
     />
@@ -50,9 +51,13 @@ export default {
       status: [],
     });
     const new_message = ref(null);
-    const fetchStages = async () => {
+    const searching = ref(false);
+    const fetchStages = async (searchText) => {
+      if (searching.value) return;
       try {
-        const response = await getDealsKanban();
+        searching.value = true;
+        console.log("CrmKanban fetchStages", searchText);
+        const response = await getDealsKanban(searchText);
         if (Array.isArray(response.data.data)) {
           stages.value = response.data.data.map((stage) => ({
             id: stage.id,
@@ -70,6 +75,7 @@ export default {
         console.error("Error fetching stages:", error);
         toast.error(t("error.loadKanban"));
       }
+      searching.value = false;
     };
     const applyFilters = async (newFilters) => {
       try {
@@ -133,6 +139,12 @@ export default {
       new_message.value = message;
     };
 
+    const HandleSearch = (search) => {
+      console.log("CrmKanban HandleSearch", search);
+      fetchStages(search);
+      // Handle search logic here
+    };
+
     onMounted(async () => {
       try {
         await fetchStages();
@@ -157,6 +169,9 @@ export default {
       selected_conversation,
       receiveWhatsappMessage,
       new_message,
+      HandleSearch,
+      fetchStages,
+      searching,
     };
   },
 };

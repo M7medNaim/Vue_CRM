@@ -42,9 +42,11 @@
                   <i class="fa-solid fa-magnifying-glass text-white"></i>
                 </button>
                 <input
-                  type="text"
+                  type="search"
                   class="form-control bg-light border-light py-2 inputSearchIpad"
                   :placeholder="t('crmlist-placeholder-search')"
+                  @search="handleSearch"
+                  v-model="searchText"
                 />
                 <button
                   class="btn btn-header py-2 btnFilterIpad"
@@ -244,6 +246,7 @@ export default {
     const today_count = ref(0);
     const tomorrow_count = ref(0);
     const notasks_count = ref(0);
+    const searchText = ref("");
     const openWhatsappModal = () => {
       try {
         const modal = new Modal(document.getElementById("whatsappModal"));
@@ -339,6 +342,11 @@ export default {
         console.error("Error fetching task counts:", error);
       }
     };
+    const handleSearch = () => {
+      const search = searchText.value.trim();
+      console.log("searchText", search);
+      emit("search", search);
+    };
     return {
       filterData,
       openFilterModal,
@@ -365,6 +373,8 @@ export default {
       tomorrow_count,
       notasks_count,
       fetchTasksCounter,
+      handleSearch,
+      searchText,
     };
   },
 
