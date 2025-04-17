@@ -211,7 +211,9 @@ export default {
             isCopied: false,
             conversation_id: this.selectedChat.id,
             isImage: messageData.file ? true : false,
-            imageUrl: messageData.file ? messageData.file.url : null,
+            imageUrl: messageData.file
+              ? URL.createObjectURL(messageData.file)
+              : null,
           };
 
           this.$emit("new-message", newMessage);

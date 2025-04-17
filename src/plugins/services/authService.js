@@ -290,9 +290,15 @@ export const getMessageConv = async (id) => {
 // };
 export const sendMessage = (messageData) => {
   const formData = new FormData();
-  formData.append("text_body", messageData.text_body);
-  formData.append("file", messageData.file); // Assuming messageData.file is a Blob
-  formData.append("conversation_id", messageData.conversation_id);
+  if (messageData.text_body) {
+    formData.append("text_body", messageData.text_body);
+  }
+  if (messageData.file) {
+    formData.append("file", messageData.file); // Assuming messageData.file is a Blob
+  }
+  if (messageData.conversation_id) {
+    formData.append("conversation_id", messageData.conversation_id);
+  }
 
   console.log("FormData before sending:", formData);
 
