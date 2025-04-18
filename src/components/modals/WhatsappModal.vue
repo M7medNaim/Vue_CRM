@@ -206,10 +206,12 @@ export default {
 
     updateMessage(data) {
       console.log("updateMessage function in Whatsapp modal data", data);
+      console.log("selected chat", this.selectedChat);
       if (this.selectedChat) {
         const messageIndex = this.selectedChat.messages.findIndex(
-          (msg) => msg.id === data.id
+          (msg) => msg.id == data.id
         );
+        console.log("Message index:", messageIndex);
         if (messageIndex !== -1) {
           console.log("Message found in selectedChat messages");
           const updated_data = {
