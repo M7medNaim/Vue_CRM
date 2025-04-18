@@ -90,12 +90,12 @@
               <p class="msg pe-2 text-truncate" :title="chat.message">
                 <span
                   :class="{
-                    'text-gray': !chat.isRead,
-                    'text-blue': chat.isRead,
+                    'text-secondary': !chat.isRead,
+                    'text-info': chat.isRead,
                   }"
                   class="pe-1"
                 >
-                  <i class="fa-solid fa-check-double"></i>
+                  <i class="fa-solid fa-check fs-6"></i>
                 </span>
                 {{ truncatedMessage(chat.message) }}
               </p>

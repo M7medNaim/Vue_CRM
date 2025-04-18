@@ -324,9 +324,9 @@ export default {
     const handleWhatsappEvent = (event) => {
       const action = event.action;
       if (action === "create") {
-        handleWhatsappMessageCreateEvent(event.data, event.message);
+        handleWhatsappMessageCreateEvent(event.data);
       } else if (action == "update") {
-        handleWhatsappMessageUpdateEvent(event.data, event.message);
+        handleWhatsappMessageUpdateEvent(event.data);
       }
     };
 
@@ -476,14 +476,12 @@ export default {
       }
     };
 
-    const handleWhatsappMessageCreateEvent = (data, message) => {
+    const handleWhatsappMessageCreateEvent = (data) => {
       emit("receive-whatsapp-message", data);
-      toast.success(message);
     };
 
-    const handleWhatsappMessageUpdateEvent = (data, message) => {
+    const handleWhatsappMessageUpdateEvent = (data) => {
       emit("update-whatsapp-message", data);
-      toast.success(message);
     };
 
     const openWhatsappModal = (conversation) => {

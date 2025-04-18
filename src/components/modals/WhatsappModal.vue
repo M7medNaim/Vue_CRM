@@ -220,6 +220,10 @@ export default {
             ...this.selectedChat.messages[messageIndex],
             ...updated_data,
           };
+          console.log(
+            "Updated message:",
+            this.selectedChat.messages[messageIndex]
+          );
         }
       }
     },
