@@ -39,7 +39,7 @@
       </div>
       <div class="chat-list position-relative overflow-auto">
         <div
-          class="chat d-flex justify-content-end align-items-center position-relative w-100 px-lg-3 pt-2 border-1 border-bottom border-secondary-subtle cursor-pointer"
+          class="chat d-flex justify-content-end align-items-center position-relative w-100 px-lg-3 pt-1 border-1 border-bottom border-secondary-subtle cursor-pointer"
           v-for="(chat, index) in chats"
           :key="index"
           @click="openChat(chat, index)"
@@ -56,6 +56,16 @@
             />
           </div>
           <div class="details position-relative w-100">
+            <div class="rating mb-1" style="font-size: 12px">
+              <template v-for="index in 7" :key="index">
+                <i
+                  class="fa-solid fa-star"
+                  :class="
+                    index <= (chat.rating || 0) ? 'text-gold' : 'text-lightgray'
+                  "
+                ></i>
+              </template>
+            </div>
             <div class="head pe-2 d-flex justify-content-between">
               <h4 class="name fs-6 fw-medium text-black">
                 {{ chat.name }}
@@ -148,6 +158,7 @@ export default {
               require("@/assets/whatsappImage/default-userImage.jpg"),
             name: conversation.name || conversation.contact?.name,
             phone: conversation.phone.phone,
+            rating: conversation.rating,
             time: lastMessage
               ? new Date(lastMessage.created_at).toLocaleTimeString("ar-EG", {
                   hour: "2-digit",
@@ -445,5 +456,12 @@ export default {
 
 .message-truncate:hover {
   cursor: pointer;
+}
+.text-gold {
+  color: #ffd700;
+}
+
+.text-lightgray {
+  color: #d3d3d3;
 }
 </style>

@@ -9,7 +9,7 @@
             type="submit"
             @click="toggleEmoji"
             v-click-outside="closeEmoji"
-            class="border-0 bg-transparent"
+            class="btn bg-transparent p-1"
             aria-label="Emojis"
           >
             <i class="fa-regular fa-face-smile fs-6 text-dark"></i>
@@ -63,7 +63,7 @@
           </div>
         </div>
         <!-- upload_file Icon -->
-        <div class="upload_file cursor-pointer d-block position-relative pe-1">
+        <div class="upload_file btn d-block position-relative p-0 pe-1">
           <form action="">
             <label for="file" class="upload-label">
               <i class="fa-solid fa-paperclip upload-icon fs-6 text-dark"></i>
@@ -342,5 +342,9 @@ export default {
 }
 .btnConfirm {
   padding: 0px 10px;
+}
+.upload-icon:hover {
+  cursor: pointer;
+  border: 1px solid #000 !important;
 }
 </style>
