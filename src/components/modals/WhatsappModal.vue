@@ -14,7 +14,7 @@
           background-size: contain;
           background-position: center;
           background-color: #eee;
-          font-family: 'Open Sans', sans-serif;
+          font-family: 'Alexandria', sans-serif !important;
           background-blend-mode: color;
         "
       >
