@@ -211,6 +211,7 @@ export default {
         const messageIndex = this.selectedChat.messages.findIndex(
           (msg) => msg.id == data.id
         );
+        console.log("messageIndex", messageIndex);
         if (messageIndex !== -1) {
           const updated_data = {
             text: data.text_body,
