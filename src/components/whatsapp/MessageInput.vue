@@ -163,6 +163,7 @@
           class="rounded-5 fs-6 border-0 py-2 px-4 w-100"
           style="outline: none; height: 45px"
           v-model="newMessage"
+          @keyup.enter="sendMessage"
         />
       </div>
       <div class="send-button">
@@ -176,13 +177,13 @@
             ref="voiceIcon"
             class="fa-solid fa-microphone d-block fs-6 text-white"
             id="voiceIcon"
-            v-if="newMessage.trim() === ''"
+            v-if="!attachedImage && newMessage.trim() === ''"
           ></i>
           <i
             ref="sendIcon"
             class="fa-solid fa-paper-plane d-block position-relative fs-6 text-white"
             id="sendIcon"
-            v-if="newMessage.trim() !== ''"
+            v-else
           ></i>
         </button>
       </div>
@@ -225,7 +226,7 @@ export default {
     //   }
     // },
     async sendMessage() {
-      if (this.newMessage.trim() !== "") {
+      if (this.newMessage.trim() !== "" || this.attachedImage) {
         try {
           const messageData = {
             text_body: this.newMessage.trim(),
