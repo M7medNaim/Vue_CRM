@@ -222,6 +222,7 @@ export default {
             isDocument: messageData.file.type.startsWith("application/"),
             isAudio: messageData.file.type.startsWith("audio/"),
             isVideo: messageData.file.type.startsWith("video/"),
+            fileName: messageData.file ? messageData.file.name : null,
             fileUrl: messageData.file
               ? URL.createObjectURL(messageData.file)
               : null,

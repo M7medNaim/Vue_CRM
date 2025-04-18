@@ -118,6 +118,7 @@ export default {
             isDocument: msg.type === "document",
             isAudio: msg.type === "audio",
             isVideo: msg.type === "video",
+            fileName: msg.file ? msg.file.name : null,
             fileUrl: msg.file ? msg.file.url : null,
             fileMimeType: msg.file ? msg.file.mime_type : null,
           }));
@@ -187,6 +188,7 @@ export default {
           isDocument: new_message.type === "document",
           isAudio: new_message.type === "audio",
           isVideo: new_message.type === "video",
+          fileName: new_message.file ? new_message.file.name : null,
           fileUrl: new_message.file ? new_message.file.url : null,
           conversation_id: new_message.conversation_id,
           fileMimeType: new_message.file ? new_message.file.mime_type : null,

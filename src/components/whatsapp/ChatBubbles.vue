@@ -40,7 +40,9 @@
           :href="message.fileUrl"
           target="_blank"
           class="text-decoration-none text-primary"
-          >Download Document</a
+        >
+          <i class="fa-solid fa-file-lines"></i> message.fileName
+        </a>
         >
       </div>
       <div
