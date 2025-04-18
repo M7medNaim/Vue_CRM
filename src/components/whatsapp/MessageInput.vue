@@ -218,13 +218,6 @@ export default {
     };
   },
   methods: {
-    // sendMessage() {
-    //   if (this.newMessage.trim() !== "") {
-    //     this.$emit("send-message", this.newMessage);
-    //     this.newMessage = "";
-    //     this.$emit("scroll-to-bottom");
-    //   }
-    // },
     async sendMessage() {
       if (this.newMessage.trim() !== "" || this.attachedImage) {
         try {

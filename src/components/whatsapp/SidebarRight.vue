@@ -199,9 +199,9 @@ export default {
           }
 
           const response = await sendMessage(messageToSend);
-
+          console.log("Message sent:", response);
           const newMessage = {
-            id: response.data.id || Date.now(),
+            id: response.data?.data?.id || Date.now(),
             type: "msg-me",
             text: messageData.text_body,
             time: new Date().toLocaleTimeString([], {
