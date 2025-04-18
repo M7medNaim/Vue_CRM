@@ -150,7 +150,17 @@
             alt="Attached Image"
             class="preview-image"
           />
-          <span class="image-name">{{ attachedImageName }}</span>
+          <span class="image-name">{{ attachedFileName }}</span>
+          <button @click="removeImage" class="remove-image-btn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div
+          v-if="attachedFile"
+          class="attached-image-preview position-absolute"
+        >
+          <i class="fa-solid fa-file fs-1 me-2"></i>
+          <span class="image-name">{{ attachedFileName }}</span>
           <button @click="removeImage" class="remove-image-btn">
             <i class="fa-solid fa-times"></i>
           </button>
@@ -202,7 +212,8 @@ export default {
       isClipboardVisible: false,
       currentLanguage: "en",
       attachedImage: null,
-      attachedImageName: "",
+      attachedFile: null,
+      attachedFileName: "",
     };
   },
   setup() {
@@ -219,11 +230,11 @@ export default {
   },
   methods: {
     async sendMessage() {
-      if (this.newMessage.trim() !== "" || this.attachedImage) {
+      if (this.newMessage.trim() !== "" || this.attachedFile) {
         try {
           const messageData = {
             text_body: this.newMessage.trim(),
-            image: this.attachedImage,
+            file: this.attachedFile,
           };
 
           if (this.$attrs.conversationId) {
@@ -273,23 +284,19 @@ export default {
           console.log("File size:", file.size, "بايت");
           console.log("File Type:", file.type);
 
-          // if (file.type.startsWith("image/")) {
-          //   const reader = new FileReader();
-          //   reader.onload = (e) => {
-          //     const imagePreview = e.target.result;
-          //     console.log(
-          //       "تم رفع الصورة بنجاح. المعاينة Base64:",
-          //       imagePreview
-          //     );
-          //   };
-          //   reader.readAsDataURL(file);
-          // } else {
-          //   console.log("تم رفع ملف غير صورة:", file.name);
-          // }
-          const messageData = {
-            file: file,
-          };
-          this.$emit("send-message", messageData);
+          if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              // const imagePreview = e.target.result;
+              this.attachedImage = e.target.result;
+              this.attachedFile = file;
+              this.attachedFileName = file.name;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            this.attachedFile = file;
+            this.attachedFileName = file.name;
+          }
         }
       } else {
         console.log("لم يتم تحديد أي ملفات.");
@@ -297,7 +304,8 @@ export default {
     },
     removeImage() {
       this.attachedImage = null;
-      this.attachedImageName = "";
+      this.attachedFile = null;
+      this.attachedFileName = "";
     },
   },
   directives: {
