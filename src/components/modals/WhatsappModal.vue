@@ -118,7 +118,6 @@ export default {
             isDocument: msg.type === "document",
             isAudio: msg.type === "audio",
             isVideo: msg.type === "video",
-            imageUrl: msg.file ? msg.file.url : null,
             fileUrl: msg.file ? msg.file.url : null,
           }));
 
@@ -184,7 +183,10 @@ export default {
           sender: new_message.sender_name || new_message.sender,
           isCopied: false,
           isImage: new_message.type === "image",
-          imageUrl: new_message.file ? new_message.file.url : null,
+          isDocument: new_message.type === "document",
+          isAudio: new_message.type === "audio",
+          isVideo: new_message.type === "video",
+          fileUrl: new_message.file ? new_message.file.url : null,
           conversation_id: new_message.conversation_id,
         });
       } else {

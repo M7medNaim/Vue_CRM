@@ -16,11 +16,33 @@
     >
       <div v-if="message.isImage">
         <img
-          :src="message.imageUrl"
+          :src="message.fileUrl"
           alt="صورة مرسلة"
           class="img-fluid rounded-2"
-          @click="openFullScreenImage(message.imageUrl)"
+          @click="openFullScreenImage(message.fileUrl)"
         />
+      </div>
+      <div v-else-if="message.isVideo">
+        <video
+          :src="message.fileUrl"
+          controls
+          class="img-fluid rounded-2"
+        ></video>
+      </div>
+      <div v-else-if="message.isAudio">
+        <audio
+          :src="message.fileUrl"
+          controls
+          class="img-fluid rounded-2"
+        ></audio>
+      </div>
+      <div v-else-if="message.isDocument">
+        <a
+          :href="message.fileUrl"
+          target="_blank"
+          class="text-decoration-none text-primary"
+          >Download Document</a
+        >
       </div>
       <div
         v-if="isFullScreenImageOpen"
@@ -33,7 +55,7 @@
           class="full-screen-image"
         />
       </div>
-      <div class="" v-else>
+      <div class="">
         {{ message.text }}
       </div>
       <button
