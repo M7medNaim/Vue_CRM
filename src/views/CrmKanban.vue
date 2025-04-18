@@ -7,6 +7,7 @@
       @search="HandleSearch"
       :selected_conversation="selected_conversation"
       :new_message="new_message"
+      :update_message="update_message"
     />
   </div>
   <KanbanBoard
@@ -14,6 +15,7 @@
     defaultColor="#333"
     @open-whatsapp-modal="openWhatsappModal"
     @receive-whatsapp-message="receiveWhatsappMessage"
+    @update-whatsapp-message="updateWhatsappMessage"
   />
 </template>
 
@@ -51,6 +53,7 @@ export default {
       status: [],
     });
     const new_message = ref(null);
+    const update_message = ref(null);
     const searching = ref(false);
     const fetchStages = async (searchText) => {
       if (searching.value) return;
@@ -139,6 +142,11 @@ export default {
       new_message.value = message;
     };
 
+    const updateWhatsappMessage = (data) => {
+      console.log("CrmKanban updateWhatsappMessage", data);
+      update_message.value = data;
+    };
+
     const HandleSearch = (search) => {
       console.log("CrmKanban HandleSearch", search);
       fetchStages(search);
@@ -168,7 +176,9 @@ export default {
       openWhatsappModal,
       selected_conversation,
       receiveWhatsappMessage,
+      updateWhatsappMessage,
       new_message,
+      update_message,
       HandleSearch,
       fetchStages,
       searching,

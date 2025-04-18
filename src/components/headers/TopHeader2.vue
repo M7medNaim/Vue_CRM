@@ -178,6 +178,7 @@
       ref="whatsappModalRef"
       :conversation="conversation"
       :new_message="local_new_message"
+      :update_message="local_update_message"
     />
     <SearchModalIpad ref="searchModalIpadRef" />
   </header>
@@ -241,6 +242,7 @@ export default {
   setup(props, { emit }) {
     const conversation = ref(null);
     const local_new_message = ref(null);
+    const local_update_message = ref(null);
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
@@ -363,6 +365,9 @@ export default {
       console.log("searchText", search);
       emit("search", search);
     };
+    const updateMessage = (data) => {
+      local_update_message.value = data;
+    };
     return {
       filterData,
       openFilterModal,
@@ -391,6 +396,7 @@ export default {
       fetchTasksCounter,
       handleSearch,
       searchText,
+      updateMessage,
     };
   },
 
@@ -406,6 +412,12 @@ export default {
       if (newValue) {
         console.log("top header2 new message", newValue);
         this.setNewMessage(newValue);
+      }
+    },
+    update_message(data) {
+      if (data) {
+        console.log("top header2 update message", data);
+        this.updateMessage(data);
       }
     },
   },

@@ -324,9 +324,10 @@ export default {
     const handleWhatsappEvent = (event) => {
       const action = event.action;
       if (action === "create") {
-        handleWhatsappMessageEvent(event.data, event.message);
+        handleWhatsappMessageCreateEvent(event.data, event.message);
       } else if (action == "update") {
         console.log("Whatsapp Message Status Updated:", event);
+        handleWhatsappMessageUpdateEvent(event.data, event.message);
       }
     };
 
@@ -498,9 +499,15 @@ export default {
       }
     };
 
-    const handleWhatsappMessageEvent = (data, message) => {
+    const handleWhatsappMessageCreateEvent = (data, message) => {
       console.log("Whatsapp Message Event:", data);
       emit("receive-whatsapp-message", data);
+      toast.success(message);
+    };
+
+    const handleWhatsappMessageUpdateEvent = (data, message) => {
+      console.log("Whatsapp Message Event:", data);
+      emit("update-whatsapp-message", data);
       toast.success(message);
     };
 
