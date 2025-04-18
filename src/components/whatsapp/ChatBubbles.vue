@@ -97,10 +97,10 @@
         class="menu-list position-absolute bg-light border rounded shadow-sm z-3 bottom-100"
       >
         <ul class="list-unstyled mb-0 m-auto px-2 lh-lg">
-          <li v-if="message.fileUrl">
+          <li v-if="message.fileDownloadUrl">
             <a
               class="text-decoration-none text-primary"
-              :href="message.fileUrl"
+              :href="message.fileDownloadUrl"
               :download="message.fileName"
               target="_blank"
               >Download</a

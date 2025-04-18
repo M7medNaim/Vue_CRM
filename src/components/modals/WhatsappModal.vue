@@ -124,6 +124,7 @@ export default {
             isVideo: msg.type === "video",
             fileName: msg.file ? msg.file.name : null,
             fileUrl: msg.file ? msg.file.url : null,
+            fileDownloadUrl: msg.file?.download_url || null,
             fileMimeType: msg.file ? msg.file.mime_type : null,
             status: msg.status,
           }));
@@ -195,6 +196,7 @@ export default {
           isVideo: new_message.type === "video",
           fileName: new_message.file ? new_message.file.name : null,
           fileUrl: new_message.file ? new_message.file.url : null,
+          fileDownloadUrl: new_message.file?.download_url || null,
           conversation_id: new_message.conversation_id,
           fileMimeType: new_message.file ? new_message.file.mime_type : null,
           status: new_message.status,

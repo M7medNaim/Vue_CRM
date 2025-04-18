@@ -225,6 +225,9 @@ export default {
             fileUrl: messageData.file
               ? URL.createObjectURL(messageData.file)
               : null,
+            fileDownloadUrl: messageData.file
+              ? URL.createObjectURL(messageData.file)
+              : null,
             fileMimeType: messageData.file ? messageData.file.type : null,
             status: "sent",
           };
