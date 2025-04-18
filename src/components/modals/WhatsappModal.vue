@@ -61,7 +61,7 @@ export default {
       type: Object,
       default: null,
     },
-    update_message: {
+    updated_message: {
       type: Object,
       default: null,
     },
@@ -252,7 +252,7 @@ export default {
         }
       },
     },
-    update_message: {
+    updated_message: {
       immediate: true,
       handler(newVal) {
         if (newVal) {
