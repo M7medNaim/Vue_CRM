@@ -141,7 +141,7 @@
             Confirm
           </button>
         </div>
-        <div
+        <!-- <div
           v-if="attachedImage"
           class="attached-image-preview position-absolute"
         >
@@ -154,6 +154,44 @@
           <button @click="removeImage" class="remove-image-btn">
             <i class="fa-solid fa-times"></i>
           </button>
+        </div> -->
+        <div
+          v-if="isModalOpen"
+          class="modal-overlay"
+          v-click-outside="closeModalImage"
+        >
+          <div class="modal-content rounded-3" @click.stop>
+            <div class="modal-body">
+              <div v-if="attachedFileType === 'image'">
+                <img
+                  :src="attachedFile"
+                  alt="Attached Image"
+                  class="preview-image"
+                />
+              </div>
+              <div v-else-if="attachedFileType === 'file'">
+                <div class="file-preview">
+                  <i class="fa-solid fa-file fs-1"></i>
+                  <span class="file-name">{{ attachedFileName }}</span>
+                </div>
+              </div>
+              <hr class="my-2" />
+              <div class="input-group mt-2 w-100">
+                <input
+                  type="text"
+                  v-model="caption"
+                  placeholder="أضف وصفًا ..."
+                  class="caption-input rounded-start-3 flex-grow-1"
+                />
+                <button
+                  @click="sendFileWithCaption"
+                  class="btn border-0 text-white btn-success"
+                >
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <input
           type="text"
@@ -177,7 +215,7 @@
             ref="voiceIcon"
             class="fa-solid fa-microphone d-block fs-6 text-white"
             id="voiceIcon"
-            v-if="!attachedImage && newMessage.trim() === ''"
+            v-if="!attachedFile && newMessage.trim() === ''"
           ></i>
           <i
             ref="sendIcon"
@@ -201,8 +239,11 @@ export default {
       isEmojiVisible: false,
       isClipboardVisible: false,
       currentLanguage: "en",
-      attachedImage: null,
-      attachedImageName: "",
+      attachedFile: null,
+      attachedFileName: "",
+      attachedFileType: "",
+      isModalOpen: false,
+      caption: "",
     };
   },
   setup() {
@@ -226,11 +267,11 @@ export default {
     //   }
     // },
     async sendMessage() {
-      if (this.newMessage.trim() !== "" || this.attachedImage) {
+      if (this.newMessage.trim() !== "" || this.attachedFile) {
         try {
           const messageData = {
             text_body: this.newMessage.trim(),
-            image: this.attachedImage,
+            image: this.attachedFile,
           };
 
           if (this.$attrs.conversationId) {
@@ -239,11 +280,28 @@ export default {
 
           await this.$emit("send-message", messageData);
           this.newMessage = "";
-          this.removeImage();
+          this.removeFile();
           this.$emit("scroll-to-bottom");
         } catch (error) {
           console.error("Error preparing message:", error);
         }
+      }
+    },
+    sendFileWithCaption() {
+      if (this.attachedFile) {
+        const messageData = {
+          text_body: this.caption,
+          image: this.attachedFile,
+        };
+
+        if (this.$attrs.conversationId) {
+          messageData.conversation_id = this.$attrs.conversationId;
+        }
+
+        this.$emit("send-message", messageData);
+        this.caption = "";
+        this.removeFile();
+        this.$emit("scroll-to-bottom");
       }
     },
     toggleEmoji() {
@@ -283,22 +341,44 @@ export default {
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              // const imagePreview = e.target.result;
-              this.attachedImage = e.target.result;
-              this.attachedImageName = file.name;
+              this.attachedFile = e.target.result;
+              this.attachedFileName = file.name;
+              this.attachedFileType = "image";
+              this.isModalOpen = true;
             };
             reader.readAsDataURL(file);
+          } else if (
+            file.type === "application/pdf" ||
+            file.type === "application/msword" ||
+            file.type === "text/plain"
+          ) {
+            this.attachedFile = URL.createObjectURL(file);
+            this.attachedFileName = file.name;
+            this.attachedFileType = "file";
+            this.isModalOpen = true;
           } else {
-            console.log("تم رفع ملف غير صورة:", file.name);
+            console.log("نوع الملف غير مدعوم:", file.name);
           }
         }
       } else {
         console.log("لم يتم تحديد أي ملفات.");
       }
     },
-    removeImage() {
-      this.attachedImage = null;
-      this.attachedImageName = "";
+    removeFile() {
+      this.attachedFile = null;
+      this.attachedFileName = "";
+      this.attachedFileType = "";
+      this.isModalOpen = false;
+    },
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModalImage() {
+      const modalContent = document.querySelector(".modal-content");
+      modalContent.style.animation = "slideDown 0.3s ease-out forwards";
+      setTimeout(() => {
+        this.isModalOpen = false;
+      }, 300);
     },
   },
   directives: {
@@ -404,5 +484,72 @@ export default {
 
 .remove-image-btn:hover {
   color: #cc0000;
+}
+/* modal style */
+.modal-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(100%);
+  animation: slideUp 0.3s ease-out forwards;
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+.modal-body {
+  padding: 10px;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 600px;
+  border-radius: 8px;
+}
+
+.caption-input {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.file-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.file-preview i {
+  color: #007bff;
+}
+
+.file-name {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #333;
 }
 </style>
