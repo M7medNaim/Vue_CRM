@@ -255,8 +255,9 @@ export default {
     updated_message: {
       immediate: true,
       handler(newVal) {
+        console.log("Updated message in Whatsapp Modal:", newVal);
         if (newVal) {
-          console.log("Update message in Whatsapp Modal:", newVal);
+          console.log("New val exists:", newVal);
           this.updateMessage(newVal);
         }
       },

@@ -178,7 +178,7 @@
       ref="whatsappModalRef"
       :conversation="conversation"
       :new_message="local_new_message"
-      :update_message="local_update_message"
+      :updated_message="local_update_message"
     />
     <SearchModalIpad ref="searchModalIpadRef" />
   </header>
