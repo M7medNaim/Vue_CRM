@@ -339,3 +339,7 @@ export const importDeals = (formData) => {
     },
   });
 };
+
+export const getStagesTasks = async () => {
+  return await axios.get("/stages/tasks");
+};

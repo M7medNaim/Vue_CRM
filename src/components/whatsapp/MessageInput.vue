@@ -9,7 +9,7 @@
             type="submit"
             @click="toggleEmoji"
             v-click-outside="closeEmoji"
-            class="border-0 bg-transparent"
+            class="btn bg-transparent p-1"
             aria-label="Emojis"
           >
             <i class="fa-regular fa-face-smile fs-6 text-dark"></i>
@@ -63,7 +63,7 @@
           </div>
         </div>
         <!-- upload_file Icon -->
-        <div class="upload_file cursor-pointer d-block position-relative pe-1">
+        <div class="upload_file btn d-block position-relative p-0 pe-1">
           <form action="">
             <label for="file" class="upload-label">
               <i class="fa-solid fa-paperclip upload-icon fs-6 text-dark"></i>
@@ -141,6 +141,20 @@
             Confirm
           </button>
         </div>
+        <div
+          v-if="attachedImage"
+          class="attached-image-preview position-absolute"
+        >
+          <img
+            :src="attachedImage"
+            alt="Attached Image"
+            class="preview-image"
+          />
+          <span class="image-name">{{ attachedImageName }}</span>
+          <button @click="removeImage" class="remove-image-btn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
         <input
           type="text"
           ref="messageInput"
@@ -149,6 +163,7 @@
           class="rounded-5 fs-6 border-0 py-2 px-4 w-100"
           style="outline: none; height: 45px"
           v-model="newMessage"
+          @keyup.enter="sendMessage"
         />
       </div>
       <div class="send-button">
@@ -162,13 +177,13 @@
             ref="voiceIcon"
             class="fa-solid fa-microphone d-block fs-6 text-white"
             id="voiceIcon"
-            v-if="newMessage.trim() === ''"
+            v-if="!attachedImage && newMessage.trim() === ''"
           ></i>
           <i
             ref="sendIcon"
             class="fa-solid fa-paper-plane d-block position-relative fs-6 text-white"
             id="sendIcon"
-            v-if="newMessage.trim() !== ''"
+            v-else
           ></i>
         </button>
       </div>
@@ -186,6 +201,8 @@ export default {
       isEmojiVisible: false,
       isClipboardVisible: false,
       currentLanguage: "en",
+      attachedImage: null,
+      attachedImageName: "",
     };
   },
   setup() {
@@ -209,10 +226,11 @@ export default {
     //   }
     // },
     async sendMessage() {
-      if (this.newMessage.trim() !== "") {
+      if (this.newMessage.trim() !== "" || this.attachedImage) {
         try {
           const messageData = {
             text_body: this.newMessage.trim(),
+            image: this.attachedImage,
           };
 
           if (this.$attrs.conversationId) {
@@ -221,6 +239,7 @@ export default {
 
           await this.$emit("send-message", messageData);
           this.newMessage = "";
+          this.removeImage();
           this.$emit("scroll-to-bottom");
         } catch (error) {
           console.error("Error preparing message:", error);
@@ -282,6 +301,10 @@ export default {
       } else {
         console.log("لم يتم تحديد أي ملفات.");
       }
+    },
+    removeImage() {
+      this.attachedImage = null;
+      this.attachedImageName = "";
     },
   },
   directives: {
@@ -346,5 +369,46 @@ export default {
 }
 .btnConfirm {
   padding: 0px 10px;
+}
+.upload-icon:hover {
+  cursor: pointer;
+  border: 1px solid #000 !important;
+}
+
+.attached-image-preview {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  top: -72px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+}
+
+.preview-image {
+  width: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.image-name {
+  flex-grow: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.remove-image-btn {
+  background: none;
+  border: none;
+  color: #ff0000;
+  cursor: pointer;
+}
+
+.remove-image-btn:hover {
+  color: #cc0000;
 }
 </style>

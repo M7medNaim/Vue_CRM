@@ -420,4 +420,11 @@ export default {
   max-height: 90% !important;
   border-radius: 8px;
 }
+.text-gray {
+  color: #6c757d;
+}
+
+.text-blue {
+  color: #0d6efd;
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="deal-card"
+    class="deal-card position-relative"
     @click="openDealDataCard"
     :style="{
       borderLeft:
@@ -9,6 +9,9 @@
           : '',
     }"
   >
+    <div class="unread_count px-1 bg-danger rounded-circle position-absolute">
+      <span class="text-white">10</span>
+    </div>
     <div
       class="row"
       style="background: linear-gradient(to left, white, rgb(231, 227, 227))"
@@ -202,5 +205,10 @@ export default {
   border-radius: 6px 6px 0 0;
   padding: 8px;
   margin: -12px -12px 8px -12px;
+}
+.unread_count {
+  bottom: 5px;
+  right: 5px;
+  font-size: 14px;
 }
 </style>

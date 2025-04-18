@@ -186,11 +186,6 @@ export default {
   },
   methods: {
     async receiveMessage(messageData) {
-      if (!messageData.text_body && !messageData.file) {
-        alert("نص الرسالة مطلوب");
-        return;
-      }
-
       if (this.selectedChat) {
         try {
           const messageToSend = {
@@ -358,7 +353,7 @@ input::placeholder {
 /* chat box */
 
 .right-side .chatBx {
-  height: 90vh;
+  height: 88vh;
 }
 .right-side .chatBx .menu {
   top: 8vh;
