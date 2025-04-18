@@ -16,24 +16,35 @@
             </button> -->
           </div>
           <div class="col-12">
-            <input
-              type="text"
-              placeholder="Search Here.."
-              v-model="searchQuery"
-              style="outline: none"
-              class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
-            />
-            <i
-              class="fa-solid fa-magnifying-glass searchIcon fs-6 text-secondary position-absolute"
-            ></i>
-            <button
-              v-if="searchQuery"
-              @click="clearSearch"
-              class="btnCloseSearch bg-transparent border-0 position-absolute text-danger d-flex justify-content-center align-items-center gap-1 fs-5"
-            >
-              <span>Close</span>
-              <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div class="input-group w-100">
+              <div class="position-relative flex-grow-1">
+                <input
+                  type="text"
+                  placeholder="Search Here.."
+                  v-model="searchQuery"
+                  style="outline: none"
+                  class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
+                />
+                <i
+                  class="fa-solid fa-magnifying-glass searchIcon fs-6 text-secondary position-absolute"
+                ></i>
+                <button
+                  v-if="searchQuery"
+                  @click="clearSearch"
+                  class="btnCloseSearch bg-transparent border-0 position-absolute text-danger d-flex justify-content-center align-items-center gap-1 fs-5"
+                >
+                  <span>Close</span>
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <button
+                type="button"
+                class="btn btn-primary py-2 flex-shrink-0"
+                @click="openFilterModal"
+              >
+                <i class="fa-solid fa-filter text-white"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +88,15 @@
               class="msgs d-flex justify-content-between align-items-center text-secondary"
             >
               <p class="msg pe-2 text-truncate" :title="chat.message">
+                <span
+                  :class="{
+                    'text-gray': !chat.isRead,
+                    'text-blue': chat.isRead,
+                  }"
+                  class="pe-1"
+                >
+                  <i class="fa-solid fa-check-double"></i>
+                </span>
                 {{ truncatedMessage(chat.message) }}
               </p>
               <div class="d-flex align-items-center gap-3">
@@ -99,16 +119,21 @@
       </div>
     </div>
   </div>
+  <FilterModalConv @filter-by-rating="handleFilterByRating" />
 </template>
 
 <script>
 import { Modal } from "bootstrap";
+import FilterModalConv from "@/components/whatsapp/FilterModalConv.vue";
 import {
   getconversations,
   getMessageConv,
 } from "@/plugins/services/authService";
 export default {
   name: "SidebarLeft",
+  components: {
+    FilterModalConv,
+  },
   data() {
     return {
       searchQuery: "",
@@ -159,6 +184,7 @@ export default {
             name: conversation.name || conversation.contact?.name,
             phone: conversation.phone.phone,
             rating: conversation.rating,
+            unread_count: conversation.unread_count,
             time: lastMessage
               ? new Date(lastMessage.created_at).toLocaleTimeString("ar-EG", {
                   hour: "2-digit",
@@ -334,8 +360,16 @@ export default {
       console.log("final processed chat and index", processed_chat, chatIndex);
       this.openChat(processed_chat, chatIndex);
     },
+    openFilterModal() {
+      const modalElement = document.getElementById("filterWhatsappModal");
+      if (modalElement) {
+        const modal = new Modal(modalElement);
+        modal.show();
+      } else {
+        console.error("Modal element not found in DOM.");
+      }
+    },
   },
-
   mounted() {
     this.fetchConversations();
     if (this.$refs.labelModal) {
@@ -350,7 +384,7 @@ export default {
   height: 8vh;
 }
 .left-side .inputSearch .searchIcon {
-  left: 5%;
+  left: 4%;
   top: 50%;
   transform: translate(0%, -50%);
 }
@@ -463,5 +497,12 @@ export default {
 
 .text-lightgray {
   color: #d3d3d3;
+}
+.text-gray {
+  color: #6c757d;
+}
+
+.text-blue {
+  color: #0d6efd;
 }
 </style>

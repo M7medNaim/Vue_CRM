@@ -43,7 +43,18 @@
       >
         <i class="fa-solid fa-ellipsis-vertical text-secondary"></i>
       </button>
-      <span class="d-block mt-1 opacity-50 fst-normal">{{ message.time }}</span>
+      <span class="d-block mt-1 opacity-50 fst-normal">
+        <span
+          :class="{
+            'text-gray': !message.isRead,
+            'text-blue': message.isRead,
+          }"
+          class="pe-2"
+        >
+          <i class="fa-solid fa-check-double"></i>
+        </span>
+        {{ message.time }}</span
+      >
       <!-- menu list -->
       <div
         v-if="activeMenu === index"
@@ -363,5 +374,12 @@ export default {
   max-width: 90% !important;
   max-height: 90% !important;
   border-radius: 8px;
+}
+.text-gray {
+  color: #6c757d;
+}
+
+.text-blue {
+  color: #0d6efd;
 }
 </style>

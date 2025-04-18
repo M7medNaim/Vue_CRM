@@ -141,6 +141,20 @@
             Confirm
           </button>
         </div>
+        <div
+          v-if="attachedImage"
+          class="attached-image-preview position-absolute"
+        >
+          <img
+            :src="attachedImage"
+            alt="Attached Image"
+            class="preview-image"
+          />
+          <span class="image-name">{{ attachedImageName }}</span>
+          <button @click="removeImage" class="remove-image-btn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
         <input
           type="text"
           ref="messageInput"
@@ -186,6 +200,8 @@ export default {
       isEmojiVisible: false,
       isClipboardVisible: false,
       currentLanguage: "en",
+      attachedImage: null,
+      attachedImageName: "",
     };
   },
   setup() {
@@ -213,6 +229,7 @@ export default {
         try {
           const messageData = {
             text_body: this.newMessage.trim(),
+            image: this.attachedImage,
           };
 
           if (this.$attrs.conversationId) {
@@ -221,6 +238,7 @@ export default {
 
           await this.$emit("send-message", messageData);
           this.newMessage = "";
+          this.removeImage();
           this.$emit("scroll-to-bottom");
         } catch (error) {
           console.error("Error preparing message:", error);
@@ -264,11 +282,9 @@ export default {
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              const imagePreview = e.target.result;
-              console.log(
-                "تم رفع الصورة بنجاح. المعاينة Base64:",
-                imagePreview
-              );
+              // const imagePreview = e.target.result;
+              this.attachedImage = e.target.result;
+              this.attachedImageName = file.name;
             };
             reader.readAsDataURL(file);
           } else {
@@ -278,6 +294,10 @@ export default {
       } else {
         console.log("لم يتم تحديد أي ملفات.");
       }
+    },
+    removeImage() {
+      this.attachedImage = null;
+      this.attachedImageName = "";
     },
   },
   directives: {
@@ -346,5 +366,42 @@ export default {
 .upload-icon:hover {
   cursor: pointer;
   border: 1px solid #000 !important;
+}
+
+.attached-image-preview {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  top: -72px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+}
+
+.preview-image {
+  width: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.image-name {
+  flex-grow: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.remove-image-btn {
+  background: none;
+  border: none;
+  color: #ff0000;
+  cursor: pointer;
+}
+
+.remove-image-btn:hover {
+  color: #cc0000;
 }
 </style>
