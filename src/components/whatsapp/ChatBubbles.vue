@@ -30,11 +30,10 @@
         ></video>
       </div>
       <div v-else-if="message.isAudio">
-        <audio
-          :src="message.fileUrl"
-          controls
-          class="img-fluid rounded-2"
-        ></audio>
+        <audio controls class="img-fluid rounded-2">
+          <source :src="message.fileUrl" :type="message.fileMimeType" />
+          Your browser does not support the audio element.
+        </audio>
       </div>
       <div v-else-if="message.isDocument">
         <a

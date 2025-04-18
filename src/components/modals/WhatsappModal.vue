@@ -119,6 +119,7 @@ export default {
             isAudio: msg.type === "audio",
             isVideo: msg.type === "video",
             fileUrl: msg.file ? msg.file.url : null,
+            fileMimeType: msg.file ? msg.file.mime_type : null,
           }));
 
           this.selectedChat = {
@@ -188,6 +189,7 @@ export default {
           isVideo: new_message.type === "video",
           fileUrl: new_message.file ? new_message.file.url : null,
           conversation_id: new_message.conversation_id,
+          fileMimeType: new_message.file ? new_message.file.mime_type : null,
         });
       } else {
         console.log("chat not opened", this.selectedChat, new_message);
