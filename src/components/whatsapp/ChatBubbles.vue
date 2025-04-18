@@ -66,6 +66,24 @@
         <i class="fa-solid fa-ellipsis-vertical text-secondary"></i>
       </button>
       <span class="d-block mt-1 opacity-50 fst-normal">{{ message.time }}</span>
+      <!-- Message status -->
+      <span v-if="message.status === 'sent'" class="status-icon text-secondary">
+        <i class="fa-solid fa-check fs-6"></i>
+      </span>
+      <span
+        v-else-if="message.status === 'delivered'"
+        class="status-icon text-secondary"
+      >
+        <i class="fa-solid fa-check me-1 fs-6"></i>
+        <i class="fa-solid fa-check fs-6"></i>
+      </span>
+      <span
+        v-else-if="message.status === 'read'"
+        class="status-icon text-success"
+      >
+        <i class="fa-solid fa-check me-1 fs-6"></i>
+        <i class="fa-solid fa-check fs-6"></i>
+      </span>
       <!-- menu list -->
       <div
         v-if="activeMenu === index"

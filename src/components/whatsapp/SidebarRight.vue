@@ -227,6 +227,7 @@ export default {
               ? URL.createObjectURL(messageData.file)
               : null,
             fileMimeType: messageData.file ? messageData.file.type : null,
+            status: "sent",
           };
 
           this.$emit("new-message", newMessage);
