@@ -398,6 +398,7 @@ export default {
       setConversation,
       setNewMessage,
       local_new_message,
+      local_update_message,
       overdue_count,
       today_count,
       tomorrow_count,
