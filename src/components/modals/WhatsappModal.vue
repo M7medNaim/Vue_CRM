@@ -205,15 +205,11 @@ export default {
     },
 
     updateMessage(data) {
-      console.log("updateMessage function in Whatsapp modal data", data);
-      console.log("selected chat", this.selectedChat);
       if (this.selectedChat) {
         const messageIndex = this.selectedChat.messages.findIndex(
           (msg) => msg.id == data.id
         );
-        console.log("Message index:", messageIndex);
         if (messageIndex !== -1) {
-          console.log("Message found in selectedChat messages");
           const updated_data = {
             text: data.text_body,
             status: data.status,
@@ -222,11 +218,7 @@ export default {
             ...this.selectedChat.messages[messageIndex],
             ...updated_data,
           };
-        } else {
-          console.warn("Message not found in selectedChat messages");
         }
-      } else {
-        console.warn("selectedChat is null");
       }
     },
   },
@@ -235,7 +227,6 @@ export default {
       immediate: true,
       handler(newVal) {
         if (newVal) {
-          console.log("Whatsapp Modal:", newVal);
           this.$refs.leftSidebar.addNewChat(newVal);
           this.setSelectedChat({
             ...newVal,
@@ -249,7 +240,6 @@ export default {
       immediate: true,
       handler(newVal) {
         if (newVal) {
-          console.log("New message in Whatsapp Modal:", newVal);
           this.receiveNewMessage(newVal);
         }
       },
@@ -257,9 +247,7 @@ export default {
     updated_message: {
       immediate: true,
       handler(newVal) {
-        console.log("Updated message in Whatsapp Modal:", newVal);
         if (newVal) {
-          console.log("New val exists:", newVal);
           this.updateMessage(newVal);
         }
       },

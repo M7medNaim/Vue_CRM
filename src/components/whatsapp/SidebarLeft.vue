@@ -410,6 +410,7 @@ export default {
 .left-side .chat-list .chat .details .msg {
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 
@@ -435,6 +436,7 @@ export default {
 .message-truncate-multiline {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

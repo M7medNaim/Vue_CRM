@@ -195,7 +195,7 @@ export default {
         moveSound.currentTime = 0;
         moveSound
           .play()
-          .catch((error) => console.log("Failed to play sound:", error));
+          .catch((error) => console.error("Failed to play sound:", error));
       }
     };
 
@@ -326,7 +326,6 @@ export default {
       if (action === "create") {
         handleWhatsappMessageCreateEvent(event.data, event.message);
       } else if (action == "update") {
-        console.log("Whatsapp Message Status Updated:", event);
         handleWhatsappMessageUpdateEvent(event.data, event.message);
       }
     };
@@ -350,7 +349,7 @@ export default {
         updated_at: data.updated_at,
       };
       stages.value[stageIndex].deals.unshift(deal);
-      console.log(message);
+      toast.success(message);
     };
 
     const dealUpdateEvent = (data, message) => {
@@ -380,7 +379,6 @@ export default {
           source_id: updatedData.source_id,
         };
         stages.value[stageIndex].deals.unshift(deal);
-        console.log("Deal not found in the new stage, creating one.");
         return;
       }
 
@@ -397,17 +395,14 @@ export default {
       );
       // Update the deal in the UI
       if (newStageIndex === stageIndex) {
-        console.log("Deal is in the same stage");
         stages.value[stageIndex].deals[dealIndex] = deal;
       } else if (newStageIndex !== -1) {
-        console.log("Deal moved to a new stage");
         stages.value[newStageIndex].deals.unshift(deal);
         stages.value[stageIndex].deals.splice(dealIndex, 1);
       } else {
-        console.log("New stage not found");
         stages.value[stageIndex].deals.splice(dealIndex, 1);
       }
-      console.log(message);
+      toast.success(message);
     };
 
     const dealDeleteEvent = (deal, message) => {
@@ -427,7 +422,7 @@ export default {
       if (dealIndex != -1) {
         stages.value[stageIndex].deals.splice(dealIndex, 1);
       }
-      console.log(message);
+      toast.success(message);
     };
 
     const handleTaskEvent = (event) => {
@@ -435,16 +430,10 @@ export default {
 
       if (action === "create") {
         tasks.value.push(data);
-        // tasks.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
         const index = tasks.value.findIndex((t) => t.id === data.id);
         if (index !== -1) {
           tasks.value[index] = { ...tasks.value[index], ...data };
-          // tasks.value[index].text = data.note;
         } else {
           tasks.value.push(data);
         }
@@ -458,16 +447,10 @@ export default {
 
       if (action === "create") {
         comments.value.push(data);
-        // comments.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
         const index = comments.value.findIndex((c) => c.id === data.id);
         if (index !== -1) {
           comments.value[index] = { ...comments.value[index], ...data };
-          // comments.value[index].text = data.note;
         } else {
           comments.value.push(data);
         }
@@ -481,16 +464,10 @@ export default {
 
       if (action === "create") {
         logs.value.push(data);
-        // logs.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
         const logIndex = logs.value.findIndex((log) => log.id === data.id);
         if (logIndex !== -1) {
           logs.value[logIndex] = { ...logs.value[logIndex], ...data };
-          // logs.value[logIndex].text = data.note;
         } else {
           logs.value.push(data);
         }
@@ -500,19 +477,16 @@ export default {
     };
 
     const handleWhatsappMessageCreateEvent = (data, message) => {
-      console.log("Whatsapp Message Event:", data);
       emit("receive-whatsapp-message", data);
       toast.success(message);
     };
 
     const handleWhatsappMessageUpdateEvent = (data, message) => {
-      console.log("Whatsapp Message Event:", data);
       emit("update-whatsapp-message", data);
       toast.success(message);
     };
 
     const openWhatsappModal = (conversation) => {
-      console.log("Kanban", conversation);
       emit("open-whatsapp-modal", conversation);
     };
     const getContrastColor = (hexColor) => {
@@ -524,7 +498,6 @@ export default {
     };
 
     const handleDealContainerScroll = async (event, id) => {
-      console.log("reachedBottom", reachedBottom.value);
       if (reachedBottom.value) return;
       const scrollTop = event.target.scrollTop;
       const scrollHeight = event.target.scrollHeight;
@@ -540,13 +513,11 @@ export default {
           []
         )
           .then((additional_deals) => {
-            console.log("Fetched additional deals:", additional_deals.data);
             if (additional_deals.data) {
               if (stageIndex !== -1) {
                 stages.value[stageIndex].deals.push(
                   ...additional_deals.data.data
                 );
-                console.log("Deals updated in the UI", stages.value);
               }
             }
           })

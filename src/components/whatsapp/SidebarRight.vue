@@ -186,7 +186,6 @@ export default {
   },
   methods: {
     async receiveMessage(messageData) {
-      console.log("Received message data:", messageData);
       if (!messageData.text_body && !messageData.file) {
         alert("نص الرسالة مطلوب");
         return;

@@ -59,7 +59,6 @@ export default {
       if (searching.value) return;
       try {
         searching.value = true;
-        console.log("CrmKanban fetchStages", searchText);
         const response = await getDealsKanban(searchText);
         if (Array.isArray(response.data.data)) {
           stages.value = response.data.data.map((stage) => ({
@@ -133,22 +132,18 @@ export default {
     };
 
     const openWhatsappModal = (conversation) => {
-      console.log("CrmKanban", conversation);
       selected_conversation.value = conversation;
     };
 
     const receiveWhatsappMessage = (message) => {
-      console.log("CrmKanban receiveWhatsappMessage", message);
       new_message.value = message;
     };
 
     const updateWhatsappMessage = (data) => {
-      console.log("CrmKanban updateWhatsappMessage", data);
       update_message.value = data;
     };
 
     const HandleSearch = (search) => {
-      console.log("CrmKanban HandleSearch", search);
       fetchStages(search);
       // Handle search logic here
     };

@@ -367,15 +367,10 @@ export default {
     };
     const handleSearch = () => {
       const search = searchText.value.trim();
-      console.log("searchText", search);
       emit("search", search);
     };
     const updateMessage = (data) => {
       local_update_message.value = data;
-      console.log(
-        "Topheader2 local update Message",
-        local_update_message.value
-      );
     };
     return {
       filterData,
@@ -413,20 +408,17 @@ export default {
   watch: {
     selected_conversation(newValue) {
       if (newValue) {
-        console.log("top header2 set conversation", newValue);
         this.openWhatsappModal();
         this.setConversation(newValue);
       }
     },
     new_message(newValue) {
       if (newValue) {
-        console.log("top header2 new message", newValue);
         this.setNewMessage(newValue);
       }
     },
     update_message(newValue) {
       if (newValue) {
-        console.log("top header2 update message", newValue);
         this.updateMessage(newValue);
       }
     },
