@@ -237,6 +237,11 @@ export default {
       type: Object,
       default: null,
     },
+
+    update_message: {
+      type: Object,
+      default: null,
+    },
   },
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
@@ -414,10 +419,10 @@ export default {
         this.setNewMessage(newValue);
       }
     },
-    update_message(data) {
-      if (data) {
-        console.log("top header2 update message", data);
-        this.updateMessage(data);
+    update_message(newValue) {
+      if (newValue) {
+        console.log("top header2 update message", newValue);
+        this.updateMessage(newValue);
       }
     },
   },

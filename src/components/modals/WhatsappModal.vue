@@ -61,6 +61,10 @@ export default {
       type: Object,
       default: null,
     },
+    update_message: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
