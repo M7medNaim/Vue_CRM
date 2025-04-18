@@ -372,6 +372,10 @@ export default {
     };
     const updateMessage = (data) => {
       local_update_message.value = data;
+      console.log(
+        "Topheader2 local update Message",
+        local_update_message.value
+      );
     };
     return {
       filterData,
