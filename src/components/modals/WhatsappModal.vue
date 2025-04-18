@@ -254,10 +254,10 @@ export default {
     },
     update_message: {
       immediate: true,
-      handler(data) {
-        if (data) {
-          console.log("Update message in Whatsapp Modal:", data);
-          this.updateMessage(data);
+      handler(newVal) {
+        if (newVal) {
+          console.log("Update message in Whatsapp Modal:", newVal);
+          this.updateMessage(newVal);
         }
       },
     },
