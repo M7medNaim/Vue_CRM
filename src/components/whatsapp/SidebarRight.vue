@@ -218,10 +218,10 @@ export default {
             sender: "You",
             isCopied: false,
             conversation_id: this.selectedChat.id,
-            isImage: messageData.file.type.startsWith("image/"),
-            isDocument: messageData.file.type.startsWith("application/"),
-            isAudio: messageData.file.type.startsWith("audio/"),
-            isVideo: messageData.file.type.startsWith("video/"),
+            isImage: messageData.file?.type.startsWith("image/"),
+            isDocument: messageData.file?.type.startsWith("application/"),
+            isAudio: messageData.file?.type.startsWith("audio/"),
+            isVideo: messageData.file?.type.startsWith("video/"),
             fileName: messageData.file ? messageData.file.name : null,
             fileUrl: messageData.file
               ? URL.createObjectURL(messageData.file)
