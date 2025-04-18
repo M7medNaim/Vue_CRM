@@ -30,7 +30,7 @@
         ></video>
       </div>
       <div v-else-if="message.isAudio">
-        <audio controls class="img-fluid rounded-2">
+        <audio controls>
           <source :src="message.fileUrl" :type="message.fileMimeType" />
           Your browser does not support the audio element.
         </audio>
