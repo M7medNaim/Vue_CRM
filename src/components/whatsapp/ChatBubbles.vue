@@ -41,9 +41,8 @@
           target="_blank"
           class="text-decoration-none text-primary"
         >
-          <i class="fa-solid fa-file-lines"></i> message.fileName
+          <i class="fa-solid fa-file-lines"></i> {{ message.fileName }}
         </a>
-        >
       </div>
       <div
         v-if="isFullScreenImageOpen"
