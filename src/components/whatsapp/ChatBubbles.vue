@@ -37,7 +37,7 @@
       </div>
       <div v-else-if="message.isDocument">
         <a
-          :href="message.fileUrl"
+          :href="message.fileDownloadUrl"
           target="_blank"
           class="text-decoration-none text-primary"
         >
