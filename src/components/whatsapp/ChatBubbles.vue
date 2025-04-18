@@ -65,24 +65,31 @@
       >
         <i class="fa-solid fa-ellipsis-vertical text-secondary"></i>
       </button>
-      <span class="d-block mt-1 opacity-50 fst-normal">{{ message.time }}</span>
-      <!-- Message status -->
-      <span v-if="message.status === 'sent'" class="status-icon text-secondary">
-        <i class="fa-solid fa-check fs-6"></i>
-      </span>
-      <span
-        v-else-if="message.status === 'delivered'"
-        class="status-icon text-secondary"
-      >
-        <i class="fa-solid fa-check me-1 fs-6"></i>
-        <i class="fa-solid fa-check fs-6"></i>
-      </span>
-      <span
-        v-else-if="message.status === 'read'"
-        class="status-icon text-success"
-      >
-        <i class="fa-solid fa-check me-1 fs-6"></i>
-        <i class="fa-solid fa-check fs-6"></i>
+      <span class="d-block mt-1 opacity-50 fst-normal">
+        <span class="me-2">{{ message.time }}</span>
+        <!-- Message status -->
+        <span v-if="message.type === 'msg-me'">
+          <span
+            v-if="message.status === 'sent'"
+            class="status-icon text-secondary"
+          >
+            <i class="fa-solid fa-check fs-6"></i>
+          </span>
+          <span
+            v-else-if="message.status === 'delivered'"
+            class="status-icon text-secondary"
+          >
+            <i class="fa-solid fa-check fs-6"></i>
+            <i class="fa-solid fa-check fs-6"></i>
+          </span>
+          <span
+            v-else-if="message.status === 'read'"
+            class="status-icon text-info"
+          >
+            <i class="fa-solid fa-check fs-6"></i>
+            <i class="fa-solid fa-check fs-6"></i>
+          </span>
+        </span>
       </span>
       <!-- menu list -->
       <div
@@ -90,6 +97,15 @@
         class="menu-list position-absolute bg-light border rounded shadow-sm z-3 bottom-100"
       >
         <ul class="list-unstyled mb-0 m-auto px-2 lh-lg">
+          <li v-if="message.fileUrl">
+            <a
+              class="text-decoration-none text-primary"
+              :href="message.fileUrl"
+              :download="message.fileName"
+              target="_blank"
+              >Download</a
+            >
+          </li>
           <li>
             <a
               class="text-decoration-none text-primary"
@@ -103,7 +119,7 @@
               class="text-decoration-none text-primary"
               href="#"
               @click.prevent="replyToMessage(message)"
-              >Replay</a
+              >Reply</a
             >
           </li>
           <li>
