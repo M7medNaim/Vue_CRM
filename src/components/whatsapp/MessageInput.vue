@@ -141,7 +141,7 @@
             Confirm
           </button>
         </div>
-        <div
+        <!-- <div
           v-if="attachedImage"
           class="attached-image-preview position-absolute"
         >
@@ -164,6 +164,44 @@
           <button @click="removeImage" class="remove-image-btn">
             <i class="fa-solid fa-times"></i>
           </button>
+        </div> -->
+        <div
+          v-if="isModalOpen"
+          class="modal-overlay"
+          v-click-outside="closeModalImage"
+        >
+          <div class="modal-content rounded-3" @click.stop>
+            <div class="modal-body">
+              <div v-if="attachedFileType === 'image'">
+                <img
+                  :src="attachedFilePreview"
+                  alt="Attached Image"
+                  class="preview-image"
+                />
+              </div>
+              <div v-else-if="attachedFileType === 'file'">
+                <div class="file-preview">
+                  <i class="fa-solid fa-file fs-1"></i>
+                  <span class="file-name">{{ attachedFileName }}</span>
+                </div>
+              </div>
+              <hr class="my-2" />
+              <div class="input-group mt-2 w-100">
+                <input
+                  type="text"
+                  v-model="newMessage"
+                  placeholder="أضف وصفًا ..."
+                  class="caption-input rounded-start-3 flex-grow-1"
+                />
+                <button
+                  @click="sendMessage"
+                  class="btn border-0 text-white btn-success"
+                >
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div
           v-if="isProcessing"
@@ -277,6 +315,8 @@ export default {
       recordingDuration: 0,
       isProcessing: false,
       recordingTimer: null,
+      isModalOpen: false,
+      caption: "",
     };
   },
   setup() {
@@ -296,7 +336,7 @@ export default {
       if (this.newMessage.trim() !== "" || this.attachedFile) {
         try {
           const messageData = {
-            text_body: this.newMessage.trim(),
+            text_body: this.newMessage?.trim(),
             file: this.attachedFile,
           };
 
@@ -306,7 +346,7 @@ export default {
 
           await this.$emit("send-message", messageData);
           this.newMessage = "";
-          this.removeImage();
+          this.removeFile();
           this.$emit("scroll-to-bottom");
         } catch (error) {
           console.error("Error preparing message:", error);
@@ -351,15 +391,19 @@ export default {
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              // const imagePreview = e.target.result;
-              this.attachedImage = e.target.result;
+              this.attachedFilePreview = e.target.result;
               this.attachedFile = file;
               this.attachedFileName = file.name;
+              this.attachedFileType = "image";
+              this.isModalOpen = true;
             };
             reader.readAsDataURL(file);
           } else {
+            this.attachedFilePreview = URL.createObjectURL(file);
             this.attachedFile = file;
             this.attachedFileName = file.name;
+            this.attachedFileType = "file";
+            this.isModalOpen = true;
           }
         }
       } else {
@@ -367,10 +411,21 @@ export default {
       }
       this.isProcessing = false;
     },
-    removeImage() {
-      this.attachedImage = null;
+    removeFile() {
       this.attachedFile = null;
       this.attachedFileName = "";
+      this.attachedFileType = "";
+      this.isModalOpen = false;
+    },
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModalImage() {
+      const modalContent = document.querySelector(".modal-content");
+      modalContent.style.animation = "slideDown 0.3s ease-out forwards";
+      setTimeout(() => {
+        this.isModalOpen = false;
+      }, 300);
     },
     StartRecordingVoice() {
       if (this.isRecording) {
@@ -611,5 +666,72 @@ export default {
 }
 .line:nth-child(5) {
   animation-delay: 0.8s;
+}
+/* modal style */
+.modal-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(100%);
+  animation: slideUp 0.3s ease-out forwards;
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+.modal-body {
+  padding: 10px;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 600px;
+  border-radius: 8px;
+}
+
+.caption-input {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.file-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.file-preview i {
+  color: #007bff;
+}
+
+.file-name {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #333;
 }
 </style>
