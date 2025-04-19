@@ -331,7 +331,6 @@ export const updateTask = async (id, formData) => {
 // update deal
 export const updateDeal = (dealId, formData) =>
   axios.put(`/deals/${dealId}`, formData);
-
 export const importDeals = (formData) => {
   return axios.post("/deals/import", formData, {
     headers: {
@@ -339,7 +338,9 @@ export const importDeals = (formData) => {
     },
   });
 };
-
 export const getStagesTasks = async () => {
   return await axios.get("/stages/tasks");
+};
+export const addViewCount = (dealId) => {
+  return axios.post(`/deals/add-view-count/${dealId}`);
 };

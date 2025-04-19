@@ -55,10 +55,10 @@
               @change="handleDragChange($event, stage.id)"
               @scroll="handleDealContainerScroll($event, stage.id)"
             >
-              <template #item="{ element: deal }">
+              <template #item="{ element: deal, index }">
                 <CustomerCard
                   :deal="deal"
-                  @open-deal-data-card="openDealDataCard(deal.id)"
+                  @open-deal-data-card="openDealDataCard(deal.id, index)"
                 />
               </template>
             </draggable>
@@ -114,6 +114,7 @@ import {
   updateDealStage,
   showDeal,
   fetchAdditionalDealsByStageId,
+  addViewCount,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -199,12 +200,21 @@ export default {
       }
     };
 
-    const openDealDataCard = async (dealId) => {
+    const openDealDataCard = async (dealId, dealIndex) => {
       try {
         const dealData = await showDeal(dealId);
         if (dealData.data) {
+          addViewCount(dealId);
           const deal = dealData.data.data;
-
+          const stages = ref(props.stages);
+          const stageIndex = stages.value.findIndex(
+            (stage) => stage.id === deal.stage_id
+          );
+          if (stageIndex === -1) {
+            console.error("Stage not found");
+            return;
+          }
+          stages.value[stageIndex].deals[dealIndex].view_count += 1;
           const checkStageLoaded = () => {
             return props.stages.some((stage) => stage.id === deal.stage_id);
           };
@@ -377,6 +387,8 @@ export default {
           created_at: updatedData.created_at,
           updated_at: updatedData.updated_at,
           source_id: updatedData.source_id,
+          view_count: updatedData.view_count,
+          unread_count: updatedData.unread_count,
         };
         stages.value[stageIndex].deals.unshift(deal);
         return;
@@ -389,6 +401,10 @@ export default {
       deal.responsible_user =
         updatedData.responsible_user ?? deal.responsible_user;
       deal.updated_at = updatedData.updated_at;
+      deal.source_id = updatedData.source_id ?? deal.source_id;
+      deal.view_count = updatedData.view_count ?? deal.view_count;
+      deal.unread_count = updatedData.unread_count ?? deal.unread_count;
+      deal.phone = updatedData.phone ?? deal.phone;
 
       const newStageIndex = stages.value.findIndex(
         (stage) => stage.id == updatedData.stage_id
@@ -477,6 +493,10 @@ export default {
     };
 
     const handleWhatsappMessageCreateEvent = (data) => {
+      console.log("handleWhatsappMessageCreateEvent", data);
+      if (data.status == "sent") {
+        IncreaseUnreadCount(data.deal_id);
+      }
       emit("receive-whatsapp-message", data);
     };
 
@@ -484,8 +504,9 @@ export default {
       emit("update-whatsapp-message", data);
     };
 
-    const openWhatsappModal = (conversation) => {
+    const openWhatsappModal = (conversation, id) => {
       emit("open-whatsapp-modal", conversation);
+      DecreaseUnreadCount(id);
     };
     const getContrastColor = (hexColor) => {
       const r = parseInt(hexColor.slice(1, 3), 16);
@@ -522,6 +543,32 @@ export default {
           .finally(() => {
             reachedBottom.value = false;
           });
+      }
+    };
+
+    const IncreaseUnreadCount = (dealId) => {
+      console.log("IncreaseUnreadCount", dealId);
+      const stages = ref(props.stages);
+      for (let i = 0; i < stages.value.length; i++) {
+        const stage = stages.value[i];
+        const dealIndex = stage.deals.findIndex((d) => d.id === dealId);
+        if (dealIndex !== -1) {
+          console.log("dealIndex", dealIndex);
+          stage.deals[dealIndex].unread_count += 1;
+          break;
+        }
+      }
+    };
+
+    const DecreaseUnreadCount = (dealId) => {
+      const stages = ref(props.stages);
+      for (let i = 0; i < stages.value.length; i++) {
+        const stage = stages.value[i];
+        const dealIndex = stage.deals.findIndex((d) => d.id === dealId);
+        if (dealIndex !== -1) {
+          stage.deals[dealIndex].unread_count = 0;
+          break;
+        }
       }
     };
 

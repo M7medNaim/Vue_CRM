@@ -930,12 +930,16 @@ export default {
           console.warn("Modal element not found in DOM.");
         }
         // emit("open-whatsapp-modal", selected_conversation.value);
-        emit("open-whatsapp-modal", {
-          ...selected_conversation.value,
-          img:
-            selected_conversation.value.img ||
-            require("@/assets/whatsappImage/default-userImage.jpg"),
-        });
+        emit(
+          "open-whatsapp-modal",
+          {
+            ...selected_conversation.value,
+            img:
+              selected_conversation.value.img ||
+              require("@/assets/whatsappImage/default-userImage.jpg"),
+          },
+          id
+        );
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
         toast.error(t("error.openWhatsappModal"), {
