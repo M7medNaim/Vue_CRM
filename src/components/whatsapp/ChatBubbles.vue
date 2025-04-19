@@ -140,6 +140,13 @@
       </div>
     </div>
   </div>
+  <button
+    v-if="showScrollButton"
+    class="btn-scroll position-fixed m-3 px-2 py-1 text-white border-0 rounded-2"
+    @click="scrollToBottom"
+  >
+    <i class="fa-solid fa-arrow-down"></i>
+  </button>
 </template>
 <script>
 export default {
@@ -162,6 +169,7 @@ export default {
       observer: null,
       isFullScreenImageOpen: false,
       fullScreenImageUrl: "",
+      showScrollButton: false,
     };
   },
   computed: {
@@ -239,10 +247,23 @@ export default {
         }
       });
     },
+    scrollToBottom() {
+      const chatBox = this.$parent.$refs.chatBox;
+      chatBox.scrollTo({
+        top: chatBox.scrollHeight,
+        behavior: "smooth",
+      });
+    },
     handleScroll() {
+      const chatBox = this.$parent.$refs.chatBox;
+      const scrollTop = chatBox.scrollTop;
+      const scrollHeight = chatBox.scrollHeight;
+      const clientHeight = chatBox.clientHeight;
+
+      this.showScrollButton = scrollTop + clientHeight < scrollHeight - 100;
       if (this.$refs.messageElements && this.$refs.messageElements.length) {
-        const chatBox = this.$parent.$refs.chatBox;
-        const scrollTop = chatBox.scrollTop;
+        // const chatBox = this.$parent.$refs.chatBox;
+        // const scrollTop = chatBox.scrollTop;
         const elements = this.$refs.messageElements;
 
         for (let i = 0; i < elements.length; i++) {
@@ -283,6 +304,8 @@ export default {
     },
   },
   mounted() {
+    const chatBox = this.$parent.$refs.chatBox;
+    chatBox.addEventListener("scroll", this.handleScroll);
     if (this.messages.length > 0) {
       this.currentDate = this.formatMessageDate(this.messages[0].created_at);
     }
@@ -296,6 +319,8 @@ export default {
       this.observer.disconnect();
     }
     this.$parent.$refs.chatBox.removeEventListener("scroll", this.handleScroll);
+    const chatBox = this.$parent.$refs.chatBox;
+    chatBox.removeEventListener("scroll", this.handleScroll);
   },
   watch: {
     messages: {
@@ -426,5 +451,13 @@ export default {
 
 .text-blue {
   color: #0d6efd;
+}
+.btn-scroll {
+  bottom: 60px;
+  right: -5px;
+  background: #8a8686eb;
+  width: 40px;
+  height: 40px;
+  z-index: 1000;
 }
 </style>

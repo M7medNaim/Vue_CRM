@@ -10,16 +10,36 @@
       <div
         class="modal-content"
         style="
-          background-image: url('img/updated_pattern.png');
+          background-image: url('../../assets/whatsappImage/backgroundWA.png') !important ;
           background-size: contain;
-          background-position: center;
-          background-color: #eee;
           font-family: 'Alexandria', sans-serif !important;
-          background-blend-mode: color;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-color: #eee;
+          background-position: right;
+          height: 100%;
+          width: 100%;
+          z-index: 9999;
         "
       >
         <!-- b75f3f2c -->
         <div class="modal-body p-0 overflow-hidden">
+          <div class="backgroundImage position-absolute">
+            <img src="../../assets/whatsappImage/Art_WA.png" alt="" /><br />
+            <span>
+              Always start with conversations that have today's tasks or overdue
+              ones.
+            </span>
+            <h1 class="text-center fw-bolder">GOOD LUCK!</h1>
+          </div>
+          <button
+            class="btnCloseWhatsapp text-white border-0 position-absolute rounded-2"
+            type="button"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            <i class="fa fa-close fs-5 py-1"></i>
+          </button>
           <div class="row mx-0">
             <SidebarLeft @select-chat="setSelectedChat" ref="leftSidebar" />
             <SidebarRight
@@ -265,5 +285,21 @@ export default {
 <style scoped>
 #whatsappModal {
   z-index: 9999 !important;
+}
+.btnCloseWhatsapp {
+  top: 10px;
+  right: 10px;
+  background-color: #7b77777e;
+}
+.backgroundImage {
+  top: 50%;
+  right: 30% !important;
+  transform: translate(50%, -50%);
+}
+.modal-body {
+  background-image: url("../../assets/whatsappImage/backgroundWA.png") !important ;
+  background-size: contain;
+  font-family: "Alexandria", sans-serif !important;
+  background-attachment: fixed;
 }
 </style>
