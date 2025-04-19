@@ -276,6 +276,7 @@ export default {
       mediaRecorder: null,
       recordingDuration: 0,
       isProcessing: false,
+      recordingTimer: null,
     };
   },
   setup() {
@@ -377,6 +378,7 @@ export default {
       }
       this.isRecording = true;
       this.recordingDuration = 0;
+      clearInterval(this.recordingTimer);
       this.recordingTimer = setInterval(() => {
         this.recordingDuration++;
       }, 1000);
@@ -418,6 +420,7 @@ export default {
     },
     stopRecordingVoice() {
       if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+        clearInterval(this.recordingTimer);
         this.isProcessing = true;
         this.mediaRecorder.stop();
         this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
