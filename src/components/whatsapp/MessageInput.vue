@@ -183,7 +183,10 @@
           @keyup.enter="sendMessage"
           v-if="!isRecording"
         />
-        <span v-else class="recording-container">
+        <span
+          v-else
+          class="recording-container rounded-5 fs-6 border-0 py-2 px-4 w-100 bg-light"
+        >
           <div class="recording-lines">
             <div class="line"></div>
             <div class="line"></div>
