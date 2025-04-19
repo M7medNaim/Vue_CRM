@@ -701,6 +701,7 @@ export default {
 
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.data) {
+          emit("stage-change", props.deal.id, stageIndex, props.deal.stage_id);
           toast.success(`${t("success.stageChanged")} ${stageName}`, {
             timeout: 3000,
           });

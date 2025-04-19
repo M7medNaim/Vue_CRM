@@ -16,6 +16,7 @@
     @open-whatsapp-modal="openWhatsappModal"
     @receive-whatsapp-message="receiveWhatsappMessage"
     @update-whatsapp-message="updateWhatsappMessage"
+    @change-deal-stage="changeDealStage"
   />
 </template>
 
@@ -148,6 +149,31 @@ export default {
       // Handle search logic here
     };
 
+    const changeDealStage = async (dealId, newStageIndex, oldStageId) => {
+      try {
+        const newStageId = stages.value[newStageIndex].id;
+        const oldStageIndex = stages.value.findIndex(
+          (stage) => stage.id == oldStageId
+        );
+        const oldDealIndex = stages.value[oldStageIndex].deals.findIndex(
+          (deal) => deal.id == dealId
+        );
+        if (oldDealIndex !== -1) {
+          stages.value[oldStageIndex].deals[oldDealIndex].stage_id = newStageId;
+          const deal = stages.value[oldStageIndex].deals[oldDealIndex];
+          stages.value[newStageIndex].deals.unshift(deal);
+          stages.value[oldStageIndex].deals.splice(oldDealIndex, 1);
+          stages.value[oldStageIndex].deal_count -= 1;
+          stages.value[newStageIndex].deal_count += 1;
+          toast.success(t("success.dealMoved"));
+        } else {
+          console.error("Deal not found in the old stage");
+        }
+      } catch (error) {
+        console.error("Error updating deal stage:", error.response?.data);
+      }
+    };
+
     onMounted(async () => {
       try {
         await fetchStages();
@@ -177,6 +203,7 @@ export default {
       HandleSearch,
       fetchStages,
       searching,
+      changeDealStage,
     };
   },
 };

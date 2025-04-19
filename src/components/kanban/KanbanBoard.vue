@@ -98,6 +98,7 @@
     :comments="comments"
     :tasks="tasks"
     @open-whatsapp-modal="openWhatsappModal"
+    @stage-change="changeDealStage"
   />
   <!-- selectedDeal -->
   <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
@@ -214,6 +215,9 @@ export default {
             console.error("Stage not found");
             return;
           }
+          console.log("deal data", {
+            deal_stage_id: deal.stage_id,
+          });
           stages.value[stageIndex].deals[dealIndex].view_count += 1;
           const checkStageLoaded = () => {
             return props.stages.some((stage) => stage.id === deal.stage_id);
@@ -391,6 +395,7 @@ export default {
           unread_count: updatedData.unread_count,
         };
         stages.value[stageIndex].deals.unshift(deal);
+        stages.value[stageIndex].deal_count += 1;
         return;
       }
 
@@ -414,9 +419,12 @@ export default {
         stages.value[stageIndex].deals[dealIndex] = deal;
       } else if (newStageIndex !== -1) {
         stages.value[newStageIndex].deals.unshift(deal);
+        stages.value[newStageIndex].deal_count += 1;
         stages.value[stageIndex].deals.splice(dealIndex, 1);
+        stages.value[stageIndex].deal_count -= 1;
       } else {
         stages.value[stageIndex].deals.splice(dealIndex, 1);
+        stages.value[stageIndex].deal_count -= 1;
       }
       toast.success(message);
     };
@@ -572,6 +580,10 @@ export default {
       }
     };
 
+    const changeDealStage = async (dealId, newStageIndex, oldStageId) => {
+      emit("change-deal-stage", dealId, newStageIndex, oldStageId);
+    };
+
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -671,6 +683,7 @@ export default {
       getContrastColor,
       handleDealContainerScroll,
       reachedBottom,
+      changeDealStage,
     };
   },
 };
