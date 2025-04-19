@@ -102,10 +102,10 @@
               <div class="d-flex align-items-center gap-3">
                 <b
                   class="num"
-                  :class="{ unread: chat.unread }"
-                  v-if="chat.unread"
+                  :class="{ unread: chat.unread_count > 0 }"
+                  v-if="chat.unread_count > 0"
                 >
-                  {{ chat.unreadCount }}
+                  {{ chat.unread_count }}
                 </b>
                 <i
                   v-if="chat.pinned"
@@ -247,6 +247,7 @@ export default {
           });
 
           this.chats[index].isActive = true;
+          this.chats[index].unread_count = 0;
 
           this.$emit("select-chat", {
             ...chat,
