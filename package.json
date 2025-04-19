@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
     "@popperjs/core": "^2.11.8",
     "@primeuix/themes": "^1.0.0",
     "@vue/compiler-sfc": "^3.5.13",

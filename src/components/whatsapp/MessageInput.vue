@@ -165,6 +165,13 @@
             <i class="fa-solid fa-times"></i>
           </button>
         </div>
+        <div
+          v-if="isProcessing"
+          class="attached-image-preview position-absolute"
+        >
+          <i class="fa-solid fa-spinner fa-spin fs-1 me-2"></i>
+          <span class="image-name">Processing voice message...</span>
+        </div>
         <input
           type="text"
           ref="messageInput"
@@ -174,26 +181,82 @@
           style="outline: none; height: 45px"
           v-model="newMessage"
           @keyup.enter="sendMessage"
+          v-if="!isRecording"
         />
+        <!-- <div
+          v-if="isRecording"
+          class="recording-timer-bar position-absolute w-100"
+        >
+          <div
+            class="timer-bar bg-danger"
+            :style="{ width: timerWidth + '%' }"
+          ></div>
+        </div> -->
+        <span v-else class="recording-container">
+          <div class="recording-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+          </div>
+          <span class="recording-duration">
+            {{ formatDuration(recordingDuration) }}
+          </span>
+        </span>
       </div>
       <div class="send-button">
         <button
-          type="submit"
+          type="button"
           class="submitMsg position-relative border-0 bg-success rounded-5"
-          @click="sendMessage"
-          aria-label="sendMessage && voiceMessage"
+          @click="StartRecordingVoice"
+          aria-label="voiceMessage start"
+          v-if="
+            !attachedImage &&
+            newMessage.trim() === '' &&
+            !attachedFile &&
+            !isRecording
+          "
         >
           <i
             ref="voiceIcon"
             class="fa-solid fa-microphone d-block fs-6 text-white"
             id="voiceIcon"
-            v-if="!attachedImage && newMessage.trim() === ''"
           ></i>
+        </button>
+        <button
+          type="button"
+          class="submitMsg position-relative border-0 bg-success rounded-5"
+          @click="stopRecordingVoice"
+          aria-label="voiceMessage stop"
+          v-else-if="
+            !attachedImage &&
+            newMessage.trim() === '' &&
+            isRecording &&
+            !attachedFile
+          "
+        >
+          <i
+            ref="voiceIcon"
+            class="fa-solid fa-stop d-block fs-6 text-white"
+            id="voiceIcon"
+          ></i>
+        </button>
+        <button
+          type="submit"
+          class="submitMsg position-relative border-0 bg-success rounded-5"
+          @click="sendMessage"
+          aria-label="sendMessage"
+          v-else-if="
+            (attachedImage || newMessage.trim() !== '' || attachedFile) &&
+            !isRecording
+          "
+        >
           <i
             ref="sendIcon"
             class="fa-solid fa-paper-plane d-block position-relative fs-6 text-white"
             id="sendIcon"
-            v-else
           ></i>
         </button>
       </div>
@@ -203,6 +266,7 @@
 
 <script>
 import { ref } from "vue";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
 export default {
   name: "MessageInput",
   data() {
@@ -214,6 +278,10 @@ export default {
       attachedImage: null,
       attachedFile: null,
       attachedFileName: "",
+      isRecording: false,
+      mediaRecorder: null,
+      recordingDuration: 0,
+      isProcessing: false,
     };
   },
   setup() {
@@ -275,6 +343,7 @@ export default {
       this.isClipboardVisible = false;
     },
     handleFileUpload(event) {
+      this.isProcessing = true;
       const files = event.target.files;
       if (files.length > 0) {
         for (let i = 0; i < files.length; i++) {
@@ -301,11 +370,98 @@ export default {
       } else {
         console.log("لم يتم تحديد أي ملفات.");
       }
+      this.isProcessing = false;
     },
     removeImage() {
       this.attachedImage = null;
       this.attachedFile = null;
       this.attachedFileName = "";
+    },
+    StartRecordingVoice() {
+      if (this.isRecording) {
+        return;
+      }
+      this.isRecording = true;
+      this.recordingDuration = 0;
+      this.recordingTimer = setInterval(() => {
+        this.recordingDuration++;
+      }, 1000);
+      let audioChunks = [];
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error("Audio recording is not supported in this browser.");
+        return;
+      }
+
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          this.mediaRecorder = new MediaRecorder(stream, {
+            mimeType: "audio/webm",
+          });
+          this.mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              audioChunks.push(event.data);
+            }
+          };
+
+          this.mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            const formattedAudio = await this.formatAudio(audioBlob);
+            this.attachedFile = formattedAudio;
+            const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
+            this.attachedFileName = `voice_message_${timestamp}.ogg`;
+            audioChunks = [];
+            this.isProcessing = false;
+          };
+
+          this.mediaRecorder.start();
+          console.log("Recording started...");
+        })
+        .catch((error) => {
+          console.error("Error accessing microphone:", error);
+        });
+    },
+    stopRecordingVoice() {
+      if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+        this.isProcessing = true;
+        this.mediaRecorder.stop();
+        this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+        console.log("Recording stopped and media tracks closed.");
+        this.isRecording = false;
+      }
+    },
+    async formatAudio(blob) {
+      try {
+        const ffmpeg = new FFmpeg({
+          log: true,
+        });
+        await ffmpeg.load();
+        const arrayBuffer = await blob.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        await ffmpeg.writeFile("input.webm", uint8Array);
+        await ffmpeg.exec([
+          "-i",
+          "input.webm",
+          "-c:a",
+          "libopus",
+          "-b:a",
+          "64k",
+          "output.ogg",
+        ]);
+        const data = await ffmpeg.readFile("output.ogg");
+        const oggBlob = new Blob([data.buffer], { type: "audio/ogg" });
+
+        return oggBlob;
+      } catch (error) {
+        console.error("Conversion error:", error);
+        throw error;
+      }
+    },
+    formatDuration(duration) {
+      const minutes = Math.floor(duration / 60);
+      const seconds = duration % 60;
+      return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     },
   },
   directives: {
@@ -411,5 +567,52 @@ export default {
 
 .remove-image-btn:hover {
   color: #cc0000;
+}
+
+.recording-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.recording-duration {
+  margin-left: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #0f0f0fc4;
+}
+
+.recording-lines {
+  display: flex;
+  justify-content: space-between;
+  width: 40px;
+  height: 20px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.line {
+  width: 4px;
+  height: 100%;
+  background-color: #4caf50;
+  animation: pulse 1s infinite ease-in-out;
+}
+
+.line:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.line:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.line:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.line:nth-child(4) {
+  animation-delay: 0.6s;
+}
+.line:nth-child(5) {
+  animation-delay: 0.8s;
 }
 </style>
