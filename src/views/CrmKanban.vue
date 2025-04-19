@@ -4,8 +4,10 @@
       :initial-filters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
+      @search="HandleSearch"
       :selected_conversation="selected_conversation"
       :new_message="new_message"
+      :update_message="update_message"
     />
   </div>
   <KanbanBoard
@@ -13,6 +15,7 @@
     defaultColor="#333"
     @open-whatsapp-modal="openWhatsappModal"
     @receive-whatsapp-message="receiveWhatsappMessage"
+    @update-whatsapp-message="updateWhatsappMessage"
   />
 </template>
 
@@ -50,15 +53,20 @@ export default {
       status: [],
     });
     const new_message = ref(null);
-    const fetchStages = async () => {
+    const update_message = ref(null);
+    const searching = ref(false);
+    const fetchStages = async (searchText) => {
+      if (searching.value) return;
       try {
-        const response = await getDealsKanban();
+        searching.value = true;
+        const response = await getDealsKanban(searchText);
         if (Array.isArray(response.data.data)) {
           stages.value = response.data.data.map((stage) => ({
             id: stage.id,
             name: stage.name,
             description: stage.description || null,
             color_code: stage.color_code,
+            deal_count: stage.deal_count,
             deals: stage.deals || [],
           }));
           toast.success(t("success.loadKanban"));
@@ -69,6 +77,7 @@ export default {
         console.error("Error fetching stages:", error);
         toast.error(t("error.loadKanban"));
       }
+      searching.value = false;
     };
     const applyFilters = async (newFilters) => {
       try {
@@ -123,13 +132,20 @@ export default {
     };
 
     const openWhatsappModal = (conversation) => {
-      console.log("CrmKanban", conversation);
       selected_conversation.value = conversation;
     };
 
     const receiveWhatsappMessage = (message) => {
-      console.log("CrmKanban receiveWhatsappMessage", message);
       new_message.value = message;
+    };
+
+    const updateWhatsappMessage = (data) => {
+      update_message.value = data;
+    };
+
+    const HandleSearch = (search) => {
+      fetchStages(search);
+      // Handle search logic here
     };
 
     onMounted(async () => {
@@ -155,7 +171,12 @@ export default {
       openWhatsappModal,
       selected_conversation,
       receiveWhatsappMessage,
+      updateWhatsappMessage,
       new_message,
+      update_message,
+      HandleSearch,
+      fetchStages,
+      searching,
     };
   },
 };

@@ -63,6 +63,31 @@ export const getDeals = async (params = {}) => {
     },
   });
 };
+
+export const fetchAdditionalDealsByStageId = (
+  stageId,
+  limit,
+  offset,
+  filters
+) => {
+  return axios.get(`/deals/get-more`, {
+    params: {
+      stage_id: stageId,
+      limit: limit,
+      offset: offset,
+      filters: filters,
+    },
+  });
+};
+
+export const fetchTasksCountByStageName = (stageName) => {
+  const token = Cookies.get("authToken");
+  return axios.get(`/tasks/count/${stageName}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 // Show Deal id
 export const showDeal = (dealId) => axios.get(`/deals/${dealId}`);
 // Create New Deal
@@ -238,8 +263,13 @@ export const uploadFiles = async (formData) => {
   });
 };
 //getDealsKanban
-export const getDealsKanban = async () => {
-  return await axios.get("/kanban/deals");
+export const getDealsKanban = (searchText) => {
+  console.log("searchText", searchText);
+  return axios.get("/kanban/deals", {
+    params: {
+      search: searchText ?? "",
+    },
+  });
 };
 export const getTasksKanban = async () => {
   return await axios.get("/kanban/tasks");
@@ -265,16 +295,23 @@ export const getMessageConv = async (id) => {
 // };
 export const sendMessage = (messageData) => {
   const formData = new FormData();
-
-  formData.append("text_body", messageData.text_body);
-
+  if (messageData.text_body) {
+    formData.append("text_body", messageData.text_body);
+  }
+  if (messageData.file) {
+    formData.append("file", messageData.file); // Assuming messageData.file is a Blob
+  }
   if (messageData.conversation_id) {
     formData.append("conversation_id", messageData.conversation_id);
-  } else {
-    formData.append("to", messageData.to || "971557893319");
   }
 
-  return axios.post("/whatsapp/send", formData);
+  console.log("FormData before sending:", formData);
+
+  return axios.post("/whatsapp/send", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 export const sendInitMessage = (id) => {

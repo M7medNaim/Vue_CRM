@@ -42,9 +42,11 @@
                   <i class="fa-solid fa-magnifying-glass text-white"></i>
                 </button>
                 <input
-                  type="text"
+                  type="search"
                   class="form-control bg-light border-light py-2 inputSearchIpad"
                   :placeholder="t('crmlist-placeholder-search')"
+                  @search="handleSearch"
+                  v-model="searchText"
                 />
                 <button
                   class="btn btn-header py-2 btnFilterIpad"
@@ -66,7 +68,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
-                    >99+</span
+                    >{{ overdue_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-overdue")
@@ -77,7 +79,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
-                    >15</span
+                    >{{ today_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-today")
@@ -86,8 +88,9 @@
                 <div
                   class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
                 >
-                  <span class="badge bg-secondary-subtle text-info fw-bold fs-6"
-                    >4</span
+                  <span
+                    class="badge bg-secondary-subtle text-info fw-bold fs-6"
+                    >{{ tomorrow_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-tomorrow")
@@ -98,7 +101,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
-                    >99+</span
+                    >{{ notasks_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-notasks")
@@ -175,6 +178,7 @@
       ref="whatsappModalRef"
       :conversation="conversation"
       :new_message="local_new_message"
+      :updated_message="local_update_message"
     />
     <SearchModalIpad ref="searchModalIpadRef" />
   </header>
@@ -192,7 +196,10 @@ import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import SearchModalIpad from "@/components/headers/SearchModalIpad.vue";
-import { getconversations } from "@/plugins/services/authService";
+import {
+  fetchTasksCountByStageName,
+  getconversations,
+} from "@/plugins/services/authService";
 
 export default {
   name: "TopHeader2",
@@ -230,15 +237,26 @@ export default {
       type: Object,
       default: null,
     },
+
+    update_message: {
+      type: Object,
+      default: null,
+    },
   },
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
     const conversation = ref(null);
     const local_new_message = ref(null);
+    const local_update_message = ref(null);
     const filterData = ref({ ...props.initialFilters });
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
     const whatsappModalRef = ref(null);
+    const overdue_count = ref(0);
+    const today_count = ref(0);
+    const tomorrow_count = ref(0);
+    const notasks_count = ref(0);
+    const searchText = ref("");
     // const openWhatsappModal = () => {
     //   try {
     //     const modal = new Modal(document.getElementById("whatsappModal"));
@@ -304,6 +322,7 @@ export default {
     };
     onMounted(() => {
       window.addEventListener("resize", handleResize);
+      fetchTasksCounter();
     });
 
     onUnmounted(() => {
@@ -326,6 +345,33 @@ export default {
     const setNewMessage = (data) => {
       local_new_message.value = data;
     };
+    const fetchTasksCounter = async () => {
+      // Simulate fetching data from an API
+      try {
+        const overdueResponse = await fetchTasksCountByStageName("Overdue");
+        overdue_count.value = overdueResponse?.data?.data || 0;
+
+        const todayResponse = await fetchTasksCountByStageName("Due Today");
+        today_count.value = todayResponse?.data?.data || 0;
+
+        const tomorrowResponse = await fetchTasksCountByStageName(
+          "Due Tomorrow"
+        );
+        tomorrow_count.value = tomorrowResponse?.data?.data || 0;
+
+        const noTasksResponse = await fetchTasksCountByStageName("No Task");
+        notasks_count.value = noTasksResponse?.data?.data || 0;
+      } catch (error) {
+        console.error("Error fetching task counts:", error);
+      }
+    };
+    const handleSearch = () => {
+      const search = searchText.value.trim();
+      emit("search", search);
+    };
+    const updateMessage = (data) => {
+      local_update_message.value = data;
+    };
     return {
       filterData,
       openFilterModal,
@@ -347,21 +393,33 @@ export default {
       setConversation,
       setNewMessage,
       local_new_message,
+      local_update_message,
+      overdue_count,
+      today_count,
+      tomorrow_count,
+      notasks_count,
+      fetchTasksCounter,
+      handleSearch,
+      searchText,
+      updateMessage,
     };
   },
 
   watch: {
     selected_conversation(newValue) {
       if (newValue) {
-        console.log("top header2 set conversation", newValue);
         this.openWhatsappModal();
         this.setConversation(newValue);
       }
     },
     new_message(newValue) {
       if (newValue) {
-        console.log("top header2 new message", newValue);
         this.setNewMessage(newValue);
+      }
+    },
+    update_message(newValue) {
+      if (newValue) {
+        this.updateMessage(newValue);
       }
     },
   },

@@ -75,7 +75,7 @@
               autocomplete="off"
               aria-label="uploadFile"
               multiple
-              accept="image/*, .pdf, .doc, .txt"
+              accept="*/*"
               @change="handleFileUpload"
             />
           </form>
@@ -150,7 +150,17 @@
             alt="Attached Image"
             class="preview-image"
           />
-          <span class="image-name">{{ attachedImageName }}</span>
+          <span class="image-name">{{ attachedFileName }}</span>
+          <button @click="removeImage" class="remove-image-btn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div
+          v-if="attachedFile"
+          class="attached-image-preview position-absolute"
+        >
+          <i class="fa-solid fa-file fs-1 me-2"></i>
+          <span class="image-name">{{ attachedFileName }}</span>
           <button @click="removeImage" class="remove-image-btn">
             <i class="fa-solid fa-times"></i>
           </button>
@@ -164,7 +174,7 @@
             <div class="modal-body">
               <div v-if="attachedFileType === 'image'">
                 <img
-                  :src="attachedFile"
+                  :src="attachedFilePreview"
                   alt="Attached Image"
                   class="preview-image"
                 />
@@ -179,12 +189,12 @@
               <div class="input-group mt-2 w-100">
                 <input
                   type="text"
-                  v-model="caption"
+                  v-model="newMessage"
                   placeholder="أضف وصفًا ..."
                   class="caption-input rounded-start-3 flex-grow-1"
                 />
                 <button
-                  @click="sendFileWithCaption"
+                  @click="sendMessage"
                   class="btn border-0 text-white btn-success"
                 >
                   <i class="fa-solid fa-paper-plane"></i>
@@ -192,6 +202,13 @@
               </div>
             </div>
           </div>
+        </div>
+        <div
+          v-if="isProcessing"
+          class="attached-image-preview position-absolute"
+        >
+          <i class="fa-solid fa-spinner fa-spin fs-1 me-2"></i>
+          <span class="image-name">Processing voice message...</span>
         </div>
         <input
           type="text"
@@ -202,26 +219,76 @@
           style="outline: none; height: 45px"
           v-model="newMessage"
           @keyup.enter="sendMessage"
+          v-if="!isRecording"
         />
+        <span
+          v-else
+          class="recording-container rounded-5 fs-6 border-0 py-2 px-4 w-100 bg-light"
+        >
+          <div class="recording-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+          </div>
+          <span class="recording-duration">
+            {{ formatDuration(recordingDuration) }}
+          </span>
+        </span>
       </div>
       <div class="send-button">
         <button
-          type="submit"
+          type="button"
           class="submitMsg position-relative border-0 bg-success rounded-5"
-          @click="sendMessage"
-          aria-label="sendMessage && voiceMessage"
+          @click="StartRecordingVoice"
+          aria-label="voiceMessage start"
+          v-if="
+            !attachedImage &&
+            newMessage.trim() === '' &&
+            !attachedFile &&
+            !isRecording
+          "
         >
           <i
             ref="voiceIcon"
             class="fa-solid fa-microphone d-block fs-6 text-white"
             id="voiceIcon"
-            v-if="!attachedFile && newMessage.trim() === ''"
           ></i>
+        </button>
+        <button
+          type="button"
+          class="submitMsg position-relative border-0 bg-success rounded-5"
+          @click="stopRecordingVoice"
+          aria-label="voiceMessage stop"
+          v-else-if="
+            !attachedImage &&
+            newMessage.trim() === '' &&
+            isRecording &&
+            !attachedFile
+          "
+        >
+          <i
+            ref="voiceIcon"
+            class="fa-solid fa-stop d-block fs-6 text-white"
+            id="voiceIcon"
+          ></i>
+        </button>
+        <button
+          type="submit"
+          class="submitMsg position-relative border-0 bg-success rounded-5"
+          @click="sendMessage"
+          aria-label="sendMessage"
+          v-else-if="
+            (attachedImage || newMessage.trim() !== '' || attachedFile) &&
+            !isRecording
+          "
+        >
           <i
             ref="sendIcon"
             class="fa-solid fa-paper-plane d-block position-relative fs-6 text-white"
             id="sendIcon"
-            v-else
           ></i>
         </button>
       </div>
@@ -231,6 +298,7 @@
 
 <script>
 import { ref } from "vue";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
 export default {
   name: "MessageInput",
   data() {
@@ -239,9 +307,14 @@ export default {
       isEmojiVisible: false,
       isClipboardVisible: false,
       currentLanguage: "en",
+      attachedImage: null,
       attachedFile: null,
       attachedFileName: "",
-      attachedFileType: "",
+      isRecording: false,
+      mediaRecorder: null,
+      recordingDuration: 0,
+      isProcessing: false,
+      recordingTimer: null,
       isModalOpen: false,
       caption: "",
     };
@@ -259,19 +332,12 @@ export default {
     };
   },
   methods: {
-    // sendMessage() {
-    //   if (this.newMessage.trim() !== "") {
-    //     this.$emit("send-message", this.newMessage);
-    //     this.newMessage = "";
-    //     this.$emit("scroll-to-bottom");
-    //   }
-    // },
     async sendMessage() {
       if (this.newMessage.trim() !== "" || this.attachedFile) {
         try {
           const messageData = {
-            text_body: this.newMessage.trim(),
-            image: this.attachedFile,
+            text_body: this.newMessage?.trim(),
+            file: this.attachedFile,
           };
 
           if (this.$attrs.conversationId) {
@@ -285,23 +351,6 @@ export default {
         } catch (error) {
           console.error("Error preparing message:", error);
         }
-      }
-    },
-    sendFileWithCaption() {
-      if (this.attachedFile) {
-        const messageData = {
-          text_body: this.caption,
-          image: this.attachedFile,
-        };
-
-        if (this.$attrs.conversationId) {
-          messageData.conversation_id = this.$attrs.conversationId;
-        }
-
-        this.$emit("send-message", messageData);
-        this.caption = "";
-        this.removeFile();
-        this.$emit("scroll-to-bottom");
       }
     },
     toggleEmoji() {
@@ -329,40 +378,38 @@ export default {
       this.isClipboardVisible = false;
     },
     handleFileUpload(event) {
+      this.isProcessing = true;
       const files = event.target.files;
       if (files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
 
-          console.log("تم اختيار الملف:", file.name);
-          console.log("حجم الملف:", file.size, "بايت");
-          console.log("نوع الملف:", file.type);
+          console.log("File Name:", file.name);
+          console.log("File size:", file.size, "بايت");
+          console.log("File Type:", file.type);
 
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              this.attachedFile = e.target.result;
+              this.attachedFilePreview = e.target.result;
+              this.attachedFile = file;
               this.attachedFileName = file.name;
               this.attachedFileType = "image";
               this.isModalOpen = true;
             };
             reader.readAsDataURL(file);
-          } else if (
-            file.type === "application/pdf" ||
-            file.type === "application/msword" ||
-            file.type === "text/plain"
-          ) {
-            this.attachedFile = URL.createObjectURL(file);
+          } else {
+            this.attachedFilePreview = URL.createObjectURL(file);
+            this.attachedFile = file;
             this.attachedFileName = file.name;
             this.attachedFileType = "file";
             this.isModalOpen = true;
-          } else {
-            console.log("نوع الملف غير مدعوم:", file.name);
           }
         }
       } else {
         console.log("لم يتم تحديد أي ملفات.");
       }
+      this.isProcessing = false;
     },
     removeFile() {
       this.attachedFile = null;
@@ -379,6 +426,94 @@ export default {
       setTimeout(() => {
         this.isModalOpen = false;
       }, 300);
+    },
+    StartRecordingVoice() {
+      if (this.isRecording) {
+        return;
+      }
+      this.isRecording = true;
+      this.recordingDuration = 0;
+      clearInterval(this.recordingTimer);
+      this.recordingTimer = setInterval(() => {
+        this.recordingDuration++;
+      }, 1000);
+      let audioChunks = [];
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error("Audio recording is not supported in this browser.");
+        return;
+      }
+
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          this.mediaRecorder = new MediaRecorder(stream, {
+            mimeType: "audio/webm",
+          });
+          this.mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              audioChunks.push(event.data);
+            }
+          };
+
+          this.mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            const formattedAudio = await this.formatAudio(audioBlob);
+            this.attachedFile = formattedAudio;
+            const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
+            this.attachedFileName = `voice_message_${timestamp}.ogg`;
+            audioChunks = [];
+            this.isProcessing = false;
+          };
+
+          this.mediaRecorder.start();
+          console.log("Recording started...");
+        })
+        .catch((error) => {
+          console.error("Error accessing microphone:", error);
+        });
+    },
+    stopRecordingVoice() {
+      if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+        clearInterval(this.recordingTimer);
+        this.isProcessing = true;
+        this.mediaRecorder.stop();
+        this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+        console.log("Recording stopped and media tracks closed.");
+        this.isRecording = false;
+      }
+    },
+    async formatAudio(blob) {
+      try {
+        const ffmpeg = new FFmpeg({
+          log: true,
+        });
+        await ffmpeg.load();
+        const arrayBuffer = await blob.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        await ffmpeg.writeFile("input.webm", uint8Array);
+        await ffmpeg.exec([
+          "-i",
+          "input.webm",
+          "-c:a",
+          "libopus",
+          "-b:a",
+          "64k",
+          "output.ogg",
+        ]);
+        const data = await ffmpeg.readFile("output.ogg");
+        const oggBlob = new Blob([data.buffer], { type: "audio/ogg" });
+
+        return oggBlob;
+      } catch (error) {
+        console.error("Conversion error:", error);
+        throw error;
+      }
+    },
+    formatDuration(duration) {
+      const minutes = Math.floor(duration / 60);
+      const seconds = duration % 60;
+      return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     },
   },
   directives: {
@@ -484,6 +619,53 @@ export default {
 
 .remove-image-btn:hover {
   color: #cc0000;
+}
+
+.recording-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.recording-duration {
+  margin-left: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #0f0f0fc4;
+}
+
+.recording-lines {
+  display: flex;
+  justify-content: space-between;
+  width: 40px;
+  height: 20px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.line {
+  width: 4px;
+  height: 100%;
+  background-color: #4caf50;
+  animation: pulse 1s infinite ease-in-out;
+}
+
+.line:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.line:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.line:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.line:nth-child(4) {
+  animation-delay: 0.6s;
+}
+.line:nth-child(5) {
+  animation-delay: 0.8s;
 }
 /* modal style */
 .modal-overlay {

@@ -61,6 +61,10 @@ export default {
       type: Object,
       default: null,
     },
+    updated_message: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -115,7 +119,14 @@ export default {
             sender: msg.conversation_member?.name || "",
             isCopied: false,
             isImage: msg.type === "image",
-            imageUrl: msg.file ? msg.file.url : null,
+            isDocument: msg.type === "document",
+            isAudio: msg.type === "audio",
+            isVideo: msg.type === "video",
+            fileName: msg.file ? msg.file.name : null,
+            fileUrl: msg.file ? msg.file.url : null,
+            fileDownloadUrl: msg.file?.download_url || null,
+            fileMimeType: msg.file ? msg.file.mime_type : null,
+            status: msg.status,
           }));
 
           this.selectedChat = {
@@ -180,11 +191,41 @@ export default {
           sender: new_message.sender_name || new_message.sender,
           isCopied: false,
           isImage: new_message.type === "image",
-          imageUrl: new_message.file ? new_message.file.url : null,
+          isDocument: new_message.type === "document",
+          isAudio: new_message.type === "audio",
+          isVideo: new_message.type === "video",
+          fileName: new_message.file ? new_message.file.name : null,
+          fileUrl: new_message.file ? new_message.file.url : null,
+          fileDownloadUrl: new_message.file?.download_url || null,
           conversation_id: new_message.conversation_id,
+          fileMimeType: new_message.file ? new_message.file.mime_type : null,
+          status: new_message.status,
         });
       } else {
         console.log("chat not opened", this.selectedChat, new_message);
+      }
+    },
+
+    updateMessage(data) {
+      if (this.selectedChat) {
+        const messageIndex = this.selectedChat.messages.findIndex(
+          (msg) => msg.id == data.id
+        );
+        console.log("messageIndex", messageIndex);
+        if (messageIndex !== -1) {
+          const updated_data = {
+            text: data.text_body,
+            status: data.status,
+          };
+          this.selectedChat.messages[messageIndex] = {
+            ...this.selectedChat.messages[messageIndex],
+            ...updated_data,
+          };
+          console.log(
+            "Updated message:",
+            this.selectedChat.messages[messageIndex]
+          );
+        }
       }
     },
   },
@@ -193,7 +234,6 @@ export default {
       immediate: true,
       handler(newVal) {
         if (newVal) {
-          console.log("Whatsapp Modal:", newVal);
           this.$refs.leftSidebar.addNewChat(newVal);
           this.setSelectedChat({
             ...newVal,
@@ -207,8 +247,15 @@ export default {
       immediate: true,
       handler(newVal) {
         if (newVal) {
-          console.log("New message in Whatsapp Modal:", newVal);
           this.receiveNewMessage(newVal);
+        }
+      },
+    },
+    updated_message: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.updateMessage(newVal);
         }
       },
     },

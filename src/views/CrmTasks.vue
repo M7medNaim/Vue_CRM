@@ -12,7 +12,12 @@
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
   </div> -->
-  <KanbanBoard :stages="stages" defaultColor="#333" />
+  <KanbanBoard
+    :stages="stages"
+    defaultColor="#333"
+    @open-whatsapp-modal="openWhatsappModal"
+    @receive-whatsapp-message="receiveWhatsappMessage"
+  />
   <!-- <WhatsappModal ref="whatsappModalRef" /> -->
 </template>
 
@@ -92,6 +97,7 @@ export default {
             description: stage.description || null,
             color_code: stage.color_code,
             deals: stage.deals || [],
+            deal_count: stage.deal_count,
           }));
           toast.success(t("success.loadKanban"));
         } else {

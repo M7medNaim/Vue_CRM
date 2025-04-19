@@ -31,7 +31,7 @@
                   color: stage.color_code,
                 }"
               >
-                {{ stage.deals.length }}
+                {{ stage.deal_count ?? 0 }}
               </span>
             </div>
             <button
@@ -53,6 +53,7 @@
               @start="drag = true"
               @end="handleDragEnd"
               @change="handleDragChange($event, stage.id)"
+              @scroll="handleDealContainerScroll($event, stage.id)"
             >
               <template #item="{ element: deal }">
                 <CustomerCard
@@ -109,7 +110,11 @@ import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { updateDealStage, showDeal } from "@/plugins/services/authService";
+import {
+  updateDealStage,
+  showDeal,
+  fetchAdditionalDealsByStageId,
+} from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
@@ -150,7 +155,7 @@ export default {
     const { t } = useI18n();
     const selectedDeal = ref(null);
     const isTasksView = computed(() => route.path === "/crm-tasks");
-
+    const reachedBottom = ref(false);
     const moveSound = new Audio(moveCardSound);
 
     const handleDragChange = async (event, newStageId) => {
@@ -190,7 +195,7 @@ export default {
         moveSound.currentTime = 0;
         moveSound
           .play()
-          .catch((error) => console.log("Failed to play sound:", error));
+          .catch((error) => console.error("Failed to play sound:", error));
       }
     };
 
@@ -319,9 +324,9 @@ export default {
     const handleWhatsappEvent = (event) => {
       const action = event.action;
       if (action === "create") {
-        handleWhatsappMessageEvent(event.data, event.message);
+        handleWhatsappMessageCreateEvent(event.data);
       } else if (action == "update") {
-        console.log("Whatsapp Message Status Updated:", event);
+        handleWhatsappMessageUpdateEvent(event.data);
       }
     };
 
@@ -344,7 +349,7 @@ export default {
         updated_at: data.updated_at,
       };
       stages.value[stageIndex].deals.unshift(deal);
-      console.log(message);
+      toast.success(message);
     };
 
     const dealUpdateEvent = (data, message) => {
@@ -374,7 +379,6 @@ export default {
           source_id: updatedData.source_id,
         };
         stages.value[stageIndex].deals.unshift(deal);
-        console.log("Deal not found in the new stage, creating one.");
         return;
       }
 
@@ -391,17 +395,14 @@ export default {
       );
       // Update the deal in the UI
       if (newStageIndex === stageIndex) {
-        console.log("Deal is in the same stage");
         stages.value[stageIndex].deals[dealIndex] = deal;
       } else if (newStageIndex !== -1) {
-        console.log("Deal moved to a new stage");
         stages.value[newStageIndex].deals.unshift(deal);
         stages.value[stageIndex].deals.splice(dealIndex, 1);
       } else {
-        console.log("New stage not found");
         stages.value[stageIndex].deals.splice(dealIndex, 1);
       }
-      console.log(message);
+      toast.success(message);
     };
 
     const dealDeleteEvent = (deal, message) => {
@@ -421,7 +422,7 @@ export default {
       if (dealIndex != -1) {
         stages.value[stageIndex].deals.splice(dealIndex, 1);
       }
-      console.log(message);
+      toast.success(message);
     };
 
     const handleTaskEvent = (event) => {
@@ -429,16 +430,10 @@ export default {
 
       if (action === "create") {
         tasks.value.push(data);
-        // tasks.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
         const index = tasks.value.findIndex((t) => t.id === data.id);
         if (index !== -1) {
           tasks.value[index] = { ...tasks.value[index], ...data };
-          // tasks.value[index].text = data.note;
         } else {
           tasks.value.push(data);
         }
@@ -452,16 +447,10 @@ export default {
 
       if (action === "create") {
         comments.value.push(data);
-        // comments.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
         const index = comments.value.findIndex((c) => c.id === data.id);
         if (index !== -1) {
           comments.value[index] = { ...comments.value[index], ...data };
-          // comments.value[index].text = data.note;
         } else {
           comments.value.push(data);
         }
@@ -475,16 +464,10 @@ export default {
 
       if (action === "create") {
         logs.value.push(data);
-        // logs.value.push({
-        //   id: data.id,
-        //   text: data.note,
-        //   date: new Date().toLocaleString(),
-        // });
       } else if (action === "update") {
         const logIndex = logs.value.findIndex((log) => log.id === data.id);
         if (logIndex !== -1) {
           logs.value[logIndex] = { ...logs.value[logIndex], ...data };
-          // logs.value[logIndex].text = data.note;
         } else {
           logs.value.push(data);
         }
@@ -493,14 +476,15 @@ export default {
       }
     };
 
-    const handleWhatsappMessageEvent = (data, message) => {
-      console.log("Whatsapp Message Event:", data);
+    const handleWhatsappMessageCreateEvent = (data) => {
       emit("receive-whatsapp-message", data);
-      toast.success(message);
+    };
+
+    const handleWhatsappMessageUpdateEvent = (data) => {
+      emit("update-whatsapp-message", data);
     };
 
     const openWhatsappModal = (conversation) => {
-      console.log("Kanban", conversation);
       emit("open-whatsapp-modal", conversation);
     };
     const getContrastColor = (hexColor) => {
@@ -509,6 +493,36 @@ export default {
       const b = parseInt(hexColor.slice(5, 7), 16);
       const brightness = (r * 299 + g * 587 + b * 114) / 1000;
       return brightness > 170 ? "#000000" : "#FFFFFF";
+    };
+
+    const handleDealContainerScroll = async (event, id) => {
+      if (reachedBottom.value) return;
+      const scrollTop = event.target.scrollTop;
+      const scrollHeight = event.target.scrollHeight;
+      const clientHeight = event.target.clientHeight;
+      const stages = ref(props.stages);
+      const stageIndex = stages.value.findIndex((s) => s.id === id);
+      if (scrollTop + clientHeight >= scrollHeight - 1) {
+        reachedBottom.value = true;
+        fetchAdditionalDealsByStageId(
+          id,
+          10,
+          stages.value[stageIndex].deals.length,
+          []
+        )
+          .then((additional_deals) => {
+            if (additional_deals.data) {
+              if (stageIndex !== -1) {
+                stages.value[stageIndex].deals.push(
+                  ...additional_deals.data.data
+                );
+              }
+            }
+          })
+          .finally(() => {
+            reachedBottom.value = false;
+          });
+      }
     };
 
     onMounted(async () => {
@@ -608,6 +622,8 @@ export default {
       selectedDeal,
       openWhatsappModal,
       getContrastColor,
+      handleDealContainerScroll,
+      reachedBottom,
     };
   },
 };

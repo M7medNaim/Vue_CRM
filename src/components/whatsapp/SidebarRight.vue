@@ -186,11 +186,6 @@ export default {
   },
   methods: {
     async receiveMessage(messageData) {
-      // if (!messageData.text_body) {
-      //   alert("نص الرسالة مطلوب");
-      //   return;
-      // }
-
       if (this.selectedChat) {
         try {
           const messageToSend = {
@@ -204,9 +199,9 @@ export default {
           }
 
           const response = await sendMessage(messageToSend);
-
+          console.log("Message sent:", response);
           const newMessage = {
-            id: response.data.id || Date.now(),
+            id: response.data?.data?.id || Date.now(),
             type: "msg-me",
             text: messageData.text_body,
             time: new Date().toLocaleTimeString([], {
@@ -217,6 +212,19 @@ export default {
             sender: "You",
             isCopied: false,
             conversation_id: this.selectedChat.id,
+            isImage: messageData.file?.type.startsWith("image/"),
+            isDocument: messageData.file?.type.startsWith("application/"),
+            isAudio: messageData.file?.type.startsWith("audio/"),
+            isVideo: messageData.file?.type.startsWith("video/"),
+            fileName: messageData.file ? messageData.file.name : null,
+            fileUrl: messageData.file
+              ? URL.createObjectURL(messageData.file)
+              : null,
+            fileDownloadUrl: messageData.file
+              ? URL.createObjectURL(messageData.file)
+              : null,
+            fileMimeType: messageData.file ? messageData.file.type : null,
+            status: "sent",
           };
 
           this.$emit("new-message", newMessage);
