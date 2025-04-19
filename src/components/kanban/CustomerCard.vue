@@ -11,7 +11,7 @@
   >
     <div
       v-if="deal.unread_count && deal.unread_count > 0"
-      class="unread_count px-1 bg-danger rounded-circle position-absolute"
+      class="unread_count px-2 bg-danger rounded position-absolute mb-2 me-1"
     >
       <span class="text-white">{{ deal.unread_count }}</span>
     </div>
