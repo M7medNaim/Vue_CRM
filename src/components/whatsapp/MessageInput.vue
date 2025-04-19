@@ -183,15 +183,6 @@
           @keyup.enter="sendMessage"
           v-if="!isRecording"
         />
-        <!-- <div
-          v-if="isRecording"
-          class="recording-timer-bar position-absolute w-100"
-        >
-          <div
-            class="timer-bar bg-danger"
-            :style="{ width: timerWidth + '%' }"
-          ></div>
-        </div> -->
         <span v-else class="recording-container">
           <div class="recording-lines">
             <div class="line"></div>
