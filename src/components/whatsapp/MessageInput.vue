@@ -1,8 +1,8 @@
 <template>
   <div class="chat-input w-100 position-relative">
-    <div class="d-flex align-items-center gap-3 p-2">
+    <div class="d-flex align-items-center gap-1">
       <div
-        class="actions-group d-flex justify-content-center align-items-center gap-2 bg-secondary-subtle mt-1 rounded-5"
+        class="actions-group d-flex justify-content-center align-items-center gap-2 bg-success rounded-2 rounded-end-0"
       >
         <div class="emoje">
           <button
@@ -12,7 +12,7 @@
             class="btn bg-transparent p-1"
             aria-label="Emojis"
           >
-            <i class="fa-regular fa-face-smile fs-6 text-dark"></i>
+            <i class="fa-regular fa-face-smile fs-6 text-white"></i>
           </button>
           <!-- all Emojis -->
           <div
@@ -66,7 +66,7 @@
         <div class="upload_file btn d-block position-relative p-0 pe-1">
           <form action="">
             <label for="file" class="upload-label">
-              <i class="fa-solid fa-paperclip upload-icon fs-6 text-dark"></i>
+              <i class="fa-solid fa-paperclip upload-icon fs-6 text-white"></i>
             </label>
             <input
               type="file"
@@ -210,17 +210,35 @@
           <i class="fa-solid fa-spinner fa-spin fs-1 me-2"></i>
           <span class="image-name">Processing voice message...</span>
         </div>
-        <input
+        <!-- <input
           type="text"
           ref="messageInput"
           placeholder="Start typing..."
           id="inputMassege"
-          class="rounded-5 fs-6 border-0 py-2 px-4 w-100"
-          style="outline: none; height: 45px"
+          class="fs-6 border-0 py-2 px-2 w-100"
+          style="outline: none; height: 42px"
           v-model="newMessage"
           @keyup.enter="sendMessage"
           v-if="!isRecording"
+        /> -->
+        <textarea
+          ref="messageInput"
+          placeholder="Start typing..."
+          id="inputMassege"
+          class="textarea-input fs-6 border-0 py-2 px-2 w-100 position-absolute"
+          style="
+            outline: none;
+            height: 40px;
+            max-height: 150px;
+            overflow-y: auto;
+            resize: none;
+          "
+          v-model="newMessage"
+          @input="autoResize"
+          @keydown.enter="handleEnter"
+          v-if="!isRecording"
         />
+        <!-- @keyup.enter="sendMessage" -->
         <span
           v-else
           class="recording-container rounded-5 fs-6 border-0 py-2 px-4 w-100 bg-light"
@@ -241,7 +259,7 @@
       <div class="send-button">
         <button
           type="button"
-          class="submitMsg position-relative border-0 bg-success rounded-5"
+          class="submitMsg position-relative border-0 bg-success rounded-2 rounded-start-0"
           @click="StartRecordingVoice"
           aria-label="voiceMessage start"
           v-if="
@@ -259,7 +277,7 @@
         </button>
         <button
           type="button"
-          class="submitMsg position-relative border-0 bg-success rounded-5"
+          class="submitMsg position-relative border-0 bg-success rounded-2 rounded-end-0"
           @click="stopRecordingVoice"
           aria-label="voiceMessage stop"
           v-else-if="
@@ -277,7 +295,7 @@
         </button>
         <button
           type="submit"
-          class="submitMsg position-relative border-0 bg-success rounded-5"
+          class="submitMsg position-relative border-0 bg-success rounded-2 rounded-start-0"
           @click="sendMessage"
           aria-label="sendMessage"
           v-else-if="
@@ -332,6 +350,24 @@ export default {
     };
   },
   methods: {
+    handleEnter(event) {
+      if (!event.shiftKey) {
+        event.preventDefault();
+        this.sendMessage();
+      }
+    },
+    autoResize() {
+      const textarea = this.$refs.messageInput;
+      textarea.style.height = "40px";
+      const newHeight = textarea.scrollHeight;
+      const maxRows = 7;
+      const lineHeight = 22;
+      textarea.style.height = Math.min(newHeight, maxRows * lineHeight) + "px";
+    },
+    resetTextareaSize() {
+      const textarea = this.$refs.messageInput;
+      textarea.style.height = "40px";
+    },
     async sendMessage() {
       if (this.newMessage.trim() !== "" || this.attachedFile) {
         try {
@@ -346,6 +382,7 @@ export default {
 
           await this.$emit("send-message", messageData);
           this.newMessage = "";
+          this.resetTextareaSize();
           this.removeFile();
           this.$emit("scroll-to-bottom");
         } catch (error) {
@@ -560,7 +597,7 @@ export default {
 
 .actions-group {
   min-width: fit-content;
-  padding: 6px 10px !important;
+  padding: 4px 10px !important;
 }
 
 .send-button {
@@ -733,5 +770,26 @@ export default {
   margin-top: 10px;
   font-size: 16px;
   color: #333;
+}
+.textarea-input {
+  bottom: -20px;
+  color: #000000c6;
+}
+.textarea-input::-webkit-scrollbar {
+  width: 8px;
+}
+
+.textarea-input::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.textarea-input::-webkit-scrollbar-thumb {
+  background: #888888cb;
+  border-radius: 4px;
+}
+
+.textarea-input::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>

@@ -303,19 +303,37 @@ export default {
   height: 110px;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.6) 30%,
-    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0.4) 30%,
+    rgba(0, 0, 0, 0.07) 70%,
     rgba(0, 0, 0, 0) 100%
   );
   pointer-events: none;
   z-index: 1;
+}
+.right-side::after {
+  content: ".";
+  position: absolute;
+  top: 0%;
+  left: 0;
+  right: 0;
+  height: 130px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0.15) 70%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  width: 100%;
+  margin: 0 auto;
 }
 li {
   cursor: pointer;
 }
 .right-side .message-input {
   position: sticky;
-  bottom: 2%;
+  bottom: 1%;
   width: 98%;
   z-index: 999;
 }
@@ -324,6 +342,7 @@ li {
   height: 7.5vh;
   width: 98%;
   margin: 0 auto;
+  z-index: 1;
 }
 @media (max-width: 850px) {
   .right-side .header {
