@@ -497,8 +497,11 @@ export default {
             const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
             const formattedAudio = await this.formatAudio(audioBlob);
             this.attachedFile = formattedAudio;
+            this.attachedFilePreview = URL.createObjectURL(formattedAudio);
+            this.attachedFileType = "file";
             const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
             this.attachedFileName = `voice_message_${timestamp}.ogg`;
+            this.isModalOpen = true;
             audioChunks = [];
             this.isProcessing = false;
           };
