@@ -108,29 +108,9 @@ export const bulkDeleteDeals = async (ids) => {
     data: { ids },
   });
 };
-// export const updateDealsStage = async (ids, stage) => {
-//   return await axios.post("/deals/update-stage", { ids, stage });
-// };
-
-// export const updateDealsSupervisor = async (ids, supervisor) => {
-//   return await axios.post("/deals/update-supervisor", { ids, supervisor });
-// };
-
-// export const updateDealsRepresentative = async (ids, representative) => {
-//   return await axios.post("/deals/update-representative", {
-//     ids,
-//     representative,
-//   });
-// };
-
-// export const updateDealsSource = async (ids, source) => {
-//   return await axios.post("/deals/update-source", { ids, source });
-// };
 
 export const deleteDeals = (ids) => axios.delete(`/deals/${ids}`);
-// export const updateDealStage = async (dealId, newStageId) =>{
-//   return await axios.put(`/deals/${dealId}`, stage_id: newStageId);
-// }
+
 export const updateDealStage = (dealId, stageId) => {
   return axios.patch(`/deals/${dealId}`, {
     stage_id: stageId,
@@ -145,11 +125,8 @@ export const getStages = () => axios.get("/stages");
 // ------------------------------------------------------------
 // Contacts
 // get all contacts
-// export const getContacts = () => axios.get("/contacts");
 export const getContacts = async (params = {}) => {
   const token = Cookies.get("authToken");
-  // console.log("Fetching contacts with params:", params);
-
   return axios.get("/contacts", {
     params: {
       page: params.page || 1,
@@ -205,25 +182,12 @@ export const saveUserLanguage = async (locale) => {
   });
 };
 
-// export const getDocuments = async () => {
-//   const token = Cookies.get("authToken");
-//   return await axios.get("/documents", {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   });
-// };
-
 export const getDocuments = async () => {
   return await axios.get("/documents");
 };
 export const getAllUsers = async () => {
   return await axios.get("/users/all");
 };
-
-// export const getDocumentsFolder = async () => {
-//   return await axios.get("/documents/folderApi");
-// };
 
 export const createDocuments = async (formData) => {
   try {
