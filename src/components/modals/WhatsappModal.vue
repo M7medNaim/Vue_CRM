@@ -137,7 +137,6 @@ export default {
               {
                 hour: "2-digit",
                 minute: "2-digit",
-                timeZone: "UTC",
               }
             ),
             created_at: msg.created_at,
