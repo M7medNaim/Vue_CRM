@@ -19,11 +19,12 @@
             <div class="input-group w-100">
               <div class="position-relative flex-grow-1">
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search Here.."
                   v-model="searchQuery"
                   style="outline: none"
                   class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
+                  @search="fetchConversations"
                 />
                 <i
                   class="fa-solid fa-magnifying-glass searchIcon fs-6 text-secondary position-absolute"
