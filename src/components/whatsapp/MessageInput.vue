@@ -277,7 +277,7 @@
         </button>
         <button
           type="button"
-          class="submitMsg position-relative border-0 bg-success rounded-2 rounded-end-0"
+          class="submitMsg position-relative border-0 bg-danger rounded-2 rounded-start-0"
           @click="stopRecordingVoice"
           aria-label="voiceMessage stop"
           v-else-if="

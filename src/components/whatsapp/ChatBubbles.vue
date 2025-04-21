@@ -12,8 +12,14 @@
     :class="message.type"
   >
     <div
-      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base pt-4"
+      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
     >
+      <button
+        class="addNote border-0 position-absolute bottom-0 fs-6 rounded-2"
+        style="left: -31px"
+      >
+        <i class="fa-solid fa-paste"></i>
+      </button>
       <div v-if="message.isImage">
         <img
           :src="message.fileUrl"
@@ -65,14 +71,13 @@
       >
         <i class="fa-solid fa-ellipsis-vertical text-secondary"></i>
       </button>
-      <button
-        class="border-0 bg-transparent position-absolute top-0 fs-6"
-        style="left: 15px"
-      >
-        <i class="fa-solid fa-paste text-secondary"></i>
-      </button>
       <span class="d-block mt-1 opacity-50 fst-normal">
-        <span class="me-2">{{ message.time }}</span>
+        <div class="d-flex justify-content-between">
+          <span class="me-2">{{ message.time }}</span>
+          <!-- <button class="border-0 bg-white fs-6">
+            <i class="fa-solid fa-paste text-secondary"></i>
+          </button> -->
+        </div>
         <!-- Message status -->
         <span v-if="message.type === 'msg-me'">
           <span
@@ -465,5 +470,15 @@ export default {
   width: 40px;
   height: 40px;
   z-index: 1000;
+}
+.addNote {
+  background: #ffffff60;
+}
+.addNote i {
+  color: #8d8a8a90;
+  transition: 0.3s;
+}
+.addNote i:hover {
+  color: #636262;
 }
 </style>
