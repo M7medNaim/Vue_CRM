@@ -54,6 +54,17 @@
       </div>
       <div class="col-6 col-md-5 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
+          <button
+            class="refresh border-0 d-flex align-items-center justify-content-center gap-2 text-white rounded-2 mt-1 me-2"
+            style="padding: 5px 7px"
+            @click="refreshPage"
+          >
+            <i class="fa-solid fa-rotate"></i>
+            <span class="refresh-text" style="font-size: 14px"
+              >New Changes..</span
+            >
+            <!-- AR => تحديثات جديدة -->
+          </button>
           <div class="lang">
             <button
               class="btnLang border-0 bg-transparent d-flex align-items-center justify-content-center gap-2 text-white position-relative rounded-2 mt-1"
@@ -251,6 +262,9 @@ export default {
         // this.calculatePosition(buttonRef);
       }
     },
+    refreshPage() {
+      window.location.reload();
+    },
     // calculatePosition(buttonRef) {
     //   if (buttonRef) {
     //     const rect = buttonRef.getBoundingClientRect();
@@ -331,5 +345,34 @@ export default {
 }
 .btnLang {
   background-color: hsla(0, 0%, 100%, 0.322) !important;
+}
+.refresh {
+  background-color: white;
+  animation: bgrefresh 2s ease-in-out infinite;
+}
+.refresh i {
+  animation: rotateRefresh 5s linear infinite;
+}
+@keyframes bgrefresh {
+  0% {
+    background-color: rgb(235, 191, 14);
+  }
+  50% {
+    background-color: hsla(0, 0%, 100%, 0.322);
+  }
+  100% {
+    background-color: rgb(250, 179, 0);
+  }
+}
+@keyframes rotateRefresh {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

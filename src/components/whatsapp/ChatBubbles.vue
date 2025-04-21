@@ -12,7 +12,7 @@
     :class="message.type"
   >
     <div
-      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
+      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base pt-4"
     >
       <div v-if="message.isImage">
         <img
@@ -64,6 +64,12 @@
         v-click-outside="closeMenu"
       >
         <i class="fa-solid fa-ellipsis-vertical text-secondary"></i>
+      </button>
+      <button
+        class="border-0 bg-transparent position-absolute top-0 fs-6"
+        style="left: 15px"
+      >
+        <i class="fa-solid fa-paste text-secondary"></i>
       </button>
       <span class="d-block mt-1 opacity-50 fst-normal">
         <span class="me-2">{{ message.time }}</span>
