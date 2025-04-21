@@ -275,8 +275,10 @@ export const getTasksKanban = async () => {
   return await axios.get("/kanban/tasks");
 };
 // Get Conversations
-export const getconversations = (search) =>
-  axios.get("/whatsapp", { params: { search: search } });
+export const getconversations = (search, rating, stage) =>
+  axios.get("/whatsapp", {
+    params: { search: search, filters: { rating: rating, stage: stage } },
+  });
 // Get Conversation by contact id
 export const fetchConversationByDealId = (id) =>
   axios.get(`/whatsapp/conversation/${id}`);
@@ -291,9 +293,6 @@ export const getMessageConv = async (id) => {
   return await axios.get(`/whatsapp/${id}`);
 };
 // send message
-// export const sendMessage = (formData) => {
-//   return axios.post("/whatsapp/send", formData);
-// };
 export const sendMessage = (messageData) => {
   const formData = new FormData();
   if (messageData.text_body) {
