@@ -84,13 +84,15 @@
             <div class="head pe-2 d-flex justify-content-between">
               <h4 class="name fs-6 fw-medium text-black">
                 {{ chat.name }}
-                <span class="text-muted ms-2">{{ chat.phone.phone }}</span>
+                <span class="text-muted ms-2">{{
+                  chat.phone.phone ?? chat.phone
+                }}</span>
               </h4>
               <span class="time text-success fst-normal">{{
                 chat.time ??
                 (chat.last_message
                   ? new Date(chat.last_message.created_at).toLocaleTimeString(
-                      "ar-EG",
+                      [locale == "ar" ? "ar-EG" : "en-US"],
                       {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -168,6 +170,7 @@ export default {
       offset: 0,
       total: 0,
       isLoading: false,
+      locale: localStorage.getItem("locale") || "en",
     };
   },
   methods: {
