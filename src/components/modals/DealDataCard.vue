@@ -541,15 +541,17 @@
             </div>
           </div>
         </div>
-        <div
-          class="trashCustm position-fixed bg-danger py-2 px-3 text-white rounded-3"
+        <button
+          class="btn trashCustm position-fixed bg-danger py-2 px-3 rounded-3"
+          @click="openTrashDealModal"
         >
-          <i class="fa-solid fa-trash"></i>
-        </div>
+          <i class="fa-solid fa-trash text-white"></i>
+        </button>
       </div>
     </div>
   </div>
   <ViewReport ref="questionsModalRef" />
+  <TrashDeal ref="trashDealModalRef" />
 </template>
 
 <script>
@@ -559,6 +561,7 @@ import ViewReport from "../kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import TrashDeal from "@/components/modals/TrashDeal.vue";
 import {
   fetchConversationByDealId,
   getSources,
@@ -573,7 +576,7 @@ import {
 
 export default {
   name: "DealDataCard",
-  components: { RatingStars, ViewReport },
+  components: { RatingStars, ViewReport, TrashDeal },
   props: {
     deal: {
       type: Object,
@@ -676,7 +679,22 @@ export default {
     const togglePhone2 = () => {
       showPhone2.value = !showPhone2.value;
     };
-
+    const openTrashDealModal = () => {
+      const openModals = document.querySelectorAll(".modal.show");
+      openModals.forEach((modal) => {
+        const modalInstance = Modal.getInstance(modal);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      });
+      const trashDealModal = new Modal(
+        document.getElementById("trashDealModal")
+      );
+      trashDealModal.show();
+      const modalBackdrop = document.createElement("div");
+      modalBackdrop.className = "modal-backdrop fade show";
+      document.body.appendChild(modalBackdrop);
+    };
     const handleStageHover = (stageId) => {
       hoveredStage.value = stageId;
     };
@@ -1045,6 +1063,7 @@ export default {
       formatDate,
       closeEditMode,
       formatDateForInput,
+      openTrashDealModal,
     };
   },
 };

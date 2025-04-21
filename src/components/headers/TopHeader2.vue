@@ -270,7 +270,8 @@ export default {
       try {
         const response = await getconversations();
         const conversations = response.data.data;
-        whatsappModalRef.value.loadConversations(conversations);
+        // whatsappModalRef.value.loadConversations(conversations);
+        emit("load-conversations", conversations);
 
         const modal = new Modal(document.getElementById("whatsappModal"));
         modal.show();
