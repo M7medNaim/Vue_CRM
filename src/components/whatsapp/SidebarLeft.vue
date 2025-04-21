@@ -92,7 +92,7 @@
                 chat.time ??
                 (chat.last_message
                   ? new Date(chat.last_message.created_at).toLocaleTimeString(
-                      [locale == "ar" ? "ar-EG" : "en-US"],
+                      [locale],
                       {
                         hour: "2-digit",
                         minute: "2-digit",

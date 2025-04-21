@@ -133,7 +133,7 @@ export default {
                 : "msg-frnd",
             text: msg.text_body,
             time: new Date(msg.created_at).toLocaleTimeString(
-              localStorage.getItem("locale") == "ar" ? "ar-EG" : "en-US",
+              localStorage.getItem("locale") || "en",
               {
                 hour: "2-digit",
                 minute: "2-digit",
