@@ -175,7 +175,7 @@ export default {
   methods: {
     async fetchConversations() {
       try {
-        const response = await getconversations();
+        const response = await getconversations(this.searchQuery);
         this.chats = await response.data.data.map((conversation) => {
           const last_message = conversation.last_message;
           return {

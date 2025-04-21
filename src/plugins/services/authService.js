@@ -275,7 +275,8 @@ export const getTasksKanban = async () => {
   return await axios.get("/kanban/tasks");
 };
 // Get Conversations
-export const getconversations = () => axios.get("/whatsapp");
+export const getconversations = (search) =>
+  axios.get("/whatsapp", { params: { search: search } });
 // Get Conversation by contact id
 export const fetchConversationByDealId = (id) =>
   axios.get(`/whatsapp/conversation/${id}`);
