@@ -66,7 +66,10 @@
 <script>
 import SidebarLeft from "@/components/whatsapp/SidebarLeft.vue";
 import SidebarRight from "@/components/whatsapp/SidebarRight.vue";
-import { getMessageConv } from "@/plugins/services/authService";
+import {
+  changePinStatus,
+  getMessageConv,
+} from "@/plugins/services/authService";
 import LabelModal from "@/components/whatsapp/labelWhatsapp.vue";
 import Cookies from "js-cookie";
 export default {
@@ -175,6 +178,8 @@ export default {
         (chat) => chat.isActive
       );
       if (activeChat) {
+        console.log("activeChat", activeChat);
+        changePinStatus(activeChat.id);
         this.$refs.leftSidebar.pinChat(activeChat);
       }
     },

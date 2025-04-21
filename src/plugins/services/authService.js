@@ -317,6 +317,21 @@ export const sendMessage = (messageData) => {
 export const sendInitMessage = (id) => {
   return axios.post("/whatsapp/send-init", { deal_id: id });
 };
+
+export const changePinStatus = (id) => {
+  return axios.post(`/whatsapp/conversation/pin/${id}`);
+};
+
+export const getMoreConversations = (offset, limit, filters, search) => {
+  return axios.get("/whatsapp/conversations/more", {
+    params: {
+      offset: offset,
+      limit: limit,
+      filters: filters,
+      search: search,
+    },
+  });
+};
 // create new comment
 export const createComment = (formData) => {
   return axios.post("/comments", formData);
