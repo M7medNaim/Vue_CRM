@@ -16,7 +16,6 @@
     >
       <button
         class="addNote border-0 position-absolute bottom-0 fs-6 rounded-2"
-        style="left: -31px"
       >
         <i class="fa-solid fa-paste"></i>
       </button>
@@ -471,9 +470,18 @@ export default {
   height: 40px;
   z-index: 1000;
 }
-.addNote {
-  background: #ffffff60;
+.right-side .chatBx .msg-frnd .buttonMenu {
+  left: 0 !important;
 }
+.right-side .chatBx .msg-frnd .addNote {
+  background: #ffffff60;
+  left: -31px;
+}
+.right-side .chatBx .msg-me .addNote {
+  background: #ffffff60;
+  right: -31px;
+}
+
 .addNote i {
   color: #8d8a8a90;
   transition: 0.3s;
