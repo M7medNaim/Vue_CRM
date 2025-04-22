@@ -433,7 +433,7 @@
                 </div>
                 <div class="col-12 mt-2 bg-light showComments py-2 rounded-3">
                   <div
-                    v-for="comment in customerData.comments"
+                    v-for="comment in customerData.comments.slice().reverse()"
                     :key="comment.id"
                     class="row mt-2"
                   >
@@ -652,7 +652,7 @@ export default {
         const response = await getStages();
         stages.value = response.data.data;
       } catch (error) {
-        console.error("Error fetching sources:", error);
+        console.error("Error fetching stages:", error);
       }
     };
     const currentStage = computed(() => {
@@ -975,7 +975,7 @@ export default {
         console.log(formData);
         const response = await createComment(formData);
         if (response.data) {
-          customerData.comments.unshift({
+          customerData.comments.push({
             id: response.data.id,
             text_body: customerData.comment,
             created_at: new Date().toISOString(),

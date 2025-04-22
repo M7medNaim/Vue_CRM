@@ -152,11 +152,11 @@ export default {
     const selectedStage = ref(null);
     const logs = ref([]);
     const comments = ref([]);
+    const isTasksView = computed(() => route.path === "/crm-tasks");
     const tasks = ref([]);
     const toast = useToast();
     const { t } = useI18n();
     const selectedDeal = ref(null);
-    const isTasksView = computed(() => route.path === "/crm-tasks");
     const reachedBottom = ref(false);
     const moveSound = new Audio(moveCardSound);
 
@@ -201,6 +201,7 @@ export default {
       }
     };
 
+    const openDealDataCard = async (dealId, currentStageId = null) => {
     const openDealDataCard = async (dealId, dealIndex) => {
       try {
         const dealData = await showDeal(dealId);
@@ -220,9 +221,12 @@ export default {
           });
           stages.value[stageIndex].deals[dealIndex].view_count += 1;
           const checkStageLoaded = () => {
-            return props.stages.some((stage) => stage.id === deal.stage_id);
+            if (isTasksView.value) {
+              return props.stages.find((stage) => stage.id === currentStageId);
+            } else {
+              return props.stages.some((stage) => stage.id === deal.stage_id);
+            }
           };
-
           const waitForStage = () => {
             return new Promise((resolve) => {
               if (checkStageLoaded()) {
@@ -235,12 +239,10 @@ export default {
 
           selectedDeal.value = deal;
           await nextTick();
-
           setTimeout(() => {
             const modalEl = document.getElementById("dealDataCard");
             const modal = new Modal(modalEl);
             modal.show();
-
             modalEl.addEventListener(
               "hidden.bs.modal",
               () => {
@@ -373,13 +375,16 @@ export default {
       const stageIndex = stages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );
-      const dealIndex = stages.value[stageIndex].deals.findIndex(
-        (deal) => deal.id == id
-      );
+
       if (stageIndex === -1) {
         console.error("Stage not found");
         return;
       }
+
+      const dealIndex = stages.value[stageIndex].deals.findIndex(
+        (deal) => deal.id == id
+      );
+
       if (dealIndex === -1) {
         const deal = {
           id: data.id,
@@ -414,6 +419,7 @@ export default {
       const newStageIndex = stages.value.findIndex(
         (stage) => stage.id == updatedData.stage_id
       );
+
       // Update the deal in the UI
       if (newStageIndex === stageIndex) {
         stages.value[stageIndex].deals[dealIndex] = deal;
