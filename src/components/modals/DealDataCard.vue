@@ -652,7 +652,7 @@ export default {
         const response = await getStages();
         stages.value = response.data.data;
       } catch (error) {
-        console.error("Error fetching sources:", error);
+        console.error("Error fetching stages:", error);
       }
     };
     const currentStage = computed(() => {
