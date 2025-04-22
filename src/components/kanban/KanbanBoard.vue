@@ -201,7 +201,7 @@ export default {
       }
     };
 
-    const openDealDataCard = async (dealId, currentStageId = null) => {
+    // Removed duplicate definition of openDealDataCard
     const openDealDataCard = async (dealId, dealIndex) => {
       try {
         const dealData = await showDeal(dealId);
@@ -222,7 +222,7 @@ export default {
           stages.value[stageIndex].deals[dealIndex].view_count += 1;
           const checkStageLoaded = () => {
             if (isTasksView.value) {
-              return props.stages.find((stage) => stage.id === currentStageId);
+              return props.stages.find((stage) => stage.id === deal.stage_id); //change to currentStageId
             } else {
               return props.stages.some((stage) => stage.id === deal.stage_id);
             }
