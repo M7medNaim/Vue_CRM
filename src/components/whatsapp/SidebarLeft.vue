@@ -80,7 +80,7 @@
             <div class="head pe-2 d-flex justify-content-between">
               <h4 class="name fs-6 fw-medium text-black">
                 {{ chat.name }}
-                <span class="text-muted ms-2">{{ chat.phone.phone }}</span>
+                <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
               <span class="time text-success fst-normal">{{ chat.time }}</span>
             </div>
@@ -182,7 +182,7 @@ export default {
               conversation.img ||
               require("@/assets/whatsappImage/default-userImage.jpg"),
             name: conversation.name || conversation.contact?.name,
-            phone: conversation.phone.phone,
+            phone: conversation.phone?.phone || "",
             rating: conversation.rating,
             unread_count: conversation.unread_count,
             time: lastMessage

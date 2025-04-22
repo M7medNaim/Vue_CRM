@@ -486,7 +486,7 @@ export default {
   color: #8d8a8a90;
   transition: 0.3s;
 }
-.addNote i:hover {
+.addNote:hover i {
   color: #636262;
 }
 </style>
