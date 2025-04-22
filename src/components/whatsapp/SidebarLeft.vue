@@ -216,7 +216,8 @@ export default {
         this.total = response.data.meta.total;
         this.offset = this.chats.length;
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.log("No conversations available:", error);
+        this.chats = [];
       }
     },
     async fetchMessages(conversationId, chatObj) {
@@ -442,7 +443,6 @@ export default {
   },
   mounted() {
     this.fetchConversations();
-    console.log("chats", this.chats);
     if (this.$refs.labelModal) {
       this.modalInstance = new Modal(this.$refs.labelModal);
     }
