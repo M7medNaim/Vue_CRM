@@ -4,7 +4,7 @@
       :initial-filters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
-      @search="HandleSearch"
+      @search-deals="HandleSearch"
       :selected_conversation="selected_conversation"
       :new_message="new_message"
       :update_message="update_message"
@@ -32,7 +32,6 @@ export default {
   components: {
     TopHeader2,
     KanbanBoard,
-    // WhatsappModal,
   },
   setup() {
     const { t } = useI18n();

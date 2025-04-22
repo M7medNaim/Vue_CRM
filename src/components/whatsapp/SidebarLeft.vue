@@ -24,19 +24,20 @@
                   v-model="searchQuery"
                   style="outline: none"
                   class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
+                  id="whatsappSearchInput"
                   @search="fetchConversations"
                 />
                 <i
                   class="fa-solid fa-magnifying-glass searchIcon fs-6 text-secondary position-absolute"
                 ></i>
-                <button
+                <!-- <button
                   v-if="searchQuery"
                   @click="clearSearch"
                   class="btnCloseSearch bg-transparent border-0 position-absolute text-danger d-flex justify-content-center align-items-center gap-1 fs-5"
                 >
                   <span>Close</span>
                   <i class="fa-solid fa-xmark"></i>
-                </button>
+                </button> -->
               </div>
               <button
                 type="button"

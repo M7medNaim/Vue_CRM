@@ -228,7 +228,7 @@ export const uploadFiles = async (formData) => {
 };
 //getDealsKanban
 export const getDealsKanban = (searchText) => {
-  console.log("searchText", searchText);
+  console.trace("searchText", searchText);
   return axios.get("/kanban/deals", {
     params: {
       search: searchText ?? "",
