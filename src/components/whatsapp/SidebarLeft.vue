@@ -176,7 +176,8 @@ export default {
   methods: {
     async fetchConversations() {
       try {
-        const response = await getconversations(this.searchQuery);
+        const searchText = this.searchQuery;
+        const response = await getconversations(searchText);
         this.chats = await response.data.data.map((conversation) => {
           const last_message = conversation.last_message;
           return {
@@ -190,12 +191,14 @@ export default {
             rating: conversation.rating,
             unread_count: conversation.unread_count,
             time: last_message
-              ? new Date(last_message.created_at).toLocaleTimeString("ar-EG", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                  timeZone: "UTC",
-                })
+              ? new Date(last_message.created_at).toLocaleTimeString(
+                  localStorage.getItem("locale") == "ar" ? "ar-EG" : "en-US",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  }
+                )
               : "",
             created_at_last_message: last_message?.created_at || "",
             message: last_message?.text_body || "",
