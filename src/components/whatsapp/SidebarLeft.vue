@@ -193,7 +193,7 @@ export default {
             unread_count: conversation.unread_count,
             time: last_message
               ? new Date(last_message.created_at).toLocaleTimeString(
-                  localStorage.getItem("locale") == "ar" ? "ar-EG" : "en-US",
+                  this.locale == "ar" ? "ar-EG" : "en-US",
                   {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -207,7 +207,7 @@ export default {
             unread: false,
             unreadCount: 0,
             isActive: false,
-            pinned: false,
+            pinned: conversation.pinned,
             label: "",
             messages: [],
             conversation_id: conversation.id,
@@ -229,12 +229,15 @@ export default {
             id: msg.id,
             type: msg.status === "sent" ? "msg-me" : "msg-frnd",
             text: msg.text_body,
-            time: new Date(msg.created_at).toLocaleTimeString("ar-EG", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-              timeZone: "UTC",
-            }),
+            time: new Date(msg.created_at).toLocaleTimeString(
+              this.locale == "ar" ? "ar-EG" : "en-US",
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+                timeZone: "UTC",
+              }
+            ),
             created_at: msg.created_at,
             sender: msg.conversation_member?.name || "",
             isCopied: false,
@@ -248,11 +251,8 @@ export default {
     },
 
     async openChat(chat, index) {
-      console.log("Open chat with chat and index:", chat, index);
       try {
         if (index >= 0 && index < this.chats.length) {
-          console.log("Opening chat:", chat);
-          console.log("Chat ID:", chat.id);
           this.chats.forEach((item) => {
             item.isActive = false;
           });
@@ -342,7 +342,7 @@ export default {
           name: chat.name || chat.contact?.name,
           time: chat.last_message
             ? new Date(chat.last_message.created_at).toLocaleTimeString(
-                "ar-EG",
+                this.locale == "ar" ? "ar-EG" : "en-US",
                 {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -357,10 +357,11 @@ export default {
           unread: false,
           unreadCount: 0,
           isActive: false,
-          pinned: false,
+          pinned: chat.pinned,
           label: "",
           messages: [],
           conversation_id: chat.id,
+          phone: chat.phone.phone,
         };
         console.log("Processed chat:", processed_chat);
         this.chats.push(processed_chat);
@@ -390,9 +391,7 @@ export default {
         !this.isLoading
       ) {
         this.isLoading = true;
-        console.log("Reached the bottom of the chat list");
         const response = await getMoreConversations(this.offset, this.limit);
-        console.log("Response from getMoreConversations:", response);
         if (response.data && response.data.data) {
           this.chats = [
             ...this.chats,
@@ -410,7 +409,7 @@ export default {
                 unread_count: conversation.unread_count,
                 time: last_message
                   ? new Date(last_message.created_at).toLocaleTimeString(
-                      "ar-EG",
+                      this.locale == "ar" ? "ar-EG" : "en-US",
                       {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -425,7 +424,7 @@ export default {
                 unread: false,
                 unreadCount: 0,
                 isActive: false,
-                pinned: false,
+                pinned: conversation.pinned,
                 label: "",
                 messages: [],
                 conversation_id: conversation.id,
