@@ -126,7 +126,6 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { getCurrentuser } from "@/plugins/services/authService";
 import {
   ref,
   onMounted,
@@ -154,10 +153,6 @@ export default {
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
       hasNewChanges: false,
-      currentUser: {
-        id: null,
-        role: null,
-      },
     };
   },
   setup() {
@@ -269,104 +264,11 @@ export default {
         // this.calculatePosition(buttonRef);
       }
     },
-    getUserInfo() {
-      getCurrentuser()
-        .then((response) => {
-          const user = response.data;
 
-          this.currentUser = {
-            id: user.id,
-            role:
-              user.roles && user.roles.length > 0 ? user.roles[0].name : null,
-            permissions: user.roles?.[0]?.permissions ?? [],
-          };
-
-          this.setupChannelListeners();
-        })
-        .catch((error) => {
-          console.error("Failed to get logged in user:", error);
-        });
-    },
-    setupChannelListeners() {
-      const { role, id } = this.currentUser;
-
-      if (!role || !id) return;
-      const eventListeners = [
-        { event: "DealEvent", handler: this.handleDealEvent },
-        { event: "TaskEvent", handler: this.handleTaskEvent },
-        { event: "CommentsEvent", handler: this.handleCommentEvent },
-        { event: "LogEvent", handler: this.handleLogEvent },
-        { event: "WhatsappEvent", handler: this.handleWhatsappEvent },
-      ];
-
-      eventListeners.forEach(({ event, handler }) => {
-        const channel = `${role.toLowerCase()}-${event
-          .replace("Event", "")
-          .toLowerCase()}-${id}`;
-        window.Echo.channel(channel).listen(`.${event}`, handler);
-      });
-
-      if (role === "super-admin") {
-        eventListeners.forEach(({ event, handler }) => {
-          const adminChannel = `super-admin-${event
-            .replace("Event", "")
-            .toLowerCase()}`;
-          window.Echo.channel(adminChannel).listen(`.${event}`, handler);
-        });
-      }
-
-      // Optional: Static test channel
-      window.Echo.channel("testing").listen(".DealEvent", this.handleDealEvent);
-    },
-
-    handleDealEvent(e) {
-      console.log("Deal event received:", e);
-      this.hasNewChanges = true;
-    },
-
-    handleTaskEvent(e) {
-      console.log("Task event received:", e);
-      this.hasNewChanges = true;
-    },
-
-    handleCommentEvent(e) {
-      console.log("Comment event received:", e);
-      this.hasNewChanges = true;
-    },
-
-    handleLogEvent(e) {
-      console.log("Log event received:", e);
-      this.hasNewChanges = true;
-    },
-
-    handleWhatsappEvent(e) {
-      console.log("WhatsApp event received:", e);
-      this.hasNewChanges = true;
-    },
     refreshPage() {
       window.location.reload();
     },
-    // calculatePosition(buttonRef) {
-    //   if (buttonRef) {
-    //     const rect = buttonRef.getBoundingClientRect();
-    //     if (this.activeMenu === "lang") {
-    //       this.listLangStyle = {
-    //         top: `${rect.bottom + 10}px`,
-    //         left: `${rect.left - 130}px`,
-    //       };
-    //     } else if (this.activeMenu === "profile") {
-    //       this.listProfileStyle = {
-    //         top: `${rect.bottom + 5}px`,
-    //         left: `${rect.left - 235}px`,
-    //       };
-    //     } else if (this.activeMenu === "notifications") {
-    //       this.listNotifiStyle = {
-    //         top: `${rect.bottom + 10}px`,
-    //         left: `${rect.left}px`,
-    //       };
-    //     }
-    //   }
-    // },
+
     handleClickOutside(event) {
       if (
         this.activeMenu &&
@@ -379,7 +281,6 @@ export default {
     },
   },
   mounted() {
-    this.getUserInfo();
     document.addEventListener("click", this.handleClickOutside);
     this.currentLanguage = localStorage.getItem("locale") || "en";
   },

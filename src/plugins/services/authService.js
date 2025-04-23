@@ -24,9 +24,6 @@ export const getUser = (filters) => {
   });
 };
 
-export function getCurrentuser() {
-  return axios.get("/getLoggedInUser");
-}
 // Create New User
 export const createUser = (formData) => {
   return axios.post("/users", formData, {
