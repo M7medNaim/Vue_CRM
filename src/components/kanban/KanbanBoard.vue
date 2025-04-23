@@ -58,9 +58,7 @@
               <template #item="{ element: deal }">
                 <CustomerCard
                   :deal="deal"
-                  @open-deal-data-card="
-                    openDealDataCard(deal.id, deal.stage_id)
-                  "
+                  @open-deal-data-card="openDealDataCard(deal.id, stage.id)"
                 />
               </template>
             </draggable>
