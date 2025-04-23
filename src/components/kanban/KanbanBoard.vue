@@ -55,10 +55,12 @@
               @change="handleDragChange($event, stage.id)"
               @scroll="handleDealContainerScroll($event, stage.id)"
             >
-              <template #item="{ element: deal, index }">
+              <template #item="{ element: deal }">
                 <CustomerCard
                   :deal="deal"
-                  @open-deal-data-card="openDealDataCard(deal.id, index)"
+                  @open-deal-data-card="
+                    openDealDataCard(deal.id, deal.stage_id)
+                  "
                 />
               </template>
             </draggable>
@@ -202,27 +204,15 @@ export default {
     };
 
     // Removed duplicate definition of openDealDataCard
-    const openDealDataCard = async (dealId, dealIndex) => {
+    const openDealDataCard = async (dealId, currentStageId = null) => {
       try {
+        addViewCount(dealId);
         const dealData = await showDeal(dealId);
         if (dealData.data) {
-          addViewCount(dealId);
           const deal = dealData.data.data;
-          const stages = ref(props.stages);
-          const stageIndex = stages.value.findIndex(
-            (stage) => stage.id === deal.stage_id
-          );
-          if (stageIndex === -1) {
-            console.error("Stage not found");
-            return;
-          }
-          console.log("deal data", {
-            deal_stage_id: deal.stage_id,
-          });
-          stages.value[stageIndex].deals[dealIndex].view_count += 1;
           const checkStageLoaded = () => {
             if (isTasksView.value) {
-              return props.stages.find((stage) => stage.id === deal.stage_id); //change to currentStageId
+              return props.stages.find((stage) => stage.id === currentStageId);
             } else {
               return props.stages.some((stage) => stage.id === deal.stage_id);
             }
