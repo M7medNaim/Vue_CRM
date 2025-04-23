@@ -337,11 +337,12 @@ export default {
       caption: "",
     };
   },
-  setup() {
+  setup(_, { emit }) {
     const showWarning = ref(true);
 
     const hideWarning = () => {
       showWarning.value = false;
+      emit("send-init-message");
     };
 
     return {
