@@ -55,6 +55,7 @@
       <div class="col-6 col-md-5 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <button
+            v-if="hasNewChanges"
             class="refresh border-0 d-flex align-items-center justify-content-center gap-2 text-white rounded-2 mt-1 me-2"
             style="padding: 5px 7px"
             @click="refreshPage"
@@ -125,6 +126,7 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { getCurrentuser } from "@/plugins/services/authService";
 import {
   ref,
   onMounted,
@@ -151,6 +153,11 @@ export default {
       name: Cookies.get("name") || "User",
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
+      hasNewChanges: false,
+      currentUser: {
+        id: null,
+        role: null,
+      },
     };
   },
   setup() {
@@ -262,6 +269,80 @@ export default {
         // this.calculatePosition(buttonRef);
       }
     },
+    getUserInfo() {
+      getCurrentuser()
+        .then((response) => {
+          const user = response.data;
+
+          this.currentUser = {
+            id: user.id,
+            role:
+              user.roles && user.roles.length > 0 ? user.roles[0].name : null,
+            permissions: user.roles?.[0]?.permissions ?? [],
+          };
+
+          this.setupChannelListeners();
+        })
+        .catch((error) => {
+          console.error("Failed to get logged in user:", error);
+        });
+    },
+    setupChannelListeners() {
+      const { role, id } = this.currentUser;
+
+      if (!role || !id) return;
+      const eventListeners = [
+        { event: "DealEvent", handler: this.handleDealEvent },
+        { event: "TaskEvent", handler: this.handleTaskEvent },
+        { event: "CommentsEvent", handler: this.handleCommentEvent },
+        { event: "LogEvent", handler: this.handleLogEvent },
+        { event: "WhatsappEvent", handler: this.handleWhatsappEvent },
+      ];
+
+      eventListeners.forEach(({ event, handler }) => {
+        const channel = `${role.toLowerCase()}-${event
+          .replace("Event", "")
+          .toLowerCase()}-${id}`;
+        window.Echo.channel(channel).listen(`.${event}`, handler);
+      });
+
+      if (role === "super-admin") {
+        eventListeners.forEach(({ event, handler }) => {
+          const adminChannel = `super-admin-${event
+            .replace("Event", "")
+            .toLowerCase()}`;
+          window.Echo.channel(adminChannel).listen(`.${event}`, handler);
+        });
+      }
+
+      // Optional: Static test channel
+      window.Echo.channel("testing").listen(".DealEvent", this.handleDealEvent);
+    },
+
+    handleDealEvent(e) {
+      console.log("Deal event received:", e);
+      this.hasNewChanges = true;
+    },
+
+    handleTaskEvent(e) {
+      console.log("Task event received:", e);
+      this.hasNewChanges = true;
+    },
+
+    handleCommentEvent(e) {
+      console.log("Comment event received:", e);
+      this.hasNewChanges = true;
+    },
+
+    handleLogEvent(e) {
+      console.log("Log event received:", e);
+      this.hasNewChanges = true;
+    },
+
+    handleWhatsappEvent(e) {
+      console.log("WhatsApp event received:", e);
+      this.hasNewChanges = true;
+    },
     refreshPage() {
       window.location.reload();
     },
@@ -298,6 +379,7 @@ export default {
     },
   },
   mounted() {
+    this.getUserInfo();
     document.addEventListener("click", this.handleClickOutside);
     this.currentLanguage = localStorage.getItem("locale") || "en";
   },
