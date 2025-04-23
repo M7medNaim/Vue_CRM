@@ -261,7 +261,6 @@ export default {
         this.activeMenu = null;
       } else {
         this.activeMenu = menu;
-        // this.calculatePosition(buttonRef);
       }
     },
 
@@ -288,10 +287,6 @@ export default {
     document.removeEventListener("click", this.handleClickOutside);
   },
   computed: {
-    // currentLanguage() {
-    //   const locale = localStorage.getItem("locale") || "en";
-    //   return locale === "ar" ? "العربية" : "English";
-    // },
     nextLanguage() {
       return this.currentLanguage === "ar" ? "en" : "ar";
     },

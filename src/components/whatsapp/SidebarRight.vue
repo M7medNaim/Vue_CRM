@@ -118,11 +118,11 @@
           </ul>
         </div>
       </div>
-
       <div class="message-input m-auto">
         <MessageInput
           @send-message="receiveMessage"
           @scroll-to-bottom="scrollToBottom"
+          @send-init-message="sendInit"
           :conversation-id="selectedChat.id"
         />
       </div>
@@ -133,7 +133,7 @@
 <script>
 import MessageInput from "@/components/whatsapp/MessageInput.vue";
 import ChatBubbles from "@/components/whatsapp/ChatBubbles.vue";
-import { sendMessage } from "@/plugins/services/authService";
+import { sendInitMessage, sendMessage } from "@/plugins/services/authService";
 export default {
   emits: [
     "mark-as-unread",
@@ -233,6 +233,17 @@ export default {
           console.error("Error sending message:", error);
           alert("Failed to send message. Please try again.");
         }
+      }
+    },
+    sendInit() {
+      if (this.selectedChat) {
+        sendInitMessage(this.selectedChat.id)
+          .then((response) => {
+            console.log("Init message sent:", response);
+          })
+          .catch((error) => {
+            console.error("Error sending init message:", error);
+          });
       }
     },
     scrollToBottom() {
