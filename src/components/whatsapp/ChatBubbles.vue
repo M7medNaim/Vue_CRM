@@ -10,6 +10,7 @@
     v-for="(message, index) in messages"
     :key="message.id"
     :class="message.type"
+    ref="messageElements"
   >
     <div
       class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
@@ -220,12 +221,39 @@ export default {
       if (!dateString) return "";
 
       const date = new Date(dateString);
-      return date.toLocaleDateString("ar-EG", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        timeZone: "UTC",
-      });
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const weekAgo = new Date(today);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+
+      // Convert dates to Turkish timezone
+      const options = { timeZone: "Europe/Istanbul" };
+      const dateInTurkey = new Date(date.toLocaleString("en-US", options));
+      const todayInTurkey = new Date(today.toLocaleString("en-US", options));
+      const yesterdayInTurkey = new Date(
+        yesterday.toLocaleString("en-US", options)
+      );
+
+      const isToday =
+        dateInTurkey.toDateString() === todayInTurkey.toDateString();
+      const isYesterday =
+        dateInTurkey.toDateString() === yesterdayInTurkey.toDateString();
+      const isWeekAgo =
+        dateInTurkey >= weekAgo && dateInTurkey < yesterdayInTurkey;
+
+      if (isToday) {
+        return "Today";
+      } else if (isYesterday) {
+        return "Yesterday";
+      } else if (isWeekAgo) {
+        return "Week ago";
+      } else {
+        const day = dateInTurkey.getDate().toString().padStart(2, "0");
+        const month = (dateInTurkey.getMonth() + 1).toString().padStart(2, "0");
+        const year = dateInTurkey.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
     },
     setupIntersectionObserver() {
       this.observer = new IntersectionObserver(
@@ -271,21 +299,28 @@ export default {
       const clientHeight = chatBox.clientHeight;
 
       this.showScrollButton = scrollTop + clientHeight < scrollHeight - 100;
+
       if (this.$refs.messageElements && this.$refs.messageElements.length) {
-        // const chatBox = this.$parent.$refs.chatBox;
-        // const scrollTop = chatBox.scrollTop;
         const elements = this.$refs.messageElements;
+        let visibleMessageIndex = 0;
 
         for (let i = 0; i < elements.length; i++) {
           const element = elements[i];
-          const elementTop = element.offsetTop;
+          const elementRect = element.getBoundingClientRect();
+          const elementTop = elementRect.top;
 
-          if (elementTop >= scrollTop) {
-            this.currentDate = this.formatMessageDate(
-              this.messages[i].created_at
-            );
+          // Check if the message is visible in the viewport
+          if (elementTop >= 0 && elementTop <= window.innerHeight) {
+            visibleMessageIndex = i;
             break;
           }
+        }
+
+        // Update current date based on visible message
+        if (this.messages[visibleMessageIndex]) {
+          this.currentDate = this.formatMessageDate(
+            this.messages[visibleMessageIndex].created_at
+          );
         }
       }
     },
@@ -316,11 +351,11 @@ export default {
   mounted() {
     const chatBox = this.$parent.$refs.chatBox;
     chatBox.addEventListener("scroll", this.handleScroll);
+
+    // Initial date setting
     if (this.messages.length > 0) {
       this.currentDate = this.formatMessageDate(this.messages[0].created_at);
     }
-
-    this.$parent.$refs.chatBox.addEventListener("scroll", this.handleScroll);
 
     this.setupIntersectionObserver();
   },
@@ -328,7 +363,6 @@ export default {
     if (this.observer) {
       this.observer.disconnect();
     }
-    this.$parent.$refs.chatBox.removeEventListener("scroll", this.handleScroll);
     const chatBox = this.$parent.$refs.chatBox;
     chatBox.removeEventListener("scroll", this.handleScroll);
   },

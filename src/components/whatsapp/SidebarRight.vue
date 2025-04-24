@@ -22,7 +22,7 @@
               <div class="">
                 <p class="my-auto text-white ps-1">{{ selectedChat.name }}</p>
                 <p class="my-auto text-white" style="font-size: 14px">
-                  {{ selectedChat.phone.phone }}
+                  {{ selectedChat.phone }}
                 </p>
               </div>
             </div>
@@ -204,11 +204,14 @@ export default {
             id: response.data?.data?.id || Date.now(),
             type: "msg-me",
             text: messageData.text_body,
-            time: new Date().toLocaleTimeString([], {
+            time: new Date().toLocaleTimeString("en-TR", {
               hour: "2-digit",
               minute: "2-digit",
+              timeZone: "Europe/Istanbul",
             }),
-            created_at: new Date().toISOString(),
+            created_at: new Date().toLocaleString("en-TR", {
+              timeZone: "Europe/Istanbul",
+            }),
             sender: "You",
             isCopied: false,
             conversation_id: this.selectedChat.id,
@@ -339,14 +342,14 @@ li {
 }
 
 .right-side .header {
-  height: 7.5vh;
+  height: 50px !important;
   width: 98%;
   margin: 0 auto;
   z-index: 1;
 }
 @media (max-width: 850px) {
   .right-side .header {
-    height: 5vh;
+    height: 50px !important;
   }
 }
 .right-side .header .user-details .user-imgBx {
