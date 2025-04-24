@@ -431,7 +431,6 @@ export default {
           ];
           this.isLoading = false;
         }
-        this.limit += 10;
         this.offset += 10;
         console.log("Updated chats:", this.chats);
         // Add logic here to load more chats or perform any desired action

@@ -194,13 +194,11 @@ export default {
     // upload data
     onMounted(async () => {
       window.addEventListener("contextmenu", handleRightClick);
+      updateTime();
+      interval = setInterval(updateTime, 1000);
     });
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
-    });
-    onMounted(() => {
-      updateTime();
-      interval = setInterval(updateTime, 1000);
     });
 
     onBeforeUnmount(() => {
