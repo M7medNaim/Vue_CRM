@@ -284,8 +284,9 @@ export default {
         formData.append("name", this.formData.username);
         formData.append("email", this.formData.email);
         formData.append("role", this.formData.role);
-        formData.append("reportTo", this.formData.reportTo);
-        formData.append("phoneNumber", this.formData.phoneNumber);
+        formData.append("parent_id", this.formData.reportTo.id);
+        formData.append("phone", this.formData.phoneNumber);
+        formData.append("color_code", this.formData.color);
         if (!this.isEditMode) {
           formData.append("password", this.formData.password);
           formData.append(
