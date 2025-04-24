@@ -126,7 +126,6 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
-import { getCurrentuser } from "@/plugins/services/authService";
 import {
   ref,
   onMounted,
@@ -270,24 +269,27 @@ export default {
       }
     },
     getUserInfo() {
-      getCurrentuser()
-        .then((response) => {
-          const user = response.data;
+      const userId = Cookies.get("user_id");
+      const userRole = Cookies.get("user_role");
 
-          this.currentUser = {
-            id: user.id,
-            role:
-              user.roles && user.roles.length > 0 ? user.roles[0].name : null,
-            permissions: user.roles?.[0]?.permissions ?? [],
-          };
-
-          this.setupChannelListeners();
-        })
-        .catch((error) => {
-          console.error("Failed to get logged in user:", error);
-        });
+      if (userId && userRole) {
+        this.currentUser = {
+          id: parseInt(userId),
+          role: userRole,
+          permissions: [],
+        };
+        console.log("Loaded user from cookies:", this.currentUser);
+        this.setupChannelListeners();
+      } else {
+        console.warn("User info not found in cookies.");
+      }
     },
     setupChannelListeners() {
+      console.log("Echo object:", window.Echo);
+      if (!window.Echo) {
+        console.log("Echo not initialized.");
+        return;
+      }
       const { role, id } = this.currentUser;
 
       if (!role || !id) return;
@@ -380,6 +382,12 @@ export default {
   },
   mounted() {
     this.getUserInfo();
+    const waitForEcho = setInterval(() => {
+      if (window.Echo) {
+        clearInterval(waitForEcho);
+        this.setupChannelListeners();
+      }
+    }, 300);
     document.addEventListener("click", this.handleClickOutside);
     this.currentLanguage = localStorage.getItem("locale") || "en";
   },
