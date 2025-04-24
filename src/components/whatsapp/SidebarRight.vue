@@ -236,8 +236,10 @@ export default {
       }
     },
     sendInit() {
+      console.log("Sending init message...");
       if (this.selectedChat) {
-        sendInitMessage(this.selectedChat.id)
+        console.log("Selected chat ID in sendInit:", this.selectedChat.id);
+        sendInitMessage(null, this.selectedChat.id)
           .then((response) => {
             console.log("Init message sent:", response);
           })
