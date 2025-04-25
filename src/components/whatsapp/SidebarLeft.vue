@@ -78,18 +78,8 @@
                 {{ chat.name }}
                 <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
-              <span class="time text-success fst-normal">{{
-                chat.time ??
-                (chat.last_message
-                  ? new Date(chat.last_message.created_at).toLocaleTimeString(
-                      [locale],
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      }
-                    )
-                  : "")
+              <span class="time text-success" style="font-size: 10px">{{
+                chat.time
               }}</span>
             </div>
             <div

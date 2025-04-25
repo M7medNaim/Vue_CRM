@@ -1,5 +1,20 @@
 <template>
   <div class="chat-input w-100 position-relative">
+    <!-- message warning -->
+    <div
+      v-if="showWarning"
+      class="message-warning bg-transparent text-dark position-absolute rounded-3 d-flex justify-content-between align-items-center"
+    >
+      <!-- <span class="me-2 w-100"
+            >
+          </span> -->
+      <button
+        class="btn btn-sm text-end btnConfirm w-100 text-center bg-success text-white"
+        @click="hideWarning"
+      >
+        You must click here in order to send messages.
+      </button>
+    </div>
     <div class="d-flex align-items-center gap-1">
       <div
         class="actions-group d-flex justify-content-center align-items-center gap-2 bg-success rounded-2 rounded-end-0"
@@ -127,21 +142,6 @@
         </div> -->
       </div>
       <div class="flex-grow-1 position-relative">
-        <!-- message warning -->
-        <div
-          v-if="showWarning"
-          class="message-warning bg-white text-dark position-absolute py-1 px-3 rounded-3 d-flex justify-content-between align-items-center"
-        >
-          <span class="me-2 w-100"
-            >to send the message you must click on the send button
-          </span>
-          <button
-            class="btn btn-sm text-end btnConfirm bg-success fw-bold text-white"
-            @click="hideWarning"
-          >
-            Confirm
-          </button>
-        </div>
         <!-- <div
           v-if="attachedImage"
           class="attached-image-preview position-absolute"
@@ -206,10 +206,10 @@
         </div>
         <div
           v-if="isProcessing"
-          class="attached-image-preview position-absolute"
+          class="attached-voice-preview position-absolute bg-white"
         >
-          <i class="fa-solid fa-spinner fa-spin fs-1 me-2"></i>
-          <span class="image-name">Processing voice message...</span>
+          <i class="fa-solid fa-spinner fa-spin fs-3 me-2 text-success"></i>
+          <span class="voice-name">Processing voice message...</span>
         </div>
         <!-- <input
           type="text"
@@ -242,7 +242,8 @@
         <!-- @keyup.enter="sendMessage" -->
         <span
           v-else
-          class="recording-container rounded-5 fs-6 border-0 py-2 px-4 w-100 bg-light"
+          class="recording-container rounded-0 fs-6 border-0 py-1 px-4 w-100 bg-light"
+          style="height: 40px"
         >
           <div class="recording-lines">
             <div class="line"></div>
@@ -316,10 +317,16 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 export default {
   name: "MessageInput",
+  props: {
+    conversationId: {
+      type: [String, Number],
+      default: null,
+    },
+  },
   data() {
     return {
       newMessage: "",
@@ -338,13 +345,20 @@ export default {
       caption: "",
     };
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const showWarning = ref(true);
 
     const hideWarning = () => {
       showWarning.value = false;
       emit("send-init-message");
     };
+
+    watch(
+      () => props.conversationId,
+      () => {
+        showWarning.value = true;
+      }
+    );
 
     return {
       showWarning,
@@ -608,16 +622,19 @@ export default {
   height: 40px;
 }
 .message-warning {
-  bottom: 80px;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80% !important;
+  width: 100% !important;
+  z-index: 1000;
 }
 .file-upload {
   cursor: pointer;
 }
 .btnConfirm {
   padding: 0px 10px;
+  height: 42px;
+  font-size: 16px;
 }
 .upload-icon:hover {
   cursor: pointer;
@@ -636,7 +653,18 @@ export default {
   transform: translateX(-50%);
   width: 90%;
 }
-
+.attached-voice-preview {
+  display: flex;
+  align-items: center;
+  bottom: -13px;
+  left: 8px;
+  width: fit-content;
+  z-index: 1000;
+}
+.voice-name {
+  flex-grow: 1;
+  font-size: 14px;
+}
 .preview-image {
   width: 50px;
   object-fit: cover;
