@@ -77,6 +77,7 @@
               multiple
               accept="*/*"
               @change="handleFileUpload"
+              ref="fileInput"
             />
           </form>
         </div>
@@ -416,16 +417,11 @@ export default {
       this.isClipboardVisible = false;
     },
     handleFileUpload(event) {
-      console.log("File changed:", this.attachedFile);
       this.isProcessing = true;
       const files = event.target.files;
       if (files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-
-          console.log("File Name:", file.name);
-          console.log("File size:", file.size, "بايت");
-          console.log("File Type:", file.type);
 
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
@@ -446,12 +442,16 @@ export default {
           }
         }
       } else {
-        console.log("لم يتم تحديد أي ملفات.");
+        console.log("No files were selected.");
       }
       this.isProcessing = false;
     },
     removeFile() {
       this.attachedFile = null;
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = null;
+        this.$refs.fileInput.dispatchEvent(new Event("change"));
+      }
       this.attachedFileName = "";
       this.attachedFileType = "";
       this.isModalOpen = false;
@@ -509,7 +509,6 @@ export default {
           };
 
           this.mediaRecorder.start();
-          console.log("Recording started...");
         })
         .catch((error) => {
           console.error("Error accessing microphone:", error);
@@ -521,7 +520,6 @@ export default {
         this.isProcessing = true;
         this.mediaRecorder.stop();
         this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-        console.log("Recording stopped and media tracks closed.");
         this.isRecording = false;
       }
     },
