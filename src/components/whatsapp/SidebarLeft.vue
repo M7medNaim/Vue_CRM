@@ -179,8 +179,8 @@ export default {
             phone: conversation.phone?.phone || "",
             rating: conversation.rating,
             unread_count: conversation.unread_count,
-            time: lastMessage
-              ? new Date(lastMessage.created_at).toLocaleTimeString("en-TR", {
+            time: last_message
+              ? new Date(last_message.created_at).toLocaleTimeString("en-TR", {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,

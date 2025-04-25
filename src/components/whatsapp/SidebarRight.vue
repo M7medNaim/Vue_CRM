@@ -134,6 +134,7 @@
 import MessageInput from "@/components/whatsapp/MessageInput.vue";
 import ChatBubbles from "@/components/whatsapp/ChatBubbles.vue";
 import { sendInitMessage, sendMessage } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
 export default {
   emits: [
     "mark-as-unread",
@@ -245,11 +246,12 @@ export default {
         sendInitMessage(null, this.selectedChat.id)
           .then((response) => {
             console.log("Init message sent:", response);
-            const user_name = localStorage.getItem("name");
+            const user_name = Cookies.get("name");
+            console.log("User name:", user_name);
             const newMessage = {
               id: response.data?.data?.id || Date.now(),
               type: "msg-me",
-              text: `Hello, I am ${user_name} from `,
+              text: `Hello, I am ${user_name} from Nokta Clinic.`,
               time: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",

@@ -416,6 +416,7 @@ export default {
       this.isClipboardVisible = false;
     },
     handleFileUpload(event) {
+      console.log("File changed:", this.attachedFile);
       this.isProcessing = true;
       const files = event.target.files;
       if (files.length > 0) {
