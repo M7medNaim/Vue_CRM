@@ -7,7 +7,7 @@
         <img
           v-show="user_role === 'sales'"
           class="me-2"
-          src="@/assets/Mediceva-Logo.png"
+          src="@/assets/new-nokta-logo.png"
           style="width: 40px; height: 40px"
           alt=""
         />
