@@ -242,6 +242,31 @@ export default {
         sendInitMessage(null, this.selectedChat.id)
           .then((response) => {
             console.log("Init message sent:", response);
+            const user_name = localStorage.getItem("name");
+            const newMessage = {
+              id: response.data?.data?.id || Date.now(),
+              type: "msg-me",
+              text: `Hello, I am ${user_name} from `,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              created_at: new Date().toISOString(),
+              sender: "You",
+              isCopied: false,
+              conversation_id: this.selectedChat.id,
+              isImage: false,
+              isDocument: false,
+              isAudio: false,
+              isVideo: false,
+              fileName: null,
+              fileUrl: null,
+              fileDownloadUrl: null,
+              fileMimeType: null,
+              status: "sent",
+            };
+            this.$emit("new-message", newMessage);
+            this.scrollToBottom();
           })
           .catch((error) => {
             console.error("Error sending init message:", error);
