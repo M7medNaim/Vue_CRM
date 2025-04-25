@@ -72,7 +72,9 @@
                 {{ chat.name }}
                 <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
-              <span class="time text-success fst-normal">{{ chat.time }}</span>
+              <span class="time text-success" style="font-size: 10px">{{
+                chat.time
+              }}</span>
             </div>
             <div
               class="msgs d-flex justify-content-between align-items-center text-secondary"

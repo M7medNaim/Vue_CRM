@@ -220,38 +220,23 @@ export default {
     formatMessageDate(dateString) {
       if (!dateString) return "";
 
-      const date = new Date(dateString);
+      const messageDate = new Date(dateString);
       const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const weekAgo = new Date(today);
-      weekAgo.setDate(weekAgo.getDate() - 7);
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
 
-      // Convert dates to Turkish timezone
-      const options = { timeZone: "Europe/Istanbul" };
-      const dateInTurkey = new Date(date.toLocaleString("en-US", options));
-      const todayInTurkey = new Date(today.toLocaleString("en-US", options));
-      const yesterdayInTurkey = new Date(
-        yesterday.toLocaleString("en-US", options)
-      );
+      messageDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      yesterday.setHours(0, 0, 0, 0);
 
-      const isToday =
-        dateInTurkey.toDateString() === todayInTurkey.toDateString();
-      const isYesterday =
-        dateInTurkey.toDateString() === yesterdayInTurkey.toDateString();
-      const isWeekAgo =
-        dateInTurkey >= weekAgo && dateInTurkey < yesterdayInTurkey;
-
-      if (isToday) {
+      if (messageDate.getTime() === today.getTime()) {
         return "Today";
-      } else if (isYesterday) {
+      } else if (messageDate.getTime() === yesterday.getTime()) {
         return "Yesterday";
-      } else if (isWeekAgo) {
-        return "Week ago";
       } else {
-        const day = dateInTurkey.getDate().toString().padStart(2, "0");
-        const month = (dateInTurkey.getMonth() + 1).toString().padStart(2, "0");
-        const year = dateInTurkey.getFullYear();
+        const day = messageDate.getDate().toString().padStart(2, "0");
+        const month = (messageDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = messageDate.getFullYear();
         return `${day}/${month}/${year}`;
       }
     },
@@ -300,28 +285,27 @@ export default {
 
       this.showScrollButton = scrollTop + clientHeight < scrollHeight - 100;
 
-      if (this.$refs.messageElements && this.$refs.messageElements.length) {
-        const elements = this.$refs.messageElements;
-        let visibleMessageIndex = 0;
+      const scrollPercentage =
+        (scrollTop / (scrollHeight - clientHeight)) * 100;
 
-        for (let i = 0; i < elements.length; i++) {
-          const element = elements[i];
-          const elementRect = element.getBoundingClientRect();
-          const elementTop = elementRect.top;
+      const totalMessages = this.messages.length;
+      let messageIndex;
 
-          // Check if the message is visible in the viewport
-          if (elementTop >= 0 && elementTop <= window.innerHeight) {
-            visibleMessageIndex = i;
-            break;
-          }
-        }
+      if (scrollTop === 0) {
+        messageIndex = 0;
+      } else if (scrollTop + clientHeight >= scrollHeight - 10) {
+        messageIndex = totalMessages - 1;
+      } else {
+        messageIndex = Math.floor(
+          (totalMessages - 1) * (scrollPercentage / 100)
+        );
+      }
 
-        // Update current date based on visible message
-        if (this.messages[visibleMessageIndex]) {
-          this.currentDate = this.formatMessageDate(
-            this.messages[visibleMessageIndex].created_at
-          );
-        }
+      // Update the date
+      if (this.messages[messageIndex]) {
+        this.currentDate = this.formatMessageDate(
+          this.messages[messageIndex].created_at
+        );
       }
     },
     openFullScreenImage(imageUrl) {
@@ -352,10 +336,13 @@ export default {
     const chatBox = this.$parent.$refs.chatBox;
     chatBox.addEventListener("scroll", this.handleScroll);
 
-    // Initial date setting
-    if (this.messages.length > 0) {
-      this.currentDate = this.formatMessageDate(this.messages[0].created_at);
-    }
+    this.$nextTick(() => {
+      if (this.messages.length > 0) {
+        this.currentDate = this.formatMessageDate(
+          this.messages[this.messages.length - 1].created_at
+        );
+      }
+    });
 
     this.setupIntersectionObserver();
   },
@@ -371,9 +358,7 @@ export default {
       handler() {
         this.$nextTick(() => {
           if (this.messages.length > 0) {
-            this.currentDate = this.formatMessageDate(
-              this.messages[0].created_at
-            );
+            this.handleScroll();
             this.setupIntersectionObserver();
           }
         });
