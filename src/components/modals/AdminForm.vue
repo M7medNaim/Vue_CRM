@@ -283,13 +283,10 @@ export default {
         const formData = new FormData();
         formData.append("name", this.formData.username);
         formData.append("email", this.formData.email);
-        const selectedRole = this.roles.find(
-          (role) => role.name === this.formData.role
-        );
-        formData.append("role", selectedRole ? selectedRole.id : "");
-
-        formData.append("reportTo", this.formData.reportTo);
-        formData.append("phoneNumber", this.formData.phoneNumber);
+        formData.append("role", this.formData.role);
+        formData.append("parent_id", this.formData.reportTo.id);
+        formData.append("phone", this.formData.phoneNumber);
+        formData.append("color_code", this.formData.color);
         if (!this.isEditMode) {
           formData.append("password", this.formData.password);
           formData.append(
@@ -303,6 +300,7 @@ export default {
 
         let response;
         if (this.isEditMode) {
+          console.log("fomrData", formData);
           response = await updateUser(this.formData.id, formData);
           this.toast.success(this.t("success.updateUser"), {
             timeout: 3000,

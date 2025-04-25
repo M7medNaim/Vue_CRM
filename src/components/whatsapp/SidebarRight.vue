@@ -118,11 +118,11 @@
           </ul>
         </div>
       </div>
-
       <div class="message-input m-auto">
         <MessageInput
           @send-message="receiveMessage"
           @scroll-to-bottom="scrollToBottom"
+          @send-init-message="sendInit"
           :conversation-id="selectedChat.id"
         />
       </div>
@@ -133,7 +133,8 @@
 <script>
 import MessageInput from "@/components/whatsapp/MessageInput.vue";
 import ChatBubbles from "@/components/whatsapp/ChatBubbles.vue";
-import { sendMessage } from "@/plugins/services/authService";
+import { sendInitMessage, sendMessage } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
 export default {
   emits: [
     "mark-as-unread",
@@ -236,6 +237,45 @@ export default {
           console.error("Error sending message:", error);
           alert("Failed to send message. Please try again.");
         }
+      }
+    },
+    sendInit() {
+      console.log("Sending init message...");
+      if (this.selectedChat) {
+        console.log("Selected chat ID in sendInit:", this.selectedChat.id);
+        sendInitMessage(null, this.selectedChat.id)
+          .then((response) => {
+            console.log("Init message sent:", response);
+            const user_name = Cookies.get("name");
+            console.log("User name:", user_name);
+            const newMessage = {
+              id: response.data?.data?.id || Date.now(),
+              type: "msg-me",
+              text: `Hello, I am ${user_name} from Nokta Clinic.`,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              created_at: new Date().toISOString(),
+              sender: "You",
+              isCopied: false,
+              conversation_id: this.selectedChat.id,
+              isImage: false,
+              isDocument: false,
+              isAudio: false,
+              isVideo: false,
+              fileName: null,
+              fileUrl: null,
+              fileDownloadUrl: null,
+              fileMimeType: null,
+              status: "sent",
+            };
+            this.$emit("new-message", newMessage);
+            this.scrollToBottom();
+          })
+          .catch((error) => {
+            console.error("Error sending init message:", error);
+          });
       }
     },
     scrollToBottom() {

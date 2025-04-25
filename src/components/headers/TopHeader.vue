@@ -55,6 +55,7 @@
       <div class="col-6 col-md-5 d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <button
+            v-if="hasNewChanges"
             class="refresh border-0 d-flex align-items-center justify-content-center gap-2 text-white rounded-2 mt-1 me-2"
             style="padding: 5px 7px"
             @click="refreshPage"
@@ -151,6 +152,7 @@ export default {
       name: Cookies.get("name") || "User",
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
+      hasNewChanges: false,
     };
   },
   setup() {
@@ -192,13 +194,11 @@ export default {
     // upload data
     onMounted(async () => {
       window.addEventListener("contextmenu", handleRightClick);
+      updateTime();
+      interval = setInterval(updateTime, 1000);
     });
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
-    });
-    onMounted(() => {
-      updateTime();
-      interval = setInterval(updateTime, 1000);
     });
 
     onBeforeUnmount(() => {
@@ -259,33 +259,13 @@ export default {
         this.activeMenu = null;
       } else {
         this.activeMenu = menu;
-        // this.calculatePosition(buttonRef);
       }
     },
+
     refreshPage() {
       window.location.reload();
     },
-    // calculatePosition(buttonRef) {
-    //   if (buttonRef) {
-    //     const rect = buttonRef.getBoundingClientRect();
-    //     if (this.activeMenu === "lang") {
-    //       this.listLangStyle = {
-    //         top: `${rect.bottom + 10}px`,
-    //         left: `${rect.left - 130}px`,
-    //       };
-    //     } else if (this.activeMenu === "profile") {
-    //       this.listProfileStyle = {
-    //         top: `${rect.bottom + 5}px`,
-    //         left: `${rect.left - 235}px`,
-    //       };
-    //     } else if (this.activeMenu === "notifications") {
-    //       this.listNotifiStyle = {
-    //         top: `${rect.bottom + 10}px`,
-    //         left: `${rect.left}px`,
-    //       };
-    //     }
-    //   }
-    // },
+
     handleClickOutside(event) {
       if (
         this.activeMenu &&
@@ -305,10 +285,6 @@ export default {
     document.removeEventListener("click", this.handleClickOutside);
   },
   computed: {
-    // currentLanguage() {
-    //   const locale = localStorage.getItem("locale") || "en";
-    //   return locale === "ar" ? "العربية" : "English";
-    // },
     nextLanguage() {
       return this.currentLanguage === "ar" ? "en" : "ar";
     },

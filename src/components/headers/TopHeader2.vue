@@ -47,6 +47,7 @@
                   :placeholder="t('crmlist-placeholder-search')"
                   @search="handleSearch"
                   v-model="searchText"
+                  id="dealSearchInput"
                 />
                 <button
                   class="btn btn-header py-2 btnFilterIpad"
@@ -367,8 +368,9 @@ export default {
       }
     };
     const handleSearch = () => {
+      console.log("Search triggered with text:", searchText.value);
       const search = searchText.value.trim();
-      emit("search", search);
+      emit("search-deals", search);
     };
     const updateMessage = (data) => {
       local_update_message.value = data;

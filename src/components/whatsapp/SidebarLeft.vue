@@ -9,23 +9,25 @@
             <div class="input-group w-100">
               <div class="position-relative flex-grow-1">
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search Here.."
                   v-model="searchQuery"
                   style="outline: none"
                   class="border border-1 border-white py-2 pe-5 ps-5 rounded-2 bg-body text-secondary w-100"
+                  id="whatsappSearchInput"
+                  @search="fetchConversations"
                 />
                 <i
                   class="fa-solid fa-magnifying-glass searchIcon fs-6 text-secondary position-absolute"
                 ></i>
-                <button
+                <!-- <button
                   v-if="searchQuery"
                   @click="clearSearch"
                   class="btnCloseSearch bg-transparent border-0 position-absolute text-danger d-flex justify-content-center align-items-center gap-1 fs-5"
                 >
                   <span>Close</span>
                   <i class="fa-solid fa-xmark"></i>
-                </button>
+                </button> -->
               </div>
               <button
                 type="button"
@@ -38,7 +40,11 @@
           </div>
         </div>
       </div>
-      <div class="chat-list position-relative overflow-auto">
+      <div
+        class="chat-list position-relative overflow-auto"
+        @scroll="handleScroll"
+        ref="chatList"
+      >
         <div
           class="chat d-flex justify-content-end align-items-center position-relative w-100 px-lg-3 pt-1 border-1 border-bottom border-secondary-subtle cursor-pointer"
           v-for="(chat, index) in chats"
@@ -79,7 +85,10 @@
             <div
               class="msgs d-flex justify-content-between align-items-center text-secondary"
             >
-              <p class="msg pe-2 text-truncate" :title="chat.message">
+              <p
+                class="msg pe-2 text-truncate"
+                :title="chat.message ?? chat.last_message?.text_body"
+              >
                 <span
                   :class="{
                     'text-secondary': !chat.isRead,
@@ -89,15 +98,17 @@
                 >
                   <i class="fa-solid fa-check fs-6"></i>
                 </span>
-                {{ truncatedMessage(chat.message) }}
+                {{
+                  truncatedMessage(chat.message ?? chat.last_message?.text_body)
+                }}
               </p>
               <div class="d-flex align-items-center gap-3">
                 <b
                   class="num"
-                  :class="{ unread: chat.unread }"
-                  v-if="chat.unread"
+                  :class="{ unread: chat.unread_count > 0 }"
+                  v-if="chat.unread_count > 0"
                 >
-                  {{ chat.unreadCount }}
+                  {{ chat.unread_count }}
                 </b>
                 <i
                   v-if="chat.pinned"
@@ -120,6 +131,7 @@ import FilterModalConv from "@/components/whatsapp/FilterModalConv.vue";
 import {
   getconversations,
   getMessageConv,
+  getMoreConversations,
 } from "@/plugins/services/authService";
 export default {
   name: "SidebarLeft",
@@ -133,40 +145,20 @@ export default {
       selectedChat: null,
       newLabel: "",
       modalInstance: null,
+      limit: 10,
+      offset: 0,
+      total: 0,
+      isLoading: false,
+      locale: localStorage.getItem("locale") || "en",
     };
-  },
-  computed: {
-    filteredChats() {
-      if (!this.searchQuery) {
-        return this.chats.slice().sort((a, b) => {
-          if (a.pinned && !b.pinned) return -1;
-          if (!a.pinned && b.pinned) return 1;
-          return 0;
-        });
-      }
-
-      return this.chats
-        .filter((chat) => {
-          const lowerQuery = this.searchQuery.toLowerCase();
-          return (
-            chat.name.toLowerCase().includes(lowerQuery) ||
-            chat.message.toLowerCase().includes(lowerQuery)
-          );
-        })
-        .sort((a, b) => {
-          if (a.pinned && !b.pinned) return -1;
-          if (!a.pinned && b.pinned) return 1;
-          return 0;
-        });
-    },
   },
   methods: {
     async fetchConversations() {
       try {
-        const response = await getconversations();
-
-        this.chats = response.data.data.map((conversation) => {
-          const lastMessage = conversation.last_message;
+        const searchText = this.searchQuery;
+        const response = await getconversations(searchText);
+        this.chats = await response.data.data.map((conversation) => {
+          const last_message = conversation.last_message;
           return {
             id: conversation.id,
             created_at: conversation.created_at,
@@ -177,28 +169,31 @@ export default {
             phone: conversation.phone?.phone || "",
             rating: conversation.rating,
             unread_count: conversation.unread_count,
-            time: lastMessage
-              ? new Date(lastMessage.created_at).toLocaleTimeString("en-TR", {
+            time: last_message
+              ? new Date(last_message.created_at).toLocaleTimeString("en-TR", {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,
                   timeZone: "Europe/Istanbul",
                 })
               : "",
-            created_at_last_message: lastMessage?.created_at || "",
-            message: lastMessage?.text_body || "",
-            sender: lastMessage?.conversation_member?.name || "",
+            created_at_last_message: last_message?.created_at || "",
+            message: last_message?.text_body || "",
+            sender: last_message?.conversation_member?.name || "",
             unread: false,
             unreadCount: 0,
             isActive: false,
-            pinned: false,
+            pinned: conversation.pinned,
             label: "",
             messages: [],
             conversation_id: conversation.id,
           };
         });
+        this.total = response.data.meta.total;
+        this.offset = this.chats.length;
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.log("No conversations available:", error);
+        this.chats = [];
       }
     },
     async fetchMessages(conversationId, chatObj) {
@@ -229,16 +224,14 @@ export default {
     },
 
     async openChat(chat, index) {
-      console.log("Open chat with chat and index:", chat, index);
       try {
         if (index >= 0 && index < this.chats.length) {
-          console.log("Opening chat:", chat);
-          console.log("Chat ID:", chat.id);
           this.chats.forEach((item) => {
             item.isActive = false;
           });
 
           this.chats[index].isActive = true;
+          this.chats[index].unread_count = 0;
 
           this.$emit("select-chat", {
             ...chat,
@@ -320,9 +313,9 @@ export default {
           img:
             chat.img || require("@/assets/whatsappImage/default-userImage.jpg"),
           name: chat.name || chat.contact?.name,
-          time: chat.lastMessage
-            ? new Date(chat.lastMessage.created_at).toLocaleTimeString(
-                "ar-EG",
+          time: chat.last_message
+            ? new Date(chat.last_message.created_at).toLocaleTimeString(
+                this.locale == "ar" ? "ar-EG" : "en-US",
                 {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -331,16 +324,17 @@ export default {
                 }
               )
             : "",
-          created_at_last_message: chat.lastMessage?.created_at || "",
-          message: chat.lastMessage?.text_body || "",
-          sender: chat.lastMessage?.conversation_member?.name || "",
+          created_at_last_message: chat.last_message?.created_at || "",
+          message: chat.last_message?.text_body || "",
+          sender: chat.last_message?.conversation_member?.name || "",
           unread: false,
           unreadCount: 0,
           isActive: false,
-          pinned: false,
+          pinned: chat.pinned,
           label: "",
           messages: [],
           conversation_id: chat.id,
+          phone: chat.phone.phone,
         };
         console.log("Processed chat:", processed_chat);
         this.chats.push(processed_chat);
@@ -359,6 +353,62 @@ export default {
         modal.show();
       } else {
         console.error("Modal element not found in DOM.");
+      }
+    },
+    async handleScroll() {
+      const chatList = this.$refs.chatList;
+      if (
+        chatList.scrollTop + chatList.clientHeight + 1 >=
+          chatList.scrollHeight &&
+        this.chats.length < this.total &&
+        !this.isLoading
+      ) {
+        this.isLoading = true;
+        const response = await getMoreConversations(this.offset, this.limit);
+        if (response.data && response.data.data) {
+          this.chats = [
+            ...this.chats,
+            ...response.data.data.map((conversation) => {
+              const last_message = conversation.last_message;
+              return {
+                id: conversation.id,
+                created_at: conversation.created_at,
+                img:
+                  conversation.img ||
+                  require("@/assets/whatsappImage/default-userImage.jpg"),
+                name: conversation.name || conversation.contact?.name,
+                phone: conversation.phone.phone,
+                rating: conversation.rating,
+                unread_count: conversation.unread_count,
+                time: last_message
+                  ? new Date(last_message.created_at).toLocaleTimeString(
+                      this.locale == "ar" ? "ar-EG" : "en-US",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                        timeZone: "UTC",
+                      }
+                    )
+                  : "",
+                created_at_last_message: last_message?.created_at || "",
+                message: last_message?.text_body || "",
+                sender: last_message?.conversation_member?.name || "",
+                unread: false,
+                unreadCount: 0,
+                isActive: false,
+                pinned: conversation.pinned,
+                label: "",
+                messages: [],
+                conversation_id: conversation.id,
+              };
+            }),
+          ];
+          this.isLoading = false;
+        }
+        this.offset += 10;
+        console.log("Updated chats:", this.chats);
+        // Add logic here to load more chats or perform any desired action
       }
     },
   },

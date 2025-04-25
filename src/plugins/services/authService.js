@@ -23,6 +23,7 @@ export const getUser = (filters) => {
     },
   });
 };
+
 // Create New User
 export const createUser = (formData) => {
   return axios.post("/users", formData, {
@@ -108,29 +109,9 @@ export const bulkDeleteDeals = async (ids) => {
     data: { ids },
   });
 };
-// export const updateDealsStage = async (ids, stage) => {
-//   return await axios.post("/deals/update-stage", { ids, stage });
-// };
-
-// export const updateDealsSupervisor = async (ids, supervisor) => {
-//   return await axios.post("/deals/update-supervisor", { ids, supervisor });
-// };
-
-// export const updateDealsRepresentative = async (ids, representative) => {
-//   return await axios.post("/deals/update-representative", {
-//     ids,
-//     representative,
-//   });
-// };
-
-// export const updateDealsSource = async (ids, source) => {
-//   return await axios.post("/deals/update-source", { ids, source });
-// };
 
 export const deleteDeals = (ids) => axios.delete(`/deals/${ids}`);
-// export const updateDealStage = async (dealId, newStageId) =>{
-//   return await axios.put(`/deals/${dealId}`, stage_id: newStageId);
-// }
+
 export const updateDealStage = (dealId, stageId) => {
   return axios.patch(`/deals/${dealId}`, {
     stage_id: stageId,
@@ -145,11 +126,8 @@ export const getStages = () => axios.get("/stages");
 // ------------------------------------------------------------
 // Contacts
 // get all contacts
-// export const getContacts = () => axios.get("/contacts");
 export const getContacts = async (params = {}) => {
   const token = Cookies.get("authToken");
-  // console.log("Fetching contacts with params:", params);
-
   return axios.get("/contacts", {
     params: {
       page: params.page || 1,
@@ -205,25 +183,12 @@ export const saveUserLanguage = async (locale) => {
   });
 };
 
-// export const getDocuments = async () => {
-//   const token = Cookies.get("authToken");
-//   return await axios.get("/documents", {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   });
-// };
-
 export const getDocuments = async () => {
   return await axios.get("/documents");
 };
 export const getAllUsers = async () => {
   return await axios.get("/users/all");
 };
-
-// export const getDocumentsFolder = async () => {
-//   return await axios.get("/documents/folderApi");
-// };
 
 export const createDocuments = async (formData) => {
   try {
@@ -264,7 +229,6 @@ export const uploadFiles = async (formData) => {
 };
 //getDealsKanban
 export const getDealsKanban = (searchText) => {
-  console.log("searchText", searchText);
   return axios.get("/kanban/deals", {
     params: {
       search: searchText ?? "",
@@ -275,7 +239,10 @@ export const getTasksKanban = async () => {
   return await axios.get("/kanban/tasks");
 };
 // Get Conversations
-export const getconversations = () => axios.get("/whatsapp");
+export const getconversations = (search, rating, stage) =>
+  axios.get("/whatsapp", {
+    params: { search: search, filters: { rating: rating, stage: stage } },
+  });
 // Get Conversation by contact id
 export const fetchConversationByDealId = (id) =>
   axios.get(`/whatsapp/conversation/${id}`);
@@ -290,9 +257,6 @@ export const getMessageConv = async (id) => {
   return await axios.get(`/whatsapp/${id}`);
 };
 // send message
-// export const sendMessage = (formData) => {
-//   return axios.post("/whatsapp/send", formData);
-// };
 export const sendMessage = (messageData) => {
   const formData = new FormData();
   if (messageData.text_body) {
@@ -314,8 +278,26 @@ export const sendMessage = (messageData) => {
   });
 };
 
-export const sendInitMessage = (id) => {
-  return axios.post("/whatsapp/send-init", { deal_id: id });
+export const sendInitMessage = (deal_id, conversation_id) => {
+  return axios.post("/whatsapp/send-init", {
+    deal_id: deal_id,
+    conversation_id: conversation_id,
+  });
+};
+
+export const changePinStatus = (id) => {
+  return axios.post(`/whatsapp/conversation/pin/${id}`);
+};
+
+export const getMoreConversations = (offset, limit, filters, search) => {
+  return axios.get("/whatsapp/conversations/more", {
+    params: {
+      offset: offset,
+      limit: limit,
+      filters: filters,
+      search: search,
+    },
+  });
 };
 // create new comment
 export const createComment = (formData) => {
@@ -331,7 +313,6 @@ export const updateTask = async (id, formData) => {
 // update deal
 export const updateDeal = (dealId, formData) =>
   axios.put(`/deals/${dealId}`, formData);
-
 export const importDeals = (formData) => {
   return axios.post("/deals/import", formData, {
     headers: {
@@ -339,7 +320,9 @@ export const importDeals = (formData) => {
     },
   });
 };
-
 export const getStagesTasks = async () => {
   return await axios.get("/stages/tasks");
+};
+export const addViewCount = (dealId) => {
+  return axios.post(`/deals/add-view-count/${dealId}`);
 };

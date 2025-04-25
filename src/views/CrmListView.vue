@@ -342,15 +342,15 @@ const fetchData = async () => {
 
       return {
         id: deal.id,
-        name: deal.name || "unassigned",
+        name: deal.name || "Empty",
         // phone1: deal.contact.phones?.[0] || "",
         // phone2: deal.contact.phones?.[1] || "",
         phone: deal.phone,
-        note: deal.note || "unassigned",
+        note: deal.note || "Empty",
         created_at: deal.created_at.split("T")[0],
-        stage: matchedStage ? matchedStage.name : "null",
+        stage: matchedStage ? matchedStage.name : "Not set",
         responsible: deal.responsible_user?.name || "Not Assigned",
-        source: matchedSource ? matchedSource.name : "Null",
+        source: matchedSource ? matchedSource.name : "Not set",
       };
     });
 
@@ -406,23 +406,23 @@ const handleShowDeal = async (dealId) => {
       (source) => source.id === deal.source_id
     );
     dealData.value = {
-      name: deal.contact?.name || "unassigned",
-      nickname: deal.contact?.nickname || "unassigned",
-      address: deal.contact?.address || "unassigned",
-      country: deal.contact?.country || "unassigned",
-      email: deal.contact?.email || "unassigned",
-      phone: deal.contact?.phones?.[0]?.phone || "unassigned",
-      note: deal.note || "unassigned",
-      rating: deal.rating || "unassigned",
+      name: deal.contact?.name || "Empty",
+      nickname: deal.contact?.nickname || "Empty",
+      address: deal.contact?.address || "Empty",
+      country: deal.contact?.country || "Empty",
+      email: deal.contact?.email || "Empty",
+      phone: deal.contact?.phones?.[0]?.phone || "Empty",
+      note: deal.note || "Empty",
+      rating: deal.rating || "Empty",
       created_at: deal.created_at
         ? new Date(deal.created_at).toISOString().split("T")[0]
         : "",
       updated_at: deal.updated_at
         ? new Date(deal.updated_at).toISOString().split("T")[0]
         : "",
-      stage_name: matchedStage?.name || "Unassigned",
-      source_name: matchedSource?.name || "Unassigned",
-      responsablePerson: deal.responsible_user.name || "unassigned",
+      stage_name: matchedStage?.name || "Empty",
+      source_name: matchedSource?.name || "Empty",
+      responsablePerson: deal.responsible_user.name || "Not assigned",
     };
 
     showDataModal.value?.openShowData();
@@ -762,8 +762,8 @@ const addNewDeal = (newDeal) => {
       email: newDeal.email,
       note: newDeal.note,
       created_at: new Date().toISOString().split("T")[0],
-      source: matchedSource ? matchedSource.name : "Null",
-      stage: matchedStage ? matchedStage.name : "null",
+      source: matchedSource ? matchedSource.name : "Not set",
+      stage: matchedStage ? matchedStage.name : "Not set",
       responsible: newDeal.responsible_user?.name || "Not Assigned",
       rating: newDeal.rating,
     };

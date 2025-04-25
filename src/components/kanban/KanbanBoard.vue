@@ -98,6 +98,7 @@
     :comments="comments"
     :tasks="tasks"
     @open-whatsapp-modal="openWhatsappModal"
+    @stage-change="changeDealStage"
   />
   <!-- selectedDeal -->
   <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
@@ -114,6 +115,7 @@ import {
   updateDealStage,
   showDeal,
   fetchAdditionalDealsByStageId,
+  addViewCount,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -199,8 +201,10 @@ export default {
       }
     };
 
+    // Removed duplicate definition of openDealDataCard
     const openDealDataCard = async (dealId, currentStageId = null) => {
       try {
+        addViewCount(dealId);
         const dealData = await showDeal(dealId);
         if (dealData.data) {
           const deal = dealData.data.data;
@@ -355,7 +359,6 @@ export default {
     const dealUpdateEvent = (data, message) => {
       let stages = ref(props.stages);
       const id = data.id;
-      const updatedData = data.updated_data;
       const stageIndex = stages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );
@@ -372,39 +375,49 @@ export default {
       if (dealIndex === -1) {
         const deal = {
           id: data.id,
-          name: updatedData.name,
-          phone: updatedData.phone,
-          description: updatedData.description,
-          stage_id: updatedData.stage_id,
-          responsible_user: updatedData.responsible_user,
-          created_at: updatedData.created_at,
-          updated_at: updatedData.updated_at,
-          source_id: updatedData.source_id,
+          name: data.name,
+          phone: data.phone,
+          description: data.description,
+          stage_id: data.stage_id,
+          responsible_user: data.responsible_user,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          source_id: data.source_id,
+          view_count: data.view_count,
+          unread_count: data.unread_count,
         };
         stages.value[stageIndex].deals.unshift(deal);
+        stages.value[stageIndex].deal_count += 1;
         return;
       }
 
       let deal = stages.value[stageIndex].deals[dealIndex];
-      deal.name = updatedData.name ?? deal.name;
-      deal.description = updatedData.description ?? deal.description;
-      deal.stage_id = updatedData.stage_id ?? deal.stage_id;
-      deal.responsible_user =
-        updatedData.responsible_user ?? deal.responsible_user;
-      deal.updated_at = updatedData.updated_at;
+      deal.name = data.name ?? deal.name;
+      deal.description = data.description ?? deal.description;
+      deal.stage_id = data.stage_id ?? deal.stage_id;
+      deal.responsible_user = data.responsible_user ?? deal.responsible_user;
+      deal.updated_at = data.updated_at;
+      deal.source_id = data.source_id ?? deal.source_id;
+      deal.view_count = data.view_count ?? deal.view_count;
+      deal.unread_count = data.unread_count ?? deal.unread_count;
+      deal.phone = data.phone ?? deal.phone;
 
       const newStageIndex = stages.value.findIndex(
-        (stage) => stage.id == updatedData.stage_id
+        (stage) => stage.id == data.stage_id
       );
 
       // Update the deal in the UI
       if (newStageIndex === stageIndex) {
-        stages.value[stageIndex].deals[dealIndex] = deal;
+        stages.value[stageIndex].deals.splice(dealIndex, 1);
+        stages.value[newStageIndex].deals.unshift(deal);
       } else if (newStageIndex !== -1) {
         stages.value[newStageIndex].deals.unshift(deal);
+        stages.value[newStageIndex].deal_count += 1;
         stages.value[stageIndex].deals.splice(dealIndex, 1);
+        stages.value[stageIndex].deal_count -= 1;
       } else {
         stages.value[stageIndex].deals.splice(dealIndex, 1);
+        stages.value[stageIndex].deal_count -= 1;
       }
       toast.success(message);
     };
@@ -481,6 +494,10 @@ export default {
     };
 
     const handleWhatsappMessageCreateEvent = (data) => {
+      console.log("handleWhatsappMessageCreateEvent", data);
+      if (data.status == "sent") {
+        IncreaseUnreadCount(data.deal_id);
+      }
       emit("receive-whatsapp-message", data);
     };
 
@@ -488,8 +505,9 @@ export default {
       emit("update-whatsapp-message", data);
     };
 
-    const openWhatsappModal = (conversation) => {
+    const openWhatsappModal = (conversation, id) => {
       emit("open-whatsapp-modal", conversation);
+      DecreaseUnreadCount(id);
     };
     const getContrastColor = (hexColor) => {
       const r = parseInt(hexColor.slice(1, 3), 16);
@@ -527,6 +545,36 @@ export default {
             reachedBottom.value = false;
           });
       }
+    };
+
+    const IncreaseUnreadCount = (dealId) => {
+      console.log("IncreaseUnreadCount", dealId);
+      const stages = ref(props.stages);
+      for (let i = 0; i < stages.value.length; i++) {
+        const stage = stages.value[i];
+        const dealIndex = stage.deals.findIndex((d) => d.id === dealId);
+        if (dealIndex !== -1) {
+          console.log("dealIndex", dealIndex);
+          stage.deals[dealIndex].unread_count += 1;
+          break;
+        }
+      }
+    };
+
+    const DecreaseUnreadCount = (dealId) => {
+      const stages = ref(props.stages);
+      for (let i = 0; i < stages.value.length; i++) {
+        const stage = stages.value[i];
+        const dealIndex = stage.deals.findIndex((d) => d.id === dealId);
+        if (dealIndex !== -1) {
+          stage.deals[dealIndex].unread_count = 0;
+          break;
+        }
+      }
+    };
+
+    const changeDealStage = async (dealId, newStageIndex, oldStageId) => {
+      emit("change-deal-stage", dealId, newStageIndex, oldStageId);
     };
 
     onMounted(async () => {
@@ -628,6 +676,7 @@ export default {
       getContrastColor,
       handleDealContainerScroll,
       reachedBottom,
+      changeDealStage,
     };
   },
 };

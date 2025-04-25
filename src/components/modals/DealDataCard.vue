@@ -719,6 +719,7 @@ export default {
 
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.data) {
+          emit("stage-change", props.deal.id, stageIndex, props.deal.stage_id);
           toast.success(`${t("success.stageChanged")} ${stageName}`, {
             timeout: 3000,
           });
@@ -948,12 +949,16 @@ export default {
           console.warn("Modal element not found in DOM.");
         }
         // emit("open-whatsapp-modal", selected_conversation.value);
-        emit("open-whatsapp-modal", {
-          ...selected_conversation.value,
-          img:
-            selected_conversation.value.img ||
-            require("@/assets/whatsappImage/default-userImage.jpg"),
-        });
+        emit(
+          "open-whatsapp-modal",
+          {
+            ...selected_conversation.value,
+            img:
+              selected_conversation.value.img ||
+              require("@/assets/whatsappImage/default-userImage.jpg"),
+          },
+          id
+        );
       } catch (error) {
         console.error("Error opening WhatsApp modal:", error);
         toast.error(t("error.openWhatsappModal"), {

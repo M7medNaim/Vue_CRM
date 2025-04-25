@@ -92,6 +92,7 @@
               multiple
               accept="*/*"
               @change="handleFileUpload"
+              ref="fileInput"
             />
           </form>
         </div>
@@ -344,11 +345,12 @@ export default {
       caption: "",
     };
   },
-  setup(props) {
+  setup(props, { emit }) {
     const showWarning = ref(true);
 
     const hideWarning = () => {
       showWarning.value = false;
+      emit("send-init-message");
     };
 
     watch(
@@ -435,10 +437,6 @@ export default {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
 
-          console.log("File Name:", file.name);
-          console.log("File size:", file.size, "بايت");
-          console.log("File Type:", file.type);
-
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -458,12 +456,16 @@ export default {
           }
         }
       } else {
-        console.log("لم يتم تحديد أي ملفات.");
+        console.log("No files were selected.");
       }
       this.isProcessing = false;
     },
     removeFile() {
       this.attachedFile = null;
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = null;
+        this.$refs.fileInput.dispatchEvent(new Event("change"));
+      }
       this.attachedFileName = "";
       this.attachedFileType = "";
       this.isModalOpen = false;
@@ -511,14 +513,16 @@ export default {
             const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
             const formattedAudio = await this.formatAudio(audioBlob);
             this.attachedFile = formattedAudio;
+            this.attachedFilePreview = URL.createObjectURL(formattedAudio);
+            this.attachedFileType = "file";
             const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
             this.attachedFileName = `voice_message_${timestamp}.ogg`;
+            this.isModalOpen = true;
             audioChunks = [];
             this.isProcessing = false;
           };
 
           this.mediaRecorder.start();
-          console.log("Recording started...");
         })
         .catch((error) => {
           console.error("Error accessing microphone:", error);
@@ -530,7 +534,6 @@ export default {
         this.isProcessing = true;
         this.mediaRecorder.stop();
         this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-        console.log("Recording stopped and media tracks closed.");
         this.isRecording = false;
       }
     },

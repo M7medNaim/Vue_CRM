@@ -9,8 +9,11 @@
           : '',
     }"
   >
-    <div class="unread_count px-1 bg-danger rounded-circle position-absolute">
-      <span class="text-white">10</span>
+    <div
+      v-if="deal.unread_count && deal.unread_count > 0"
+      class="unread_count px-2 bg-danger rounded position-absolute mb-2 me-1"
+    >
+      <span class="text-white">{{ deal.unread_count }}</span>
     </div>
     <div
       class="row"
@@ -22,7 +25,7 @@
       >
         <span class="fw-semibold fs-7">{{ deal.name }}</span>
         <span class="text-secondary fs-7">
-          6 <i class="fa-regular fa-eye"></i>
+          {{ deal.view_count }} <i class="fa-regular fa-eye"></i>
         </span>
       </div>
 
@@ -134,20 +137,6 @@ export default {
     const openDealDataCard = () => {
       emit("open-deal-data-card", props.deal.id);
     };
-    // onMounted(async () => {
-    //   try {
-    //     const response = await getUser(props.deal.responsible_user);
-    //     console.log("Response:", response);
-    //     if (!response.ok) throw new Error("Failed to fetch user");
-    //     const userData = await response.data.data;
-    //     console.log("User Data:", userData);
-    //     responsibleUserName.value = userData.name;
-    //   } catch (error) {
-    //     responsibleUserName.value = "غير معروف";
-    //     console.error("Error fetching user:", error);
-    //   }
-    // });
-    // responsibleUserName
     const getUserColor = (userId) => {
       return localStorage.getItem(`user_${userId}_color`) || "#292929";
     };

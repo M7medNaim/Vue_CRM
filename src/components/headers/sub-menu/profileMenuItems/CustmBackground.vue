@@ -35,7 +35,7 @@
               <div
                 class="background-thumbnail position-relative"
                 :style="{ backgroundImage: `url(${image.url})` }"
-                @click="selectBackground(image.url, image.id)"
+                @click="selectBackground(image.id)"
               >
                 <div class="selected-overlay" v-if="isSelected(image.url)">
                   <i class="fas fa-check"></i>
@@ -65,6 +65,7 @@ import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
+  getBackgroundId,
   getBackgroundImages,
   saveBackgroundId,
 } from "@/plugins/services/authService";
@@ -109,13 +110,20 @@ export default {
       document.body.classList.remove("modal-open");
     };
 
-    const selectBackground = async (imageUrl, imageId) => {
+    const selectBackground = async (imageId) => {
       try {
-        document.body.style.backgroundImage = `url(${imageUrl})`;
+        const bg_url = await getBackgroundId(imageId);
+        if (!bg_url) {
+          toast.error(t("backgroundPicker1.error"), {
+            timeout: 3000,
+          });
+          return;
+        }
+        document.body.style.backgroundImage = `url(${bg_url.data.url})`;
         document.body.style.backgroundSize = "cover";
         document.body.style.backgroundPosition = "center";
 
-        localStorage.setItem("backgroundImage", imageUrl);
+        localStorage.setItem("backgroundImage", bg_url.data.url);
 
         const response = await saveBackgroundId(imageId);
         console.log("API response:", response);
