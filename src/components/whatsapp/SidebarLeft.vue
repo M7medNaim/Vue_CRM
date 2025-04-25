@@ -5,16 +5,6 @@
         class="inputSearch w-100 text-center position-relative d-flex justify-content-center align-items-center"
       >
         <div class="row d-flex justify-content-start align-items-center w-100">
-          <div class="col-2 col-lg-1">
-            <!-- <button
-              class="bg-transparent border-0"
-              type="button"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <i class="fa fa-window-restore fs-5 pt-2 ps-1 text-black-50"></i>
-            </button> -->
-          </div>
           <div class="col-12">
             <div class="input-group w-100">
               <div class="position-relative flex-grow-1">
@@ -189,15 +179,13 @@ export default {
             phone: conversation.phone?.phone || "",
             rating: conversation.rating,
             unread_count: conversation.unread_count,
-            time: last_message
-              ? new Date(last_message.created_at).toLocaleTimeString(
-                  this.locale == "ar" ? "ar-EG" : "en-US",
-                  {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  }
-                )
+            time: lastMessage
+              ? new Date(lastMessage.created_at).toLocaleTimeString("en-TR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                  timeZone: "Europe/Istanbul",
+                })
               : "",
             created_at_last_message: last_message?.created_at || "",
             message: last_message?.text_body || "",
@@ -227,15 +215,12 @@ export default {
             id: msg.id,
             type: msg.status === "sent" ? "msg-me" : "msg-frnd",
             text: msg.text_body,
-            time: new Date(msg.created_at).toLocaleTimeString(
-              this.locale == "ar" ? "ar-EG" : "en-US",
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-                timeZone: "UTC",
-              }
-            ),
+            time: new Date(msg.created_at).toLocaleTimeString("en-TR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "Europe/Istanbul",
+            }),
             created_at: msg.created_at,
             sender: msg.conversation_member?.name || "",
             isCopied: false,
@@ -448,7 +433,7 @@ export default {
 
 <style scoped>
 .left-side .inputSearch {
-  height: 8vh;
+  height: 70px !important;
 }
 .left-side .inputSearch .searchIcon {
   left: 4%;

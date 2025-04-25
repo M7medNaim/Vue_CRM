@@ -132,13 +132,12 @@ export default {
                 ? "msg-me"
                 : "msg-frnd",
             text: msg.text_body,
-            time: new Date(msg.created_at).toLocaleTimeString(
-              localStorage.getItem("locale") || "en",
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            ),
+            time: new Date(msg.created_at).toLocaleTimeString("en-TR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "Europe/Istanbul",
+            }),
             created_at: msg.created_at,
             sender: msg.conversation_member?.name || "",
             isCopied: false,
