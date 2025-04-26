@@ -17,6 +17,7 @@ export const PERMISSIONS = {
   READ_TASK: "read-task",
   VIEW_SIDEBAR: "view-sidebar",
   EDIT_STAGE: "edit-stage",
+  // CREATE_FOLDER: "create-folder",
 };
 
 export const usePermissionStore = defineStore("permissions", {
