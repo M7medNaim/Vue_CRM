@@ -8,7 +8,10 @@
             v-for="stage in stages"
             :key="stage.id"
             class="stage-header position-relative"
-            @click="openUpdateStage(stage)"
+            @click="
+              permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE) &&
+                openUpdateStage(stage)
+            "
             :title="stage.description || stage.name"
           >
             <!-- :style="{ backgroundColor: stage.color || defaultColor }" -->
@@ -35,6 +38,7 @@
               </span>
             </div>
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
               class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
               style="right: -2%; top: 3%"
             >
@@ -101,7 +105,9 @@
     @stage-change="changeDealStage"
   />
   <!-- selectedDeal -->
-  <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
+  <div v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)">
+    <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
+  </div>
 </template>
 
 <script>
@@ -123,7 +129,7 @@ import DealDataCard from "@/components/modals/DealDataCard.vue";
 import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";
 import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
-
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 export default {
   name: "KanbanBoard",
   components: {
@@ -159,6 +165,7 @@ export default {
     const selectedDeal = ref(null);
     const reachedBottom = ref(false);
     const moveSound = new Audio(moveCardSound);
+    const permissionStore = usePermissionStore();
 
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
@@ -677,6 +684,8 @@ export default {
       handleDealContainerScroll,
       reachedBottom,
       changeDealStage,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };
