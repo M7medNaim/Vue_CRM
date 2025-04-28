@@ -52,13 +52,7 @@ export const getDeals = async (params = {}) => {
   // console.log("Fetching getDeals with params:", params);
 
   return axios.get("/deals", {
-    params: {
-      page: params.page || 1,
-      per_page: params.per_page || 10,
-      sort_by: params.sort_by || "id",
-      sort_type: params.sort_type || "asc",
-      ...params,
-    },
+    params: params,
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -329,5 +323,5 @@ export const addViewCount = (dealId) => {
 
 // Broadcast services
 export const getBroadcasts = async () => {
-  return await axios.get("/broadcasts");
+  return await axios.get("/settings/broadcasts");
 };

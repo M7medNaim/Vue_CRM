@@ -24,6 +24,9 @@
           <FilterCrmListFormVue
             :filters="filters"
             :selectedStatuses="selectedStatuses"
+            :stages="local_stages"
+            :sources="local_sources"
+            :users="local_users"
             @update:filters="updateFilters"
             @update:selectedStatuses="updateSelectedStatuses"
           />
@@ -49,6 +52,18 @@ export default {
   components: { FilterCrmListFormVue, FilterButtonCrmList },
   props: {
     modelValue: { type: Object, required: true },
+    stages: {
+      type: Array,
+      default: () => [],
+    },
+    sources: {
+      type: Array,
+      default: () => [],
+    },
+    users: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ["update:modelValue", "apply-filters"],
 
@@ -57,6 +72,9 @@ export default {
     const toast = useToast();
     const filters = ref({ ...props.modelValue });
     const selectedStatuses = ref([]);
+    const local_stages = ref([]);
+    const local_sources = ref([]);
+    const local_users = ref([]);
 
     watch(
       () => props.modelValue,
@@ -145,6 +163,33 @@ export default {
       selectedStatuses.value = newStatuses;
     };
 
+    watch(
+      () => props.stages,
+      (newStages) => {
+        local_stages.value = newStages;
+        console.log("filters local_stages", local_stages.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.sources,
+      (newSources) => {
+        local_sources.value = newSources;
+        console.log("filters local_sources", local_sources.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.users,
+      (newUsers) => {
+        console.log("filters new users", newUsers);
+        local_users.value = newUsers;
+      },
+      { deep: true }
+    );
+
     return {
       filters,
       selectedStatuses,
@@ -156,6 +201,9 @@ export default {
       applyFilters,
       resetFilter,
       t,
+      local_stages,
+      local_sources,
+      local_users,
     };
   },
 };

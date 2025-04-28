@@ -34,11 +34,11 @@
         <div class="col-sm-6 col-lg">
           <div class="input-group position-relative">
             <input
-              type="text"
+              type="search"
               class="form-control"
               :placeholder="t('crmlist-placeholder-search')"
               v-model="searchInput"
-              @keyup.enter="search = searchInput"
+              @search="fetchData"
             />
             <i
               v-if="searchInput"
@@ -77,7 +77,7 @@
     </div>
 
     <DataTable
-      :value="filteredItems"
+      :value="rows"
       :paginator="true"
       :rows="rowsPerPage"
       :rowsPerPageOptions="[10, 25, 50]"
@@ -175,6 +175,9 @@
     @apply-filters="applyFilters"
     @reset-filter="resetFilter"
     :selectedStatuses="selectedStatuses"
+    :stages="stages"
+    :sources="sources"
+    :users="users"
   />
   <!-- @add-deal="addNewDeal" -->
   <DealModal @add-deal="addNewDeal" ref="dealModal" />
@@ -182,7 +185,7 @@
   <ShowData :formData="dealData" ref="showDataModal" />
 </template>
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import DataTable from "primevue/datatable";
@@ -195,6 +198,7 @@ import {
   getStages,
   bulkUpdateDeals,
   bulkDeleteDeals,
+  getAllUsers,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
@@ -220,6 +224,7 @@ const selectedAction = ref("");
 const selectedStatuses = ref([]);
 const sources = ref([]);
 const stages = ref([]);
+const users = ref([]);
 
 const filters = ref({
   source: "",
@@ -264,18 +269,6 @@ const executeAction = () => {
       }
       break;
 
-    // case "assignSalesSupervisor":
-    //   modalElement = document.getElementById("assignSupervisorModal");
-    //   if (modalElement) {
-    //     modal = new Modal(modalElement, {
-    //       backdrop: true,
-    //       keyboard: true,
-    //       focus: true,
-    //     });
-    //     modal.show();
-    //   }
-    //   break;
-
     case "assignUser":
       modalElement = document.getElementById("assignUser");
       if (modalElement) {
@@ -313,20 +306,16 @@ const fetchData = async () => {
     if (stages.value.length === 0 || sources.value.length === 0) {
       await fetchStagesAndSources();
     }
-    // if (stages.value.length === 0 || sources.value.length === 0) {
-    //   const [stagesRes, sourcesRes] = await Promise.all([
-    //     getStages(),
-    //     getSources(),
-    //   ]);
-    //   stages.value = stagesRes.data.data;
-    //   sources.value = sourcesRes.data.data;
-    // }
+
+    console.log("filters", filters.value);
 
     const dealsRes = await getDeals({
+      search: searchInput.value,
       page: currentPage.value + 1,
       per_page: rowsPerPage.value,
       sort_by: "created_at",
       sort_order: "desc",
+      filters: filters.value,
     });
 
     if (!Array.isArray(dealsRes?.data?.data)) {
@@ -434,9 +423,7 @@ const handleShowDeal = async (dealId) => {
 const applyFilters = async (newFilters) => {
   try {
     filters.value = { ...newFilters };
-
-    const response = await getDeals(filters.value);
-    rows.value = response.data.data;
+    fetchData();
   } catch (error) {
     console.error("Filter Error:", error);
   }
@@ -449,67 +436,10 @@ const openDealModal = () => {
   modal.show();
 };
 
-// Filtered items search and filters
-const filteredItems = computed(() => {
-  return rows.value.filter((item) => {
-    const searchLower = search.value.toLowerCase();
-
-    const matchesSearch =
-      !search.value ||
-      item.name?.toLowerCase().includes(searchLower) ||
-      item.phone?.includes(search.value) ||
-      item.note?.toLowerCase().includes(searchLower) ||
-      item.source?.toLowerCase().includes(searchLower) ||
-      item.stage?.toLowerCase().includes(searchLower) ||
-      item.responsible?.toLowerCase().includes(searchLower);
-
-    // Filters
-    const matchesSource =
-      !filters.value.source || item.source === filters.value.source;
-    const matchesStage =
-      !filters.value.stage || item.stage === filters.value.stage;
-    const matchesSupervisor =
-      !filters.value.supervisor || item.supervisor === filters.value.supervisor;
-    const matchesRepresentative =
-      !filters.value.representative ||
-      item.representative === filters.value.representative;
-    const matchesPackage =
-      !filters.value.package || item.package === filters.value.package;
-
-    // Date filters
-    const matchesCreatedDate =
-      (!filters.value.createdStart ||
-        new Date(item.created_at) >= new Date(filters.value.createdStart)) &&
-      (!filters.value.createdEnd ||
-        new Date(item.created_at) <= new Date(filters.value.createdEnd));
-
-    const matchesModifiedDate =
-      (!filters.value.modifiedStart ||
-        new Date(item.updated_at) >= new Date(filters.value.modifiedStart)) &&
-      (!filters.value.modifiedEnd ||
-        new Date(item.updated_at) <= new Date(filters.value.modifiedEnd));
-
-    // Status filter
-    const matchesStatus =
-      filters.value.status.length === 0 ||
-      filters.value.status.includes(item.status);
-
-    return (
-      matchesSearch &&
-      matchesSource &&
-      matchesStage &&
-      matchesSupervisor &&
-      matchesRepresentative &&
-      matchesPackage &&
-      matchesCreatedDate &&
-      matchesModifiedDate &&
-      matchesStatus
-    );
-  });
-});
 const clearSearch = () => {
   searchInput.value = "";
   search.value = "";
+  fetchData();
 };
 
 // Opening and closing modals
@@ -615,15 +545,33 @@ const handleRightClick = (event) => {
 const fetchStagesAndSources = async () => {
   try {
     if (stages.value.length === 0 || sources.value.length === 0) {
-      const [stagesRes, sourcesRes] = await Promise.all([
-        getStages(),
-        getSources(),
-      ]);
-      stages.value = stagesRes.data.data;
-      sources.value = sourcesRes.data.data;
+      console.log("Fetching stages and sources...");
+      const stage_res = await getStages();
+      const source_res = await getSources();
+      stages.value = stage_res.data.data;
+      sources.value = source_res.data.data;
+      console.log("Fetched stages and sources:", {
+        stages: stages.value,
+        sources: sources.value,
+      });
     }
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
+  }
+};
+
+const fetchUsers = async () => {
+  try {
+    const response = await getAllUsers();
+    if (response.status === 200) {
+      users.value = response.data.data.map((user) => ({
+        id: user.id,
+        name: user.name,
+        role: user.role,
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching users:", error);
   }
 };
 

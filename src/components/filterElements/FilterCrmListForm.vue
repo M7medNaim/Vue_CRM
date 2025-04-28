@@ -190,9 +190,8 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getStages, getSources } from "@/plugins/services/authService";
 
 export default {
   name: "FilterCrmListFormVue",
@@ -201,6 +200,22 @@ export default {
     selectedStatuses: {
       type: Array,
       required: true,
+    },
+    stages: {
+      type: Array,
+      default: () => [],
+    },
+    sources: {
+      type: Array,
+      default: () => [],
+    },
+    users: {
+      type: Array,
+      default: () => [],
+    },
+    packages: {
+      type: Array,
+      default: () => [],
     },
   },
   emits: ["update:filters", "update:selectedStatuses"],
@@ -219,37 +234,13 @@ export default {
       status: [],
       ...props.filters,
     });
-    const stages = ref([]);
-    const sources = ref([]);
-    const fetchStages = async () => {
-      try {
-        const response = await getStages();
-        if (response.status === 200) {
-          stages.value = response.data.data.map((stage) => ({
-            value: stage.id,
-            name: stage.name,
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching stages:", error);
-      }
-    };
-    const fetchSources = async () => {
-      try {
-        const response = await getSources();
-        if (response.status === 200) {
-          sources.value = response.data.data.map((source) => ({
-            value: source.id,
-            name: source.name,
-          }));
-        } else {
-          // alert("Failed to fetch sources");
-        }
-      } catch (error) {
-        console.error("Error fetching sources:", error);
-        // alert("Failed to fetch sources");
-      }
-    };
+    const local_stages = ref([]);
+    const local_sources = ref([]);
+    const local_company = ref([]);
+    const local_supervisors = ref([]);
+    const local_representatives = ref([]);
+    const local_packages = ref([]);
+
     const statuses = ref([
       { value: "unassigned", label: "Unassigned" },
       { value: "no_comments", label: "No Comments" },
@@ -291,44 +282,61 @@ export default {
       { deep: true }
     );
 
-    onMounted(() => {
-      fetchStages();
-      fetchSources();
-    });
+    watch(
+      () => props.stages,
+      (newStages) => {
+        local_stages.value = newStages;
+        console.log("form local_stages", local_stages.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.sources,
+      (newSources) => {
+        local_sources.value = newSources;
+        console.log("form local_sources", local_sources.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.users,
+      (newUsers) => {
+        console.log("form new users", newUsers);
+        local_company.value = newUsers.filter(
+          (user) => user.role === "company"
+        );
+        local_supervisors.value = newUsers.filter(
+          (user) => user.role === "supervisor"
+        );
+        local_representatives.value = newUsers.filter(
+          (user) => user.role === "sales"
+        );
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.packages,
+      (newPackages) => {
+        local_packages.value = newPackages;
+        console.log("form local_packages", local_packages.value);
+      },
+      { deep: true }
+    );
 
     return {
       localFilters,
       statuses,
-      stages,
-      sources,
+      local_stages,
+      local_sources,
       toggleStatus,
       t,
-      // sources: [
-      //   { value: "facebook", label: "Facebook" },
-      //   { value: "twitter", label: "Twitter" },
-      //   { value: "instagram", label: "Instagram" },
-      //   { value: "linkedin", label: "LinkedIn" },
-      // ],
-      // stages: [
-      //   { value: "newDeal", label: "New Deal" },
-      //   { value: "oldData", label: "Old Data" },
-      //   { value: "medicines", label: "Medicines" },
-      // ],
-      supervisors: [
-        { value: "any", label: "Any" },
-        { value: "eurasia", label: "Eurasia Admin" },
-        { value: "sup", label: "Sup Sup" },
-      ],
-      representatives: [
-        { value: "any", label: "Any" },
-        { value: "bader", label: "Bader Rep" },
-        { value: "reem", label: "Reem Rep" },
-      ],
-      packages: [
-        { value: "any", label: "Any" },
-        { value: "basic", label: "Basic Package" },
-        { value: "premium", label: "Premium Package" },
-      ],
+      local_supervisors,
+      local_representatives,
+      local_packages,
+      local_company,
     };
   },
 };
