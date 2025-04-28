@@ -16,6 +16,7 @@ export const PERMISSIONS = {
   READ_DEAL: "read-deal",
   READ_TASK: "read-task",
   VIEW_SIDEBAR: "view-sidebar",
+  BROADCAST_SETTINGS: "view-broadcast-settings-page",
 };
 
 export const usePermissionStore = defineStore("permissions", {

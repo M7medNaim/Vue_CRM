@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import CrmTasks from "@/views/CrmTasks.vue";
 import CrmList from "@/views/CrmListView.vue";
 import TasksKanban from "@/views/CrmTasks.vue";
+import BroadcastSettings from "@/views/BroadcastSettings.vue";
 
 const routes = [
   {
@@ -101,12 +102,12 @@ const routes = [
     beforeEnter: requirePermission(PERMISSIONS.CONTACTS),
   },
   {
-    path: "/general-setting",
+    path: "/general-settings",
     name: "Settings",
     component: GeneralSetting,
     meta: {
       requiresAuth: true,
-      title: "General Setting",
+      title: "General Settings",
     },
     beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
   },
@@ -117,6 +118,16 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Role Settings",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
+  },
+  {
+    path: "/broadcast-settings",
+    name: "BroadcastSettings",
+    component: BroadcastSettings,
+    meta: {
+      requiresAuth: true,
+      title: "Broadcast Settings",
     },
     beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },

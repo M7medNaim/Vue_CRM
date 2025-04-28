@@ -326,3 +326,8 @@ export const getStagesTasks = async () => {
 export const addViewCount = (dealId) => {
   return axios.post(`/deals/add-view-count/${dealId}`);
 };
+
+// Broadcast services
+export const getBroadcasts = async () => {
+  return await axios.get("/broadcasts");
+};

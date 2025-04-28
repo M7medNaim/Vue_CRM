@@ -933,7 +933,7 @@ export default {
       try {
         let conversation = await fetchConversationByDealId(id);
         if (!conversation.data?.data) {
-          conversation = await sendInitMessage(id);
+          conversation = await sendInitMessage(id, null);
         }
         console.log("conversation", conversation);
 

@@ -115,7 +115,7 @@
       </div> -->
       <router-link
         v-if="permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)"
-        to="/general-setting"
+        to="/general-settings"
         class="text-decoration-none text-white"
       >
         <div
