@@ -729,6 +729,7 @@ const addNewDeal = (newDeal) => {
 onMounted(async () => {
   // await fetchStagesAndSources();
   await fetchData();
+  fetchUsers();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {
