@@ -61,7 +61,7 @@
           class="full-screen-image"
         />
       </div>
-      <div class="">
+      <div class="message-text" style="white-space: pre-line">
         {{ message.text }}
       </div>
       <button

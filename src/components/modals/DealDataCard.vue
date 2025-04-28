@@ -551,7 +551,11 @@
     </div>
   </div>
   <ViewReport ref="questionsModalRef" />
-  <TrashDeal ref="trashDealModalRef" />
+  <TrashDeal
+    ref="trashDealModalRef"
+    :dealId="deal?.id"
+    @stage-updated="handleStageUpdate"
+  />
 </template>
 
 <script>
@@ -680,20 +684,33 @@ export default {
       showPhone2.value = !showPhone2.value;
     };
     const openTrashDealModal = () => {
-      const openModals = document.querySelectorAll(".modal.show");
-      openModals.forEach((modal) => {
-        const modalInstance = Modal.getInstance(modal);
-        if (modalInstance) {
-          modalInstance.hide();
-        }
-      });
-      const trashDealModal = new Modal(
-        document.getElementById("trashDealModal")
-      );
-      trashDealModal.show();
-      const modalBackdrop = document.createElement("div");
-      modalBackdrop.className = "modal-backdrop fade show";
-      document.body.appendChild(modalBackdrop);
+      if (!props.deal?.id) {
+        toast.error(t("error.dealNotFound"), {
+          timeout: 3000,
+        });
+        return;
+      }
+      try {
+        const openModals = document.querySelectorAll(".modal.show");
+        openModals.forEach((modal) => {
+          const modalInstance = Modal.getInstance(modal);
+          if (modalInstance) {
+            modalInstance.hide();
+          }
+        });
+        const trashDealModal = new Modal(
+          document.getElementById("trashDealModal")
+        );
+        trashDealModal.show();
+        const modalBackdrop = document.createElement("div");
+        modalBackdrop.className = "modal-backdrop fade show";
+        document.body.appendChild(modalBackdrop);
+      } catch (error) {
+        console.error("Error opening trash modal:", error);
+        toast.error(t("error.openTrashModal"), {
+          timeout: 3000,
+        });
+      }
     };
     const handleStageHover = (stageId) => {
       hoveredStage.value = stageId;
@@ -1024,6 +1041,15 @@ export default {
     const activeTasks = computed(() => {
       return customerData.tasks.filter((task) => task.status === "active");
     });
+    const handleStageUpdate = (data) => {
+      if (!props.deal?.id) {
+        toast.error(t("error.dealNotFound"), {
+          timeout: 3000,
+        });
+        return;
+      }
+      emit("stage-change", data.dealId, data.newStage);
+    };
     onMounted(() => {
       fetchSources();
       fetchStages();
@@ -1070,6 +1096,7 @@ export default {
       closeEditMode,
       formatDateForInput,
       openTrashDealModal,
+      handleStageUpdate,
     };
   },
 };
