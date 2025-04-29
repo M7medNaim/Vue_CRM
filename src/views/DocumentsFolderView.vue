@@ -7,7 +7,11 @@
           {{ t("documents-modal-importdocument-heading") }}
           <i class="fas fa-file-import me-1"></i>
         </button> -->
-        <button class="btn btn-primary me-2" @click="openNewFolderModal">
+        <button
+          class="btn btn-primary me-2"
+          @click="openNewFolderModal"
+          v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+        >
           {{ t("documents-button-createfolder") }}
           <i class="fas fa-folder-plus me-1"></i>
         </button>
@@ -119,7 +123,7 @@ import {
   updateDocuments,
   deleteDocuments,
 } from "@/plugins/services/authService";
-
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 export default {
   name: "DocumentsFolderView",
   components: {
@@ -132,6 +136,7 @@ export default {
     const router = useRouter();
     const tableLoading = ref(false);
     const items = ref([]);
+    const permissionStore = usePermissionStore();
     const folderFormModal = ref(null);
     const importFolderModal = ref(null);
     const selectedFolder = ref(null);
@@ -367,6 +372,8 @@ export default {
       downloadFolder,
       fetchFolderFiles,
       t,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };

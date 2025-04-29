@@ -34,15 +34,21 @@
               class="form-control"
               placeholder="Write a comment"
               rows="4"
+              v-model="comment"
             ></textarea>
             <h4 class="mt-5">
               Please choose one of the stages below to discard the deal.
             </h4>
             <div class="btn-group mt-2">
-              <button class="btn bg-white">Medicines</button>
-              <button class="btn bg-white">No Response</button>
-              <button class="btn bg-white">Trash</button>
-              <button class="btn bg-white">Old Data</button>
+              <button
+                v-for="stage in trashStages"
+                :key="stage.id"
+                class="btn bg-white"
+                @click="selectedStage = stage.id"
+                :class="{ active: selectedStage === stage.id }"
+              >
+                {{ stage.name }}
+              </button>
             </div>
           </div>
         </div>
@@ -64,23 +70,60 @@
           >
             Next
           </button>
+          <button
+            v-else
+            type="button"
+            class="btn bg-white py-2 px-4"
+            style="color: red; font-size: 14px"
+            @click="handleTrashDeal"
+            :disabled="!selectedStage || !comment"
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import { Modal } from "bootstrap";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
+import { updateDealStage, createComment } from "@/plugins/services/authService";
+
 export default {
   name: "TrashDeal",
+  props: {
+    dealId: {
+      type: [String, Number],
+      required: true,
+    },
+  },
+  setup() {
+    const { t } = useI18n();
+    const toast = useToast();
+    return { t, toast };
+  },
   data() {
     return {
       showModal2: false,
+      comment: "",
+      selectedStage: null,
+      trashStages: [
+        { id: 12, name: "Medicines" },
+        { id: 14, name: "No Response" },
+        { id: 16, name: "Trash" },
+        { id: 13, name: "Stopped Responding" },
+        { id: 13, name: "Old Data" },
+      ],
     };
   },
   methods: {
     resetModal() {
       this.showModal2 = false;
+      this.comment = "";
+      this.selectedStage = null;
     },
     closeTrashDealModal() {
       const trashDealModal = Modal.getInstance(
@@ -93,10 +136,52 @@ export default {
       if (modalBackdrop) {
         modalBackdrop.remove();
       }
+      this.resetModal();
+    },
+    async handleTrashDeal() {
+      try {
+        if (!this.selectedStage || !this.comment) {
+          this.toast.error(this.t("error.requiredFields"), {
+            timeout: 3000,
+          });
+          return;
+        }
+
+        // Update the deal stage
+        const stageResponse = await updateDealStage(
+          this.dealId,
+          this.selectedStage
+        );
+
+        if (stageResponse.data) {
+          // Add the comment as a new comment
+          const commentResponse = await createComment({
+            text_body: this.comment,
+            deal_id: this.dealId,
+          });
+
+          if (commentResponse.data) {
+            this.toast.success(this.t("success.stageAndCommentUpdated"), {
+              timeout: 3000,
+            });
+            this.closeTrashDealModal();
+            this.$emit("stage-updated", {
+              dealId: this.dealId,
+              newStage: this.selectedStage,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error updating deal:", error);
+        this.toast.error(this.t("error.updatingDeal"), {
+          timeout: 3000,
+        });
+      }
     },
   },
 };
 </script>
+
 <style scoped>
 .modal2 button {
   color: red;
@@ -105,6 +190,10 @@ export default {
 }
 .modal2 button:hover {
   background-color: #eee !important;
+}
+.modal2 button.active {
+  background-color: #ddd !important;
+  font-weight: bold;
 }
 textarea {
   width: 100% !important;
