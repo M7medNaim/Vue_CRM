@@ -358,6 +358,7 @@ export default {
     };
 
     const checkLastMessageTime = () => {
+      console.log("Checking last message time...", props.lastMessageDate);
       if (props.lastMessageDate) {
         const lastMessageTime = new Date(props.lastMessageDate).getTime();
         const currentTime = new Date().getTime();
