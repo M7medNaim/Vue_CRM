@@ -124,6 +124,7 @@
           @scroll-to-bottom="scrollToBottom"
           @send-init-message="sendInit"
           :conversation-id="selectedChat.id"
+          :lastMessageDate="lastMessageDate"
         />
       </div>
     </div>
@@ -164,6 +165,13 @@ export default {
   computed: {
     chatMessages() {
       return this.selectedChat?.messages || [];
+    },
+    lastMessageDate() {
+      // console.log(
+      //   "lastMessageDate",
+      //   this.selectedChat.last_message?.created_at
+      // );
+      return this.selectedChat.last_message?.created_at;
     },
   },
   watch: {

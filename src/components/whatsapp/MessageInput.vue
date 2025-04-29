@@ -326,6 +326,10 @@ export default {
       type: [String, Number],
       default: null,
     },
+    lastMessageDate: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -353,11 +357,23 @@ export default {
       emit("send-init-message");
     };
 
-    watch(
-      () => props.conversationId,
-      () => {
+    const checkLastMessageTime = () => {
+      if (props.lastMessageDate) {
+        const lastMessageTime = new Date(props.lastMessageDate).getTime();
+        const currentTime = new Date().getTime();
+        const hoursDiff = (currentTime - lastMessageTime) / (1000 * 60 * 60);
+        showWarning.value = hoursDiff >= 24;
+      } else {
         showWarning.value = true;
       }
+    };
+
+    watch(
+      [() => props.conversationId, () => props.lastMessageDate],
+      () => {
+        checkLastMessageTime();
+      },
+      { immediate: true }
     );
 
     return {
