@@ -190,7 +190,7 @@
               <div class="input-group mt-2 w-100">
                 <input
                   type="text"
-                  v-model="newMessageImage"
+                  v-model="newMessage"
                   placeholder="أضف وصفًا ..."
                   class="caption-input rounded-start-3 flex-grow-1"
                 />
