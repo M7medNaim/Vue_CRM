@@ -110,7 +110,11 @@
           }}
         </template>
       </Column> -->
-      <Column field="note" :header="t('crmlist-table-header-notes')"></Column>
+      <Column
+        field="note"
+        :header="t('crmlist-table-header-notes')"
+        class="note-column"
+      ></Column>
       <Column
         field="responsible"
         :header="t('crmlist-table-header-responsible')"
@@ -847,6 +851,14 @@ select:focus {
 :deep(.p-datatable tbody td) {
   text-align: left;
 }
+
+:deep(.note-column) {
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media (max-width: 850px) {
   .fs-7 {
     font-size: 14px;
