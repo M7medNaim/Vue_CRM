@@ -167,10 +167,6 @@ export default {
       return this.selectedChat?.messages || [];
     },
     lastMessageDate() {
-      // console.log(
-      //   "lastMessageDate",
-      //   this.selectedChat.last_message?.created_at
-      // );
       console.log("lastMessageDate", this.selectedChat.created_at_last_message);
       return this.selectedChat.created_at_last_message;
     },
