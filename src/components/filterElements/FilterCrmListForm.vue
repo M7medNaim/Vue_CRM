@@ -37,7 +37,7 @@
           <div class="col-9">
             <div class="mb-3">
               <select
-                v-model="localFilters.source"
+                v-model="localFilters.source_id"
                 class="form-select text-secondary"
               >
                 <option
@@ -59,7 +59,7 @@
           <div class="col-9">
             <div class="mb-3">
               <select
-                v-model="localFilters.stage"
+                v-model="localFilters.stage_id"
                 class="form-select text-secondary"
               >
                 <option
@@ -82,38 +82,15 @@
           <div class="col-9">
             <div class="mb-3">
               <select
-                v-model="localFilters.supervisor"
+                v-model="localFilters.user_id"
                 class="form-select text-secondary"
               >
                 <option
-                  v-for="supervisor in supervisors"
-                  :key="supervisor.value"
-                  :value="supervisor.value"
+                  v-for="user in users"
+                  :key="user.value"
+                  :value="user.value"
                 >
-                  {{ supervisor.label }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Representative Filter -->
-        <div class="row">
-          <div class="col-3 pt-2">
-            <span>{{ t("crmlist-modal-filter-label-representative") }}</span>
-          </div>
-          <div class="col-9">
-            <div class="mb-3">
-              <select
-                v-model="localFilters.representative"
-                class="form-select text-secondary"
-              >
-                <option
-                  v-for="representative in representatives"
-                  :key="representative.value"
-                  :value="representative.value"
-                >
-                  {{ representative.label }}
+                  {{ user.label }}
                 </option>
               </select>
             </div>
@@ -121,7 +98,7 @@
         </div>
 
         <!-- Package Filter -->
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-3 pt-2">
             <span>{{ t("crmlist-modal-filter-label-packages") }}</span>
           </div>
@@ -141,7 +118,7 @@
               </select>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Created Date Range -->
         <div class="row mb-3">
@@ -154,12 +131,12 @@
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.createdStart"
+              v-model="localFilters.created_at_start"
             />
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.createdEnd"
+              v-model="localFilters.created_at_end"
             />
           </div>
         </div>
@@ -175,12 +152,12 @@
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.modifiedStart"
+              v-model="localFilters.updated_at_start"
             />
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.modifiedEnd"
+              v-model="localFilters.updated_at_end"
             />
           </div>
         </div>
@@ -222,15 +199,14 @@ export default {
   setup(props, { emit }) {
     const { t } = useI18n();
     const localFilters = ref({
-      source: "facebook",
-      stage: "newDeal",
-      supervisor: "any",
-      representative: "any",
-      package: "any",
-      createdStart: "",
-      createdEnd: "",
-      modifiedStart: "",
-      modifiedEnd: "",
+      source_id: "",
+      stage_id: "",
+      user_id: "",
+      package_id: "",
+      created_at_start: "",
+      created_at_end: "",
+      updated_at_start: "",
+      updated_at_end: "",
       status: [],
       ...props.filters,
     });
