@@ -155,7 +155,8 @@ export default {
             ...chat,
             id: chatId,
             messages,
-            created_at_last_message: chat.updated_at,
+            created_at_last_message:
+              chat.created_at_last_message ?? chat.updated_at,
           };
 
           console.log("Updated selectedChat:", this.selectedChat);
