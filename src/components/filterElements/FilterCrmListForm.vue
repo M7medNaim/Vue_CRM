@@ -207,11 +207,11 @@ export default {
   setup(props, { emit }) {
     const { t } = useI18n();
     const localFilters = ref({
-      source: "facebook",
-      stage: "newDeal",
-      supervisor: "any",
-      representative: "any",
-      package: "any",
+      source: "",
+      stage: "",
+      supervisor: "",
+      representative: "",
+      package: "",
       createdStart: "",
       createdEnd: "",
       modifiedStart: "",
@@ -270,23 +270,17 @@ export default {
       }
       emit("update:selectedStatuses", newSelectedStatuses);
 
-      localFilters.value = {
-        ...localFilters.value,
-        status: newSelectedStatuses,
-      };
+      // Update local filters with status
+      localFilters.value.status = newSelectedStatuses;
       emit("update:filters", localFilters.value);
     };
+
+    // Watch for all filter changes
     watch(
-      () => props.filters,
+      () => localFilters.value,
       (newFilters) => {
-        localFilters.value = { ...newFilters };
-      },
-      { deep: true }
-    );
-    watch(
-      () => props.selectedStatuses,
-      (newStatuses) => {
-        localFilters.value.status = newStatuses;
+        console.log("Filters changed:", newFilters);
+        emit("update:filters", newFilters);
       },
       { deep: true }
     );
@@ -303,17 +297,6 @@ export default {
       sources,
       toggleStatus,
       t,
-      // sources: [
-      //   { value: "facebook", label: "Facebook" },
-      //   { value: "twitter", label: "Twitter" },
-      //   { value: "instagram", label: "Instagram" },
-      //   { value: "linkedin", label: "LinkedIn" },
-      // ],
-      // stages: [
-      //   { value: "newDeal", label: "New Deal" },
-      //   { value: "oldData", label: "Old Data" },
-      //   { value: "medicines", label: "Medicines" },
-      // ],
       supervisors: [
         { value: "any", label: "Any" },
         { value: "eurasia", label: "Eurasia Admin" },

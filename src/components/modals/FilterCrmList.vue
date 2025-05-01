@@ -23,13 +23,14 @@
         <form @submit.prevent="submitFilters">
           <FilterCrmListFormVue
             :filters="filters"
-            :selectedStatuses="selectedStatuses"
+            :selectedStatuses="localSelectedStatuses"
             @update:filters="updateFilters"
             @update:selectedStatuses="updateSelectedStatuses"
           />
           <FilterButtonCrmList
             @reset-filter="resetFilter"
             @close-modal="closeFilterModal"
+            @submit-filters="submitFilters"
           />
         </form>
       </div>
@@ -44,36 +45,47 @@ import FilterCrmListFormVue from "../filterElements/FilterCrmListForm.vue";
 import FilterButtonCrmList from "../filterElements/FilterButtonCrmList.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+
 export default {
   name: "FilterModal",
   components: { FilterCrmListFormVue, FilterButtonCrmList },
   props: {
     modelValue: { type: Object, required: true },
+    selectedStatuses: { type: Array, default: () => [] },
   },
-  emits: ["update:modelValue", "apply-filters"],
+  emits: ["update:modelValue", "apply-filters", "reset-filter"],
 
   setup(props, { emit }) {
     const { t } = useI18n();
     const toast = useToast();
     const filters = ref({ ...props.modelValue });
-    const selectedStatuses = ref([]);
+    const localSelectedStatuses = ref([...props.selectedStatuses]);
 
+    // Watch for changes in modelValue
     watch(
       () => props.modelValue,
       (newFilters) => {
-        filters.value = { ...newFilters };
-      }
+        if (newFilters) {
+          filters.value = { ...newFilters };
+          localSelectedStatuses.value = Array.isArray(newFilters.status)
+            ? [...newFilters.status]
+            : [];
+        }
+      },
+      { immediate: true, deep: true }
     );
 
-    const openFilterModal = () => {
-      try {
-        this.isModalOpen = true;
-      } catch (error) {
-        toast.error(t("error.closeModal"), {
-          timeout: 3000,
-        });
-      }
-    };
+    // Watch for changes in selectedStatuses prop
+    watch(
+      () => props.selectedStatuses,
+      (newStatuses) => {
+        if (Array.isArray(newStatuses)) {
+          localSelectedStatuses.value = [...newStatuses];
+          filters.value.status = [...newStatuses];
+        }
+      },
+      { immediate: true }
+    );
 
     const closeFilterModal = () => {
       try {
@@ -83,34 +95,33 @@ export default {
         document.querySelector(".modal-backdrop")?.remove();
         document.body.classList.remove("modal-open");
       } catch (error) {
-        toast.error(t("error.closeModal"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.closeModal"), { timeout: 3000 });
       }
     };
 
     const submitFilters = () => {
       try {
-        emit("update:modelValue", filters.value);
-        emit("apply-filters", filters.value);
-        toast.success(t("success.applyFilters"), {
-          timeout: 3000,
-        });
+        // Update filters with current statuses
+        if (Array.isArray(localSelectedStatuses.value)) {
+          filters.value.status = [...localSelectedStatuses.value];
+        }
+
+        // Emit both the updated filters and apply them
+        emit("update:modelValue", { ...filters.value });
+        emit("apply-filters", { ...filters.value });
+
+        toast.success(t("success.applyFilters"), { timeout: 3000 });
         closeFilterModal();
       } catch (error) {
-        toast.error(t("error.applyFilters"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.applyFilters"), { timeout: 3000 });
       }
     };
 
     const updateFilters = (newFilters) => {
-      filters.value = newFilters;
-      emit("update:modelValue", newFilters);
-    };
-
-    const applyFilters = (appliedFilters) => {
-      filters.value = appliedFilters;
+      if (newFilters) {
+        filters.value = { ...newFilters };
+        emit("update:modelValue", { ...filters.value });
+      }
     };
 
     const resetFilter = () => {
@@ -128,32 +139,31 @@ export default {
           status: [],
         };
         filters.value = { ...emptyFilters };
-        selectedStatuses.value = [];
-        emit("update:modelValue", emptyFilters);
-        emit("apply-filters", emptyFilters);
-        toast.success(t("success.resetFilters"), {
-          timeout: 3000,
-        });
+        localSelectedStatuses.value = [];
+        emit("update:modelValue", { ...emptyFilters });
+        emit("reset-filter");
+        toast.success(t("success.resetFilters"), { timeout: 3000 });
+        closeFilterModal();
       } catch (error) {
-        toast.error(t("error.resetFilters"), {
-          timeout: 3000,
-        });
+        toast.error(t("error.resetFilters"), { timeout: 3000 });
       }
     };
 
     const updateSelectedStatuses = (newStatuses) => {
-      selectedStatuses.value = newStatuses;
+      if (Array.isArray(newStatuses)) {
+        localSelectedStatuses.value = [...newStatuses];
+        filters.value.status = [...newStatuses];
+        emit("update:modelValue", { ...filters.value });
+      }
     };
 
     return {
       filters,
-      selectedStatuses,
-      openFilterModal,
+      localSelectedStatuses,
       closeFilterModal,
       submitFilters,
       updateFilters,
       updateSelectedStatuses,
-      applyFilters,
       resetFilter,
       t,
     };

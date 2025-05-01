@@ -49,7 +49,9 @@ export const getRoles = () => axios.get("/roles");
 // Get All Deals
 export const getDeals = async (params = {}) => {
   const token = Cookies.get("authToken");
-  // console.log("Fetching getDeals with params:", params);
+  console.log("Fetching getDeals with params:", params);
+
+  const { filters, ...restParams } = params;
 
   return axios.get("/deals", {
     params: {
@@ -57,7 +59,8 @@ export const getDeals = async (params = {}) => {
       per_page: params.per_page || 10,
       sort_by: params.sort_by || "id",
       sort_type: params.sort_type || "asc",
-      ...params,
+      ...filters,
+      ...restParams,
     },
     headers: {
       Authorization: `Bearer ${token}`,
