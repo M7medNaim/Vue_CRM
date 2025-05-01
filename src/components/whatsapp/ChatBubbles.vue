@@ -1,6 +1,8 @@
 <template>
   <p
-    class="date fs-6 text-center bg-secondary text-white py-1 px-3 rounded-3 position-sticky start-50 z-3"
+    :class="`date fs-6 text-center ${
+      message.status === 'undelivered' ? 'bg-danger' : 'bg-secondary'
+    } text-white py-1 px-3 rounded-3 position-sticky start-50 z-3`"
   >
     <!-- {{ formatMessageDate(messages[0]?.created_at) }} -->
     {{ currentDate }}
@@ -80,6 +82,7 @@
         </div>
         <!-- Message status -->
         <span v-if="message.type === 'msg-me'">
+
           <span
             v-if="message.status === 'sent'"
             class="status-icon text-secondary"
@@ -99,6 +102,12 @@
           >
             <i class="fa-solid fa-check fs-6"></i>
             <i class="fa-solid fa-check fs-6"></i>
+          </span>
+          <span
+            v-if="message.status === 'undelivered'"
+            class="status-icon text-secondary"
+          >
+            <i class="fa-solid fa-xmark"></i>
           </span>
         </span>
       </span>
