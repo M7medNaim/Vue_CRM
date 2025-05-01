@@ -1,8 +1,6 @@
 <template>
   <p
-    :class="`date fs-6 text-center ${
-      message.status === 'undelivered' ? 'bg-danger' : 'bg-secondary'
-    } text-white py-1 px-3 rounded-3 position-sticky start-50 z-3`"
+    class="date fs-6 text-center bg-secondary text-white py-1 px-3 rounded-3 position-sticky start-50 z-3"
   >
     <!-- {{ formatMessageDate(messages[0]?.created_at) }} -->
     {{ currentDate }}
@@ -15,7 +13,9 @@
     ref="messageElements"
   >
     <div
-      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
+      :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
+        message.status === 'undelivered' ? 'text-danger' : ''
+      }`"
     >
       <button
         class="addNote border-0 position-absolute bottom-0 fs-6 rounded-2"
@@ -82,7 +82,6 @@
         </div>
         <!-- Message status -->
         <span v-if="message.type === 'msg-me'">
-
           <span
             v-if="message.status === 'sent'"
             class="status-icon text-secondary"
@@ -105,9 +104,9 @@
           </span>
           <span
             v-if="message.status === 'undelivered'"
-            class="status-icon text-secondary"
+            class="status-icon text-danger"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
         </span>
       </span>
