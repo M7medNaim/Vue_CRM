@@ -11,7 +11,7 @@
         <div class="text-muted fs-6">{{ item.id }}</div>
       </template>
       <!-- Role Name Column -->
-      <template #item-name="item">
+      <template #item-description="item">
         <div class="fs-6">
           {{
             item.description.length > 50
@@ -22,11 +22,31 @@
       </template>
 
       <!--  Create At Column -->
-      <template #item-create_at="item">
+      <template #item-created_at="item">
         <div class="">
           <div class="fs-6">
             {{ new Date(item.created_at).toLocaleDateString() }}
           </div>
+        </div>
+      </template>
+
+      <!-- Positions Column -->
+      <template #item-positions="item">
+        <div class="d-flex gap-2 my-1">
+          <button
+            class="btn btn-sm btn-success"
+            v-show="!item.is_first"
+            @click="updatePosition(item.id, -1)"
+          >
+            <i class="fas fa-arrow-up"></i>
+          </button>
+          <button
+            class="btn btn-sm btn-warning"
+            v-show="!item.is_last"
+            @click="updatePosition(item.id, 1)"
+          >
+            <i class="fas fa-arrow-down"></i>
+          </button>
         </div>
       </template>
 
@@ -65,10 +85,12 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
-// import RoleModal from "@/components/modals/RoleSettings.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
-import { getBroadcasts } from "@/plugins/services/authService";
+import {
+  getBroadcasts,
+  updateBroadcastPosition,
+} from "@/plugins/services/authService";
 
 export default {
   name: "BroadcastSettings",
@@ -81,9 +103,18 @@ export default {
     const items = ref([]);
     const headers = ref([
       { text: `#`, value: "id" },
-      { text: t("table.name"), value: "name" },
-      { text: t("table.create_at"), value: "create_at" },
-      { text: t("table.actions"), value: "actions", sortable: false },
+      { text: t("settings-broadcast-table-description"), value: "description" },
+      { text: t("settings-broadcast-table-createdat"), value: "created_at" },
+      {
+        text: t("settings-broadcast-table-actions"),
+        value: "actions",
+        sortable: false,
+      },
+      {
+        text: t("settings-broadcast-table-positions"),
+        value: "positions",
+        sortable: false,
+      },
     ]);
     const fetchBroadcasts = async () => {
       const response = await getBroadcasts();
@@ -93,6 +124,17 @@ export default {
       } else {
         // Handle error response
         toast.error("Failed to fetch broadcasts");
+      }
+    };
+
+    const updatePosition = async (id, direction) => {
+      // Logic to update position
+      const response = await updateBroadcastPosition(id, direction);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        fetchBroadcasts();
+      } else {
+        toast.error("Failed to update position");
       }
     };
 
@@ -109,6 +151,7 @@ export default {
       items,
       fetchBroadcasts,
       headers,
+      updatePosition,
     };
   },
 };
