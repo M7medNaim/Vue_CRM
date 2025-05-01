@@ -35,11 +35,11 @@
             :dir="currentLanguage === 'ar' ? 'rtl' : 'ltr'" -->
           <div
             v-if="isClipboardVisible"
-            class="listClipboard row bg-body-tertiary border border-1 border-dark-subtle text-end w-25 position-absolute fs-6 bottom-100 text-break text-wrap"
+            class="listClipboard row bg-body-tertiary border border-1 border-dark-subtle text-end position-absolute fs-6 bottom-100 text-break text-wrap"
             dir="rtl"
           >
             <div
-              class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle"
+              class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle position-sticky top-0"
             >
               <i class="fa-solid fa-xmark fs-5"></i>
               <!-- <button
@@ -648,6 +648,26 @@ export default {
 .right-side .listClipboard {
   cursor: pointer;
   left: 1%;
+  max-height: 600px;
+  width: 300px;
+  overflow-y: auto;
+}
+.right-side .listClipboard::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right-side .listClipboard::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.right-side .listClipboard::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.right-side .listClipboard::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 .submitMsg {
   width: 40px;
