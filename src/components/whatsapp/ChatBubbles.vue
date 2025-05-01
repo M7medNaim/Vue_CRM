@@ -103,7 +103,7 @@
             <i class="fa-solid fa-check fs-6"></i>
           </span>
           <span
-            v-if="message.status === 'undelivered'"
+            v-else-if="message.status === 'undelivered'"
             class="status-icon text-danger"
           >
             <i class="fa-solid fa-xmark"></i> (Message not sent)
