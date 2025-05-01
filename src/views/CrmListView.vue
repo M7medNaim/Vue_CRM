@@ -83,7 +83,6 @@
       :rowsPerPageOptions="[10, 25, 50]"
       :total-records="totalRows"
       :lazy="true"
-      :onLazyLoad="loadCarsLazy"
       :loading="loading"
       @page="onPageChange"
       v-model:selection="selectedRows"
@@ -362,7 +361,7 @@ const fetchData = async () => {
 const onPageChange = (event) => {
   currentPage.value = event.page;
   rowsPerPage.value = event.rows;
-  fetchData();
+  applyFilters(filters.value); // Reapply current filters with new pagination
 };
 const deleteItem = async (id) => {
   try {
@@ -426,10 +425,117 @@ const handleShowDeal = async (dealId) => {
 
 const applyFilters = async (newFilters) => {
   try {
+    loading.value = true;
     filters.value = { ...newFilters };
-    fetchData();
+
+    // Build filters object in the correct format
+    const apiFilters = {
+      page: currentPage.value + 1,
+      per_page: rowsPerPage.value,
+      sort_by: "created_at",
+      sort_type: "desc",
+    };
+
+    // Add filters directly to the main object
+    if (filters.value.source) {
+      apiFilters["filters[source_id]"] = parseInt(filters.value.source);
+    }
+
+    if (filters.value.stage) {
+      apiFilters["filters[stage_id]"] = parseInt(filters.value.stage);
+    }
+
+    // Add status filters
+    if (Array.isArray(filters.value.status)) {
+      if (filters.value.status.includes("unassigned")) {
+        apiFilters["filters[unassigned]"] = 1;
+      }
+      if (filters.value.status.includes("no_comments")) {
+        apiFilters["filters[uncommented]"] = 1;
+      }
+      if (filters.value.status.includes("no_task")) {
+        apiFilters["filters[no_tasks]"] = 1;
+      }
+      if (filters.value.status.includes("overdue")) {
+        apiFilters["filters[overdue]"] = 1;
+      }
+      if (filters.value.status.includes("new")) {
+        apiFilters["filters[new]"] = 1;
+      }
+      if (filters.value.status.includes("reclaimed")) {
+        apiFilters["filters[reclaimed]"] = 1;
+      }
+    }
+
+    // Add date filters
+    if (filters.value.createdStart) {
+      apiFilters["filters[created_at_start]"] = filters.value.createdStart;
+    }
+    if (filters.value.createdEnd) {
+      apiFilters["filters[created_at_end]"] = filters.value.createdEnd;
+    }
+    if (filters.value.modifiedStart) {
+      apiFilters["filters[updated_at_start]"] = filters.value.modifiedStart;
+    }
+    if (filters.value.modifiedEnd) {
+      apiFilters["filters[updated_at_end]"] = filters.value.modifiedEnd;
+    }
+
+    // Add other filters
+    if (filters.value.representative) {
+      apiFilters["filters[user_id]"] = parseInt(filters.value.representative);
+    }
+    if (filters.value.package) {
+      apiFilters["filters[package_id]"] = parseInt(filters.value.package);
+    }
+
+    console.log("API Filters:", apiFilters);
+    console.log("API Request URL:", new URLSearchParams(apiFilters).toString());
+
+    const response = await getDeals(apiFilters);
+    console.log("API Response:", response);
+
+    if (!response?.data?.data) {
+      toast.info(t("noDealsFound"));
+      rows.value = [];
+      totalRows.value = 0;
+      return;
+    }
+
+    // Make sure we have stages and sources loaded
+    if (stages.value.length === 0 || sources.value.length === 0) {
+      await fetchStagesAndSources();
+    }
+
+    rows.value = response.data.data.map((deal) => {
+      const matchedStage = stages.value.find(
+        (stage) => stage.id === deal.stage_id
+      );
+      const matchedSource = sources.value.find(
+        (source) => source.id === deal.source_id
+      );
+
+      return {
+        id: deal.id,
+        name: deal.name || "Empty",
+        phone: deal.phone,
+        note: deal.note || "Empty",
+        created_at: deal.created_at.split("T")[0],
+        stage: matchedStage ? matchedStage.name : "Not set",
+        responsible: deal.responsible_user?.name || "Not Assigned",
+        source: matchedSource ? matchedSource.name : "Not set",
+      };
+    });
+
+    totalRows.value = response.data.meta.total;
+    toast.success(t("success.applyFilters"), { timeout: 3000 });
   } catch (error) {
     console.error("Filter Error:", error);
+    toast.error(t("error.applyFilters"), { timeout: 3000 });
+    rows.value = [];
+    totalRows.value = 0;
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -461,6 +567,7 @@ const resetFilter = () => {
     status: [],
   };
   selectedStatuses.value = [];
+  fetchData(); // Fetch data with default filters
 };
 
 const openFilterModal = () => {
@@ -579,21 +686,21 @@ const fetchUsers = async () => {
   }
 };
 
-const loadCarsLazy = async (event) => {
-  try {
-    const response = await getDeals({
-      page: event.page + 1,
-      per_page: event.rows,
-      sort_by: "created_at",
-      sort_order: "desc",
-    });
-    rows.value = response.data.data;
-    totalRows.value = response.data.meta.total;
-  } catch (error) {
-    console.error("Error fetching lazy data:", error);
-    toast.error(t("error.fetchFailed"));
-  }
-};
+// const loadCarsLazy = async (event) => {
+//   try {
+//     const response = await getDeals({
+//       page: event.page + 1,
+//       per_page: event.rows,
+//       sort_by: "created_at",
+//       sort_order: "desc",
+//     });
+//     rows.value = response.data.data;
+//     totalRows.value = response.data.meta.total;
+//   } catch (error) {
+//     console.error("Error fetching lazy data:", error);
+//     toast.error(t("error.fetchFailed"));
+//   }
+// };
 
 const handleBulkUpdate = async (key, value) => {
   try {
@@ -748,6 +855,7 @@ onUnmounted(() => {
   window.removeEventListener("contextmenu", handleRightClick);
 });
 </script>
+
 <style scoped>
 .crm-container {
   width: 100%;

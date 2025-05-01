@@ -19,6 +19,64 @@
       <div
         class="actions-group d-flex justify-content-center align-items-center gap-2 bg-success rounded-2 rounded-end-0"
       >
+        <div class="Clipboard">
+          <button
+            @click="toggleClipboard"
+            v-click-outside="closeClipboard"
+            aria-label="Clipboard"
+            class="border-0 bg-transparent fs-6 text-dark p-0 m-0"
+          >
+            <i class="fa-regular fa-clipboard text-white"></i>
+          </button>
+          <!-- :class="{
+              'text-end': currentLanguage === 'ar',
+              'text-start': currentLanguage === 'en',
+            }"
+            :dir="currentLanguage === 'ar' ? 'rtl' : 'ltr'" -->
+          <div
+            v-if="isClipboardVisible"
+            class="listClipboard row bg-body-tertiary border border-1 border-dark-subtle text-end w-25 position-absolute fs-6 bottom-100 text-break text-wrap"
+            dir="rtl"
+          >
+            <div
+              class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle"
+            >
+              <i class="fa-solid fa-xmark fs-5"></i>
+              <!-- <button
+                class="btn btn-sm btn-outline-secondary"
+                @click="toggleLanguage"
+              >
+                {{ currentLanguage === "ar" ? "AR" : "EN" }}
+              </button> -->
+              <span>الردود السريعة</span>
+              <i class="fa-regular fa-clipboard fs-5"></i>
+            </div>
+            <div
+              class="col-12 border-bottom border-secondary-subtle py-1"
+              @click="addClipboard('خدماتنا الطبية')"
+            >
+              <span>خدماتنا الطبية</span>
+            </div>
+            <div
+              class="col-12 border-bottom border-secondary-subtle py-1"
+              @click="addClipboard('تحديد المشكلة')"
+            >
+              <span>تحديد المشكلة</span>
+            </div>
+            <div
+              class="col-12 border-bottom border-secondary-subtle py-1"
+              @click="addClipboard('إستشارة مجانية')"
+            >
+              <span>إستشارة مجانية</span>
+            </div>
+            <div
+              class="col-12 border-bottom border-secondary-subtle py-1"
+              @click="addClipboard('معلومات إضافية')"
+            >
+              <span>معلومات إضافية</span>
+            </div>
+          </div>
+        </div>
         <div class="emoje">
           <button
             type="submit"
@@ -96,50 +154,6 @@
             />
           </form>
         </div>
-        <!-- <div class="Clipboard">
-          <button
-            @click="toggleClipboard"
-            v-click-outside="closeClipboard"
-            aria-label="Clipboard"
-            class="border-0 bg-transparent fs-6 text-dark pb-1"
-          >
-            <i class="fa-regular fa-clipboard"></i>
-          </button>
-          <div
-            v-if="isClipboardVisible"
-            :class="{
-              'text-end': currentLanguage === 'ar',
-              'text-start': currentLanguage === 'en',
-            }"
-            :dir="currentLanguage === 'ar' ? 'rtl' : 'ltr'"
-            class="listClipboard row bg-body-tertiary border border-1 border-dark-subtle text-start w-25 position-absolute fs-6 bottom-100 text-break text-wrap"
-          >
-            <div
-              class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle"
-            >
-              <i class="fa-solid fa-xmark fs-5"></i>
-              <button
-                class="btn btn-sm btn-outline-secondary"
-                @click="toggleLanguage"
-              >
-                {{ currentLanguage === "ar" ? "AR" : "EN" }}
-              </button>
-              <i class="fa-regular fa-clipboard fs-5"></i>
-            </div>
-            <div
-              class="col-12 border-bottom border-secondary-subtle"
-              @click="addClipboard('Hi')"
-            >
-              <span>Hi</span>
-            </div>
-            <div
-              class="col-12 border-bottom border-light-subtle"
-              @click="addClipboard('hi')"
-            >
-              <span>hi</span>
-            </div>
-          </div>
-        </div> -->
       </div>
       <div class="flex-grow-1 position-relative">
         <!-- <div
@@ -173,6 +187,10 @@
         >
           <div class="modal-content rounded-3" @click.stop>
             <div class="modal-body">
+              <i
+                class="fa-solid fa-xmark fs-5 IconRemoveFile cursor-pointer"
+                @click="closeModalImage"
+              ></i>
               <div v-if="attachedFileType === 'image'">
                 <img
                   :src="attachedFilePreview"
@@ -495,6 +513,14 @@ export default {
       modalContent.style.animation = "slideDown 0.3s ease-out forwards";
       setTimeout(() => {
         this.isModalOpen = false;
+        this.attachedFile = null;
+        this.attachedFilePreview = null;
+        this.attachedFileName = "";
+        this.attachedFileType = "";
+        this.newMessageImage = "";
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null;
+        }
       }, 300);
     },
     StartRecordingVoice() {
@@ -839,5 +865,8 @@ export default {
 
 .textarea-input::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+.IconRemoveFile {
+  cursor: pointer;
 }
 </style>

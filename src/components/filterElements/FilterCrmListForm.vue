@@ -199,14 +199,15 @@ export default {
   setup(props, { emit }) {
     const { t } = useI18n();
     const localFilters = ref({
-      source_id: "",
-      stage_id: "",
-      user_id: "",
-      package_id: "",
-      created_at_start: "",
-      created_at_end: "",
-      updated_at_start: "",
-      updated_at_end: "",
+      source: "",
+      stage: "",
+      supervisor: "",
+      representative: "",
+      package: "",
+      createdStart: "",
+      createdEnd: "",
+      modifiedStart: "",
+      modifiedEnd: "",
       status: [],
       ...props.filters,
     });
@@ -237,23 +238,17 @@ export default {
       }
       emit("update:selectedStatuses", newSelectedStatuses);
 
-      localFilters.value = {
-        ...localFilters.value,
-        status: newSelectedStatuses,
-      };
+      // Update local filters with status
+      localFilters.value.status = newSelectedStatuses;
       emit("update:filters", localFilters.value);
     };
+
+    // Watch for all filter changes
     watch(
-      () => props.filters,
+      () => localFilters.value,
       (newFilters) => {
-        localFilters.value = { ...newFilters };
-      },
-      { deep: true }
-    );
-    watch(
-      () => props.selectedStatuses,
-      (newStatuses) => {
-        localFilters.value.status = newStatuses;
+        console.log("Filters changed:", newFilters);
+        emit("update:filters", newFilters);
       },
       { deep: true }
     );
@@ -309,10 +304,21 @@ export default {
       local_sources,
       toggleStatus,
       t,
-      local_supervisors,
-      local_representatives,
-      local_packages,
-      local_company,
+      supervisors: [
+        { value: "any", label: "Any" },
+        { value: "eurasia", label: "Eurasia Admin" },
+        { value: "sup", label: "Sup Sup" },
+      ],
+      representatives: [
+        { value: "any", label: "Any" },
+        { value: "bader", label: "Bader Rep" },
+        { value: "reem", label: "Reem Rep" },
+      ],
+      packages: [
+        { value: "any", label: "Any" },
+        { value: "basic", label: "Basic Package" },
+        { value: "premium", label: "Premium Package" },
+      ],
     };
   },
 };
