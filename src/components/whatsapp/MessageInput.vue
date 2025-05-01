@@ -173,6 +173,10 @@
         >
           <div class="modal-content rounded-3" @click.stop>
             <div class="modal-body">
+              <i
+                class="fa-solid fa-xmark fs-5 IconRemoveFile cursor-pointer"
+                @click="closeModalImage"
+              ></i>
               <div v-if="attachedFileType === 'image'">
                 <img
                   :src="attachedFilePreview"
@@ -494,6 +498,14 @@ export default {
       modalContent.style.animation = "slideDown 0.3s ease-out forwards";
       setTimeout(() => {
         this.isModalOpen = false;
+        this.attachedFile = null;
+        this.attachedFilePreview = null;
+        this.attachedFileName = "";
+        this.attachedFileType = "";
+        this.newMessageImage = "";
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null;
+        }
       }, 300);
     },
     StartRecordingVoice() {
@@ -838,5 +850,8 @@ export default {
 
 .textarea-input::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+.IconRemoveFile {
+  cursor: pointer;
 }
 </style>
