@@ -190,10 +190,6 @@ export default {
       type: Array,
       default: () => [],
     },
-    packages: {
-      type: Array,
-      default: () => [],
-    },
   },
   emits: ["update:filters", "update:selectedStatuses"],
   setup(props, { emit }) {

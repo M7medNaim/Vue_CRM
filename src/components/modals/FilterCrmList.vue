@@ -60,6 +60,9 @@ export default {
     const toast = useToast();
     const filters = ref({ ...props.modelValue });
     const localSelectedStatuses = ref([...props.selectedStatuses]);
+    const local_stages = ref([]);
+    const local_sources = ref([]);
+    const local_users = ref([]);
 
     // Watch for changes in modelValue
     watch(

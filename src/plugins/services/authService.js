@@ -281,11 +281,16 @@ export const sendMessage = (messageData) => {
   });
 };
 
-export const sendInitMessage = (deal_id, conversation_id) => {
+export const sendInitMessage = (deal_id, conversation_id, init_message_id) => {
   return axios.post("/whatsapp/send-init", {
     deal_id: deal_id,
     conversation_id: conversation_id,
+    init_message_id: init_message_id,
   });
+};
+
+export const getInitMessages = () => {
+  return axios.get("/whatsapp/init-messages");
 };
 
 export const changePinStatus = (id) => {
