@@ -169,7 +169,7 @@ export default {
               conversation.img ||
               require("@/assets/whatsappImage/default-userImage.jpg"),
             name: conversation.name || conversation.contact?.name,
-            phone: conversation.phone?.phone || "",
+            phone: conversation.phone || "",
             rating: conversation.rating,
             unread_count: conversation.unread_count,
             time: last_message
@@ -235,7 +235,7 @@ export default {
 
           this.chats[index].isActive = true;
           this.chats[index].unread_count = 0;
-
+          console.log("opening chat:", chat);
           this.$emit("select-chat", {
             ...chat,
             id: chat.id,
