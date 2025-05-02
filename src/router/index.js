@@ -15,6 +15,7 @@ import CrmTasks from "@/views/CrmTasks.vue";
 import CrmList from "@/views/CrmListView.vue";
 import TasksKanban from "@/views/CrmTasks.vue";
 import BroadcastSettings from "@/views/BroadcastSettings.vue";
+import SettingStageConv from "@/views/StagingSetting.vue";
 
 const routes = [
   {
@@ -108,6 +109,16 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "General Settings",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
+  },
+  {
+    path: "/stageing-settings",
+    name: "StageingSettings",
+    component: SettingStageConv,
+    meta: {
+      requiresAuth: true,
+      title: "Stageing Settings",
     },
     beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
   },
