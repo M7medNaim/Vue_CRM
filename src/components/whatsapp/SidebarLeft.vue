@@ -74,11 +74,14 @@
               </template>
             </div>
             <div class="head pe-2 d-flex justify-content-between">
-              <h4 class="name fs-6 fw-medium text-black">
+              <h4
+                class="name text-black"
+                style="font-size: 14px; font-weight: 400"
+              >
                 {{ chat.name }}
                 <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
-              <span class="time text-success" style="font-size: 10px">{{
+              <span class="time text-success" style="font-size: 12px">{{
                 chat.time
               }}</span>
             </div>
