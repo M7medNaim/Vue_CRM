@@ -24,7 +24,7 @@
                   <input
                     class="form-check-input shadow-none custom-switch"
                     type="checkbox"
-                    v-model="stage.timer_status"
+                    :checked="stage.timer_status"
                     @change="changeStageStatus(stage.id)"
                   />
                 </div>
@@ -70,9 +70,10 @@ export default {
 
     const changeStageStatus = async (id) => {
       try {
-        const stage = stages.value.find((stage) => stage.id === id);
+        const stage = stages.value.find((stage) => stage.id == id);
         if (stage) {
-          stage.timer_status = !stage.timer_status;
+          stage.timer_status = stage.timer_status ? 0 : 1;
+          console.log("Stage status:", stage.timer_status);
           await updateStage(id, { timer_status: stage.timer_status });
           toast.success("Stage status updated successfully");
         }
@@ -83,7 +84,7 @@ export default {
 
     const updateStageTimer = async (id) => {
       try {
-        const stage = stages.value.find((stage) => stage.id === id);
+        const stage = stages.value.find((stage) => stage.id == id);
         if (stage) {
           await updateStage(id, { timer_allowed: stage.timer_allowed });
           toast.success("Stage timer updated successfully");
