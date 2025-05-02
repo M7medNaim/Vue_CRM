@@ -2,19 +2,20 @@
   <div class="top-bar pe-1 position-relative pt-2">
     <div class="row">
       <div
-        class="col-2 col-md-3 d-flex align-items-center text-white fs-6 pt-1"
+        class="col-3 col-md-5 d-flex align-items-center text-white fs-6 pt-1"
       >
         <img
           v-show="user_role === 'sales'"
           class="me-2"
-          src="@/assets/Mediceva-Logo.png"
+          src="@/assets/new-nokta-logo.png"
           style="width: 40px; height: 40px"
           alt=""
         />
         <span>{{ pageTitle }}</span>
         <router-link
           v-if="
-            $route.path === '/general-setting' &&
+            ($route.path === '/general-settings' ||
+              $route.path === '/broadcast-settings') &&
             permissionStore.hasPermission(PERMISSIONS.ROLES_SETTINGS)
           "
           to="/role-settings"
@@ -25,12 +26,29 @@
           }}</span>
         </router-link>
         <router-link
-          v-if="$route.path === '/role-settings'"
-          to="/general-setting"
+          v-if="
+            ($route.path === '/role-settings' ||
+              $route.path === '/broadcast-settings') &&
+            permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+          "
+          to="/general-settings"
           class="text-decoration-none ms-3 border-3 border-start border-white"
         >
           <span class="text-white px-3">{{
             $t("header-subnav-item-settings-general")
+          }}</span>
+        </router-link>
+        <router-link
+          v-if="
+            ($route.path === '/general-settings' ||
+              $route.path === '/role-settings') &&
+            permissionStore.hasPermission(PERMISSIONS.BROADCAST_SETTINGS)
+          "
+          to="/broadcast-settings"
+          class="text-decoration-none ms-3 border-3 border-start border-white"
+        >
+          <span class="text-white px-3">{{
+            $t("header-subnav-item-settings-broadcast")
           }}</span>
         </router-link>
       </div>
@@ -52,7 +70,7 @@
           </transition>
         </button>
       </div>
-      <div class="col-6 col-md-5 d-flex justify-content-end align-items-center">
+      <div class="col d-flex justify-content-end align-items-center">
         <div class="user-info d-flex justify-content-end align-items-center">
           <button
             v-if="hasNewChanges"

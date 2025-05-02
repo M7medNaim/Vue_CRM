@@ -167,11 +167,8 @@ export default {
       return this.selectedChat?.messages || [];
     },
     lastMessageDate() {
-      // console.log(
-      //   "lastMessageDate",
-      //   this.selectedChat.last_message?.created_at
-      // );
-      return this.selectedChat.last_message?.created_at;
+      console.log("lastMessageDate", this.selectedChat.created_at_last_message);
+      return this.selectedChat.created_at_last_message;
     },
   },
   watch: {
@@ -247,11 +244,11 @@ export default {
         }
       }
     },
-    sendInit() {
-      console.log("Sending init message...");
+    sendInit(init_message_id) {
+      console.log("Sending init message...", init_message_id);
       if (this.selectedChat) {
         console.log("Selected chat ID in sendInit:", this.selectedChat.id);
-        sendInitMessage(null, this.selectedChat.id)
+        sendInitMessage(null, this.selectedChat.id, init_message_id || null)
           .then((response) => {
             console.log("Init message sent:", response);
             const user_name = Cookies.get("name");
@@ -259,7 +256,7 @@ export default {
             const newMessage = {
               id: response.data?.data?.id || Date.now(),
               type: "msg-me",
-              text: `Hello, I am ${user_name} from Nokta Clinic.`,
+              text: response.data?.data?.last_message?.text_body || "",
               time: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",

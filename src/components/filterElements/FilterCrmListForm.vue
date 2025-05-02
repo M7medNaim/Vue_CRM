@@ -37,7 +37,7 @@
           <div class="col-9">
             <div class="mb-3">
               <select
-                v-model="localFilters.source"
+                v-model="localFilters.source_id"
                 class="form-select text-secondary"
               >
                 <option
@@ -59,7 +59,7 @@
           <div class="col-9">
             <div class="mb-3">
               <select
-                v-model="localFilters.stage"
+                v-model="localFilters.stage_id"
                 class="form-select text-secondary"
               >
                 <option
@@ -82,38 +82,15 @@
           <div class="col-9">
             <div class="mb-3">
               <select
-                v-model="localFilters.supervisor"
+                v-model="localFilters.user_id"
                 class="form-select text-secondary"
               >
                 <option
-                  v-for="supervisor in supervisors"
-                  :key="supervisor.value"
-                  :value="supervisor.value"
+                  v-for="user in users"
+                  :key="user.value"
+                  :value="user.value"
                 >
-                  {{ supervisor.label }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Representative Filter -->
-        <div class="row">
-          <div class="col-3 pt-2">
-            <span>{{ t("crmlist-modal-filter-label-representative") }}</span>
-          </div>
-          <div class="col-9">
-            <div class="mb-3">
-              <select
-                v-model="localFilters.representative"
-                class="form-select text-secondary"
-              >
-                <option
-                  v-for="representative in representatives"
-                  :key="representative.value"
-                  :value="representative.value"
-                >
-                  {{ representative.label }}
+                  {{ user.label }}
                 </option>
               </select>
             </div>
@@ -121,7 +98,7 @@
         </div>
 
         <!-- Package Filter -->
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-3 pt-2">
             <span>{{ t("crmlist-modal-filter-label-packages") }}</span>
           </div>
@@ -141,7 +118,7 @@
               </select>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Created Date Range -->
         <div class="row mb-3">
@@ -154,12 +131,12 @@
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.createdStart"
+              v-model="localFilters.created_at_start"
             />
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.createdEnd"
+              v-model="localFilters.created_at_end"
             />
           </div>
         </div>
@@ -175,12 +152,12 @@
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.modifiedStart"
+              v-model="localFilters.updated_at_start"
             />
             <input
               type="date"
               class="form-control text-secondary"
-              v-model="localFilters.modifiedEnd"
+              v-model="localFilters.updated_at_end"
             />
           </div>
         </div>
@@ -190,9 +167,8 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getStages, getSources } from "@/plugins/services/authService";
 
 export default {
   name: "FilterCrmListFormVue",
@@ -201,6 +177,18 @@ export default {
     selectedStatuses: {
       type: Array,
       required: true,
+    },
+    stages: {
+      type: Array,
+      default: () => [],
+    },
+    sources: {
+      type: Array,
+      default: () => [],
+    },
+    users: {
+      type: Array,
+      default: () => [],
     },
   },
   emits: ["update:filters", "update:selectedStatuses"],
@@ -219,37 +207,13 @@ export default {
       status: [],
       ...props.filters,
     });
-    const stages = ref([]);
-    const sources = ref([]);
-    const fetchStages = async () => {
-      try {
-        const response = await getStages();
-        if (response.status === 200) {
-          stages.value = response.data.data.map((stage) => ({
-            value: stage.id,
-            name: stage.name,
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching stages:", error);
-      }
-    };
-    const fetchSources = async () => {
-      try {
-        const response = await getSources();
-        if (response.status === 200) {
-          sources.value = response.data.data.map((source) => ({
-            value: source.id,
-            name: source.name,
-          }));
-        } else {
-          // alert("Failed to fetch sources");
-        }
-      } catch (error) {
-        console.error("Error fetching sources:", error);
-        // alert("Failed to fetch sources");
-      }
-    };
+    const local_stages = ref([]);
+    const local_sources = ref([]);
+    const local_company = ref([]);
+    const local_supervisors = ref([]);
+    const local_representatives = ref([]);
+    const local_packages = ref([]);
+
     const statuses = ref([
       { value: "unassigned", label: "Unassigned" },
       { value: "no_comments", label: "No Comments" },
@@ -285,16 +249,55 @@ export default {
       { deep: true }
     );
 
-    onMounted(() => {
-      fetchStages();
-      fetchSources();
-    });
+    watch(
+      () => props.stages,
+      (newStages) => {
+        local_stages.value = newStages;
+        console.log("form local_stages", local_stages.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.sources,
+      (newSources) => {
+        local_sources.value = newSources;
+        console.log("form local_sources", local_sources.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.users,
+      (newUsers) => {
+        console.log("form new users", newUsers);
+        local_company.value = newUsers.filter(
+          (user) => user.role === "company"
+        );
+        local_supervisors.value = newUsers.filter(
+          (user) => user.role === "supervisor"
+        );
+        local_representatives.value = newUsers.filter(
+          (user) => user.role === "sales"
+        );
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.packages,
+      (newPackages) => {
+        local_packages.value = newPackages;
+        console.log("form local_packages", local_packages.value);
+      },
+      { deep: true }
+    );
 
     return {
       localFilters,
       statuses,
-      stages,
-      sources,
+      local_stages,
+      local_sources,
       toggleStatus,
       t,
       supervisors: [

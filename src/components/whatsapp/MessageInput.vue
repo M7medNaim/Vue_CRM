@@ -5,12 +5,9 @@
       v-if="showWarning"
       class="message-warning bg-transparent text-dark position-absolute rounded-3 d-flex justify-content-between align-items-center"
     >
-      <!-- <span class="me-2 w-100"
-            >
-          </span> -->
       <button
         class="btn btn-sm text-end btnConfirm w-100 text-center bg-success text-white"
-        @click="hideWarning"
+        @click="sendInitMessage(null)"
       >
         You must click here in order to send messages.
       </button>
@@ -28,11 +25,6 @@
           >
             <i class="fa-regular fa-clipboard text-white"></i>
           </button>
-          <!-- :class="{
-              'text-end': currentLanguage === 'ar',
-              'text-start': currentLanguage === 'en',
-            }"
-            :dir="currentLanguage === 'ar' ? 'rtl' : 'ltr'" -->
           <div
             v-if="isClipboardVisible"
             class="listClipboard row bg-body-tertiary border border-1 border-dark-subtle text-end position-absolute fs-6 bottom-100 text-break text-wrap"
@@ -42,38 +34,16 @@
               class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle position-sticky top-0"
             >
               <i class="fa-solid fa-xmark fs-5"></i>
-              <!-- <button
-                class="btn btn-sm btn-outline-secondary"
-                @click="toggleLanguage"
-              >
-                {{ currentLanguage === "ar" ? "AR" : "EN" }}
-              </button> -->
               <span>الردود السريعة</span>
               <i class="fa-regular fa-clipboard fs-5"></i>
             </div>
             <div
+              v-for="init_message in init_messages"
+              :key="init_message.id"
               class="col-12 border-bottom border-secondary-subtle py-1"
-              @click="addClipboard('خدماتنا الطبية')"
+              @click="sendInitMessage(init_message.id)"
             >
-              <span>خدماتنا الطبية</span>
-            </div>
-            <div
-              class="col-12 border-bottom border-secondary-subtle py-1"
-              @click="addClipboard('تحديد المشكلة')"
-            >
-              <span>تحديد المشكلة</span>
-            </div>
-            <div
-              class="col-12 border-bottom border-secondary-subtle py-1"
-              @click="addClipboard('إستشارة مجانية')"
-            >
-              <span>إستشارة مجانية</span>
-            </div>
-            <div
-              class="col-12 border-bottom border-secondary-subtle py-1"
-              @click="addClipboard('معلومات إضافية')"
-            >
-              <span>معلومات إضافية</span>
+              <span>{{ init_message.name }}</span>
             </div>
           </div>
         </div>
@@ -156,30 +126,6 @@
         </div>
       </div>
       <div class="flex-grow-1 position-relative">
-        <!-- <div
-          v-if="attachedImage"
-          class="attached-image-preview position-absolute"
-        >
-          <img
-            :src="attachedImage"
-            alt="Attached Image"
-            class="preview-image"
-          />
-          <span class="image-name">{{ attachedFileName }}</span>
-          <button @click="removeImage" class="remove-image-btn">
-            <i class="fa-solid fa-times"></i>
-          </button>
-        </div>
-        <div
-          v-if="attachedFile"
-          class="attached-image-preview position-absolute"
-        >
-          <i class="fa-solid fa-file fs-1 me-2"></i>
-          <span class="image-name">{{ attachedFileName }}</span>
-          <button @click="removeImage" class="remove-image-btn">
-            <i class="fa-solid fa-times"></i>
-          </button>
-        </div> -->
         <div
           v-if="isModalOpen"
           class="modal-overlay"
@@ -208,7 +154,7 @@
               <div class="input-group mt-2 w-100">
                 <input
                   type="text"
-                  v-model="newMessageImage"
+                  v-model="newMessage"
                   placeholder="أضف وصفًا ..."
                   class="caption-input rounded-start-3 flex-grow-1"
                 />
@@ -335,8 +281,9 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { getInitMessages } from "@/plugins/services/authService";
 export default {
   name: "MessageInput",
   props: {
@@ -369,13 +316,15 @@ export default {
   },
   setup(props, { emit }) {
     const showWarning = ref(true);
+    const init_messages = ref([]);
 
-    const hideWarning = () => {
+    const sendInitMessage = (id) => {
       showWarning.value = false;
-      emit("send-init-message");
+      emit("send-init-message", id);
     };
 
     const checkLastMessageTime = () => {
+      console.log("Checking last message time...", props.lastMessageDate);
       if (props.lastMessageDate) {
         const lastMessageTime = new Date(props.lastMessageDate).getTime();
         const currentTime = new Date().getTime();
@@ -385,6 +334,18 @@ export default {
         showWarning.value = true;
       }
     };
+
+    const fetchInitMessages = async () => {
+      const response = await getInitMessages();
+      if (response.data && response.data.data) {
+        init_messages.value = response.data.data;
+        console.log("Init messages:", init_messages.value);
+      }
+    };
+
+    onMounted(() => {
+      fetchInitMessages();
+    });
 
     watch(
       [() => props.conversationId, () => props.lastMessageDate],
@@ -396,7 +357,9 @@ export default {
 
     return {
       showWarning,
-      hideWarning,
+      sendInitMessage,
+      fetchInitMessages,
+      init_messages,
     };
   },
   methods: {

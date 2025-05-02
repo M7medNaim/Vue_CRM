@@ -65,7 +65,6 @@ import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
-  getBackgroundId,
   getBackgroundImages,
   saveBackgroundId,
 } from "@/plugins/services/authService";
@@ -112,20 +111,14 @@ export default {
 
     const selectBackground = async (imageId) => {
       try {
-        const bg_url = await getBackgroundId(imageId);
-        if (!bg_url) {
-          toast.error(t("backgroundPicker1.error"), {
-            timeout: 3000,
-          });
-          return;
-        }
-        document.body.style.backgroundImage = `url(${bg_url.data.url})`;
+        const response = await saveBackgroundId(imageId);
+        let imageUrl = response.data.data.url;
+        document.body.style.backgroundImage = `url(${imageUrl})`;
         document.body.style.backgroundSize = "cover";
         document.body.style.backgroundPosition = "center";
 
-        localStorage.setItem("backgroundImage", bg_url.data.url);
+        localStorage.setItem("backgroundImage", imageUrl);
 
-        const response = await saveBackgroundId(imageId);
         console.log("API response:", response);
 
         if (response.status === 200 || response.status === 201) {

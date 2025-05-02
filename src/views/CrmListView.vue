@@ -34,11 +34,11 @@
         <div class="col-sm-6 col-lg">
           <div class="input-group position-relative">
             <input
-              type="text"
+              type="search"
               class="form-control"
               :placeholder="t('crmlist-placeholder-search')"
               v-model="searchInput"
-              @keyup.enter="search = searchInput"
+              @search="fetchData"
             />
             <i
               v-if="searchInput"
@@ -178,6 +178,9 @@
     @apply-filters="applyFilters"
     @reset-filter="resetFilter"
     :selectedStatuses="selectedStatuses"
+    :stages="stages"
+    :sources="sources"
+    :users="users"
   />
   <!-- @add-deal="addNewDeal" -->
   <DealModal @add-deal="addNewDeal" ref="dealModal" />
@@ -198,6 +201,7 @@ import {
   getStages,
   bulkUpdateDeals,
   bulkDeleteDeals,
+  getAllUsers,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
@@ -223,6 +227,7 @@ const selectedAction = ref("");
 const selectedStatuses = ref([]);
 const sources = ref([]);
 const stages = ref([]);
+const users = ref([]);
 
 const filters = ref({
   source: "",
@@ -230,10 +235,10 @@ const filters = ref({
   supervisor: "",
   representative: "",
   package: "",
-  createdStart: "",
-  createdEnd: "",
-  modifiedStart: "",
-  modifiedEnd: "",
+  created_at_start: "",
+  created_at_end: "",
+  updated_at_start: "",
+  updated_at_end: "",
   status: [],
 });
 const dealData = ref(null);
@@ -266,18 +271,6 @@ const executeAction = () => {
         modal.show();
       }
       break;
-
-    // case "assignSalesSupervisor":
-    //   modalElement = document.getElementById("assignSupervisorModal");
-    //   if (modalElement) {
-    //     modal = new Modal(modalElement, {
-    //       backdrop: true,
-    //       keyboard: true,
-    //       focus: true,
-    //     });
-    //     modal.show();
-    //   }
-    //   break;
 
     case "assignUser":
       modalElement = document.getElementById("assignUser");
@@ -316,20 +309,16 @@ const fetchData = async () => {
     if (stages.value.length === 0 || sources.value.length === 0) {
       await fetchStagesAndSources();
     }
-    // if (stages.value.length === 0 || sources.value.length === 0) {
-    //   const [stagesRes, sourcesRes] = await Promise.all([
-    //     getStages(),
-    //     getSources(),
-    //   ]);
-    //   stages.value = stagesRes.data.data;
-    //   sources.value = sourcesRes.data.data;
-    // }
+
+    console.log("filters", filters.value);
 
     const dealsRes = await getDeals({
+      search: searchInput.value,
       page: currentPage.value + 1,
       per_page: rowsPerPage.value,
       sort_by: "created_at",
       sort_order: "desc",
+      filters: filters.value,
     });
 
     if (!Array.isArray(dealsRes?.data?.data)) {
@@ -560,6 +549,7 @@ const openDealModal = () => {
 const clearSearch = () => {
   searchInput.value = "";
   search.value = "";
+  fetchData();
 };
 
 // Opening and closing modals
@@ -570,10 +560,10 @@ const resetFilter = () => {
     supervisor: "",
     representative: "",
     package: "",
-    createdStart: "",
-    createdEnd: "",
-    modifiedStart: "",
-    modifiedEnd: "",
+    created_at_start: "",
+    created_at_end: "",
+    updated_at_start: "",
+    updated_at_end: "",
     status: [],
   };
   selectedStatuses.value = [];
@@ -666,17 +656,51 @@ const handleRightClick = (event) => {
 const fetchStagesAndSources = async () => {
   try {
     if (stages.value.length === 0 || sources.value.length === 0) {
-      const [stagesRes, sourcesRes] = await Promise.all([
-        getStages(),
-        getSources(),
-      ]);
-      stages.value = stagesRes.data.data;
-      sources.value = sourcesRes.data.data;
+      console.log("Fetching stages and sources...");
+      const stage_res = await getStages();
+      const source_res = await getSources();
+      stages.value = stage_res.data.data;
+      sources.value = source_res.data.data;
+      console.log("Fetched stages and sources:", {
+        stages: stages.value,
+        sources: sources.value,
+      });
     }
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
   }
 };
+
+const fetchUsers = async () => {
+  try {
+    const response = await getAllUsers();
+    if (response.status === 200) {
+      users.value = response.data.data.map((user) => ({
+        id: user.id,
+        name: user.name,
+        role: user.role,
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+};
+
+// const loadCarsLazy = async (event) => {
+//   try {
+//     const response = await getDeals({
+//       page: event.page + 1,
+//       per_page: event.rows,
+//       sort_by: "created_at",
+//       sort_order: "desc",
+//     });
+//     rows.value = response.data.data;
+//     totalRows.value = response.data.meta.total;
+//   } catch (error) {
+//     console.error("Error fetching lazy data:", error);
+//     toast.error(t("error.fetchFailed"));
+//   }
+// };
 
 const handleBulkUpdate = async (key, value) => {
   try {
@@ -816,6 +840,7 @@ const addNewDeal = (newDeal) => {
 onMounted(async () => {
   // await fetchStagesAndSources();
   await fetchData();
+  fetchUsers();
   const modalElements = document.querySelectorAll(".modal");
   modalElements.forEach((element) => {
     new Modal(element, {

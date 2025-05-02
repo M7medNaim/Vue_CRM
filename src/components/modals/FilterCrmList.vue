@@ -60,6 +60,9 @@ export default {
     const toast = useToast();
     const filters = ref({ ...props.modelValue });
     const localSelectedStatuses = ref([...props.selectedStatuses]);
+    const local_stages = ref([]);
+    const local_sources = ref([]);
+    const local_users = ref([]);
 
     // Watch for changes in modelValue
     watch(
@@ -132,10 +135,10 @@ export default {
           supervisor: "",
           representative: "",
           package: "",
-          createdStart: "",
-          createdEnd: "",
-          modifiedStart: "",
-          modifiedEnd: "",
+          created_at_start: "",
+          created_at_end: "",
+          updated_at_start: "",
+          updated_at_end: "",
           status: [],
         };
         filters.value = { ...emptyFilters };
@@ -157,6 +160,33 @@ export default {
       }
     };
 
+    watch(
+      () => props.stages,
+      (newStages) => {
+        local_stages.value = newStages;
+        console.log("filters local_stages", local_stages.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.sources,
+      (newSources) => {
+        local_sources.value = newSources;
+        console.log("filters local_sources", local_sources.value);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.users,
+      (newUsers) => {
+        console.log("filters new users", newUsers);
+        local_users.value = newUsers;
+      },
+      { deep: true }
+    );
+
     return {
       filters,
       localSelectedStatuses,
@@ -166,6 +196,9 @@ export default {
       updateSelectedStatuses,
       resetFilter,
       t,
+      local_stages,
+      local_sources,
+      local_users,
     };
   },
 };

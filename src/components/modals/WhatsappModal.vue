@@ -120,7 +120,6 @@ export default {
           return;
         }
 
-        console.log("Fetching messages for chat ID:", chatId);
         const response = await getMessageConv(chatId);
 
         if (response.data && response.data.data) {
@@ -156,6 +155,8 @@ export default {
             ...chat,
             id: chatId,
             messages,
+            created_at_last_message:
+              chat.created_at_last_message ?? chat.updated_at,
           };
 
           console.log("Updated selectedChat:", this.selectedChat);
