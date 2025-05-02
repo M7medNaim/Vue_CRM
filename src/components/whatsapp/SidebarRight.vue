@@ -22,7 +22,7 @@
               <div class="">
                 <p class="my-auto text-white ps-1">{{ selectedChat.name }}</p>
                 <p class="my-auto text-white" style="font-size: 14px">
-                  {{ selectedChat.phone }} {{ selectedChat }}
+                  {{ selectedChat.phone }}
                 </p>
               </div>
             </div>
