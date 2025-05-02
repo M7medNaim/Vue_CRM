@@ -126,6 +126,10 @@ export const getSources = () => axios.get("/sources");
 
 // Get All Stages
 export const getStages = () => axios.get("/stages");
+
+export const getStageTimers = async () => {
+  return await axios.get("/settings/stages/timers");
+};
 // ------------------------------------------------------------
 // Contacts
 // get all contacts

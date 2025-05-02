@@ -113,12 +113,12 @@ const routes = [
     beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
   },
   {
-    path: "/stageing-settings",
-    name: "StageingSettings",
+    path: "/stage-settings",
+    name: "StageSettings",
     component: SettingStageConv,
     meta: {
       requiresAuth: true,
-      title: "Stageing Settings",
+      title: "Stage Settings",
     },
     beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
   },

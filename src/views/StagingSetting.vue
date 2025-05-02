@@ -24,7 +24,7 @@
                   <input
                     class="form-check-input shadow-none custom-switch"
                     type="checkbox"
-                    v-model="stage.status"
+                    v-model="stage.timer_status"
                   />
                 </div>
               </div>
@@ -32,7 +32,7 @@
             <div class="col-4">
               <input
                 type="number"
-                v-model="stage.number"
+                v-model="stage.timer_allowed"
                 placeholder="Days Counts"
                 class="form-control"
               />
@@ -47,7 +47,7 @@
 <script>
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import { getStages } from "@/plugins/services/authService";
+import { getStageTimers } from "@/plugins/services/authService";
 import { ref, onMounted } from "vue";
 
 export default {
@@ -59,7 +59,7 @@ export default {
 
     const getAllStages = async () => {
       try {
-        const response = await getStages();
+        const response = await getStageTimers();
         stages.value = response.data.data;
       } catch (error) {
         toast.error("Error loading stages");
