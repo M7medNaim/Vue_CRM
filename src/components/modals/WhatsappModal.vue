@@ -259,11 +259,6 @@ export default {
       handler(newVal) {
         if (newVal) {
           this.$refs.leftSidebar.addNewChat(newVal);
-          this.setSelectedChat({
-            ...newVal,
-            isActive: true,
-            messages: [],
-          });
         }
       },
     },
