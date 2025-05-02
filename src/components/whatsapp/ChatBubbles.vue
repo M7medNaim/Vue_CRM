@@ -79,7 +79,7 @@
         style="white-space: pre-line"
         v-if="message.status === 'error'"
       >
-        أنا غير موجود عبر تطبيق واتساب، يرجى الإتصال بي!.
+        {{ t(message.text) }}
       </div>
       <button
         class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
@@ -189,6 +189,7 @@
   </button>
 </template>
 <script>
+import { useI18n } from "vue-i18n";
 export default {
   name: "ChatBubbles",
   props: {
@@ -210,6 +211,7 @@ export default {
       isFullScreenImageOpen: false,
       fullScreenImageUrl: "",
       showScrollButton: false,
+      t: useI18n().t,
     };
   },
   computed: {
