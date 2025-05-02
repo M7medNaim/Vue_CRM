@@ -25,6 +25,7 @@
                     class="form-check-input shadow-none custom-switch"
                     type="checkbox"
                     v-model="stage.timer_status"
+                    @change="changeStageStatus(stage.id)"
                   />
                 </div>
               </div>
@@ -35,6 +36,7 @@
                 v-model="stage.timer_allowed"
                 placeholder="Days Counts"
                 class="form-control"
+                @change="updateStageTimer(stage.id)"
               />
             </div>
           </div>
@@ -47,7 +49,7 @@
 <script>
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import { getStageTimers } from "@/plugins/services/authService";
+import { getStageTimers, updateStage } from "@/plugins/services/authService";
 import { ref, onMounted } from "vue";
 
 export default {
@@ -66,11 +68,43 @@ export default {
       }
     };
 
+    const changeStageStatus = async (id) => {
+      try {
+        const stage = stages.value.find((stage) => stage.id === id);
+        if (stage) {
+          stage.timer_status = !stage.timer_status;
+          await updateStage(id, { timer_status: stage.timer_status });
+          toast.success("Stage status updated successfully");
+        }
+      } catch (error) {
+        toast.error("Error updating stage status");
+      }
+    };
+
+    const updateStageTimer = async (id) => {
+      try {
+        const stage = stages.value.find((stage) => stage.id === id);
+        if (stage) {
+          await updateStage(id, { timer_allowed: stage.timer_allowed });
+          toast.success("Stage timer updated successfully");
+        }
+      } catch (error) {
+        toast.error("Error updating stage timer");
+      }
+    };
+
     onMounted(() => {
       getAllStages();
     });
 
-    return { t, toast, stages, getAllStages };
+    return {
+      t,
+      toast,
+      stages,
+      getAllStages,
+      changeStageStatus,
+      updateStageTimer,
+    };
   },
 };
 </script>

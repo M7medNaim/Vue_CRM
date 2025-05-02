@@ -130,6 +130,10 @@ export const getStages = () => axios.get("/stages");
 export const getStageTimers = async () => {
   return await axios.get("/settings/stages/timers");
 };
+
+export const updateStage = async (id, params) => {
+  return await axios.patch(`/stages/${id}`, params);
+};
 // ------------------------------------------------------------
 // Contacts
 // get all contacts
