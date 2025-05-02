@@ -9,7 +9,7 @@
             :key="stage.id"
             class="stage-header position-relative"
             @click="
-              permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE) &&
+              permissionStore.hasPermission('edit-stage') &&
                 openUpdateStage(stage)
             "
             :title="stage.description || stage.name"
@@ -38,7 +38,7 @@
               </span>
             </div>
             <button
-              v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+              v-if="permissionStore.hasPermission('edit-stage')"
               class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
               style="right: -2%; top: 3%"
             >
@@ -105,7 +105,7 @@
     @stage-change="changeDealStage"
   />
   <!-- selectedDeal -->
-  <div v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)">
+  <div v-if="permissionStore.hasPermission('edit-stage')">
     <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
   </div>
 </template>

@@ -277,12 +277,9 @@
                 </div>
               </div>
               <div class="row">
-                <div
-                  class="col-6 pt-2"
-                  v-if="permissionStore.hasPermission(PERMISSIONS.SHOW_HISTORY)"
-                >
+                <!-- <div class="col-6 pt-2">
                   <h5>{{ t("kanban-modal-edit-history-heading") }}</h5>
-                </div>
+                </div> -->
                 <div
                   class="col-6 d-flex justify-content-end align-items-center gap-2"
                   v-if="isEditMode"
@@ -300,7 +297,7 @@
               </div>
               <div
                 class="history ps-2 mt-2"
-                v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+                v-if="permissionStore.hasPermission('edit-stage')"
               >
                 <div
                   v-for="log in logs"
