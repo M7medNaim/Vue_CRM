@@ -79,7 +79,7 @@
         style="white-space: pre-line"
         v-if="message.status === 'error'"
       >
-        {{ $t(message.text) }}
+        {{ t(message.text) }}
       </div>
       <button
         class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
