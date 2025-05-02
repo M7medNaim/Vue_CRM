@@ -144,6 +144,7 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { useKanbanStore } from "@/stores/kanbanStore";
 import {
   ref,
   onMounted,
@@ -170,13 +171,11 @@ export default {
       name: Cookies.get("name") || "User",
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
-      hasNewChanges: false,
-      idleTimer: null,
-      idleTimeLimit: 5 * 60 * 1000,
-      isIdle: false,
     };
   },
   setup() {
+    const kanbanStore = useKanbanStore();
+    const hasNewChanges = computed(() => kanbanStore.hasNewChanges);
     const user_role = Cookies.get("user_role");
     const loadingStore = useLoadingStore();
     const currentTime = ref("");
@@ -242,7 +241,10 @@ export default {
     });
 
     const permissionStore = usePermissionStore();
-
+    function refreshPage() {
+      kanbanStore.setHasNewChanges(false);
+      window.location.reload();
+    }
     return {
       currentTime,
       pageTitle,
@@ -252,6 +254,8 @@ export default {
       PERMISSIONS,
       loadingStore,
       user_role,
+      refreshPage,
+      hasNewChanges,
     };
   },
   methods: {
@@ -283,10 +287,6 @@ export default {
       }
     },
 
-    refreshPage() {
-      window.location.reload();
-    },
-
     handleClickOutside(event) {
       if (
         this.activeMenu &&
@@ -297,71 +297,13 @@ export default {
         this.activeMenu = null;
       }
     },
-    startIdleTimer() {
-      this.clearIdleTimer();
-      this.idleTimer = setTimeout(this.setIdle, this.idleTimeLimit);
-    },
-    clearIdleTimer() {
-      if (this.idleTimer) clearTimeout(this.idleTimer);
-    },
-    setupUserActivityListeners() {
-      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
-        window.addEventListener(event, this.resetIdleTimer);
-      });
-    },
-    removeUserActivityListeners() {
-      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
-        window.removeEventListener(event, this.resetIdleTimer);
-      });
-    },
-    resetIdleTimer() {
-      if (this.isIdle) {
-        this.isIdle = false;
-        this.reconnectWebSocket();
-      }
-      this.startIdleTimer();
-    },
-    setIdle() {
-      this.isIdle = true;
-      this.disconnectWebSocket();
-    },
-    disconnectWebSocket() {
-      window.Echo.disconnect();
-      console.log("WebSocket disconnected due to inactivity");
-    },
-    reconnectWebSocket() {
-      window.Echo.connect();
-      const userRole = Cookies.get("user_role");
-      const user_id = Cookies.get("user_id");
-      let userChannel;
-      if (userRole === "super-admin") {
-        userChannel = userRole;
-      } else {
-        userChannel = `${userRole}-${user_id}`;
-      }
-      if (window.Echo && userChannel) {
-        window.Echo.channel(userChannel).listen(
-          ".DealEvent",
-          ".TaskEvent",
-          ".CommentEvent",
-          ".LogEvent",
-          ".WhatsappEvent"
-        );
-      }
-      console.log("WebSocket reconnected on user activity");
-      this.hasNewChanges = true;
-    },
   },
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
     this.currentLanguage = localStorage.getItem("locale") || "en";
-    this.startIdleTimer();
-    this.setupUserActivityListeners();
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
-    this.clearIdleTimer();
-    this.removeUserActivityListeners();
   },
   computed: {
     nextLanguage() {
