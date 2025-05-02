@@ -171,6 +171,9 @@ export default {
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
       hasNewChanges: false,
+      idleTimer: null,
+      idleTimeLimit: 1 * 60 * 1000,
+      isIdle: false,
     };
   },
   setup() {
@@ -294,13 +297,71 @@ export default {
         this.activeMenu = null;
       }
     },
+    startIdleTimer() {
+      this.clearIdleTimer();
+      this.idleTimer = setTimeout(this.setIdle, this.idleTimeLimit);
+    },
+    clearIdleTimer() {
+      if (this.idleTimer) clearTimeout(this.idleTimer);
+    },
+    setupUserActivityListeners() {
+      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
+        window.addEventListener(event, this.resetIdleTimer);
+      });
+    },
+    removeUserActivityListeners() {
+      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
+        window.removeEventListener(event, this.resetIdleTimer);
+      });
+    },
+    resetIdleTimer() {
+      if (this.isIdle) {
+        this.isIdle = false;
+        this.reconnectWebSocket();
+      }
+      this.startIdleTimer();
+    },
+    setIdle() {
+      this.isIdle = true;
+      this.disconnectWebSocket();
+    },
+    disconnectWebSocket() {
+      window.Echo.disconnect();
+      console.log("WebSocket disconnected due to inactivity");
+    },
+    reconnectWebSocket() {
+      window.Echo.connect();
+      const userRole = Cookies.get("user_role");
+      const user_id = Cookies.get("user_id");
+      let userChannel;
+      if (userRole === "super-admin") {
+        userChannel = userRole;
+      } else {
+        userChannel = `${userRole}-${user_id}`;
+      }
+      if (window.Echo && userChannel) {
+        window.Echo.channel(userChannel).listen(
+          ".DealEvent",
+          ".TaskEvent",
+          ".CommentEvent",
+          ".LogEvent",
+          ".WhatsappEvent"
+        );
+      }
+      console.log("WebSocket reconnected on user activity");
+      this.hasNewChanges = true;
+    },
   },
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
     this.currentLanguage = localStorage.getItem("locale") || "en";
+    this.startIdleTimer();
+    this.setupUserActivityListeners();
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+    this.clearIdleTimer();
+    this.removeUserActivityListeners();
   },
   computed: {
     nextLanguage() {
