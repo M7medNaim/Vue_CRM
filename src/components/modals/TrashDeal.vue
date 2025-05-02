@@ -112,10 +112,9 @@ export default {
       selectedStage: null,
       trashStages: [
         { id: 12, name: "Medicines" },
+        { id: 13, name: "Old Data" },
         { id: 14, name: "No Response" },
         { id: 16, name: "Trash" },
-        { id: 13, name: "Stopped Responding" },
-        { id: 13, name: "Old Data" },
       ],
     };
   },
@@ -146,34 +145,38 @@ export default {
           });
           return;
         }
+        const selectedStage = this.selectedStage;
 
-        // Update the deal stage
-        const stageResponse = await updateDealStage(
-          this.dealId,
-          this.selectedStage
-        );
-
-        if (stageResponse.data) {
-          // Add the comment as a new comment
-          const commentResponse = await createComment({
-            text_body: this.comment,
-            deal_id: this.dealId,
+        const commentResponse = await createComment({
+          text_body: this.comment,
+          deal_id: this.dealId,
+        });
+        if (commentResponse.data) {
+          this.$emit("stage-updated", {
+            dealId: this.dealId,
+            newStage: selectedStage,
           });
-
-          if (commentResponse.data) {
-            this.toast.success(this.t("success.stageAndCommentUpdated"), {
-              timeout: 3000,
-            });
-            this.closeTrashDealModal();
-            this.$emit("stage-updated", {
-              dealId: this.dealId,
-              newStage: this.selectedStage,
-            });
-          }
+        } else {
+          this.toast.error(commentResponse.data.message, {
+            timeout: 3000,
+          });
+        }
+        // Update the deal stage
+        const response = await updateDealStage(this.dealId, selectedStage);
+        if (response.status !== 200) {
+          this.toast.error(response.data.message, {
+            timeout: 3000,
+          });
+          return;
+        } else {
+          this.closeTrashDealModal();
+          this.toast.success(response.data.message, {
+            timeout: 3000,
+          });
         }
       } catch (error) {
         console.error("Error updating deal:", error);
-        this.toast.error(this.t("error.updatingDeal"), {
+        this.toast.error(error.message, {
           timeout: 3000,
         });
       }

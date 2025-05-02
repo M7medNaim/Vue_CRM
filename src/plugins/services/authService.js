@@ -281,11 +281,16 @@ export const sendMessage = (messageData) => {
   });
 };
 
-export const sendInitMessage = (deal_id, conversation_id) => {
+export const sendInitMessage = (deal_id, conversation_id, init_message_id) => {
   return axios.post("/whatsapp/send-init", {
     deal_id: deal_id,
     conversation_id: conversation_id,
+    init_message_id: init_message_id,
   });
+};
+
+export const getInitMessages = () => {
+  return axios.get("/whatsapp/init-messages");
 };
 
 export const changePinStatus = (id) => {
@@ -328,4 +333,30 @@ export const getStagesTasks = async () => {
 };
 export const addViewCount = (dealId) => {
   return axios.post(`/deals/add-view-count/${dealId}`);
+};
+
+// Broadcast services
+export const getBroadcasts = async () => {
+  return await axios.get("/settings/broadcasts");
+};
+
+export const createBroadcast = async (description) => {
+  return await axios.post("/settings/broadcasts", {
+    description: description,
+  });
+};
+
+export const updateBroadcastPosition = async (id, direction) => {
+  return await axios.patch(`/settings/broadcasts/position/${id}/${direction}`);
+};
+
+export const updateBroadcast = async (id, description, status) => {
+  return await axios.patch(`/settings/broadcasts/${id}`, {
+    description: description,
+    status: status,
+  });
+};
+
+export const deleteBroadcast = async (id) => {
+  return await axios.delete(`/settings/broadcasts/${id}`);
 };

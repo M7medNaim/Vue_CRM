@@ -575,7 +575,7 @@ import {
   updateTask,
   updateDealStage,
   updateDeal,
-  sendInitMessage,
+  createConversation,
 } from "@/plugins/services/authService";
 
 export default {
@@ -950,7 +950,7 @@ export default {
       try {
         let conversation = await fetchConversationByDealId(id);
         if (!conversation.data?.data) {
-          conversation = await sendInitMessage(id);
+          conversation = await createConversation(id);
         }
         console.log("conversation", conversation);
 

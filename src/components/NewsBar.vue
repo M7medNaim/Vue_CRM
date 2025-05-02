@@ -37,24 +37,7 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 export default {
   name: "NewsBar",
   setup() {
-    const newsList = ref([
-      {
-        text: "يجب تقييم العميل بعد وصوله لمرحلة المفاوضات وإلا سيتم رفض الحركة من قبل النظام نفسه",
-        important: true,
-      },
-      {
-        text: "اللهم ارزقنا رزقا حلالاً طيباً مباركاً فيه كما تحب وترضى يا رب العالمين.",
-        important: false,
-      },
-      {
-        text: "الواتساب لا يعمل حالياً في نظامنا يرجى تفادي العمل به",
-        important: true,
-      },
-      {
-        text: "اللّهم إن كان رزقي في السّماء فأنزله، وإن كان في الأرض فأخرجه...",
-        important: false,
-      },
-    ]);
+    const newsList = ref([]);
     const marquee = ref(null);
     const translateX = ref(0);
     let animationFrame;

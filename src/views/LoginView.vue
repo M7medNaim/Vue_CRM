@@ -6,7 +6,7 @@
           <form class="card-body" @submit.prevent="handleLogin">
             <div class="mb-3 text-center">
               <img
-                src="../../public/images/medicevaLogo.png"
+                src="../../public/images/new-nokta-logo.png"
                 class="img-fluid profile-image-pic"
                 alt="logo"
               />
@@ -69,12 +69,11 @@
 </template>
 
 <script>
-import { login } from "@/plugins/services/authService";
+import { getBackgroundId, login } from "@/plugins/services/authService";
 import Cookies from "js-cookie";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useRouter } from "vue-router";
 import { initializeTranslations } from "@/i18n";
-import { saveBackgroundId } from "@/plugins/services/authService";
 import { useLoadingStore } from "@/plugins/loadingStore";
 // import axiosInstance from "@/plugins/axios";
 
@@ -144,7 +143,7 @@ export default {
           const redirect = this.$route.query.redirect || "/crm-kanban";
           this.permissionStore.setPermissions(response.data.user.permissions);
           this.$emit("loginSuccess");
-          let bg_fetch = await saveBackgroundId(response.data.user.bg_image_id);
+          let bg_fetch = await getBackgroundId(response.data.user.bg_image_id);
           let imageUrl = bg_fetch.data.data.url;
           document.body.style.backgroundImage = `url(${imageUrl})`;
           document.body.style.backgroundSize = "cover";

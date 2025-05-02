@@ -13,7 +13,9 @@
     ref="messageElements"
   >
     <div
-      class="textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base"
+      :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
+        message.status === 'undelivered' ? 'text-danger' : ''
+      }`"
     >
       <button
         class="addNote border-0 position-absolute bottom-0 fs-6 rounded-2"
@@ -99,6 +101,12 @@
           >
             <i class="fa-solid fa-check fs-6"></i>
             <i class="fa-solid fa-check fs-6"></i>
+          </span>
+          <span
+            v-else-if="message.status === 'undelivered'"
+            class="status-icon text-danger"
+          >
+            <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
         </span>
       </span>

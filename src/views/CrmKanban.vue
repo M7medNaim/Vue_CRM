@@ -46,10 +46,10 @@ export default {
       supervisor: "",
       representative: "",
       package: "",
-      createdStart: "",
-      createdEnd: "",
-      modifiedStart: "",
-      modifiedEnd: "",
+      created_at_start: "",
+      created_at_end: "",
+      updated_at_start: "",
+      updated_at_end: "",
       status: [],
     });
     const new_message = ref(null);
@@ -101,10 +101,10 @@ export default {
           supervisor: "",
           representative: "",
           package: "",
-          createdStart: "",
-          createdEnd: "",
-          modifiedStart: "",
-          modifiedEnd: "",
+          created_at_start: "",
+          created_at_end: "",
+          updated_at_start: "",
+          updated_at_end: "",
           status: [],
         };
         toast.success(t("success.resetFilters"), {
