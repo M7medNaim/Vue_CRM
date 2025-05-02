@@ -16,8 +16,8 @@
       :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
         message.status === 'undelivered'
           ? 'text-danger'
-          : message.status === 'no-whatsapp'
-          ? 'message-no-whatsapp'
+          : message.status === 'error'
+          ? 'message-error'
           : ''
       }`"
     >
@@ -70,14 +70,14 @@
       <div
         class="message-text"
         style="white-space: pre-line"
-        v-if="message.status !== 'no-whatsapp'"
+        v-if="message.status !== 'error'"
       >
         {{ message.text }}
       </div>
       <div
         class="message-text"
         style="white-space: pre-line"
-        v-if="message.status === 'no-whatsapp'"
+        v-if="message.status === 'error'"
       >
         أنا غير موجود عبر تطبيق واتساب، يرجى الإتصال بي!.
       </div>
@@ -88,7 +88,7 @@
       >
         <i
           class="fa-solid fa-ellipsis-vertical text-secondary"
-          :class="message.status === 'message-no-whatsapp' ? 'text-white' : ''"
+          :class="message.status === 'message-error' ? 'text-white' : ''"
         ></i>
       </button>
       <span class="d-block mt-1 opacity-50 fst-normal">
@@ -126,10 +126,7 @@
           >
             <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
-          <span
-            v-else-if="message.status === 'no-whatsapp'"
-            class="status-icon"
-          >
+          <span v-else-if="message.status === 'error'" class="status-icon">
             <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
         </span>
@@ -540,17 +537,17 @@ export default {
 .addNote:hover i {
   color: #636262;
 }
-.message-no-whatsapp {
+.message-error {
   background-color: #d40000 !important;
   color: #fff !important;
 }
 
-.right-side .chatBx .msg-me .message-no-whatsapp::before {
+.right-side .chatBx .msg-me .message-error::before {
   border-top-color: #d40000 !important;
   border-right-color: #d40000 !important;
 }
 
-.right-side .chatBx .msg-frnd .message-no-whatsapp::before {
+.right-side .chatBx .msg-frnd .message-error::before {
   border-top-color: #d40000 !important;
   border-left-color: #d40000 !important;
 }
