@@ -14,7 +14,11 @@
   >
     <div
       :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
-        message.status === 'undelivered' ? 'text-danger' : ''
+        message.status === 'undelivered'
+          ? 'text-danger'
+          : message.status === 'no-whatsapp'
+          ? 'message-no-whatsapp'
+          : ''
       }`"
     >
       <button
@@ -63,15 +67,29 @@
           class="full-screen-image"
         />
       </div>
-      <div class="message-text" style="white-space: pre-line">
+      <div
+        class="message-text"
+        style="white-space: pre-line"
+        v-if="message.status !== 'no-whatsapp'"
+      >
         {{ message.text }}
+      </div>
+      <div
+        class="message-text"
+        style="white-space: pre-line"
+        v-if="message.status === 'no-whatsapp'"
+      >
+        أنا غير موجود عبر تطبيق واتساب، يرجى الإتصال بي!.
       </div>
       <button
         class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
         @click.stop="toggleMenu(index)"
         v-click-outside="closeMenu"
       >
-        <i class="fa-solid fa-ellipsis-vertical text-secondary"></i>
+        <i
+          class="fa-solid fa-ellipsis-vertical text-secondary"
+          :class="message.status === 'message-no-whatsapp' ? 'text-white' : ''"
+        ></i>
       </button>
       <span class="d-block mt-1 opacity-50 fst-normal">
         <div class="d-flex justify-content-between">
@@ -104,7 +122,13 @@
           </span>
           <span
             v-else-if="message.status === 'undelivered'"
-            class="status-icon text-danger"
+            class="status-icon"
+          >
+            <i class="fa-solid fa-xmark"></i> (Message not sent)
+          </span>
+          <span
+            v-else-if="message.status === 'no-whatsapp'"
+            class="status-icon"
           >
             <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
@@ -515,5 +539,19 @@ export default {
 }
 .addNote:hover i {
   color: #636262;
+}
+.message-no-whatsapp {
+  background-color: #d40000 !important;
+  color: #fff !important;
+}
+
+.right-side .chatBx .msg-me .message-no-whatsapp::before {
+  border-top-color: #d40000 !important;
+  border-right-color: #d40000 !important;
+}
+
+.right-side .chatBx .msg-frnd .message-no-whatsapp::before {
+  border-top-color: #d40000 !important;
+  border-left-color: #d40000 !important;
 }
 </style>

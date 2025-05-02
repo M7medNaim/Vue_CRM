@@ -10,7 +10,7 @@
         <button
           class="btn btn-primary me-2"
           @click="openNewFolderModal"
-          v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+          v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_FOLDER)"
         >
           {{ t("documents-button-createfolder") }}
           <i class="fas fa-folder-plus me-1"></i>

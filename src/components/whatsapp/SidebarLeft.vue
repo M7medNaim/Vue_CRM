@@ -75,13 +75,13 @@
             </div>
             <div class="head pe-2 d-flex justify-content-between">
               <h4
-                class="name text-black"
                 style="font-size: 14px; font-weight: 400"
+                class="name text-black"
               >
                 {{ chat.name }}
                 <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
-              <span class="time text-success" style="font-size: 12px">{{
+              <span style="font-size: 12px" class="time text-success">{{
                 chat.time
               }}</span>
             </div>

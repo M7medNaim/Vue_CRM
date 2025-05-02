@@ -18,7 +18,9 @@ export const PERMISSIONS = {
   VIEW_SIDEBAR: "view-sidebar",
   BROADCAST_SETTINGS: "view-broadcast-settings-page",
   EDIT_STAGE: "edit-stage",
-  // CREATE_FOLDER: "create-folder",
+  CREATE_FOLDER: "create-folder",
+  SHOW_HISTORY: "show-history",
+  SHOW_ASSIGNED_TO: "show-assigned-to",
 };
 
 export const usePermissionStore = defineStore("permissions", {

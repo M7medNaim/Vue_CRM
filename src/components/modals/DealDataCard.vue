@@ -239,7 +239,13 @@
                 </div>
               </div>
 
-              <div class="row mb-3" @dblclick="handleDoubleClick">
+              <div
+                class="row mb-3"
+                @dblclick="handleDoubleClick"
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.SHOW_ASSIGNED_TO)
+                "
+              >
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-users"></i>
@@ -322,7 +328,10 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-6 pt-2">
+                <div
+                  class="col-6 pt-2"
+                  v-if="permissionStore.hasPermission(PERMISSIONS.SHOW_HISTORY)"
+                >
                   <h5>{{ t("kanban-modal-edit-history-heading") }}</h5>
                 </div>
                 <div
@@ -340,7 +349,10 @@
                   </button>
                 </div>
               </div>
-              <div class="history ps-2 mt-2">
+              <div
+                class="history ps-2 mt-2"
+                v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+              >
                 <div
                   v-for="log in logs"
                   :key="log.id"
@@ -421,6 +433,7 @@
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.comment"
                       :placeholder="t('kanban-modal-edit-comment-placeholder')"
+                      @keyup.enter="handleAddComment"
                     />
                     <button
                       class="btn btn-primary py-1 px-4"
@@ -479,12 +492,14 @@
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.task"
                       :placeholder="t('kanban-modal-edit-tasks-placeholder')"
+                      @keyup.enter="handleAddTask"
                     />
                     <input
                       type="date"
                       class="form-control bg-light text-secondary py-2 me-1"
                       v-model="customerData.date"
                       :placeholder="t('modals.selectDate')"
+                      @keyup.enter="handleAddTask"
                     />
                     <button
                       class="btn btn-primary py-1 px-4"
@@ -577,7 +592,7 @@ import {
   updateDeal,
   createConversation,
 } from "@/plugins/services/authService";
-
+import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 export default {
   name: "DealDataCard",
   components: { RatingStars, ViewReport, TrashDeal },
@@ -600,6 +615,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const permissionStore = usePermissionStore();
     const selected_conversation = ref(null);
     const { t } = useI18n();
     const toast = useToast();
@@ -1097,6 +1113,8 @@ export default {
       formatDateForInput,
       openTrashDealModal,
       handleStageUpdate,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };
