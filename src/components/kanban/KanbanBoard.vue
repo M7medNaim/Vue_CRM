@@ -358,6 +358,7 @@ export default {
         responsible_user: data.responsible_user,
         created_at: data.created_at,
         updated_at: data.updated_at,
+        phone: data.phone,
       };
       stages.value[stageIndex].deals.unshift(deal);
       toast.success(message);
