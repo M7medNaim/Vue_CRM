@@ -177,7 +177,7 @@ export default {
     const permissionStore = usePermissionStore();
     const kanbanStore = useKanbanStore();
     let idleTimer = null;
-    const idleTimeLimit = 1 * 60 * 1000;
+    const idleTimeLimit = 5 * 60 * 1000;
 
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
