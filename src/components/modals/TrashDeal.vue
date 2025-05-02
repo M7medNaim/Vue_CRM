@@ -118,6 +118,16 @@ export default {
       ],
     };
   },
+  mounted() {
+    const modal = document.getElementById("trashDealModal");
+    modal.addEventListener("hidden.bs.modal", () => {
+      const modalBackdrop = document.querySelector(".modal-backdrop");
+      if (modalBackdrop) {
+        modalBackdrop.remove();
+      }
+      this.resetModal();
+    });
+  },
   methods: {
     resetModal() {
       this.showModal2 = false;

@@ -126,6 +126,19 @@
           <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-settings") }}</span>
         </div>
       </router-link>
+      <router-link
+        v-if="permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)"
+        to="/stageing-settings"
+        class="text-decoration-none text-white"
+      >
+        <div
+          class="sidebar-item d-flex align-items-center"
+          :title="$t('sidebar-nav-item-settings')"
+        >
+          <i class="fa-solid fa-sliders fs-5 me-2"></i>
+          <span v-if="!isCollapsed">{{ $t("sidebar-nav-item-settings") }}</span>
+        </div>
+      </router-link>
       <!-- <router-link
         v-if="permissionStore.hasPermission(PERMISSIONS.ROLES_SETTINGS)"
         to="/role-settings"
