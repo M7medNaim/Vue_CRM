@@ -254,7 +254,7 @@ export default {
             const user_name = Cookies.get("name");
             console.log("User name:", user_name);
             const newMessage = {
-              id: response.data?.data?.id || Date.now(),
+              id: response.data?.data?.last_message?.id || "",
               type: "msg-me",
               text: response.data?.data?.last_message?.text_body || "",
               time: new Date().toLocaleTimeString([], {
