@@ -70,15 +70,11 @@
       <div
         class="message-text"
         style="white-space: pre-line"
-        v-if="message.status !== 'error'"
+        v-if="message.status != 'error'"
       >
-        {{ message.text }}
+        {{ message.text }} (status: {{ message.status }})
       </div>
-      <div
-        class="message-text"
-        style="white-space: pre-line"
-        v-if="message.status === 'error'"
-      >
+      <div class="message-text" style="white-space: pre-line" v-else>
         {{ t(message.text) }}
       </div>
       <button
