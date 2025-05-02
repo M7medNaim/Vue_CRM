@@ -242,9 +242,7 @@
               <div
                 class="row mb-3"
                 @dblclick="handleDoubleClick"
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.SHOW_ASSIGNED_TO)
-                "
+                v-if="permissionStore.hasPermission('add-assigned-to-deal')"
               >
                 <div class="col-2">
                   <label class="form-label"
@@ -264,55 +262,6 @@
                   </select>
                 </div>
               </div>
-
-              <!-- Packages -->
-              <!-- <div class="row mb-3" @dblclick="handleDoubleClick">
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-cubes"></i>
-                    {{ t("kanban-modal-edit-label-packages") }}</label
-                  >
-                </div>
-                <div class="col-10">
-                  <div class="" v-if="packages.length > 0">
-                    <div
-                      v-for="(item, index) in packages"
-                      :key="index"
-                      class="packages d-flex align-items-center gap-3 mb-2"
-                    >
-                      <select
-                        class="form-select bg-light"
-                        v-model="item.serviceSelect"
-                      >
-                        <option value="" disabled>
-                          {{ t("kanban-modal-edit-placeholder-packages-name") }}
-                        </option>
-                      </select>
-                      <input
-                        type="text"
-                        class="bg-light text-secondary p-2"
-                        v-model="item.serviceInput"
-                        :placeholder="
-                          t('kanban-modal-edit-placeholder-packages-quantity')
-                        "
-                      />
-                      <button
-                        class="btn btn-secondary"
-                        @click="removePackage(index)"
-                      >
-                        x
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="btn btn-primary mt-2 fs-5 px-3"
-                    @click="addNewPackage"
-                    :disabled="!isEditMode"
-                  >
-                    +
-                  </button>
-                </div>
-              </div> -->
               <!-- Deal Status -->
               <div class="row mb-3">
                 <div class="col-2">
