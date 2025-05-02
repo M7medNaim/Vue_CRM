@@ -172,7 +172,7 @@ export default {
       currentLanguage: localStorage.getItem("locale") || "en",
       hasNewChanges: false,
       idleTimer: null,
-      idleTimeLimit: 1 * 60 * 1000,
+      idleTimeLimit: 5 * 60 * 1000,
       isIdle: false,
     };
   },
