@@ -310,7 +310,7 @@ export default {
       let chatIndex = this.chats.findIndex((c) => c.id === chat.id);
       let processed_chat = null;
       if (chatIndex === -1) {
-        const processed_chat = {
+        processed_chat = {
           id: chat.id,
           created_at: chat.created_at,
           img:
@@ -340,7 +340,7 @@ export default {
           phone: chat.phone.phone,
         };
         console.log("Processed chat:", processed_chat);
-        this.chats.push(processed_chat);
+        this.chats.unshift(processed_chat);
         chatIndex = this.chats.length - 1;
       } else {
         processed_chat = this.chats[chatIndex];
