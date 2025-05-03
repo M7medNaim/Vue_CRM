@@ -19,7 +19,7 @@
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
 
-        <div :class="headerClass" class="mx-2">
+        <div :class="headerClass" class="ms-2">
           <TopHeader @logout="handleLogout" />
           <div class="content">
             <router-view />

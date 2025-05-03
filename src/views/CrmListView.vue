@@ -1,106 +1,110 @@
 <template>
-  <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0">
-    <div class="controls mb-3">
-      <div class="row">
-        <div class="col-sm-6 col-lg">
-          <div class="input-group">
-            <select
-              v-model="selectedAction"
-              class="text-secondary form-control"
-            >
-              []
-              <option value="" disabled>
-                {{ t("crmlist-placeholder-action") }}
-              </option>
-              <option
-                v-for="action in actions"
-                :key="action.value"
-                :value="action.value"
+  <div class="me-2">
+    <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0">
+      <div class="controls mb-3">
+        <div class="row">
+          <div class="col-sm-6 col-lg">
+            <div class="input-group">
+              <select
+                v-model="selectedAction"
+                class="text-secondary form-control"
               >
-                {{ action.label }}
-              </option>
-            </select>
+                []
+                <option value="" disabled>
+                  {{ t("crmlist-placeholder-action") }}
+                </option>
+                <option
+                  v-for="action in actions"
+                  :key="action.value"
+                  :value="action.value"
+                >
+                  {{ action.label }}
+                </option>
+              </select>
+              <button
+                class="btn-actions btn btn-primary input-group-text"
+                @click="executeAction"
+                :disabled="!selectedAction || !selectedRows.length"
+              >
+                <span>{{ t("crmlist-button-actionsubmit") }}</span> ({{
+                  selectedRows.length
+                }})
+              </button>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg">
+            <div class="input-group position-relative">
+              <input
+                type="search"
+                class="form-control"
+                :placeholder="t('crmlist-placeholder-search')"
+                v-model="searchInput"
+                @search="fetchData"
+              />
+              <i
+                v-if="searchInput"
+                class="fas fa-times clear-icon p-2 rounded-2"
+                @click="clearSearch"
+                title="Clear Search"
+              >
+                CLR
+              </i>
+              <button
+                :title="t('buttons.filter')"
+                type="button"
+                class="btn btn-primary input-group-text"
+                @click="openFilterModal"
+              >
+                <i class="fas fa-filter"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-sm-12 mt-2 mt-lg-0 col-lg text-end">
             <button
-              class="btn-actions btn btn-primary input-group-text"
-              @click="executeAction"
-              :disabled="!selectedAction || !selectedRows.length"
+              class="btn btn-primary rounded-2 me-2 fs-7"
+              @click="openDealModal"
             >
-              <span>{{ t("crmlist-button-actionsubmit") }}</span> ({{
-                selectedRows.length
-              }})
+              <span>{{ t("kanban-button-add-deal") }}</span>
+            </button>
+            <button
+              class="btn btn-primary rounded-2 fs-7"
+              @click="openImportModal"
+            >
+              <i class="fa-solid fa-upload me-2"></i>
+              <span>{{ t("crmlist-button-import") }}</span>
             </button>
           </div>
-        </div>
-        <div class="col-sm-6 col-lg">
-          <div class="input-group position-relative">
-            <input
-              type="search"
-              class="form-control"
-              :placeholder="t('crmlist-placeholder-search')"
-              v-model="searchInput"
-              @search="fetchData"
-            />
-            <i
-              v-if="searchInput"
-              class="fas fa-times clear-icon p-2 rounded-2"
-              @click="clearSearch"
-              title="Clear Search"
-            >
-              CLR
-            </i>
-            <button
-              :title="t('buttons.filter')"
-              type="button"
-              class="btn btn-primary input-group-text"
-              @click="openFilterModal"
-            >
-              <i class="fas fa-filter"></i>
-            </button>
-          </div>
-        </div>
-        <div class="col-sm-12 mt-2 mt-lg-0 col-lg text-end">
-          <button
-            class="btn btn-primary rounded-2 me-2 fs-7"
-            @click="openDealModal"
-          >
-            <span>{{ t("kanban-button-add-deal") }}</span>
-          </button>
-          <button
-            class="btn btn-primary rounded-2 fs-7"
-            @click="openImportModal"
-          >
-            <i class="fa-solid fa-upload me-2"></i>
-            <span>{{ t("crmlist-button-import") }}</span>
-          </button>
         </div>
       </div>
-    </div>
 
-    <DataTable
-      :value="rows"
-      :paginator="true"
-      :rows="rowsPerPage"
-      :rowsPerPageOptions="[10, 25, 50]"
-      :total-records="totalRows"
-      :lazy="true"
-      :loading="loading"
-      @page="onPageChange"
-      v-model:selection="selectedRows"
-      selectionMode="multiple"
-      responsive="true"
-    >
-      <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
-      <Column :header="'#'">
-        <template #body="slotProps">
-          {{ slotProps.index + 1 + currentPage * rowsPerPage }}
-        </template>
-      </Column>
-      <Column
-        field="name"
-        :header="t('crmlist-table-header-fullname')"
-      ></Column>
-      <Column field="phone" :header="t('crmlist-table-header-phone')"></Column>
-      <!-- <Column :header="t('contacts-table-header-phone')">
+      <DataTable
+        :value="rows"
+        :paginator="true"
+        :rows="rowsPerPage"
+        :rowsPerPageOptions="[10, 25, 50]"
+        :total-records="totalRows"
+        :lazy="true"
+        :loading="loading"
+        @page="onPageChange"
+        v-model:selection="selectedRows"
+        selectionMode="multiple"
+        responsive="true"
+      >
+        <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
+        <Column :header="'#'">
+          <template #body="slotProps">
+            {{ slotProps.index + 1 + currentPage * rowsPerPage }}
+          </template>
+        </Column>
+        <Column
+          field="name"
+          :header="t('crmlist-table-header-fullname')"
+        ></Column>
+        <Column
+          field="phone"
+          :header="t('crmlist-table-header-phone')"
+        ></Column>
+        <!-- <Column :header="t('contacts-table-header-phone')">
         <template #body="slotProps">
           {{
             slotProps.data.phones && slotProps.data.phones.length > 0
@@ -109,68 +113,72 @@
           }}
         </template>
       </Column> -->
-      <Column
-        field="note"
-        :header="t('crmlist-table-header-notes')"
-        class="note-column"
-      ></Column>
-      <Column
-        field="responsible"
-        :header="t('crmlist-table-header-responsible')"
-      ></Column>
-      <Column
-        class="d-lg-table-cell"
-        field="created_at"
-        :header="t('crmlist-table-header-createdat')"
-      ></Column>
-      <Column
-        field="source"
-        :header="t('crmlist-table-header-source')"
-      ></Column>
-      <Column field="stage" :header="t('crmlist-table-header-stage')"></Column>
-      <!-- <Column
+        <Column
+          field="note"
+          :header="t('crmlist-table-header-notes')"
+          class="note-column"
+        ></Column>
+        <Column
+          field="responsible"
+          :header="t('crmlist-table-header-responsible')"
+        ></Column>
+        <Column
+          class="d-lg-table-cell"
+          field="created_at"
+          :header="t('crmlist-table-header-createdat')"
+        ></Column>
+        <Column
+          field="source"
+          :header="t('crmlist-table-header-source')"
+        ></Column>
+        <Column
+          field="stage"
+          :header="t('crmlist-table-header-stage')"
+        ></Column>
+        <!-- <Column
         field="responsible"
         :header="t('crmlist-table-header-responsible')"
       ></Column> -->
-      <Column :header="t('crmlist-table-header-action')">
-        <template #body="slotProps">
-          <div class="d-flex gap-2">
-            <button
-              class="btn btn-sm btn-primary"
-              @click="handleShowDeal(slotProps.data.id)"
-            >
-              <i class="fas fa-eye"></i>
-            </button>
-            <button
-              class="btn btn-sm btn-danger"
-              @click="deleteItem(slotProps.data.id)"
-            >
-              <i class="fas fa-trash"></i>
-            </button>
+        <Column :header="t('crmlist-table-header-action')">
+          <template #body="slotProps">
+            <div class="d-flex gap-2">
+              <button
+                class="btn btn-sm btn-primary"
+                @click="handleShowDeal(slotProps.data.id)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                @click="deleteItem(slotProps.data.id)"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </template>
+        </Column>
+
+        <template #loading>
+          <div class="text-center loading-container">
+            <div class="position-relative d-inline-block">
+              <img
+                src="../assets/Mediceva-Logo.png"
+                class="loading-logo"
+                style="width: 50px; height: 50px"
+              />
+            </div>
+            <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
           </div>
         </template>
-      </Column>
+      </DataTable>
 
-      <template #loading>
-        <div class="text-center loading-container">
-          <div class="position-relative d-inline-block">
-            <img
-              src="../assets/Mediceva-Logo.png"
-              class="loading-logo"
-              style="width: 50px; height: 50px"
-            />
-          </div>
-          <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
-        </div>
-      </template>
-    </DataTable>
-
-    <ActionsDeal
-      :selected-rows="selectedRows"
-      @update-stage="(value) => handleBulkUpdate('stage_id', value)"
-      @update-user="(value) => handleBulkUpdate('user_id', value)"
-      @update-source="(value) => handleBulkUpdate('source_id', value)"
-    />
+      <ActionsDeal
+        :selected-rows="selectedRows"
+        @update-stage="(value) => handleBulkUpdate('stage_id', value)"
+        @update-user="(value) => handleBulkUpdate('user_id', value)"
+        @update-source="(value) => handleBulkUpdate('source_id', value)"
+      />
+    </div>
   </div>
   <!-- filter modal -->
   <FilterCrmList

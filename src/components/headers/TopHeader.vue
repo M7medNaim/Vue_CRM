@@ -1,5 +1,5 @@
 <template>
-  <div class="top-bar pe-1 position-relative pt-2">
+  <div class="top-bar pe-1 position-relative pt-2 me-2">
     <div class="row">
       <div
         class="col-3 col-md-5 d-flex align-items-center text-white fs-6 pt-1"

@@ -21,6 +21,13 @@
                 backgroundColor: stage.color_code,
               }"
             >
+              <span>
+                <i
+                  :class="getStageIconById(stage.id)"
+                  class="me-2"
+                  :style="{ color: getContrastColor(stage.color_code) }"
+                ></i>
+              </span>
               <span
                 class="me-2"
                 :style="{ color: getContrastColor(stage.color_code) }"
@@ -584,6 +591,29 @@ export default {
       emit("change-deal-stage", dealId, newStageIndex, oldStageId);
     };
 
+    const getStageIconById = (stageId) => {
+      const iconMap = {
+        1: "fa-solid fa-user-plus",
+        2: "fa-solid fa-hourglass",
+        3: "fa-solid fa-hourglass-end",
+        4: "fa-solid fa-hourglass-start",
+        5: "fa-solid fa-hourglass-half",
+        // 6: "fa-solid fa-phone-volume",
+        6: "fa-solid fa-comments",
+        7: "fa-solid fa-people-arrows",
+        8: "fa-solid fa-calendar-plus",
+        9: "fa-solid fa-calendar-check",
+        10: "fa-solid fa-spinner",
+        11: "fa-solid fa-circle-check",
+        12: "fa-solid fa-moon",
+        13: "fa-solid fa-phone-slash",
+        14: "fa-solid fa-repeat",
+        15: "fa-solid fa-repeat",
+        16: "fa-solid fa-trash-can",
+      };
+      return iconMap[stageId] || "fa-solid fa-circle";
+    };
+
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -686,6 +716,7 @@ export default {
       changeDealStage,
       permissionStore,
       PERMISSIONS,
+      getStageIconById,
     };
   },
 };
