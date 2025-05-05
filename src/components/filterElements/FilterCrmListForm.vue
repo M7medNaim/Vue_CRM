@@ -161,6 +161,36 @@
             />
           </div>
         </div>
+
+        <!-- Sorting Section -->
+        <div class="row mb-3">
+          <div class="col-3">
+            <span>Sort By</span>
+          </div>
+          <div class="col-9">
+            <div class="d-flex gap-3">
+              <select
+                v-model="localFilters.sort_by"
+                class="form-select text-secondary"
+              >
+                <option value="name">Full Name</option>
+                <option value="phone">Phone</option>
+                <option value="note">Notes</option>
+                <option value="responsible">Responsible</option>
+                <option value="created_at">Created At</option>
+                <option value="source">Source</option>
+                <option value="stage">Stage</option>
+              </select>
+              <select
+                v-model="localFilters.sort_order"
+                class="form-select text-secondary"
+              >
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -203,14 +233,10 @@ export default {
       updated_at_start: null,
       updated_at_end: null,
       status: [],
+      sort_by: "created_at",
+      sort_order: "desc",
       ...props.filters,
     });
-    const local_stages = ref([]);
-    const local_sources = ref([]);
-    const local_company = ref([]);
-    const local_supervisors = ref([]);
-    const local_representatives = ref([]);
-    const local_packages = ref([]);
 
     const statuses = ref([
       { value: "unassigned", label: "Unassigned" },
@@ -220,6 +246,33 @@ export default {
       { value: "new", label: "New" },
       { value: "reclaimed", label: "Reclaimed" },
     ]);
+
+    const updateLocalFilters = (newFilters) => {
+      if (newFilters) {
+        Object.keys(localFilters.value).forEach((key) => {
+          localFilters.value[key] = newFilters[key] ?? null;
+        });
+      }
+    };
+
+    updateLocalFilters(props.filters);
+
+    watch(
+      () => props.filters,
+      (newFilters) => {
+        updateLocalFilters(newFilters);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.selectedStatuses,
+      (newStatuses) => {
+        if (Array.isArray(newStatuses)) {
+          localFilters.value.status = [...newStatuses];
+        }
+      }
+    );
 
     const toggleStatus = (status) => {
       let newSelectedStatuses;
@@ -231,62 +284,14 @@ export default {
         newSelectedStatuses = [...props.selectedStatuses, status];
       }
       emit("update:selectedStatuses", newSelectedStatuses);
-
-      // Update local filters with status
       localFilters.value.status = newSelectedStatuses;
       emit("update:filters", localFilters.value);
     };
 
-    // Watch for all filter changes
     watch(
       () => localFilters.value,
       (newFilters) => {
-        console.log("Filters changed:", newFilters);
-        emit("update:filters", newFilters);
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.stages,
-      (newStages) => {
-        local_stages.value = newStages;
-        console.log("form local_stages", local_stages.value);
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.sources,
-      (newSources) => {
-        local_sources.value = newSources;
-        console.log("form local_sources", local_sources.value);
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.users,
-      (newUsers) => {
-        console.log("form new users", newUsers);
-        local_company.value = newUsers.filter(
-          (user) => user.role === "company"
-        );
-        local_supervisors.value = newUsers.filter(
-          (user) => user.role === "supervisor"
-        );
-        local_representatives.value = newUsers.filter(
-          (user) => user.role === "sales"
-        );
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.packages,
-      (newPackages) => {
-        local_packages.value = newPackages;
-        console.log("form local_packages", local_packages.value);
+        emit("update:filters", { ...newFilters });
       },
       { deep: true }
     );
@@ -294,25 +299,8 @@ export default {
     return {
       localFilters,
       statuses,
-      local_stages,
-      local_sources,
       toggleStatus,
       t,
-      supervisors: [
-        { value: "any", label: "Any" },
-        { value: "eurasia", label: "Eurasia Admin" },
-        { value: "sup", label: "Sup Sup" },
-      ],
-      representatives: [
-        { value: "any", label: "Any" },
-        { value: "bader", label: "Bader Rep" },
-        { value: "reem", label: "Reem Rep" },
-      ],
-      packages: [
-        { value: "any", label: "Any" },
-        { value: "basic", label: "Basic Package" },
-        { value: "premium", label: "Premium Package" },
-      ],
     };
   },
 };
