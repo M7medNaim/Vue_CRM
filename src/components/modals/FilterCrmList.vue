@@ -52,6 +52,9 @@ export default {
   props: {
     modelValue: { type: Object, required: true },
     selectedStatuses: { type: Array, default: () => [] },
+    stages: { type: Array, default: () => [] },
+    sources: { type: Array, default: () => [] },
+    users: { type: Array, default: () => [] },
   },
   emits: ["update:modelValue", "apply-filters", "reset-filter"],
 
@@ -135,10 +138,12 @@ export default {
           supervisor: "",
           representative: "",
           package: "",
-          created_at_start: "",
-          created_at_end: "",
-          updated_at_start: "",
-          updated_at_end: "",
+          updated_at_start: null,
+          updated_at_end: null,
+          source_id: null,
+          stage_id: null,
+          created_at_start: null,
+          created_at_end: null,
           status: [],
         };
         filters.value = { ...emptyFilters };

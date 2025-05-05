@@ -23,6 +23,15 @@
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
+              <router-link
+                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnKanban"
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
+                "
+                to="/crmlist"
+              >
+                List
+              </router-link>
               <button
                 class="btn btn-header text-white px-2 py-2 fs-7 btnKanban"
                 @click="openCrmTasks"
