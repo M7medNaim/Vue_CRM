@@ -810,9 +810,7 @@ export default {
       changeDealStage,
       permissionStore,
       PERMISSIONS,
-<<<<<<< HEAD
       getStageIconById,
-=======
       isIdle,
 
       // Methods
@@ -825,7 +823,6 @@ export default {
       setIdle,
       disconnectWebSocket,
       reconnectWebSocket,
->>>>>>> v2.6
     };
   },
 };
