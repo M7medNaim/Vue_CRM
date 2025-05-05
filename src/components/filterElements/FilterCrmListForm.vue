@@ -195,15 +195,13 @@ export default {
   setup(props, { emit }) {
     const { t } = useI18n();
     const localFilters = ref({
-      source: "",
-      stage: "",
-      supervisor: "",
-      representative: "",
-      package: "",
-      createdStart: "",
-      createdEnd: "",
-      modifiedStart: "",
-      modifiedEnd: "",
+      source_id: null,
+      stage_id: null,
+      user_id: null,
+      created_at_start: null,
+      created_at_end: null,
+      updated_at_start: null,
+      updated_at_end: null,
       status: [],
       ...props.filters,
     });

@@ -4,6 +4,7 @@ export const PERMISSIONS = {
   DASHBOARD: "view-dashboard-page",
   DEALS_KANBAN: "view-deals-kanban-page",
   DEALS_LIST: "view-deals-list-page",
+  DEALS_LIST_KANBAN: "view-deals-list-kanban-page",
   USERS: "view-users-page",
   CONTACTS: "view-contacts-page",
   DOCUMENTS: "view-documents-page",

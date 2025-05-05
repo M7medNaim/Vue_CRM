@@ -3,7 +3,10 @@
     <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0">
       <div class="controls mb-3">
         <div class="row">
-          <div class="col-sm-6 col-lg">
+          <div
+            class="col-sm-6 col-lg"
+            v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+          >
             <div class="input-group">
               <select
                 v-model="selectedAction"
@@ -59,15 +62,29 @@
               </button>
             </div>
           </div>
-          <div class="col-sm-12 mt-2 mt-lg-0 col-lg text-end">
+          <div
+            class="col-sm-12 mt-2 mt-lg-0 col-lg text-center d-flex align-items-center justify-content-end gap-2"
+          >
+            <button
+              class="btn btn-primary rounded-2 d-flex align-items-center"
+              @click="$router.back()"
+              v-if="
+                permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
+              "
+            >
+              <i class="fa-solid fa-arrow-right me-2"></i>
+              <span>رجوع</span>
+            </button>
             <button
               class="btn btn-primary rounded-2 me-2 fs-7"
+              v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
               @click="openDealModal"
             >
               <span>{{ t("kanban-button-add-deal") }}</span>
             </button>
             <button
               class="btn btn-primary rounded-2 fs-7"
+              v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
               @click="openImportModal"
             >
               <i class="fa-solid fa-upload me-2"></i>
@@ -121,6 +138,7 @@
         <Column
           field="responsible"
           :header="t('crmlist-table-header-responsible')"
+          v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
         ></Column>
         <Column
           class="d-lg-table-cell"
@@ -143,8 +161,18 @@
           <template #body="slotProps">
             <div class="d-flex gap-2">
               <button
+                v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
                 class="btn btn-sm btn-primary"
                 @click="handleShowDeal(slotProps.data.id)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+              <button
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
+                "
+                class="btn btn-sm btn-primary"
+                @click="handleShowDealModal(slotProps.data.id)"
               >
                 <i class="fas fa-eye"></i>
               </button>
@@ -157,12 +185,33 @@
             </div>
           </template>
         </Column>
+        <!-- <Column
+          :header="t('crmlist-table-header-action')"
+          v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)"
+        >
+          <template #body="slotProps">
+            <div class="d-flex gap-2">
+              <button
+                class="btn btn-sm btn-primary"
+                @click="handleShowDealModal(slotProps.data.id)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                @click="deleteItem(slotProps.data.id)"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </template>
+        </Column> -->
 
         <template #loading>
           <div class="text-center loading-container">
             <div class="position-relative d-inline-block">
               <img
-                src="../assets/Mediceva-Logo.png"
+                src="../assets/new-nokta-logo.png"
                 class="loading-logo"
                 style="width: 50px; height: 50px"
               />
@@ -194,9 +243,18 @@
   <DealModal @add-deal="addNewDeal" ref="dealModal" />
   <ImportModal @import-complete="fetchData" />
   <ShowData :formData="dealData" ref="showDataModal" />
+  <DealDataCard
+    :key="selectedDeal?.id"
+    :deal="selectedDeal"
+    :logs="logs"
+    :comments="comments"
+    :tasks="tasks"
+    @open-whatsapp-modal="openWhatsappModal"
+    @stage-change="changeDealStage"
+  />
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import DataTable from "primevue/datatable";
@@ -218,9 +276,13 @@ import ImportModal from "@/components/modals/ImportModal.vue";
 import ShowData from "@/components/modals/ShowData.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Swal from "sweetalert2";
+import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
+import DealDataCard from "@/components/modals/DealDataCard.vue";
+import Cookies from "js-cookie";
 
 const { t } = useI18n();
 const toast = useToast();
+const permissionStore = usePermissionStore();
 
 // Table state
 const rows = ref([]);
@@ -243,14 +305,21 @@ const filters = ref({
   supervisor: "",
   representative: "",
   package: "",
-  created_at_start: "",
-  created_at_end: "",
-  updated_at_start: "",
-  updated_at_end: "",
+  updated_at_start: null,
+  updated_at_end: null,
+  source_id: null,
+  stage_id: null,
+  created_at_start: null,
+  created_at_end: null,
   status: [],
 });
 const dealData = ref(null);
 const showDataModal = ref(null);
+const selectedDeal = ref(null);
+const logs = ref([]);
+const comments = ref([]);
+const tasks = ref([]);
+
 // Actions operations
 const actions = ref([
   { value: "changeStage", label: t("crmlist-action-changestage") },
@@ -318,15 +387,75 @@ const fetchData = async () => {
       await fetchStagesAndSources();
     }
 
-    console.log("filters", filters.value);
-
-    const dealsRes = await getDeals({
+    // نجهز الفلاتر
+    const apiFilters = {
       search: searchInput.value,
       page: currentPage.value + 1,
       per_page: rowsPerPage.value,
       sort_by: "created_at",
       sort_order: "desc",
-      filters: filters.value,
+      filters: { ...filters.value },
+    };
+
+    // إذا كان المستخدم سيلزي، نضيف فلتر المستخدم
+    if (permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)) {
+      const userId = Cookies.get("user_id");
+      apiFilters.filters.user_id = userId;
+    }
+
+    // تحويل الفلاتر إلى الصيغة المطلوبة للـ API
+    const formattedFilters = {};
+
+    // فلتر المصدر
+    if (apiFilters.filters.source_id) {
+      formattedFilters["filters[source_id]"] = apiFilters.filters.source_id;
+    }
+
+    // فلتر المرحلة
+    if (apiFilters.filters.stage_id) {
+      formattedFilters["filters[stage_id]"] = apiFilters.filters.stage_id;
+    }
+
+    // فلتر المستخدم
+    if (apiFilters.filters.user_id) {
+      formattedFilters["filters[user_id]"] = apiFilters.filters.user_id;
+    }
+
+    // فلتر التواريخ
+    if (apiFilters.filters.created_at_start) {
+      formattedFilters["filters[created_at_start]"] =
+        apiFilters.filters.created_at_start;
+    }
+    if (apiFilters.filters.created_at_end) {
+      formattedFilters["filters[created_at_end]"] =
+        apiFilters.filters.created_at_end;
+    }
+
+    // فلتر الحالة
+    if (Array.isArray(apiFilters.filters.status)) {
+      if (apiFilters.filters.status.includes("unassigned")) {
+        formattedFilters["filters[unassigned]"] = 1;
+      }
+      if (apiFilters.filters.status.includes("no_comments")) {
+        formattedFilters["filters[uncommented]"] = 1;
+      }
+      if (apiFilters.filters.status.includes("no_task")) {
+        formattedFilters["filters[no_tasks]"] = 1;
+      }
+      if (apiFilters.filters.status.includes("overdue")) {
+        formattedFilters["filters[overdue]"] = 1;
+      }
+      if (apiFilters.filters.status.includes("new")) {
+        formattedFilters["filters[new]"] = 1;
+      }
+      if (apiFilters.filters.status.includes("reclaimed")) {
+        formattedFilters["filters[reclaimed]"] = 1;
+      }
+    }
+
+    const dealsRes = await getDeals({
+      ...apiFilters,
+      filters: formattedFilters,
     });
 
     if (!Array.isArray(dealsRes?.data?.data)) {
@@ -334,17 +463,15 @@ const fetchData = async () => {
     }
     rows.value = dealsRes.data.data.map((deal) => {
       const matchedStage = stages.value.find(
-        (stage) => stage.id === deal.stage_id
+        (stage) => stage.value === deal.stage_id
       );
       const matchedSource = sources.value.find(
-        (source) => source.id === deal.source_id
+        (source) => source.value === deal.source_id
       );
 
       return {
         id: deal.id,
         name: deal.name || "Empty",
-        // phone1: deal.contact.phones?.[0] || "",
-        // phone2: deal.contact.phones?.[1] || "",
         phone: deal.phone,
         note: deal.note || "Empty",
         created_at: deal.created_at.split("T")[0],
@@ -369,7 +496,7 @@ const fetchData = async () => {
 const onPageChange = (event) => {
   currentPage.value = event.page;
   rowsPerPage.value = event.rows;
-  applyFilters(filters.value); // Reapply current filters with new pagination
+  applyFilters(filters.value);
 };
 const deleteItem = async (id) => {
   try {
@@ -400,10 +527,10 @@ const handleShowDeal = async (dealId) => {
     const response = await showDeal(dealId);
     const deal = response.data.data;
     const matchedStage = stages.value.find(
-      (stage) => stage.id === deal.stage_id
+      (stage) => stage.value === deal.stage_id
     );
     const matchedSource = sources.value.find(
-      (source) => source.id === deal.source_id
+      (source) => source.value === deal.source_id
     );
     dealData.value = {
       name: deal.contact?.name || "Empty",
@@ -431,6 +558,34 @@ const handleShowDeal = async (dealId) => {
   }
 };
 
+const handleShowDealModal = async (dealId) => {
+  try {
+    const response = await showDeal(dealId);
+    const deal = response.data.data;
+    selectedDeal.value = deal;
+
+    await nextTick();
+    setTimeout(() => {
+      const modalEl = document.getElementById("dealDataCard");
+      const modal = new Modal(modalEl);
+      modal.show();
+      modalEl.addEventListener(
+        "hidden.bs.modal",
+        () => {
+          const backdrop = document.querySelector(".modal-backdrop");
+          if (backdrop) {
+            backdrop.remove();
+            document.body.classList.remove("modal-open");
+            document.body.style.paddingRight = null;
+          }
+        },
+        { once: true }
+      );
+    }, 300);
+  } catch (error) {
+    console.error("Error fetching deal data:", error);
+  }
+};
 const applyFilters = async (newFilters) => {
   try {
     loading.value = true;
@@ -438,70 +593,74 @@ const applyFilters = async (newFilters) => {
 
     // Build filters object in the correct format
     const apiFilters = {
+      search: searchInput.value,
       page: currentPage.value + 1,
       per_page: rowsPerPage.value,
       sort_by: "created_at",
-      sort_type: "desc",
+      sort_order: "desc",
+      filters: { ...filters.value },
     };
 
-    // Add filters directly to the main object
-    if (filters.value.source) {
-      apiFilters["filters[source_id]"] = parseInt(filters.value.source);
+    // إذا كان المستخدم سيلزي، نضيف فلتر المستخدم
+    if (permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)) {
+      const userId = Cookies.get("user_id");
+      apiFilters.filters.user_id = userId;
     }
 
-    if (filters.value.stage) {
-      apiFilters["filters[stage_id]"] = parseInt(filters.value.stage);
+    // تحويل الفلاتر إلى الصيغة المطلوبة للـ API
+    const formattedFilters = {};
+
+    // فلتر المصدر
+    if (apiFilters.filters.source_id) {
+      formattedFilters["filters[source_id]"] = apiFilters.filters.source_id;
     }
 
-    // Add status filters
-    if (Array.isArray(filters.value.status)) {
-      if (filters.value.status.includes("unassigned")) {
-        apiFilters["filters[unassigned]"] = 1;
+    // فلتر المرحلة
+    if (apiFilters.filters.stage_id) {
+      formattedFilters["filters[stage_id]"] = apiFilters.filters.stage_id;
+    }
+
+    // فلتر المستخدم
+    if (apiFilters.filters.user_id) {
+      formattedFilters["filters[user_id]"] = apiFilters.filters.user_id;
+    }
+
+    // فلتر التواريخ
+    if (apiFilters.filters.created_at_start) {
+      formattedFilters["filters[created_at_start]"] =
+        apiFilters.filters.created_at_start;
+    }
+    if (apiFilters.filters.created_at_end) {
+      formattedFilters["filters[created_at_end]"] =
+        apiFilters.filters.created_at_end;
+    }
+
+    // فلتر الحالة
+    if (Array.isArray(apiFilters.filters.status)) {
+      if (apiFilters.filters.status.includes("unassigned")) {
+        formattedFilters["filters[unassigned]"] = 1;
       }
-      if (filters.value.status.includes("no_comments")) {
-        apiFilters["filters[uncommented]"] = 1;
+      if (apiFilters.filters.status.includes("no_comments")) {
+        formattedFilters["filters[uncommented]"] = 1;
       }
-      if (filters.value.status.includes("no_task")) {
-        apiFilters["filters[no_tasks]"] = 1;
+      if (apiFilters.filters.status.includes("no_task")) {
+        formattedFilters["filters[no_tasks]"] = 1;
       }
-      if (filters.value.status.includes("overdue")) {
-        apiFilters["filters[overdue]"] = 1;
+      if (apiFilters.filters.status.includes("overdue")) {
+        formattedFilters["filters[overdue]"] = 1;
       }
-      if (filters.value.status.includes("new")) {
-        apiFilters["filters[new]"] = 1;
+      if (apiFilters.filters.status.includes("new")) {
+        formattedFilters["filters[new]"] = 1;
       }
-      if (filters.value.status.includes("reclaimed")) {
-        apiFilters["filters[reclaimed]"] = 1;
+      if (apiFilters.filters.status.includes("reclaimed")) {
+        formattedFilters["filters[reclaimed]"] = 1;
       }
     }
 
-    // Add date filters
-    if (filters.value.createdStart) {
-      apiFilters["filters[created_at_start]"] = filters.value.createdStart;
-    }
-    if (filters.value.createdEnd) {
-      apiFilters["filters[created_at_end]"] = filters.value.createdEnd;
-    }
-    if (filters.value.modifiedStart) {
-      apiFilters["filters[updated_at_start]"] = filters.value.modifiedStart;
-    }
-    if (filters.value.modifiedEnd) {
-      apiFilters["filters[updated_at_end]"] = filters.value.modifiedEnd;
-    }
-
-    // Add other filters
-    if (filters.value.representative) {
-      apiFilters["filters[user_id]"] = parseInt(filters.value.representative);
-    }
-    if (filters.value.package) {
-      apiFilters["filters[package_id]"] = parseInt(filters.value.package);
-    }
-
-    console.log("API Filters:", apiFilters);
-    console.log("API Request URL:", new URLSearchParams(apiFilters).toString());
-
-    const response = await getDeals(apiFilters);
-    console.log("API Response:", response);
+    const response = await getDeals({
+      ...apiFilters,
+      filters: formattedFilters,
+    });
 
     if (!response?.data?.data) {
       toast.info(t("noDealsFound"));
@@ -510,17 +669,12 @@ const applyFilters = async (newFilters) => {
       return;
     }
 
-    // Make sure we have stages and sources loaded
-    if (stages.value.length === 0 || sources.value.length === 0) {
-      await fetchStagesAndSources();
-    }
-
     rows.value = response.data.data.map((deal) => {
       const matchedStage = stages.value.find(
-        (stage) => stage.id === deal.stage_id
+        (stage) => stage.value === deal.stage_id
       );
       const matchedSource = sources.value.find(
-        (source) => source.id === deal.source_id
+        (source) => source.value === deal.source_id
       );
 
       return {
@@ -563,15 +717,10 @@ const clearSearch = () => {
 // Opening and closing modals
 const resetFilter = () => {
   filters.value = {
-    source: "",
-    stage: "",
-    supervisor: "",
-    representative: "",
-    package: "",
-    created_at_start: "",
-    created_at_end: "",
-    updated_at_start: "",
-    updated_at_end: "",
+    source_id: null,
+    stage_id: null,
+    created_at_start: null,
+    created_at_end: null,
     status: [],
   };
   selectedStatuses.value = [];
@@ -665,10 +814,21 @@ const fetchStagesAndSources = async () => {
   try {
     if (stages.value.length === 0 || sources.value.length === 0) {
       console.log("Fetching stages and sources...");
-      const stage_res = await getStages();
-      const source_res = await getSources();
-      stages.value = stage_res.data.data;
-      sources.value = source_res.data.data;
+      const [stageRes, sourceRes] = await Promise.all([
+        getStages(),
+        getSources(),
+      ]);
+
+      stages.value = stageRes.data.data.map((stage) => ({
+        value: stage.id,
+        name: stage.name,
+      }));
+
+      sources.value = sourceRes.data.data.map((source) => ({
+        value: source.id,
+        name: source.name,
+      }));
+
       console.log("Fetched stages and sources:", {
         stages: stages.value,
         sources: sources.value,
@@ -676,6 +836,7 @@ const fetchStagesAndSources = async () => {
     }
   } catch (error) {
     console.error("Error fetching stages and sources:", error);
+    toast.error(t("error.fetchFailed"));
   }
 };
 
@@ -817,10 +978,10 @@ const bulkDeleteItems = async () => {
 const addNewDeal = (newDeal) => {
   try {
     const matchedStage = stages.value.find(
-      (stage) => stage.id === newDeal.stage_id
+      (stage) => stage.value === newDeal.stage_id
     );
     const matchedSource = sources.value.find(
-      (source) => source.id === newDeal.source_id
+      (source) => source.value === newDeal.source_id
     );
     const formattedDeal = {
       id: newDeal.id,

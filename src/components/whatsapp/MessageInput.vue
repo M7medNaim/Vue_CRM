@@ -124,6 +124,12 @@
             />
           </form>
         </div>
+        <div class="hiMessage">
+          <button class="btn p-0 text-white">
+            <!-- <i class="fa-solid fa-handshake-simple"></i> -->
+            <i class="fa-solid fa-hand"></i>
+          </button>
+        </div>
       </div>
       <div class="flex-grow-1 position-relative">
         <div
