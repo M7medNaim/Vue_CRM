@@ -134,6 +134,7 @@ export default {
             response.data.user.bg_image_id,
             cookieOptions
           );
+          localStorage.setItem("locale", response.data.user.locale);
           const locale = localStorage.getItem("locale") || "en";
           await initializeTranslations(locale);
 
