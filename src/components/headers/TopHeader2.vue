@@ -23,22 +23,23 @@
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
-              <router-link
-                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnKanban"
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
-                "
-                to="/crmlist"
-              >
-                List
-              </router-link>
               <button
-                class="btn btn-header text-white px-2 py-2 fs-7 btnKanban"
+                class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnKanban"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
+              <router-link
+                class="btn btn-header text-white px-3 py-2 fs-7 btnKanban"
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
+                  user_role == 'sales'
+                "
+                to="/crmlist"
+              >
+                {{ t("sidebar-nav-item-crmlist") }}
+              </router-link>
             </div>
 
             <!-- Search Form -->
@@ -210,6 +211,7 @@ import {
   fetchTasksCountByStageName,
   getconversations,
 } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
 
 export default {
   name: "TopHeader2",
@@ -267,6 +269,7 @@ export default {
     const tomorrow_count = ref(0);
     const notasks_count = ref(0);
     const searchText = ref("");
+    const user_role = ref(Cookies.get("user_role"));
     // const openWhatsappModal = () => {
     //   try {
     //     const modal = new Modal(document.getElementById("whatsappModal"));
@@ -415,6 +418,7 @@ export default {
       handleSearch,
       searchText,
       updateMessage,
+      user_role,
     };
   },
 

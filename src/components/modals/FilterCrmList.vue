@@ -24,6 +24,9 @@
           <FilterCrmListFormVue
             :filters="filters"
             :selectedStatuses="localSelectedStatuses"
+            :stages="local_stages"
+            :sources="local_sources"
+            :users="local_users"
             @update:filters="updateFilters"
             @update:selectedStatuses="updateSelectedStatuses"
           />
@@ -146,9 +149,9 @@ export default {
           created_at_end: null,
           status: [],
         };
-        filters.value = { ...emptyFilters };
+        filters.value = emptyFilters;
         localSelectedStatuses.value = [];
-        emit("update:modelValue", { ...emptyFilters });
+        emit("update:modelValue", emptyFilters);
         emit("reset-filter");
         toast.success(t("success.resetFilters"), { timeout: 3000 });
         closeFilterModal();

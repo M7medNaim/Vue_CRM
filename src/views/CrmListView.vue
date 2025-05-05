@@ -5,7 +5,7 @@
         <div class="row">
           <div
             class="col-sm-6 col-lg"
-            v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+            v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_DEAL)"
           >
             <div class="input-group">
               <select
@@ -69,7 +69,8 @@
               class="btn btn-primary rounded-2 d-flex align-items-center"
               @click="$router.back()"
               v-if="
-                permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
+                permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN) &&
+                user_role == 'sales'
               "
             >
               <i class="fa-solid fa-arrow-right me-2"></i>
@@ -77,14 +78,14 @@
             </button>
             <button
               class="btn btn-primary rounded-2 me-2 fs-7"
-              v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+              v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
               @click="openDealModal"
             >
               <span>{{ t("kanban-button-add-deal") }}</span>
             </button>
             <button
               class="btn btn-primary rounded-2 fs-7"
-              v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+              v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
               @click="openImportModal"
             >
               <i class="fa-solid fa-upload me-2"></i>
@@ -107,7 +108,15 @@
         selectionMode="multiple"
         responsive="true"
       >
-        <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
+        <Column
+          :selectionMode="
+            permissionStore.hasPermission(PERMISSIONS.UPDATE_DEAL)
+              ? 'multiple'
+              : 'single'
+          "
+          headerStyle="width: 3rem;"
+          v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_DEAL)"
+        ></Column>
         <Column :header="'#'">
           <template #body="slotProps">
             {{ slotProps.index + 1 + currentPage * rowsPerPage }}
@@ -121,15 +130,6 @@
           field="phone"
           :header="t('crmlist-table-header-phone')"
         ></Column>
-        <!-- <Column :header="t('contacts-table-header-phone')">
-        <template #body="slotProps">
-          {{
-            slotProps.data.phones && slotProps.data.phones.length > 0
-              ? slotProps.data.phones.join(", ")
-              : "N/A"
-          }}
-        </template>
-      </Column> -->
         <Column
           field="note"
           :header="t('crmlist-table-header-notes')"
@@ -153,24 +153,10 @@
           field="stage"
           :header="t('crmlist-table-header-stage')"
         ></Column>
-        <!-- <Column
-        field="responsible"
-        :header="t('crmlist-table-header-responsible')"
-      ></Column> -->
         <Column :header="t('crmlist-table-header-action')">
           <template #body="slotProps">
             <div class="d-flex gap-2">
               <button
-                v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
-                class="btn btn-sm btn-primary"
-                @click="handleShowDeal(slotProps.data.id)"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
-              <button
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
-                "
                 class="btn btn-sm btn-primary"
                 @click="handleShowDealModal(slotProps.data.id)"
               >
@@ -252,6 +238,12 @@
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
   />
+  <WhatsappModal
+    ref="whatsappModalRef"
+    :conversation="selected_conversation"
+    :new_message="local_new_message"
+    :updated_message="local_update_message"
+  />
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
@@ -279,6 +271,7 @@ import Swal from "sweetalert2";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
+import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -319,6 +312,8 @@ const selectedDeal = ref(null);
 const logs = ref([]);
 const comments = ref([]);
 const tasks = ref([]);
+const user_role = Cookies.get("user_role");
+const selected_conversation = ref(null);
 
 // Actions operations
 const actions = ref([
@@ -520,41 +515,6 @@ const deleteItem = async (id) => {
   } catch (error) {
     toast.error(t("error.deleteFailed"), { timeout: 3000 });
     console.error("Delete Error:", error);
-  }
-};
-const handleShowDeal = async (dealId) => {
-  try {
-    const response = await showDeal(dealId);
-    const deal = response.data.data;
-    const matchedStage = stages.value.find(
-      (stage) => stage.value === deal.stage_id
-    );
-    const matchedSource = sources.value.find(
-      (source) => source.value === deal.source_id
-    );
-    dealData.value = {
-      name: deal.contact?.name || "Empty",
-      nickname: deal.contact?.nickname || "Empty",
-      address: deal.contact?.address || "Empty",
-      country: deal.contact?.country || "Empty",
-      email: deal.contact?.email || "Empty",
-      phone: deal.contact?.phones?.[0]?.phone || "Empty",
-      note: deal.note || "Empty",
-      rating: deal.rating || "Empty",
-      created_at: deal.created_at
-        ? new Date(deal.created_at).toISOString().split("T")[0]
-        : "",
-      updated_at: deal.updated_at
-        ? new Date(deal.updated_at).toISOString().split("T")[0]
-        : "",
-      stage_name: matchedStage?.name || "Empty",
-      source_name: matchedSource?.name || "Empty",
-      // responsablePerson: deal.responsible_user.name || "Not assigned",
-    };
-
-    showDataModal.value?.openShowData();
-  } catch (error) {
-    console.error("Error fetching deal data:", error);
   }
 };
 
@@ -1004,6 +964,11 @@ const addNewDeal = (newDeal) => {
   } catch (error) {
     console.error("Error fetching user data for new deal:", error);
   }
+};
+
+const openWhatsappModal = (conversation) => {
+  console.log("selected conversation in Crm kanban component", conversation);
+  selected_conversation.value = conversation;
 };
 
 onMounted(async () => {

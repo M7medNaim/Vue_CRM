@@ -41,7 +41,7 @@
                 class="form-select text-secondary"
               >
                 <option
-                  v-for="source in sources"
+                  v-for="source in local_sources"
                   :key="source.value"
                   :value="source.value"
                 >
@@ -63,7 +63,7 @@
                 class="form-select text-secondary"
               >
                 <option
-                  v-for="stage in stages"
+                  v-for="stage in local_stages"
                   :key="stage.value"
                   :value="stage.value"
                 >
@@ -86,7 +86,7 @@
                 class="form-select text-secondary"
               >
                 <option
-                  v-for="user in users"
+                  v-for="user in local_users"
                   :key="user.value"
                   :value="user.value"
                 >
@@ -205,11 +205,9 @@ export default {
       status: [],
       ...props.filters,
     });
-    const local_stages = ref([]);
-    const local_sources = ref([]);
-    const local_company = ref([]);
-    const local_supervisors = ref([]);
-    const local_representatives = ref([]);
+    const local_stages = ref(props.stages);
+    const local_sources = ref(props.sources);
+    const local_users = ref([]);
     const local_packages = ref([]);
 
     const statuses = ref([
@@ -241,7 +239,7 @@ export default {
     watch(
       () => localFilters.value,
       (newFilters) => {
-        console.log("Filters changed:", newFilters);
+        console.log("filter reset", newFilters);
         emit("update:filters", newFilters);
       },
       { deep: true }
@@ -251,7 +249,6 @@ export default {
       () => props.stages,
       (newStages) => {
         local_stages.value = newStages;
-        console.log("form local_stages", local_stages.value);
       },
       { deep: true }
     );
@@ -260,7 +257,6 @@ export default {
       () => props.sources,
       (newSources) => {
         local_sources.value = newSources;
-        console.log("form local_sources", local_sources.value);
       },
       { deep: true }
     );
@@ -268,16 +264,7 @@ export default {
     watch(
       () => props.users,
       (newUsers) => {
-        console.log("form new users", newUsers);
-        local_company.value = newUsers.filter(
-          (user) => user.role === "company"
-        );
-        local_supervisors.value = newUsers.filter(
-          (user) => user.role === "supervisor"
-        );
-        local_representatives.value = newUsers.filter(
-          (user) => user.role === "sales"
-        );
+        local_users.value = newUsers;
       },
       { deep: true }
     );
@@ -286,7 +273,6 @@ export default {
       () => props.packages,
       (newPackages) => {
         local_packages.value = newPackages;
-        console.log("form local_packages", local_packages.value);
       },
       { deep: true }
     );
@@ -298,21 +284,8 @@ export default {
       local_sources,
       toggleStatus,
       t,
-      supervisors: [
-        { value: "any", label: "Any" },
-        { value: "eurasia", label: "Eurasia Admin" },
-        { value: "sup", label: "Sup Sup" },
-      ],
-      representatives: [
-        { value: "any", label: "Any" },
-        { value: "bader", label: "Bader Rep" },
-        { value: "reem", label: "Reem Rep" },
-      ],
-      packages: [
-        { value: "any", label: "Any" },
-        { value: "basic", label: "Basic Package" },
-        { value: "premium", label: "Premium Package" },
-      ],
+      local_users,
+      local_packages,
     };
   },
 };
