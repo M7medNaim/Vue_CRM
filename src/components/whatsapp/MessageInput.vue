@@ -34,7 +34,7 @@
               class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle position-sticky top-0"
             >
               <i class="fa-solid fa-xmark fs-5"></i>
-              <span>الردود السريعة</span>
+              <span>{{ t("kanban-modal-whatsapp-clipboard-heading") }}</span>
               <i class="fa-regular fa-clipboard fs-5"></i>
             </div>
             <div

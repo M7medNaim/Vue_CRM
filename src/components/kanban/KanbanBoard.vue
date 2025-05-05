@@ -118,7 +118,14 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  onBeforeUnmount,
+  computed,
+  nextTick,
+} from "vue";
 import draggable from "vuedraggable";
 import CustomerCard from "./CustomerCard.vue";
 import { Modal } from "bootstrap";
@@ -137,6 +144,7 @@ import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";
 import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+import { useKanbanStore } from "@/stores/kanbanStore";
 export default {
   name: "KanbanBoard",
   components: {
@@ -156,6 +164,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const isIdle = ref(false);
     const route = useRoute();
     const dealsContainer = ref(null);
     let scrollInterval = null;
@@ -173,6 +182,9 @@ export default {
     const reachedBottom = ref(false);
     const moveSound = new Audio(moveCardSound);
     const permissionStore = usePermissionStore();
+    const kanbanStore = useKanbanStore();
+    let idleTimer = null;
+    const idleTimeLimit = 5 * 60 * 1000;
 
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
@@ -597,6 +609,73 @@ export default {
     const changeDealStage = async (dealId, newStageIndex, oldStageId) => {
       emit("change-deal-stage", dealId, newStageIndex, oldStageId);
     };
+    const refreshPage = () => {
+      window.location.reload();
+    };
+    const startIdleTimer = () => {
+      clearIdleTimer();
+      idleTimer = setTimeout(setIdle, idleTimeLimit);
+    };
+
+    const clearIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+    };
+
+    const setupUserActivityListeners = () => {
+      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
+        window.addEventListener(event, resetIdleTimer);
+      });
+    };
+
+    const removeUserActivityListeners = () => {
+      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
+        window.removeEventListener(event, resetIdleTimer);
+      });
+    };
+
+    const resetIdleTimer = () => {
+      if (isIdle.value) {
+        isIdle.value = false;
+        reconnectWebSocket();
+      }
+      startIdleTimer();
+    };
+
+    const setIdle = () => {
+      isIdle.value = true;
+      disconnectWebSocket();
+    };
+
+    const disconnectWebSocket = () => {
+      window.Echo.disconnect();
+      console.log("WebSocket disconnected due to inactivity");
+    };
+
+    const reconnectWebSocket = () => {
+      window.Echo.connect();
+      const userRole = Cookies.get("user_role");
+      const user_id = Cookies.get("user_id");
+      let userChannel;
+
+      if (userRole === "super-admin") {
+        userChannel = userRole;
+      } else {
+        userChannel = `${userRole}-${user_id}`;
+      }
+
+      if (window.Echo && userChannel) {
+        window.Echo.channel(userChannel).listen(
+          ".DealEvent",
+          ".TaskEvent",
+          ".CommentEvent",
+          ".LogEvent",
+          ".WhatsappEvent"
+        );
+      }
+
+      console.log("WebSocket reconnected on user activity");
+      kanbanStore.setHasNewChanges(true);
+    };
 
     const getStageIconById = (stageId) => {
       const iconMap = {
@@ -625,6 +704,8 @@ export default {
       document.addEventListener("mouseup", stopScrolling);
       document.addEventListener("mouseleave", stopScrolling);
       updateArrowVisibility();
+      startIdleTimer();
+      setupUserActivityListeners();
 
       try {
         // Initialize WebSocket connection
@@ -695,6 +776,12 @@ export default {
       // Close the WebSocket connection
       closeWebSocket();
     });
+
+    onBeforeUnmount(() => {
+      clearIdleTimer();
+      removeUserActivityListeners();
+    });
+
     return {
       // stages,
       drag,
@@ -723,6 +810,18 @@ export default {
       permissionStore,
       PERMISSIONS,
       getStageIconById,
+      isIdle,
+
+      // Methods
+      refreshPage,
+      startIdleTimer,
+      clearIdleTimer,
+      setupUserActivityListeners,
+      removeUserActivityListeners,
+      resetIdleTimer,
+      setIdle,
+      disconnectWebSocket,
+      reconnectWebSocket,
     };
   },
 };
