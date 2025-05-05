@@ -264,8 +264,10 @@ export const createConversation = (deal_id) => {
   });
 };
 // Get message by Conversation id
-export const getMessageConv = async (id) => {
-  return await axios.get(`/whatsapp/${id}`);
+export const getMessageConv = async (id, params) => {
+  return await axios.get(`/whatsapp/${id}`, {
+    params: params,
+  });
 };
 // send message
 export const sendMessage = (messageData) => {

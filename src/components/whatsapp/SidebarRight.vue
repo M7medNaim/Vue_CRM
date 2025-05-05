@@ -82,6 +82,7 @@
           :messages="chatMessages"
           :searchQuery="searchQuery"
           @delete-message="handleDeleteMessage"
+          @scroll-top-reached="getMoreMessages"
         />
         <div
           ref="menu"
@@ -154,12 +155,17 @@ export default {
       type: Object,
       required: true,
     },
+    scrollToBot: {
+      type: Boolean,
+      required: false,
+    },
   },
   data() {
     return {
       isSearchBarVisible: false,
       showListVisible: false,
       searchQuery: "",
+      chatBox_ref: this.$refs.chatBox,
     };
   },
   computed: {
@@ -182,12 +188,12 @@ export default {
       },
     },
     "selectedChat.messages": {
+      immediate: true,
       handler() {
         this.$nextTick(() => {
           this.scrollToBottom();
         });
       },
-      immediate: true,
     },
   },
   methods: {
@@ -314,6 +320,9 @@ export default {
     },
     handleDeleteMessage(index) {
       this.$emit("delete-message", index);
+    },
+    async getMoreMessages() {
+      this.$emit("get-more-messages");
     },
   },
   directives: {

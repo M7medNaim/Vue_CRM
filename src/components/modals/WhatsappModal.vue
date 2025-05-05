@@ -50,6 +50,9 @@
               @open-label="handleOpenLabel"
               @delete-chat="handleDeleteChat"
               @new-message="handleNewMessage"
+              @get-more-messages="getMoreMessages"
+              :scrollToBot="scrollToBot"
+              ref="SidebarRight"
             />
           </div>
         </div>
@@ -92,6 +95,10 @@ export default {
   data() {
     return {
       selectedChat: null,
+      offset: 0,
+      total: 0,
+      scrollToBot: false,
+      isFetching: false,
     };
   },
   methods: {
@@ -112,60 +119,88 @@ export default {
     },
     async setSelectedChat(chat) {
       try {
+        this.isFetching = true;
+        this.offset = 0;
         console.log("Selected chat:", chat);
         const chatId = chat.id || chat.conversation_id;
-
         if (!chatId) {
           console.error("No chat ID found!");
           return;
         }
-
-        const response = await getMessageConv(chatId);
-
-        if (response.data && response.data.data) {
-          const messages = response.data.data.map((msg) => ({
-            id: msg.id,
-            type:
-              msg.conversation_member.type === "User" &&
-              msg.conversation_member.id == Cookies.get("user_id")
-                ? "msg-me"
-                : "msg-frnd",
-            text: msg.text_body,
-            time: new Date(msg.created_at).toLocaleTimeString("en-TR", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-              timeZone: "Europe/Istanbul",
-            }),
-            created_at: msg.created_at,
-            sender: msg.conversation_member?.name || "",
-            isCopied: false,
-            isImage: msg.type === "image",
-            isDocument: msg.type === "document",
-            isAudio: msg.type === "audio",
-            isVideo: msg.type === "video",
-            fileName: msg.file ? msg.file.name : null,
-            fileUrl: msg.file ? msg.file.url : null,
-            fileDownloadUrl: msg.file?.download_url || null,
-            fileMimeType: msg.file ? msg.file.mime_type : null,
-            status: msg.status,
-          }));
-
-          this.selectedChat = {
-            ...chat,
-            id: chatId,
-            messages,
-            created_at_last_message:
-              chat.created_at_last_message ?? chat.updated_at,
-          };
-
-          console.log("Updated selectedChat:", this.selectedChat);
-        }
+        this.selectedChat = chat;
+        const messages = await this.fetchMessages(chatId);
+        this.selectedChat = {
+          ...chat,
+          id: chatId,
+          messages,
+          created_at_last_message:
+            chat.created_at_last_message ?? chat.updated_at,
+        };
+        this.scrollToBot = false;
+        this.scrollToBot = true;
+        this.$nextTick(() => {
+          this.isFetching = false;
+        });
       } catch (error) {
         console.error("Error fetching messages:", error);
         this.selectedChat = chat;
       }
     },
+
+    async getMoreMessages() {
+      if (!this.isFetching) {
+        this.isFetching = true;
+        console.log("get more");
+        this.offset = this.selectedChat.messages.length;
+        const messages = await this.fetchMessages(this.selectedChat.id);
+        this.selectedChat.messages = [
+          ...messages,
+          ...this.selectedChat.messages,
+        ];
+        this.isFetching = false;
+      } else {
+        console.log("Already fetching messages");
+      }
+    },
+
+    async fetchMessages(id) {
+      const response = await getMessageConv(id, {
+        limit: 10,
+        offset: this.offset,
+      });
+      if (response.data && response.data.data) {
+        const messages = response.data.data.map((msg) => ({
+          id: msg.id,
+          type:
+            msg.conversation_member.type === "User" &&
+            msg.conversation_member.id == Cookies.get("user_id")
+              ? "msg-me"
+              : "msg-frnd",
+          text: msg.text_body,
+          time: new Date(msg.created_at).toLocaleTimeString("en-TR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "Europe/Istanbul",
+          }),
+          created_at: msg.created_at,
+          sender: msg.conversation_member?.name || "",
+          isCopied: false,
+          isImage: msg.type === "image",
+          isDocument: msg.type === "document",
+          isAudio: msg.type === "audio",
+          isVideo: msg.type === "video",
+          fileName: msg.file ? msg.file.name : null,
+          fileUrl: msg.file ? msg.file.url : null,
+          fileDownloadUrl: msg.file?.download_url || null,
+          fileMimeType: msg.file ? msg.file.mime_type : null,
+          status: msg.status,
+        }));
+
+        return messages;
+      }
+    },
+
     handleMarkAsUnread() {
       const activeChat = this.$refs.leftSidebar.chats.find(
         (chat) => chat.isActive

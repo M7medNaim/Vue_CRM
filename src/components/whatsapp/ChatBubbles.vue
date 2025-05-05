@@ -11,6 +11,7 @@
     :key="message.id"
     :class="message.type"
     ref="messageElements"
+    @scroll="handleScroll"
   >
     <div
       :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
@@ -298,13 +299,14 @@ export default {
       });
     },
     scrollToBottom() {
+      console.log("scrollToBottom triggered");
       const chatBox = this.$parent.$refs.chatBox;
       chatBox.scrollTo({
         top: chatBox.scrollHeight,
         behavior: "smooth",
       });
     },
-    handleScroll() {
+    async handleScroll() {
       const chatBox = this.$parent.$refs.chatBox;
       const scrollTop = chatBox.scrollTop;
       const scrollHeight = chatBox.scrollHeight;
@@ -319,6 +321,8 @@ export default {
       let messageIndex;
 
       if (scrollTop === 0) {
+        console.log("At the top");
+        this.$emit("scroll-top-reached");
         messageIndex = 0;
       } else if (scrollTop + clientHeight >= scrollHeight - 10) {
         messageIndex = totalMessages - 1;
