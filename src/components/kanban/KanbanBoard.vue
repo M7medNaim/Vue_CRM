@@ -533,6 +533,11 @@ export default {
       const clientHeight = event.target.clientHeight;
       const stages = ref(props.stages);
       const stageIndex = stages.value.findIndex((s) => s.id === id);
+      if (
+        stages.value[stageIndex].deals.length ===
+        stages.value[stageIndex].deal_count
+      )
+        return;
       if (scrollTop + clientHeight >= scrollHeight - 1) {
         reachedBottom.value = true;
         fetchAdditionalDealsByStageId(
