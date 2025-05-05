@@ -81,7 +81,7 @@
                 {{ chat.name }}
                 <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
-              <span style="font-size: 12px" class="time text-success">{{
+              <span style="font-size: 14px" class="time text-success">{{
                 chat.time
               }}</span>
             </div>
@@ -92,17 +92,57 @@
                 class="msg pe-2 text-truncate"
                 :title="chat.message ?? chat.last_message?.text_body"
               >
-                <span
+                <!-- <span
                   :class="{
-                    'text-secondary': !chat.isRead,
-                    'text-info': chat.isRead,
+                    'text-secondary':
+                      chat.message_status === 'sent' ||
+                      chat.message_status === 'delivered',
+                    'text-info':
+                      chat.message_status === 'received' ||
+                      chat.message_status === 'read',
                   }"
                   class="pe-1"
                 >
                   <i class="fa-solid fa-check fs-6"></i>
+                </span> -->
+                <span v-if="chat.message_type === 'msg-me'">
+                  <span
+                    v-if="chat.message_status === 'sent'"
+                    class="text-secondary"
+                  >
+                    <i class="fa-solid fa-check fs-6"></i>
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'delivered'"
+                    class="text-secondary"
+                  >
+                    <i class="fa-solid fa-check fs-6"></i>
+                    <i class="fa-solid fa-check fs-6"></i>
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'read'"
+                    class="text-info"
+                  >
+                    <i class="fa-solid fa-check fs-6"></i>
+                    <i class="fa-solid fa-check fs-6"></i>
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'undelivered'"
+                    class="text-danger"
+                  >
+                    <i class="fa-solid fa-xmark"></i> (Not sent)
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'error'"
+                    class="text-danger"
+                  >
+                    <i class="fa-solid fa-xmark"></i> (Not sent)
+                  </span>
                 </span>
                 {{
-                  truncatedMessage(chat.message ?? chat.last_message?.text_body)
+                  truncatedMessage(
+                    chat.message ?? chat.last_message?.text_body
+                  ) || "Media message"
                 }}
               </p>
               <div class="d-flex align-items-center gap-3">
@@ -182,9 +222,13 @@ export default {
               : "",
             created_at_last_message: last_message?.created_at || "",
             message: last_message?.text_body || "",
+            message_status: last_message?.status,
+            message_type:
+              last_message?.conversation_member?.type == "User"
+                ? "msg-me"
+                : "msg-frnd",
             sender: last_message?.conversation_member?.name || "",
             unread: false,
-            unreadCount: 0,
             isActive: false,
             pinned: conversation.pinned,
             label: "",
@@ -329,6 +373,11 @@ export default {
             : "",
           created_at_last_message: chat.last_message?.created_at || "",
           message: chat.last_message?.text_body || "",
+          message_status: chat.last_message?.status,
+          message_type:
+            chat.last_message?.conversation_member?.type == "User"
+              ? "msg-me"
+              : "msg-frnd",
           sender: chat.last_message?.conversation_member?.name || "",
           unread: false,
           unreadCount: 0,
@@ -337,7 +386,7 @@ export default {
           label: "",
           messages: [],
           conversation_id: chat.id,
-          phone: chat.phone.phone,
+          phone: chat.phone.phone || chat.phone,
         };
         console.log("Processed chat:", processed_chat);
         this.chats.unshift(processed_chat);

@@ -132,6 +132,10 @@ export default {
     };
 
     const openWhatsappModal = (conversation) => {
+      console.log(
+        "selected conversation in Crm kanban component",
+        conversation
+      );
       selected_conversation.value = conversation;
     };
 

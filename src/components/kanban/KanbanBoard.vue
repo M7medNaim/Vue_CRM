@@ -514,6 +514,7 @@ export default {
     };
 
     const openWhatsappModal = (conversation, id) => {
+      console.log("openWhatsappModal in kanban comp", conversation);
       emit("open-whatsapp-modal", conversation);
       DecreaseUnreadCount(id);
     };

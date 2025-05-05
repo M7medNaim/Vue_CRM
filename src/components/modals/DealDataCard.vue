@@ -935,7 +935,9 @@ export default {
             img:
               selected_conversation.value.img ||
               require("@/assets/whatsappImage/default-userImage.jpg"),
-            phone: selected_conversation.value.phone?.phone || "",
+            phone:
+              selected_conversation.value.phone?.phone ||
+              selected_conversation.value.phone,
           },
           id
         );

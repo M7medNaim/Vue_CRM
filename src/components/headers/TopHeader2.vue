@@ -343,6 +343,7 @@ export default {
     });
     const setConversation = (data) => {
       conversation.value = data;
+      console.log("setConversation in Top header 2 comp", conversation.value);
     };
     const setNewMessage = (data) => {
       local_new_message.value = data;
