@@ -74,7 +74,7 @@
               "
             >
               <i class="fa-solid fa-arrow-right me-2"></i>
-              <span>رجوع</span>
+              <span>{{ t("crmlist-button-back") }}</span>
             </button>
             <button
               class="btn btn-primary rounded-2 me-2 fs-7"
