@@ -290,6 +290,7 @@
 import { onMounted, ref, watch } from "vue";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { getInitMessages } from "@/plugins/services/authService";
+import { useI18n } from "vue-i18n";
 export default {
   name: "MessageInput",
   props: {
@@ -321,6 +322,7 @@ export default {
     };
   },
   setup(props, { emit }) {
+    const { t } = useI18n();
     const showWarning = ref(true);
     const init_messages = ref([]);
 
@@ -371,6 +373,7 @@ export default {
       sendInitMessage,
       fetchInitMessages,
       init_messages,
+      t,
     };
   },
   methods: {
