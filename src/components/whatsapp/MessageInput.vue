@@ -1,7 +1,7 @@
 <template>
   <div class="chat-input w-100 position-relative">
     <!-- message warning -->
-    <div
+    <!-- <div
       v-if="showWarning"
       class="message-warning bg-transparent text-dark position-absolute rounded-3 d-flex justify-content-between align-items-center"
     >
@@ -11,7 +11,7 @@
       >
         You must click here in order to send messages.
       </button>
-    </div>
+    </div> -->
     <div class="d-flex align-items-center gap-1">
       <div
         class="actions-group d-flex justify-content-center align-items-center gap-2 bg-success rounded-2 rounded-end-0"
