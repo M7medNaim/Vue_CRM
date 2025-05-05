@@ -324,14 +324,19 @@ export default {
     };
 
     const checkLastMessageTime = () => {
-      console.log("Checking last message time...", props.lastMessageDate);
-      if (props.lastMessageDate) {
-        const lastMessageTime = new Date(props.lastMessageDate).getTime();
-        const currentTime = new Date().getTime();
-        const hoursDiff = (currentTime - lastMessageTime) / (1000 * 60 * 60);
-        showWarning.value = hoursDiff >= 24;
-      } else {
+      // console.log("Checking last message time...", props.lastMessageDate);
+      // if (props.lastMessageDate) {
+      //   const lastMessageTime = new Date(props.lastMessageDate).getTime();
+      //   const currentTime = new Date().getTime();
+      //   const hoursDiff = (currentTime - lastMessageTime) / (1000 * 60 * 60);
+      //   showWarning.value = hoursDiff >= 24;
+      // } else {
+      //   showWarning.value = true;
+      // }
+      if (!props.lastMessageDate) {
         showWarning.value = true;
+      } else {
+        showWarning.value = false;
       }
     };
 

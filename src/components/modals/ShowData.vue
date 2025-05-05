@@ -53,12 +53,18 @@
               </div> -->
               <div class="mb-3">
                 <label class="form-label">Note</label>
-                <input
+                <!-- <input
                   type="text"
                   class="form-control"
                   :value="dealData?.note || 'No description'"
                   disabled
-                />
+                /> -->
+                <textarea
+                  class="form-control"
+                  :value="dealData?.note || 'No description'"
+                  disabled
+                  style="resize: none; overflow-y: auto"
+                ></textarea>
               </div>
               <div class="mb-3">
                 <label class="form-label">Create at</label>
