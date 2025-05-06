@@ -5,6 +5,7 @@
     tabindex="-1"
     aria-labelledby="filterModalLabel"
     aria-hidden="true"
+    ref="filterModal"
   >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -69,6 +70,7 @@ export default {
     const local_stages = ref([]);
     const local_sources = ref([]);
     const local_users = ref([]);
+    const filterModal = ref(null);
 
     watch(
       () => props.modelValue,
@@ -96,13 +98,14 @@ export default {
 
     const closeFilterModal = () => {
       try {
-        const modal = document.getElementById("filterModal");
+        const modal = filterModal.value;
         const modalInstance = Modal.getInstance(modal);
         if (modalInstance) modalInstance.hide();
         document.querySelector(".modal-backdrop")?.remove();
         document.body.classList.remove("modal-open");
       } catch (error) {
         toast.error(t("error.closeModal"), { timeout: 3000 });
+        console.error("Error closing modal:", error);
       }
     };
 
@@ -132,15 +135,12 @@ export default {
     const resetFilter = () => {
       try {
         const emptyFilters = {
-          source: "",
-          stage: "",
-          supervisor: "",
-          representative: "",
-          package: "",
+          package_id: null,
           updated_at_start: null,
           updated_at_end: null,
           source_id: null,
           stage_id: null,
+          user_id: null,
           created_at_start: null,
           created_at_end: null,
           status: [],
@@ -202,6 +202,7 @@ export default {
       local_stages,
       local_sources,
       local_users,
+      filterModal,
     };
   },
 };

@@ -12,7 +12,7 @@ export const PERMISSIONS = {
   TASKS_KANBAN: "view-tasks-kanban-page",
   ROLES_SETTINGS: "view-roles-settings-page",
   CREATE_DEAL: "create-deal",
-  UPDATE_DEAL: "update-deal",
+  UPDATE_DEAL: "edit-deal",
   DELETE_DEAL: "delete-deal",
   READ_DEAL: "read-deal",
   READ_TASK: "read-task",

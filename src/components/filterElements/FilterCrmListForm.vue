@@ -43,10 +43,11 @@
                 v-model="localFilters.source_id"
                 class="form-select text-secondary"
               >
+                <option value="" selected>All</option>
                 <option
                   v-for="source in local_sources"
-                  :key="source.id"
-                  :value="source.id"
+                  :key="source.value"
+                  :value="source.value"
                 >
                   {{ source.name }}
                 </option>
@@ -65,10 +66,11 @@
                 v-model="localFilters.stage_id"
                 class="form-select text-secondary"
               >
+                <option value="" selected>All</option>
                 <option
                   v-for="stage in local_stages"
-                  :key="stage.id"
-                  :value="stage.id"
+                  :key="stage.value"
+                  :value="stage.value"
                 >
                   {{ stage.name }}
                 </option>
@@ -91,6 +93,7 @@
                 v-model="localFilters.user_id"
                 class="form-select text-secondary"
               >
+                <option value="" selected>All</option>
                 <option
                   v-for="user in local_users"
                   :key="user.id"
@@ -344,11 +347,11 @@ export default {
       if (permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)) {
         statuses.value.push({
           value: "unassigned",
-          label: t("crmlist-modal-filter-label-unassigned"),
+          label: "Unassigned",
         });
         statuses.value.push({
           value: "reclaimed",
-          label: t("crmlist-modal-filter-label-reclaimed"),
+          label: "Reclaimed",
         });
       }
     });
