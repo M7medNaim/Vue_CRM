@@ -87,10 +87,10 @@
               >
                 <option
                   v-for="user in local_users"
-                  :key="user.value"
-                  :value="user.value"
+                  :key="user.id"
+                  :value="user.id"
                 >
-                  {{ user.label }}
+                  {{ user.name }}
                 </option>
               </select>
             </div>
@@ -340,6 +340,8 @@ export default {
       t,
       local_users,
       local_packages,
+      local_stages,
+      local_sources,
     };
   },
 };

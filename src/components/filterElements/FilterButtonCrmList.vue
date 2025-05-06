@@ -33,10 +33,12 @@ export default {
 
     const removeFilter = () => {
       emit("reset-filter");
+      closeFilterModal();
     };
 
     const submitFilters = () => {
       emit("submit-filters");
+      closeFilterModal();
     };
 
     return {
