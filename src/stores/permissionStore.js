@@ -22,6 +22,9 @@ export const PERMISSIONS = {
   CREATE_FOLDER: "create-folder",
   SHOW_HISTORY: "show-history",
   SHOW_ASSIGNED_TO: "show-assigned-to",
+  ADD_ASSIGN_BY_DEAL: "add-assign-by-deal",
+  ADD_ASSIGNED_TO_DEAL: "add-assigned-to-deal",
+  ADD_OWNER_DEAL: "add-owner-deal",
 };
 
 export const usePermissionStore = defineStore("permissions", {

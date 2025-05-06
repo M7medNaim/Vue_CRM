@@ -30,7 +30,10 @@
         </div>
 
         <!-- Source Filter -->
-        <div class="row">
+        <div
+          class="row"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        >
           <div class="col-3 pt-2">
             <span>{{ t("crmlist-modal-filter-label-source") }}</span>
           </div>
@@ -42,8 +45,8 @@
               >
                 <option
                   v-for="source in local_sources"
-                  :key="source.value"
-                  :value="source.value"
+                  :key="source.id"
+                  :value="source.id"
                 >
                   {{ source.name }}
                 </option>
@@ -64,8 +67,8 @@
               >
                 <option
                   v-for="stage in local_stages"
-                  :key="stage.value"
-                  :value="stage.value"
+                  :key="stage.id"
+                  :value="stage.id"
                 >
                   {{ stage.name }}
                 </option>
@@ -75,7 +78,10 @@
         </div>
 
         <!-- Supervisor Filter -->
-        <div class="row">
+        <div
+          class="row"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        >
           <div class="col-3 pt-2">
             <span>{{ t("crmlist-modal-filter-label-user") }}</span>
           </div>
@@ -197,8 +203,9 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "FilterCrmListFormVue",
@@ -243,12 +250,10 @@ export default {
     const local_packages = ref([]);
 
     const statuses = ref([
-      { value: "unassigned", label: "Unassigned" },
       { value: "no_comments", label: "No Comments" },
       { value: "no_task", label: "No Task" },
       { value: "overdue", label: "Overdue" },
       { value: "new", label: "New" },
-      { value: "reclaimed", label: "Reclaimed" },
     ]);
 
     const updateLocalFilters = (newFilters) => {
@@ -258,6 +263,8 @@ export default {
         });
       }
     };
+
+    const permissionStore = usePermissionStore();
 
     updateLocalFilters(props.filters);
 
@@ -333,6 +340,19 @@ export default {
       { deep: true }
     );
 
+    onMounted(() => {
+      if (permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)) {
+        statuses.value.push({
+          value: "unassigned",
+          label: t("crmlist-modal-filter-label-unassigned"),
+        });
+        statuses.value.push({
+          value: "reclaimed",
+          label: t("crmlist-modal-filter-label-reclaimed"),
+        });
+      }
+    });
+
     return {
       localFilters,
       statuses,
@@ -342,6 +362,8 @@ export default {
       local_packages,
       local_stages,
       local_sources,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };
