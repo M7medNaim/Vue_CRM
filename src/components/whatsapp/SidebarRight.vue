@@ -210,8 +210,8 @@ export default {
           };
 
           if (!messageToSend.conversation_id) {
-            messageToSend.to = "971557893319";
-            delete messageToSend.conversation_id;
+            console.error("Conversation ID is missing.");
+            return;
           }
 
           const response = await sendMessage(messageToSend);
