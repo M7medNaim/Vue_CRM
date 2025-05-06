@@ -182,18 +182,17 @@
                 v-model="localFilters.sort_by"
                 class="form-select text-secondary"
               >
-                <option value="name">Full Name</option>
-                <option value="phone">Phone</option>
-                <option value="note">Notes</option>
-                <option value="responsible">Responsible</option>
+                <option value="" selected>None</option>
                 <option value="created_at">Created At</option>
-                <option value="source">Source</option>
-                <option value="stage">Stage</option>
+                <option value="updated_at">Updated At</option>
+                <option value="source_id">Source</option>
+                <option value="stage_id">Stage</option>
               </select>
               <select
                 v-model="localFilters.sort_order"
                 class="form-select text-secondary"
               >
+                <option value="" selected>None</option>
                 <option value="desc">Desc</option>
                 <option value="asc">Asc</option>
               </select>
