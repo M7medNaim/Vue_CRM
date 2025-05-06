@@ -299,8 +299,15 @@ export const sendInitMessage = (deal_id, conversation_id, init_message_id) => {
   });
 };
 
-export const getInitMessages = () => {
-  return axios.get("/whatsapp/init-messages");
+export const sendGreetingMessage = (deal_id, conversation_id) => {
+  return axios.post("/whatsapp/send-greeting", {
+    deal_id: deal_id,
+    conversation_id: conversation_id,
+  });
+};
+
+export const getInitMessages = (type = "marketing") => {
+  return axios.get(`/whatsapp/init-messages/${type}`);
 };
 
 export const changePinStatus = (id) => {

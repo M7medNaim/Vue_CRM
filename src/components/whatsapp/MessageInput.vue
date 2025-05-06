@@ -125,7 +125,7 @@
           </form>
         </div>
         <div class="hiMessage">
-          <button class="btn p-0 text-white">
+          <button class="btn p-0 text-white" @click="sendGreetingMessage">
             <!-- <i class="fa-solid fa-handshake-simple"></i> -->
             <i class="fa-solid fa-hand"></i>
           </button>
@@ -331,6 +331,10 @@ export default {
       emit("send-init-message", id);
     };
 
+    const sendGreetingMessage = () => {
+      emit("send-greeting-message");
+    };
+
     const checkLastMessageTime = () => {
       // console.log("Checking last message time...", props.lastMessageDate);
       // if (props.lastMessageDate) {
@@ -374,6 +378,7 @@ export default {
       fetchInitMessages,
       init_messages,
       t,
+      sendGreetingMessage,
     };
   },
   methods: {
