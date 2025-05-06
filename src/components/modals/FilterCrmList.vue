@@ -70,7 +70,6 @@ export default {
     const local_sources = ref([]);
     const local_users = ref([]);
 
-    // Watch for changes in modelValue
     watch(
       () => props.modelValue,
       (newFilters) => {
@@ -84,7 +83,6 @@ export default {
       { immediate: true, deep: true }
     );
 
-    // Watch for changes in selectedStatuses prop
     watch(
       () => props.selectedStatuses,
       (newStatuses) => {
@@ -110,17 +108,15 @@ export default {
 
     const submitFilters = () => {
       try {
-        // Update filters with current statuses
         if (Array.isArray(localSelectedStatuses.value)) {
           filters.value.status = [...localSelectedStatuses.value];
         }
 
-        // Emit both the updated filters and apply them
         emit("update:modelValue", { ...filters.value });
         emit("apply-filters", { ...filters.value });
 
         toast.success(t("success.applyFilters"), { timeout: 3000 });
-        closeFilterModal();
+        // closeFilterModal();
       } catch (error) {
         toast.error(t("error.applyFilters"), { timeout: 3000 });
       }
@@ -154,7 +150,6 @@ export default {
         emit("update:modelValue", emptyFilters);
         emit("reset-filter");
         toast.success(t("success.resetFilters"), { timeout: 3000 });
-        closeFilterModal();
       } catch (error) {
         toast.error(t("error.resetFilters"), { timeout: 3000 });
       }

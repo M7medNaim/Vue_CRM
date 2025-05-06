@@ -305,6 +305,8 @@ const filters = ref({
   created_at_start: null,
   created_at_end: null,
   status: [],
+  sort_by: "created_at",
+  sort_order: "desc",
 });
 const dealData = ref(null);
 const showDataModal = ref(null);
@@ -382,41 +384,34 @@ const fetchData = async () => {
       await fetchStagesAndSources();
     }
 
-    // نجهز الفلاتر
     const apiFilters = {
       search: searchInput.value,
       page: currentPage.value + 1,
       per_page: rowsPerPage.value,
-      sort_by: "created_at",
-      sort_order: "desc",
+      sort_by: filters.value.sort_by,
+      sort_type: filters.value.sort_order,
       filters: { ...filters.value },
     };
 
-    // إذا كان المستخدم سيلزي، نضيف فلتر المستخدم
     if (permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)) {
       const userId = Cookies.get("user_id");
       apiFilters.filters.user_id = userId;
     }
 
-    // تحويل الفلاتر إلى الصيغة المطلوبة للـ API
     const formattedFilters = {};
 
-    // فلتر المصدر
     if (apiFilters.filters.source_id) {
       formattedFilters["filters[source_id]"] = apiFilters.filters.source_id;
     }
 
-    // فلتر المرحلة
     if (apiFilters.filters.stage_id) {
       formattedFilters["filters[stage_id]"] = apiFilters.filters.stage_id;
     }
 
-    // فلتر المستخدم
     if (apiFilters.filters.user_id) {
       formattedFilters["filters[user_id]"] = apiFilters.filters.user_id;
     }
 
-    // فلتر التواريخ
     if (apiFilters.filters.created_at_start) {
       formattedFilters["filters[created_at_start]"] =
         apiFilters.filters.created_at_start;
@@ -426,7 +421,6 @@ const fetchData = async () => {
         apiFilters.filters.created_at_end;
     }
 
-    // فلتر الحالة
     if (Array.isArray(apiFilters.filters.status)) {
       if (apiFilters.filters.status.includes("unassigned")) {
         formattedFilters["filters[unassigned]"] = 1;
@@ -556,36 +550,25 @@ const applyFilters = async (newFilters) => {
       search: searchInput.value,
       page: currentPage.value + 1,
       per_page: rowsPerPage.value,
-      sort_by: "created_at",
-      sort_order: "desc",
+      sort_by: filters.value.sort_by,
+      sort_type: filters.value.sort_order,
       filters: { ...filters.value },
     };
 
-    // إذا كان المستخدم سيلزي، نضيف فلتر المستخدم
-    if (permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)) {
-      const userId = Cookies.get("user_id");
-      apiFilters.filters.user_id = userId;
-    }
-
-    // تحويل الفلاتر إلى الصيغة المطلوبة للـ API
     const formattedFilters = {};
 
-    // فلتر المصدر
     if (apiFilters.filters.source_id) {
       formattedFilters["filters[source_id]"] = apiFilters.filters.source_id;
     }
 
-    // فلتر المرحلة
     if (apiFilters.filters.stage_id) {
       formattedFilters["filters[stage_id]"] = apiFilters.filters.stage_id;
     }
 
-    // فلتر المستخدم
     if (apiFilters.filters.user_id) {
       formattedFilters["filters[user_id]"] = apiFilters.filters.user_id;
     }
 
-    // فلتر التواريخ
     if (apiFilters.filters.created_at_start) {
       formattedFilters["filters[created_at_start]"] =
         apiFilters.filters.created_at_start;
@@ -595,7 +578,6 @@ const applyFilters = async (newFilters) => {
         apiFilters.filters.created_at_end;
     }
 
-    // فلتر الحالة
     if (Array.isArray(apiFilters.filters.status)) {
       if (apiFilters.filters.status.includes("unassigned")) {
         formattedFilters["filters[unassigned]"] = 1;
@@ -674,17 +656,28 @@ const clearSearch = () => {
   fetchData();
 };
 
-// Opening and closing modals
 const resetFilter = () => {
   filters.value = {
+    source: "",
+    stage: "",
+    supervisor: "",
+    representative: "",
+    package: "",
+    updated_at_start: null,
+    updated_at_end: null,
     source_id: null,
     stage_id: null,
     created_at_start: null,
     created_at_end: null,
     status: [],
+    sort_by: "created_at",
+    sort_order: "desc",
   };
   selectedStatuses.value = [];
-  fetchData(); // Fetch data with default filters
+  searchInput.value = "";
+  console.log("resetFilter", filters.value);
+
+  fetchData();
 };
 
 const openFilterModal = () => {

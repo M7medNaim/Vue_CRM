@@ -57,8 +57,8 @@ export const getDeals = async (params = {}) => {
     params: {
       page: params.page || 1,
       per_page: params.per_page || 10,
-      sort_by: params.sort_by || "id",
-      sort_type: params.sort_type || "asc",
+      sort_by: params.sort_by || "created_at",
+      sort_type: params.sort_type || "desc",
       ...filters,
       ...restParams,
     },

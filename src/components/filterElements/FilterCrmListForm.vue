@@ -161,6 +161,36 @@
             />
           </div>
         </div>
+
+        <!-- Sorting Section -->
+        <div class="row mb-3">
+          <div class="col-3">
+            <span>Sort By</span>
+          </div>
+          <div class="col-9">
+            <div class="d-flex gap-3">
+              <select
+                v-model="localFilters.sort_by"
+                class="form-select text-secondary"
+              >
+                <option value="name">Full Name</option>
+                <option value="phone">Phone</option>
+                <option value="note">Notes</option>
+                <option value="responsible">Responsible</option>
+                <option value="created_at">Created At</option>
+                <option value="source">Source</option>
+                <option value="stage">Stage</option>
+              </select>
+              <select
+                v-model="localFilters.sort_order"
+                class="form-select text-secondary"
+              >
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -203,6 +233,8 @@ export default {
       updated_at_start: null,
       updated_at_end: null,
       status: [],
+      sort_by: "created_at",
+      sort_order: "desc",
       ...props.filters,
     });
     const local_stages = ref(props.stages);
@@ -219,6 +251,33 @@ export default {
       { value: "reclaimed", label: "Reclaimed" },
     ]);
 
+    const updateLocalFilters = (newFilters) => {
+      if (newFilters) {
+        Object.keys(localFilters.value).forEach((key) => {
+          localFilters.value[key] = newFilters[key] ?? null;
+        });
+      }
+    };
+
+    updateLocalFilters(props.filters);
+
+    watch(
+      () => props.filters,
+      (newFilters) => {
+        updateLocalFilters(newFilters);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.selectedStatuses,
+      (newStatuses) => {
+        if (Array.isArray(newStatuses)) {
+          localFilters.value.status = [...newStatuses];
+        }
+      }
+    );
+
     const toggleStatus = (status) => {
       let newSelectedStatuses;
       if (props.selectedStatuses.includes(status)) {
@@ -229,13 +288,10 @@ export default {
         newSelectedStatuses = [...props.selectedStatuses, status];
       }
       emit("update:selectedStatuses", newSelectedStatuses);
-
-      // Update local filters with status
       localFilters.value.status = newSelectedStatuses;
       emit("update:filters", localFilters.value);
     };
 
-    // Watch for all filter changes
     watch(
       () => localFilters.value,
       (newFilters) => {
@@ -280,8 +336,6 @@ export default {
     return {
       localFilters,
       statuses,
-      local_stages,
-      local_sources,
       toggleStatus,
       t,
       local_users,
