@@ -77,7 +77,7 @@
         <!-- Supervisor Filter -->
         <div class="row">
           <div class="col-3 pt-2">
-            <span>{{ t("modals.supervisor") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-user") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
