@@ -79,9 +79,9 @@
             @click="refreshPage"
           >
             <i class="fa-solid fa-rotate"></i>
-            <span class="refresh-text" style="font-size: 14px"
-              >New Changes..</span
-            >
+            <span class="refresh-text" style="font-size: 14px">{{
+              $t("kanban-header-refresh")
+            }}</span>
             <!-- AR => تحديثات جديدة -->
           </button>
           <div class="lang">

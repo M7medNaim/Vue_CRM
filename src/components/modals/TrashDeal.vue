@@ -15,11 +15,10 @@
               class="fa-solid fa-triangle-exclamation pb-4"
               style="font-size: 60px"
             ></i>
-            <h4>Are you sure you want to give up on this deal?</h4>
-            <span style="font-size: 14px"
-              >Warning! You will not be able to recover it later by your
-              own</span
-            >
+            <h4>{{ $t("kanban-trash-heading") }}</h4>
+            <span style="font-size: 14px">{{
+              $t("kanban-trash-sub-heading")
+            }}</span>
           </div>
           <div class="modal2" v-else>
             <i
@@ -27,17 +26,16 @@
               style="font-size: 60px"
             ></i>
             <h4>
-              Please provide an explanation for why you are discarding this
-              ticket
+              {{ $t("kanban-trash-modal2-heading") }}
             </h4>
             <textarea
               class="form-control"
-              placeholder="Write a comment"
+              placeholder="{{$t('kanban-trash-comments-placeholder')}}"
               rows="4"
               v-model="comment"
             ></textarea>
             <h4 class="mt-5">
-              Please choose one of the stages below to discard the deal.
+              {{ $t("kanban-trash-modal2-choosebutton-heading") }}
             </h4>
             <div class="btn-group mt-2">
               <button
@@ -47,7 +45,7 @@
                 @click="selectedStage = stage.id"
                 :class="{ active: selectedStage === stage.id }"
               >
-                {{ stage.name }}
+                {{ $t(stage.name) }}
               </button>
             </div>
           </div>
@@ -59,7 +57,7 @@
             style="color: red; font-size: 14px"
             @click="closeTrashDealModal"
           >
-            Cancel
+            {{ $t("kanban-trash-cancel-button") }}
           </button>
           <button
             v-if="!showModal2"
@@ -68,7 +66,7 @@
             style="color: red; font-size: 14px"
             @click="showModal2 = true"
           >
-            Next
+            {{ $t("kanban-trash-next-button") }}
           </button>
           <button
             v-else
@@ -78,7 +76,7 @@
             @click="handleTrashDeal"
             :disabled="!selectedStage || !comment"
           >
-            Confirm
+            {{ $t("kanban-trash-confin-button") }}
           </button>
         </div>
       </div>
