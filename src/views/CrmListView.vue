@@ -5,7 +5,9 @@
         <div class="row">
           <div
             class="col-sm-6 col-lg"
-            v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_DEAL)"
+            v-if="
+              permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)
+            "
           >
             <div class="input-group">
               <select

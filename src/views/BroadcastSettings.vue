@@ -1,5 +1,8 @@
 <template>
   <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
+    <button class="btn btn-primary mb-3" v-b-modal.broadcastMessageCreateModal>
+      Add
+    </button>
     <EasyDataTable
       :headers="headers"
       :items="items"
@@ -103,6 +106,7 @@
       </template>
     </EasyDataTable>
   </div>
+  <BroadcastMessageCreateModal />
 </template>
 
 <script>
@@ -116,11 +120,14 @@ import {
   updateBroadcast,
   updateBroadcastPosition,
 } from "@/plugins/services/authService";
+import { BroadcastMessageCreateModal } from "@/components/modals/BroadcastMessageCreateModal.vue";
+import { Modal } from "bootstrap";
 
 export default {
   name: "BroadcastSettings",
   components: {
     EasyDataTable,
+    BroadcastMessageCreateModal,
   },
   setup() {
     const { t } = useI18n();
@@ -139,13 +146,13 @@ export default {
         value: "status",
       },
       {
-        text: t("settings-broadcast-table-actions"),
-        value: "actions",
+        text: t("settings-broadcast-table-positions"),
+        value: "positions",
         sortable: false,
       },
       {
-        text: t("settings-broadcast-table-positions"),
-        value: "positions",
+        text: t("settings-broadcast-table-actions"),
+        value: "actions",
         sortable: false,
       },
     ]);
@@ -204,6 +211,17 @@ export default {
       }
     };
 
+    const OpenCreateModal = () => {
+      const item = document.getElementById("broadcastMessageCreateModal");
+      console.log(item);
+      if (!item) {
+        console.error("Modal element not found");
+        return;
+      }
+      const modal = new Modal(item);
+      modal.show();
+    };
+
     onMounted(() => {
       fetchBroadcasts();
     });
@@ -220,6 +238,7 @@ export default {
       updatePosition,
       changeStatus,
       updateImportant,
+      OpenCreateModal,
     };
   },
 };

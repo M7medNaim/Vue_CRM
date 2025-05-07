@@ -50,6 +50,14 @@ export default {
     };
     const repeatedNewsList = ref([]);
 
+    const messages_length = computed(() => {
+      let length = 0;
+      newsList.value.forEach((item) => {
+        length += item.text.length;
+      });
+      return length;
+    });
+
     const startAnimation = () => {
       if (!marquee.value) return;
       contentWidth = marquee.value.scrollWidth / 2;
@@ -57,16 +65,11 @@ export default {
       const step = () => {
         translateX.value += speed;
         if (translateX.value >= 0) {
-          translateX.value = contentWidth - repeatedNewsList.value.length * 50;
+          translateX.value = contentWidth - messages_length.value * 25;
           repeatedNewsList.value = [
             ...repeatedNewsList.value,
             ...newsList.value,
           ];
-          if (repeatedNewsList.value.length > 10) {
-            repeatedNewsList.value = repeatedNewsList.value.slice(
-              repeatedNewsList.value.length - 10
-            );
-          }
         }
         animationFrame = requestAnimationFrame(step);
       };
@@ -114,6 +117,7 @@ export default {
       toggleNewsBar,
       toggleButtonStyle,
       repeatedNewsList,
+      messages_length,
     };
   },
 };
