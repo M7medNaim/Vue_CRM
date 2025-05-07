@@ -1,9 +1,9 @@
 <template>
   <div
-    id="broadcastMessageCreateModal"
+    id="broadcastMessageUpdateModal"
     class="modal fade"
     tabindex="-1"
-    aria-labelledby="broadcastMessageCreateModalLabel"
+    aria-labelledby="broadcastMessageUpdateModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
@@ -22,7 +22,7 @@
                 id="messageContent"
                 rows="3"
                 placeholder="Enter message"
-                v-model="description"
+                v-model="local_item.description"
               ></textarea>
             </div>
           </form>
@@ -42,19 +42,35 @@
 
 <script>
 export default {
-  name: "BroadcastMessageCreateModal",
+  name: "BroadcastMessageUpdateModal",
+  props: {
+    item: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
-      description: "",
+      local_item: {
+        id: null,
+        description: null,
+      },
     };
   },
   methods: {
     submit() {
-      this.$emit("submit", this.description);
+      this.$emit("update", this.local_item.description);
     },
     closeModal() {
-      console.log("close modal");
-      this.$emit("close-modal");
+      this.$emit("close-modal", "broadcastMessageUpdateModal");
+    },
+  },
+  watch: {
+    item: {
+      immediate: true,
+      handler(newVal) {
+        this.local_item = newVal;
+      },
     },
   },
 };

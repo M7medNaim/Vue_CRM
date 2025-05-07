@@ -1,8 +1,6 @@
 <template>
   <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
-    <button class="btn btn-primary mb-3" v-b-modal.broadcastMessageCreateModal>
-      Add
-    </button>
+    <button class="btn btn-primary mb-3" @click="OpenCreateModal">Add</button>
     <EasyDataTable
       :headers="headers"
       :items="items"
@@ -61,16 +59,16 @@
       <template #item-positions="item">
         <div class="d-flex gap-2 my-1">
           <button
-            class="btn btn-sm btn-success"
-            v-show="!item.is_first"
+            :class="`btn btn-sm btn-${item.is_first ? 'secondary' : 'success'}`"
             @click="updatePosition(item.id, -1)"
+            :disabled="item.is_first"
           >
             <i class="fas fa-arrow-up"></i>
           </button>
           <button
-            class="btn btn-sm btn-warning"
-            v-show="!item.is_last"
+            :class="`btn btn-sm btn-${item.is_last ? 'secondary' : 'warning'}`"
             @click="updatePosition(item.id, 1)"
+            :disabled="item.is_last"
           >
             <i class="fas fa-arrow-down"></i>
           </button>
@@ -106,7 +104,10 @@
       </template>
     </EasyDataTable>
   </div>
-  <BroadcastMessageCreateModal />
+  <BroadcastMessageCreateModal
+    @submit="submit"
+    @close-modal="closeCreateModal"
+  />
 </template>
 
 <script>
@@ -116,11 +117,12 @@ import "vue3-easy-data-table/dist/style.css";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
+  createBroadcast,
   getBroadcasts,
   updateBroadcast,
   updateBroadcastPosition,
 } from "@/plugins/services/authService";
-import { BroadcastMessageCreateModal } from "@/components/modals/BroadcastMessageCreateModal.vue";
+import BroadcastMessageCreateModal from "@/components/modals/BroadcastMessageCreateModal.vue";
 import { Modal } from "bootstrap";
 
 export default {
@@ -159,7 +161,11 @@ export default {
     const fetchBroadcasts = async () => {
       const response = await getBroadcasts();
       if (response.status === 200) {
-        items.value = response.data.data;
+        items.value = response.data.data.map((item, index) => ({
+          ...item,
+          is_first: index === 0,
+          is_last: index === response.data.data.length - 1,
+        }));
         toast.success(response.data.message);
       } else {
         // Handle error response
@@ -222,6 +228,32 @@ export default {
       modal.show();
     };
 
+    const closeCreateModal = () => {
+      const item = document.getElementById("broadcastMessageCreateModal");
+      if (!item) {
+        console.error("Modal element not found");
+        return;
+      }
+      try {
+        const modal = Modal.getInstance(item) || new Modal(item);
+        modal.hide();
+      } catch (error) {
+        console.error("Failed to close modal:", error);
+      }
+    };
+
+    const submit = async (description) => {
+      // Logic to submit the form
+      const response = await createBroadcast(description);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        fetchBroadcasts();
+      } else {
+        toast.error("Failed to create broadcast");
+      }
+      closeCreateModal();
+    };
+
     onMounted(() => {
       fetchBroadcasts();
     });
@@ -239,6 +271,8 @@ export default {
       changeStatus,
       updateImportant,
       OpenCreateModal,
+      closeCreateModal,
+      submit,
     };
   },
 };
