@@ -357,6 +357,10 @@ export const getBroadcasts = async () => {
   return await axios.get("/settings/broadcasts");
 };
 
+export const getKanbanBroadcasts = async () => {
+  return await axios.get("/kanban/broadcasts");
+};
+
 export const createBroadcast = async (description) => {
   return await axios.post("/settings/broadcasts", {
     description: description,

@@ -18,9 +18,9 @@
           :style="{ transform: `translateX(${translateX}px)` }"
         >
           <span
-            v-for="(news, index) in repeatedNews"
+            v-for="(news, index) in repeatedNewsList"
             :key="index"
-            class="marquee_margin px-2"
+            class="marquee_margin px-4"
             :class="{ important: news.important }"
           >
             {{ news.text }}
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { getKanbanBroadcasts } from "@/plugins/services/authService";
 import { ref, onMounted, onUnmounted, computed } from "vue";
 
 export default {
@@ -47,8 +48,7 @@ export default {
     const toggleNewsBar = () => {
       isNewsBarVisible.value = !isNewsBarVisible.value;
     };
-
-    const repeatedNews = computed(() => [...newsList.value, ...newsList.value]);
+    const repeatedNewsList = ref([]);
 
     const startAnimation = () => {
       if (!marquee.value) return;
@@ -57,14 +57,40 @@ export default {
       const step = () => {
         translateX.value += speed;
         if (translateX.value >= 0) {
-          translateX.value = -contentWidth;
+          translateX.value = contentWidth - repeatedNewsList.value.length * 50;
+          repeatedNewsList.value = [
+            ...repeatedNewsList.value,
+            ...newsList.value,
+          ];
+          if (repeatedNewsList.value.length > 10) {
+            repeatedNewsList.value = repeatedNewsList.value.slice(
+              repeatedNewsList.value.length - 10
+            );
+          }
         }
         animationFrame = requestAnimationFrame(step);
       };
       step();
     };
 
+    const fetchBroadcasts = async () => {
+      try {
+        const response = await getKanbanBroadcasts();
+        if (!response.data && !response.data.data) {
+          throw new Error("Network response was not ok");
+        }
+        newsList.value = response.data.data.map((item) => ({
+          text: item.description,
+          important: item.important,
+        }));
+        repeatedNewsList.value = [...newsList.value, ...newsList.value];
+      } catch (error) {
+        console.error("Error fetching broadcasts:", error);
+      }
+    };
+
     onMounted(() => {
+      fetchBroadcasts();
       startAnimation();
     });
 
@@ -84,10 +110,10 @@ export default {
       newsList,
       translateX,
       marquee,
-      repeatedNews,
       isNewsBarVisible,
       toggleNewsBar,
       toggleButtonStyle,
+      repeatedNewsList,
     };
   },
 };
