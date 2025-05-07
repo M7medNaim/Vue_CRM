@@ -30,6 +30,30 @@
         </div>
       </template>
 
+      <!-- Important -->
+      <template #item-important="item">
+        <div class="d-flex gap-2 my-1 form-check form-switch">
+          <input
+            class="form-check-input shadow-none custom-switch"
+            type="checkbox"
+            :checked="item.important"
+            @change="updateImportant(item.id)"
+          />
+        </div>
+      </template>
+
+      <!-- Status -->
+      <template #item-status="item">
+        <div class="d-flex gap-2 my-1 form-check form-switch">
+          <input
+            class="form-check-input shadow-none custom-switch"
+            type="checkbox"
+            :checked="item.status"
+            @change="changeStatus(item.id)"
+          />
+        </div>
+      </template>
+
       <!-- Positions Column -->
       <template #item-positions="item">
         <div class="d-flex gap-2 my-1">
@@ -89,6 +113,7 @@ import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
   getBroadcasts,
+  updateBroadcast,
   updateBroadcastPosition,
 } from "@/plugins/services/authService";
 
@@ -105,6 +130,14 @@ export default {
       { text: `#`, value: "id" },
       { text: t("settings-broadcast-table-description"), value: "description" },
       { text: t("settings-broadcast-table-createdat"), value: "created_at" },
+      {
+        text: t("settings-broadcast-table-important"),
+        value: "important",
+      },
+      {
+        text: t("settings-broadcast-table-status"),
+        value: "status",
+      },
       {
         text: t("settings-broadcast-table-actions"),
         value: "actions",
@@ -138,6 +171,39 @@ export default {
       }
     };
 
+    const changeStatus = async (id) => {
+      // Logic to change status
+      const broadcast = items.value.find((item) => item.id === id);
+      if (broadcast) {
+        broadcast.status = broadcast.status ? 0 : 1;
+        const response = await updateBroadcast(id, null, broadcast.status);
+        if (response.status === 200) {
+          toast.success(response.data.message);
+        } else {
+          toast.error("Failed to update status");
+        }
+      }
+    };
+
+    const updateImportant = async (id) => {
+      // Logic to update important status
+      const broadcast = items.value.find((item) => item.id === id);
+      if (broadcast) {
+        broadcast.important = broadcast.important ? 0 : 1;
+        const response = await updateBroadcast(
+          id,
+          null,
+          null,
+          broadcast.important
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+        } else {
+          toast.error("Failed to update important status");
+        }
+      }
+    };
+
     onMounted(() => {
       fetchBroadcasts();
     });
@@ -152,6 +218,8 @@ export default {
       fetchBroadcasts,
       headers,
       updatePosition,
+      changeStatus,
+      updateImportant,
     };
   },
 };

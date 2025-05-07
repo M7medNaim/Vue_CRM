@@ -371,10 +371,11 @@ export const updateBroadcastPosition = async (id, direction) => {
   return await axios.patch(`/settings/broadcasts/position/${id}/${direction}`);
 };
 
-export const updateBroadcast = async (id, description, status) => {
+export const updateBroadcast = async (id, description, status, important) => {
   return await axios.patch(`/settings/broadcasts/${id}`, {
     description: description,
     status: status,
+    important: important,
   });
 };
 
