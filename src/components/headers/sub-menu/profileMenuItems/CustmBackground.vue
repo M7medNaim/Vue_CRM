@@ -26,7 +26,7 @@
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-          <div v-show="!loading" class="row">
+          <div v-show="!loading" class="row overflow-auto background-container">
             <div
               class="col-4 mb-3"
               v-for="(image, index) in images"
@@ -190,5 +190,8 @@ export default {
   justify-content: center;
   color: white;
   font-size: 1.5rem;
+}
+.background-container {
+  max-height: 75vh;
 }
 </style>

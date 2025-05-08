@@ -58,6 +58,7 @@ app.use(PrimeVue, {
 
 const locale = localStorage.getItem("locale") || "en";
 initializeTranslations(locale).then(() => {
+  const app = createApp(App);
   app.use(store);
   app.use(router);
   app.use(i18n);

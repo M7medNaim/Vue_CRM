@@ -178,5 +178,6 @@ export default {
 }
 .Vue-Toastification__container {
   max-width: 320px !important;
+  z-index: 999;
 }
 </style>
