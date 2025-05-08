@@ -2,7 +2,7 @@
   <div class="top-bar pe-1 position-relative pt-2 me-2">
     <div class="row">
       <div
-        class="col-3 col-md-5 d-flex align-items-center text-white fs-6 pt-1"
+        class="col-3 col-md-4 d-flex align-items-center text-white fs-6 pt-1"
       >
         <img
           v-show="user_role === 'sales'"
@@ -53,7 +53,7 @@
         </router-link>
       </div>
       <div
-        class="col-4 col-md-4 d-flex justify-content-center align-items-center g-3 pt-0 mt-0"
+        class="col-3 col-md-3 d-flex justify-content-end align-items-center g-3 pt-0 mt-0"
       >
         <span class="fs-2 text-white">{{ currentTime }}</span>
         <button
@@ -74,7 +74,7 @@
         <div class="user-info d-flex justify-content-end align-items-center">
           <button
             v-if="hasNewChanges"
-            class="refresh border-0 d-flex align-items-center justify-content-center gap-2 text-white rounded-2 mt-1 me-2"
+            class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-2 mt-1 me-2"
             style="padding: 5px 7px"
             @click="refreshPage"
           >

@@ -336,8 +336,36 @@ export default {
   font-size: 14px;
 }
 :deep(.custom-table) {
+  display: flex;
+  flex-direction: column;
+  height: 80vh !important;
   border-radius: 10px;
   overflow: hidden;
+  border: none !important;
+}
+:deep(.custom-table thead) {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 2;
+}
+
+:deep(.custom-table tbody) {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  display: block;
+}
+
+:deep(.custom-table tbody tr) {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+:deep(.custom-table thead tr) {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 .loading-logo {
   animation: pulse-and-spin 2s infinite linear;

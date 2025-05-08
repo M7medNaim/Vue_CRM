@@ -50,6 +50,8 @@
       :onLazyLoad="loadCarsLazy"
       :loading="loading"
       @page="onPageChange"
+      scrollable
+      scrollHeight="calc(90vh - 140px)"
     >
       <Column :header="'#'">
         <template #body="slotProps">

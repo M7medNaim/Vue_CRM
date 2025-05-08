@@ -1,6 +1,9 @@
 <template>
-  <div class="me-2">
-    <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0">
+  <div class="mt-2">
+    <TopHeader2 />
+  </div>
+  <div class="tableCrmList me-2">
+    <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0 w-100">
       <div class="controls mb-3">
         <div class="row">
           <div
@@ -93,35 +96,37 @@
           </div>
         </div>
       </div>
-
-      <DataTable
-        :value="rows"
-        :paginator="true"
-        :rows="rowsPerPage"
-        :rowsPerPageOptions="[10, 25, 50]"
-        :total-records="totalRows"
-        :lazy="true"
-        :loading="loading"
-        @page="onPageChange"
-        v-model:selection="selectedRows"
-        selectionMode="multiple"
-        responsive="true"
-      >
-        <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
-        <Column :header="'#'">
-          <template #body="slotProps">
-            {{ slotProps.index + 1 + currentPage * rowsPerPage }}
-          </template>
-        </Column>
-        <Column
-          field="name"
-          :header="t('crmlist-table-header-fullname')"
-        ></Column>
-        <Column
-          field="phone"
-          :header="t('crmlist-table-header-phone')"
-        ></Column>
-        <!-- <Column :header="t('contacts-table-header-phone')">
+      <div class="table-responsive-wrapper">
+        <DataTable
+          :value="rows"
+          :paginator="true"
+          :rows="rowsPerPage"
+          :rowsPerPageOptions="[10, 25, 50]"
+          :total-records="totalRows"
+          :lazy="true"
+          :loading="loading"
+          @page="onPageChange"
+          v-model:selection="selectedRows"
+          selectionMode="multiple"
+          responsive="true"
+          scrollable
+          scrollHeight="calc(90vh - 190px)"
+        >
+          <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
+          <Column :header="'#'">
+            <template #body="slotProps">
+              {{ slotProps.index + 1 + currentPage * rowsPerPage }}
+            </template>
+          </Column>
+          <Column
+            field="name"
+            :header="t('crmlist-table-header-fullname')"
+          ></Column>
+          <Column
+            field="phone"
+            :header="t('crmlist-table-header-phone')"
+          ></Column>
+          <!-- <Column :header="t('contacts-table-header-phone')">
         <template #body="slotProps">
           {{
             slotProps.data.phones && slotProps.data.phones.length > 0
@@ -130,62 +135,62 @@
           }}
         </template>
       </Column> -->
-        <Column
-          field="note"
-          :header="t('crmlist-table-header-notes')"
-          class="note-column"
-        ></Column>
-        <Column
-          field="responsible"
-          :header="t('crmlist-table-header-responsible')"
-          v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
-        ></Column>
-        <Column
-          class="d-lg-table-cell"
-          field="created_at"
-          :header="t('crmlist-table-header-createdat')"
-        ></Column>
-        <Column
-          field="source"
-          :header="t('crmlist-table-header-source')"
-        ></Column>
-        <Column
-          field="stage"
-          :header="t('crmlist-table-header-stage')"
-        ></Column>
-        <!-- <Column
+          <Column
+            field="note"
+            :header="t('crmlist-table-header-notes')"
+            class="note-column"
+          ></Column>
+          <Column
+            field="responsible"
+            :header="t('crmlist-table-header-responsible')"
+            v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+          ></Column>
+          <Column
+            class="d-lg-table-cell"
+            field="created_at"
+            :header="t('crmlist-table-header-createdat')"
+          ></Column>
+          <Column
+            field="source"
+            :header="t('crmlist-table-header-source')"
+          ></Column>
+          <Column
+            field="stage"
+            :header="t('crmlist-table-header-stage')"
+          ></Column>
+          <!-- <Column
         field="responsible"
         :header="t('crmlist-table-header-responsible')"
       ></Column> -->
-        <Column :header="t('crmlist-table-header-action')">
-          <template #body="slotProps">
-            <div class="d-flex gap-2">
-              <button
-                v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
-                class="btn btn-sm btn-primary"
-                @click="handleShowDeal(slotProps.data.id)"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
-              <button
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
-                "
-                class="btn btn-sm btn-primary"
-                @click="handleShowDealModal(slotProps.data.id)"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
-              <button
-                class="btn btn-sm btn-danger"
-                @click="deleteItem(slotProps.data.id)"
-              >
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </template>
-        </Column>
-        <!-- <Column
+          <Column :header="t('crmlist-table-header-action')">
+            <template #body="slotProps">
+              <div class="d-flex gap-2">
+                <button
+                  v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+                  class="btn btn-sm btn-primary"
+                  @click="handleShowDeal(slotProps.data.id)"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button
+                  v-if="
+                    permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
+                  "
+                  class="btn btn-sm btn-primary"
+                  @click="handleShowDealModal(slotProps.data.id)"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  @click="deleteItem(slotProps.data.id)"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </template>
+          </Column>
+          <!-- <Column
           :header="t('crmlist-table-header-action')"
           v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)"
         >
@@ -207,19 +212,20 @@
           </template>
         </Column> -->
 
-        <template #loading>
-          <div class="text-center loading-container">
-            <div class="position-relative d-inline-block">
-              <img
-                src="../assets/new-nokta-logo.png"
-                class="loading-logo"
-                style="width: 50px; height: 50px"
-              />
+          <template #loading>
+            <div class="text-center loading-container">
+              <div class="position-relative d-inline-block">
+                <img
+                  src="../assets/new-nokta-logo.png"
+                  class="loading-logo"
+                  style="width: 50px; height: 50px"
+                />
+              </div>
+              <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
             </div>
-            <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
-          </div>
-        </template>
-      </DataTable>
+          </template>
+        </DataTable>
+      </div>
 
       <ActionsDeal
         :selected-rows="selectedRows"
@@ -279,7 +285,7 @@ import Swal from "sweetalert2";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
-
+import TopHeader2 from "@/components/headers/TopHeader2.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();
@@ -298,7 +304,7 @@ const selectedStatuses = ref([]);
 const sources = ref([]);
 const stages = ref([]);
 const users = ref([]);
-
+const selected_conversation = ref(null);
 const filters = ref({
   source: "",
   stage: "",
@@ -998,6 +1004,9 @@ const addNewDeal = (newDeal) => {
     console.error("Error fetching user data for new deal:", error);
   }
 };
+const openWhatsappModal = (conversation) => {
+  selected_conversation.value = conversation;
+};
 
 onMounted(async () => {
   // await fetchStagesAndSources();
@@ -1019,9 +1028,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.crm-container {
-  width: 100%;
-}
 input:focus {
   box-shadow: none;
   border: 1px solid #333;
@@ -1037,17 +1043,12 @@ select:focus {
   border: 2px solid #eee;
   font-size: 14px;
 }
+
 :deep(.custom-table) {
   --easy-table-row-height: 45px;
   --easy-table-header-height: 30px;
   --easy-table-body-row-font-size: 15px;
   --easy-table-header-font-size: 13px;
-}
-/* media query for small screens */
-@media (max-width: 850px) {
-  .create-at-column {
-    display: none;
-  }
 }
 
 /* Better padding for action buttons */
@@ -1132,6 +1133,9 @@ select:focus {
 @media (max-width: 850px) {
   .fs-7 {
     font-size: 14px;
+  }
+  :deep(.note-column) {
+    max-width: 200px;
   }
 }
 .clear-icon {

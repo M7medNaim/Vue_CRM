@@ -134,7 +134,7 @@ export default {
             response.data.user.bg_image_id,
             cookieOptions
           );
-          const locale = localStorage.getItem("locale") || "en";
+          const locale = localStorage.getItem("locale") || "ar";
           await initializeTranslations(locale);
 
           this.email = "";

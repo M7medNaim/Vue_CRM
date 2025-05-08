@@ -11,7 +11,10 @@
     </div>
 
     <div v-else class="app overflow-hidden">
-      <div v-if="!$route.meta.hideNavigation" class="row g-0 flex-nowrap">
+      <div
+        v-if="!$route.meta.hideNavigation"
+        class="row g-0 flex-nowrap app-layout"
+      >
         <div
           :class="['sidebar', sidebarClass, isSidebarCollapsed]"
           v-if="showSidebar"
@@ -19,7 +22,7 @@
           <LeftSidebar @toggle="handleSidebarToggle" />
         </div>
 
-        <div :class="headerClass" class="ms-2">
+        <div :class="headerClass" class="ms-2 main-content">
           <TopHeader @logout="handleLogout" />
           <div class="content">
             <router-view />
@@ -178,5 +181,42 @@ export default {
 }
 .Vue-Toastification__container {
   max-width: 320px !important;
+}
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #988e8e;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6b6767;
+}
+.app-layout {
+  width: 100%;
+  overflow: hidden;
+}
+
+.main-content {
+  width: 100%;
+  min-width: 0;
+  flex-grow: 1;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex-grow: 1;
+  overflow-x: hidden;
 }
 </style>

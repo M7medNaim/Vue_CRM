@@ -78,7 +78,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
-                    >{{ overdue_count }}</span
+                    >{{ overdue_count > 99 ? "+99" : overdue_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-overdue")
@@ -89,7 +89,8 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
-                    >{{ today_count }}</span
+                  >
+                    {{ today_count > 99 ? "+99" : today_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-today")
@@ -100,7 +101,8 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-info fw-bold fs-6"
-                    >{{ tomorrow_count }}</span
+                  >
+                    {{ tomorrow_count > 99 ? "+99" : tomorrow_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-tomorrow")
@@ -111,7 +113,8 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
-                    >{{ notasks_count }}</span
+                  >
+                    {{ notasks_count > 99 ? "+99" : notasks_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-notasks")

@@ -7,7 +7,11 @@
         <div class="col-4">Status</div>
         <div class="col-4">Days Counts</div>
       </div>
-      <div v-for="(stage, index) in stages" :key="index" class="row mb-3">
+      <div
+        v-for="(stage, index) in stages"
+        :key="index"
+        class="row mb-3 tableStage"
+      >
         <div class="col-12">
           <div
             class="row align-items-center mb-3 border-bottom pb-2"
