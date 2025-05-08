@@ -45,8 +45,8 @@
 <script>
 import { ref, watch } from "vue";
 import { Modal } from "bootstrap";
-import FilterCrmListFormVue from "../filterElements/FilterCrmListForm.vue";
-import FilterButtonCrmList from "../filterElements/FilterButtonCrmList.vue";
+import FilterCrmListFormVue from "@/components/filterElements/FilterCrmListForm.vue";
+import FilterButtonCrmList from "@/components/filterElements/FilterButtonCrmList.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 

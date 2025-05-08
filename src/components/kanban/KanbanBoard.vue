@@ -127,7 +127,7 @@ import {
   nextTick,
 } from "vue";
 import draggable from "vuedraggable";
-import CustomerCard from "./CustomerCard.vue";
+import CustomerCard from "@/components/kanban/CustomerCard.vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";

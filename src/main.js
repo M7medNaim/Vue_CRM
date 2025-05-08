@@ -1,12 +1,12 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import App from "@/App.vue";
+import router from "@/router";
+import store from "@/store";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import Swal from "sweetalert2";
-import i18n, { initializeTranslations } from "./i18n";
+import i18n, { initializeTranslations } from "@/i18n";
 import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
 

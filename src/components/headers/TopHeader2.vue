@@ -202,7 +202,7 @@ import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 import { Modal } from "bootstrap";
-import CreateDealModal from "../kanban/CreateDealModal.vue";
+import CreateDealModal from "@/components/kanban/CreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";

@@ -10,7 +10,7 @@
       <div
         class="modal-content"
         style="
-          background-image: url('../../assets/whatsappImage/backgroundWA.png') !important ;
+          background-image: url('@/assets/whatsappImage/backgroundWA.png') !important ;
           background-size: contain;
           font-family: 'Alexandria', sans-serif !important;
           background-repeat: no-repeat;
@@ -25,7 +25,7 @@
         <!-- b75f3f2c -->
         <div class="modal-body p-0 overflow-hidden">
           <div class="backgroundImage position-absolute">
-            <img src="../../assets/whatsappImage/Art_WA.png" alt="" /><br />
+            <img src="@/assets/whatsappImage/Art_WA.png" alt="" /><br />
             <span>
               Always start with conversations that have today's tasks or overdue
               ones.
@@ -331,7 +331,7 @@ export default {
   transform: translate(50%, -50%);
 }
 .modal-body {
-  background-image: url("../../assets/whatsappImage/backgroundWA.png") !important ;
+  background-image: url("@/assets/whatsappImage/backgroundWA.png") !important ;
   background-size: contain;
   font-family: "Alexandria", sans-serif !important;
   background-attachment: fixed;

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { requireGuest, requirePermission } from "./guards";
+import { requireGuest, requirePermission } from "@/router/guards";
 import { PERMISSIONS } from "@/stores/permissionStore";
-import HomeView from "../views/HomeView.vue";
-import LoginView from "../views/LoginView.vue";
-import UsersView from "../views/UsersView.vue";
+import HomeView from "@/views/HomeView.vue";
+import LoginView from "@/views/LoginView.vue";
+import UsersView from "@/views/UsersView.vue";
 import ContactsView from "@/views/ContactsView.vue";
 import GeneralSetting from "@/views/GeneralSetting.vue";
 import RoleSettings from "@/views/RoleSettings.vue";

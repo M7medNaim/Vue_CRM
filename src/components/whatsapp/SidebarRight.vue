@@ -381,7 +381,7 @@ export default {
 <style scoped>
 .right-side {
   position: relative;
-  background-image: url(../../assets/whatsappImage/Default\ WhatsApp\ background.jpg);
+  background-image: url(@/assets/whatsappImage/Default\ WhatsApp\ background.jpg);
   background-size: contain;
   background-position: center;
 }

@@ -48,7 +48,7 @@ import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { logout, getBackgroundId } from "@/plugins/services/authService";
-import { PERMISSIONS, usePermissionStore } from "./stores/permissionStore";
+import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 
 export default {
   name: "App",

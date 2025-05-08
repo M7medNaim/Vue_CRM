@@ -398,7 +398,7 @@
                   >
                     <div class="col-3">
                       <img
-                        src="../../assets/default-user-image.jpg"
+                        src="@/assets/default-user-image.jpg"
                         alt="Seals Image"
                         width="45"
                         height="45"
@@ -521,8 +521,8 @@
 
 <script>
 import { ref, reactive, computed, onMounted, nextTick } from "vue";
-import RatingStars from "../CreateDealElements/RatingStars.vue";
-import ViewReport from "../kanban/ViewReport.vue";
+import RatingStars from "@/components/CreateDealElements/RatingStars.vue";
+import ViewReport from "@/components/kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";

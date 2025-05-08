@@ -36,8 +36,8 @@
 <script>
 import { ref } from "vue";
 import { Modal } from "bootstrap";
-import ImportForm from "../importElements/ImportForm.vue";
-import ImportButtons from "../importElements/ImportButtons.vue";
+import ImportForm from "@/components/importElements/ImportForm.vue";
+import ImportButtons from "@/components/importElements/ImportButtons.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import { importDeals } from "@/plugins/services/authService";
