@@ -385,66 +385,67 @@ export default {
 
     const dealUpdateEvent = (data, message) => {
       let stages = ref(props.stages);
-      const id = data.id;
-      const stageIndex = stages.value.findIndex(
-        (stage) => stage.id == data.stage_id
-      );
-
-      if (stageIndex === -1) {
-        console.error("Stage not found");
-        return;
-      }
-
-      const dealIndex = stages.value[stageIndex].deals.findIndex(
-        (deal) => deal.id == id
-      );
-
-      if (dealIndex === -1) {
-        const deal = {
-          id: data.id,
-          name: data.name,
-          phone: data.phone,
-          description: data.description,
-          stage_id: data.stage_id,
-          responsible_user: data.responsible_user,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          source_id: data.source_id,
-          view_count: data.view_count,
-          unread_count: data.unread_count,
-        };
-        stages.value[stageIndex].deals.unshift(deal);
-        stages.value[stageIndex].deal_count += 1;
-        return;
-      }
-
-      let deal = stages.value[stageIndex].deals[dealIndex];
-      deal.name = data.name ?? deal.name;
-      deal.description = data.description ?? deal.description;
-      deal.stage_id = data.stage_id ?? deal.stage_id;
-      deal.responsible_user = data.responsible_user ?? deal.responsible_user;
-      deal.updated_at = data.updated_at;
-      deal.source_id = data.source_id ?? deal.source_id;
-      deal.view_count = data.view_count ?? deal.view_count;
-      deal.unread_count = data.unread_count ?? deal.unread_count;
-      deal.phone = data.phone ?? deal.phone;
-
       const newStageIndex = stages.value.findIndex(
+        (stage) => stage.id == data.updated_data?.stage_id
+      );
+      const id = data.id;
+      const oldStageIndex = stages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );
 
-      // Update the deal in the UI
-      if (newStageIndex === stageIndex) {
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-        stages.value[newStageIndex].deals.unshift(deal);
-      } else if (newStageIndex !== -1) {
+      const deal = {
+        id: id,
+        name: data.updated_data.name,
+        phone: data.updated_data.phone,
+        description: data.updated_data.description,
+        stage_id: data.updated_data.stage_id,
+        responsible_user: data.updated_data.responsible_user,
+        created_at: data.updated_data.created_at,
+        updated_at: data.updated_data.updated_at,
+        source_id: data.updated_data.source_id,
+        view_count: data.updated_data.view_count,
+        unread_count: data.updated_data.unread_count,
+      };
+      console.log("updated data", deal);
+
+      if (oldStageIndex === -1) {
+        console.log("old stage not exists");
+        if (newStageIndex === -1) {
+          console.error(
+            "New stage not found, unrelated or something went wrong"
+          );
+          return;
+        }
         stages.value[newStageIndex].deals.unshift(deal);
         stages.value[newStageIndex].deal_count += 1;
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-        stages.value[stageIndex].deal_count -= 1;
       } else {
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-        stages.value[stageIndex].deal_count -= 1;
+        console.log("old stage exists");
+        const dealIndex = stages.value[oldStageIndex].deals.findIndex(
+          (deal) => deal.id == id
+        );
+
+        if (dealIndex === -1) {
+          console.error("Deal not found in view, unshifting deal to new stage");
+          stages.value[newStageIndex].deals.unshift(deal);
+          stages.value[oldStageIndex].deal_count -= 1;
+          stages.value[newStageIndex].deal_count += 1;
+          return;
+        } else {
+          console.log("deal exists in old stage, moving deal");
+          if (newStageIndex === oldStageIndex) {
+            stages.value[oldStageIndex].deals[dealIndex] = deal;
+          } else if (newStageIndex !== -1) {
+            console.log("moving deal to new stage");
+            stages.value[newStageIndex].deals.unshift(deal);
+            stages.value[newStageIndex].deal_count += 1;
+            stages.value[oldStageIndex].deals.splice(dealIndex, 1);
+            stages.value[oldStageIndex].deal_count -= 1;
+          } else {
+            console.log("new stage not exists, trash deal");
+            stages.value[oldStageIndex].deals.splice(dealIndex, 1);
+            stages.value[oldStageIndex].deal_count -= 1;
+          }
+        }
       }
       toast.success(message);
     };
