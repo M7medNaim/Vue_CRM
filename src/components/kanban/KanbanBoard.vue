@@ -398,7 +398,7 @@ export default {
         );
 
         if (dealIndex === -1) {
-          console.error("Deal not found in view, unshifting deal to new stage");
+          console.log("Deal not found in view, unshifting deal to new stage");
           stages.value[newStageIndex].deals.unshift(deal);
           stages.value[oldStageIndex].deal_count -= 1;
           stages.value[newStageIndex].deal_count += 1;

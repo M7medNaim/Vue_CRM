@@ -122,25 +122,24 @@ export default {
         console.log("API response:", response);
 
         if (response.status === 200 || response.status === 201) {
-          toast.success(t("backgroundPicker.success"), {
+          toast.success(response.data.message, {
             timeout: 3000,
           });
         } else {
-          toast.error(t("backgroundPicker2.error"), {
+          toast.error(response.data.message, {
             timeout: 3000,
           });
         }
       } catch (error) {
         console.error("Error saving background ID:", error);
-        toast.error(t("backgroundPicker1.error"), {
+        toast.error(t("error.default"), {
           timeout: 3000,
         });
       }
     };
 
-    const openModal = () => {
-      fetchImages();
-      console.log("images fetching");
+    const openModal = async () => {
+      await fetchImages();
       const modal = new Modal(document.getElementById("customBackgroundModal"));
       modal.show();
     };

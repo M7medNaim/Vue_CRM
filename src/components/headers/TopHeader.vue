@@ -270,9 +270,9 @@ export default {
           localStorage.setItem("locale", newLang);
           this.currentLanguage = newLang;
 
-          this.toast.success("تم تغيير اللغة بنجاح!", { timeout: 3000 });
+          this.toast.success(response.data.message, { timeout: 3000 });
         } else {
-          throw new Error("فشل حفظ اللغة في API");
+          throw new Error("Error fetching language change");
         }
       } catch (error) {
         console.error("Error changing language:", error);

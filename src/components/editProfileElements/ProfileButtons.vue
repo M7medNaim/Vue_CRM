@@ -38,9 +38,6 @@ export default {
           modalInstance.hide();
           document.querySelector(".modal-backdrop")?.remove();
           document.body.classList.remove("modal-open");
-          toast.success(t("success.profileClosed"), {
-            timeout: 3000,
-          });
         }
       } catch (error) {
         toast.error(t("errors.profileClosedError"), {

@@ -48,13 +48,13 @@ export default {
         if (response.status === 200) {
           localStorage.setItem("locale", lang);
 
-          this.toast.success("تم تغيير اللغة بنجاح!", { timeout: 3000 });
+          this.toast.success(response.data.message, { timeout: 3000 });
         } else {
-          throw new Error("فشل حفظ اللغة في API");
+          throw new Error(response.data.message);
         }
       } catch (error) {
         console.error("Error changing language:", error);
-        this.toast.error("حدث خطأ أثناء حفظ اللغة!", { timeout: 3000 });
+        this.toast.error(error.message, { timeout: 3000 });
       } finally {
         this.loadingStore.stopLoading();
       }
