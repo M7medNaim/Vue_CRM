@@ -178,9 +178,6 @@ export default {
           return;
         } else {
           this.closeTrashDealModal();
-          this.toast.success(response.data.message, {
-            timeout: 3000,
-          });
         }
       } catch (error) {
         console.error("Error updating deal:", error);

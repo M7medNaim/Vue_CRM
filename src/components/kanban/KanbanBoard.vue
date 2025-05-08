@@ -595,20 +595,20 @@ export default {
       );
       console.log("newStage", newStage.value);
       const deal =
-        newStage.value.deals.find((d) => d.id == dealId) ??
+        newStage?.value?.deals.find((d) => d.id == dealId) ??
         oldStage.value.deals.find((d) => d.id == dealId);
       console.log("deal", deal);
       try {
         await updateDealStage(dealId, newStageId);
         deal.stage_id = newStageId;
-        oldStage.value.deal_count -= 1;
-        newStage.value.deal_count += 1;
+        if (oldStage.value) oldStage.value.deal_count -= 1;
+        if (newStage.value) newStage.value.deal_count += 1;
         if (!kanban) {
           oldStage.value.deals.splice(
             oldStage.value.deals.findIndex((d) => d.id == dealId),
             1
           );
-          newStage.value.deals.unshift(deal);
+          if (newStage.value) newStage.value.deals.unshift(deal);
         }
         toast.success(t("success.dealMoved"));
         playSound();

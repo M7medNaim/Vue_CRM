@@ -1012,7 +1012,7 @@ export default {
         });
         return;
       }
-      emit("stage-change", data.dealId, data.newStage);
+      emit("stage-change", data.dealId, data.newStage, props.deal.stage_id, 0);
     };
     onMounted(() => {
       fetchSources();
