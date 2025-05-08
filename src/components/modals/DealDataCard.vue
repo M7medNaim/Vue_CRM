@@ -686,7 +686,7 @@ export default {
       try {
         currentStageId.value = stageId;
         const stageIndex = stages.value.findIndex((s) => s.id === stageId);
-        const stageName = stages.value.find((s) => s.id === stageId)?.name;
+        const stageName = stages.value[stageIndex].name;
 
         stages.value.forEach((stage, index) => {
           if (index <= stageIndex) {
@@ -698,7 +698,7 @@ export default {
 
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.data) {
-          emit("stage-change", props.deal.id, stageIndex, props.deal.stage_id);
+          emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
           toast.success(`${t("success.stageChanged")} ${stageName}`, {
             timeout: 3000,
           });

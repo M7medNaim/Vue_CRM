@@ -62,7 +62,6 @@
               item-key="id"
               class="deal-list"
               @start="drag = true"
-              @end="handleDragEnd"
               @change="handleDragChange($event, stage.id)"
               @scroll="handleDealContainerScroll($event, stage.id)"
             >
@@ -189,43 +188,16 @@ export default {
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
         const deal = event.added.element;
-        const oldStageId = deal.stage_id;
-        const stages = ref(props.stages);
-        try {
-          await updateDealStage(deal.id, newStageId);
-          deal.stage_id = newStageId;
-          stages.value.find((stage) => stage.id == oldStageId).deal_count -= 1;
-          stages.value.find((stage) => stage.id == newStageId).deal_count += 1;
-          toast.success(t("success.dealMoved"));
-        } catch (error) {
-          console.error("Error updating deal stage:", error);
-
-          const oldStage = props.stages.find((s) => s.id === oldStageId);
-          if (oldStage) {
-            const currentStage = props.stages.find((s) => s.id === newStageId);
-            if (currentStage) {
-              const dealIndex = currentStage.deals.findIndex(
-                (d) => d.id === deal.id
-              );
-              if (dealIndex !== -1) {
-                const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
-                oldStage.deals.push(removedDeal);
-              }
-            }
-          }
-
-          toast.error(t("error.dealMoveFailed"));
-        }
+        console.log("deal", deal);
+        changeDealStage(deal.id, newStageId, event.added.element.stage_id);
       }
     };
 
-    const handleDragEnd = (evt) => {
-      if (evt.from !== evt.to) {
-        moveSound.currentTime = 0;
-        moveSound
-          .play()
-          .catch((error) => console.error("Failed to play sound:", error));
-      }
+    const playSound = () => {
+      moveSound.currentTime = 0;
+      moveSound
+        .play()
+        .catch((error) => console.error("Failed to play sound:", error));
     };
 
     // Removed duplicate definition of openDealDataCard
@@ -608,8 +580,56 @@ export default {
       }
     };
 
-    const changeDealStage = async (dealId, newStageIndex, oldStageId) => {
-      emit("change-deal-stage", dealId, newStageIndex, oldStageId);
+    const changeDealStage = async (
+      dealId,
+      newStageId,
+      oldStageId,
+      kanban = 1
+    ) => {
+      const stages = ref(props.stages);
+      const newStage = ref(
+        stages.value.find((stage) => stage.id == newStageId)
+      );
+      const oldStage = ref(
+        stages.value.find((stage) => stage.id == oldStageId)
+      );
+      console.log("newStage", newStage.value);
+      const deal =
+        newStage.value.deals.find((d) => d.id == dealId) ??
+        oldStage.value.deals.find((d) => d.id == dealId);
+      console.log("deal", deal);
+      try {
+        await updateDealStage(dealId, newStageId);
+        deal.stage_id = newStageId;
+        oldStage.value.deal_count -= 1;
+        newStage.value.deal_count += 1;
+        if (!kanban) {
+          oldStage.value.deals.splice(
+            oldStage.value.deals.findIndex((d) => d.id == dealId),
+            1
+          );
+          newStage.value.deals.unshift(deal);
+        }
+        toast.success(t("success.dealMoved"));
+        playSound();
+      } catch (error) {
+        console.error("Error updating deal stage:", error);
+
+        const oldStage = props.stages.find((s) => s.id === oldStageId);
+        if (oldStage) {
+          const currentStage = props.stages.find((s) => s.id === newStageId);
+          if (currentStage) {
+            const dealIndex = currentStage.deals.findIndex(
+              (d) => d.id === deal.id
+            );
+            if (dealIndex !== -1) {
+              const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
+              oldStage.deals.push(removedDeal);
+            }
+          }
+        }
+        toast.error(t("error.dealMoveFailed"));
+      }
     };
     const refreshPage = () => {
       window.location.reload();
@@ -787,7 +807,6 @@ export default {
     return {
       // stages,
       drag,
-      handleDragEnd,
       getStageHeaderClass,
       dealsContainer,
       scrollDeals,
