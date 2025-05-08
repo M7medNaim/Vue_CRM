@@ -24,7 +24,12 @@
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnKanban"
+                :class="`btn btn-header text-white px-2 py-2 fs-7 btnKanban ${
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
+                  user_role == 'sales'
+                    ? 'me-2'
+                    : ''
+                }`"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
               >
@@ -79,7 +84,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
-                    >{{ overdue_count }}</span
+                    >{{ computed_overdue_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-overdue")
@@ -90,7 +95,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
-                    >{{ today_count }}</span
+                    >{{ computed_today_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-today")
@@ -101,7 +106,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-info fw-bold fs-6"
-                    >{{ tomorrow_count }}</span
+                    >{{ computed_tomorrow_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-tomorrow")
@@ -112,7 +117,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
-                    >{{ notasks_count }}</span
+                    >{{ computed_notasks_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-notasks")
@@ -257,6 +262,18 @@ export default {
   },
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
+    const computed_overdue_count = computed(() =>
+      overdue_count.value > 99 ? "99+" : overdue_count.value
+    );
+    const computed_today_count = computed(() =>
+      today_count.value > 99 ? "99+" : today_count.value
+    );
+    const computed_tomorrow_count = computed(() =>
+      tomorrow_count.value > 99 ? "99+" : tomorrow_count.value
+    );
+    const computed_notasks_count = computed(() =>
+      notasks_count.value > 99 ? "99+" : notasks_count.value
+    );
     const conversation = ref(null);
     const local_new_message = ref(null);
     const local_update_message = ref(null);
@@ -419,6 +436,10 @@ export default {
       searchText,
       updateMessage,
       user_role,
+      computed_overdue_count,
+      computed_today_count,
+      computed_tomorrow_count,
+      computed_notasks_count,
     };
   },
 
