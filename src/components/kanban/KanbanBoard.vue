@@ -190,14 +190,15 @@ export default {
       if (event.added) {
         const deal = event.added.element;
         const oldStageId = deal.stage_id;
-
+        const stages = ref(props.stages);
         try {
           await updateDealStage(deal.id, newStageId);
-
           deal.stage_id = newStageId;
+          stages.value.find((stage) => stage.id == oldStageId).deal_count -= 1;
+          stages.value.find((stage) => stage.id == newStageId).deal_count += 1;
           toast.success(t("success.dealMoved"));
         } catch (error) {
-          console.error("Error updating deal stage:", error.response?.data);
+          console.error("Error updating deal stage:", error);
 
           const oldStage = props.stages.find((s) => s.id === oldStageId);
           if (oldStage) {
@@ -328,9 +329,9 @@ export default {
         scrollInterval = null;
       }
     };
-    const stages = ref(props.stages);
     // update Stage Color and Name
     const handleStageUpdate = (updatedStage) => {
+      const stages = ref(props.stages);
       const stageIndex = stages.value.findIndex(
         (stage) => stage.id === updatedStage.id
       );
