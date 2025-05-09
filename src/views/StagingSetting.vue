@@ -86,7 +86,7 @@ export default {
   top: -4%;
   background-color: #fff;
   width: 100% !important;
-  z-index: 99;
+  z-index: 999;
 }
 .form-check-input:checked {
   background-color: #09b103 !important;
