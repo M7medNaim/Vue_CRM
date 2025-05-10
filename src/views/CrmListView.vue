@@ -1,7 +1,4 @@
 <template>
-  <div class="mt-2">
-    <TopHeader2 :selected_conversation="selected_conversation" />
-  </div>
   <div class="tableCrmList me-2">
     <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0 w-100">
       <div class="controls mb-3">
@@ -262,7 +259,6 @@ import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
-import TopHeader2 from "@/components/headers/TopHeader2.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();
