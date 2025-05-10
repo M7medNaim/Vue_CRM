@@ -37,7 +37,7 @@
               </button>
             </div>
           </div>
-          <div class="col-sm-6 col-lg">
+          <div class="col">
             <div class="input-group position-relative">
               <input
                 type="search"
@@ -57,26 +57,44 @@
               <button
                 :title="t('buttons.filter')"
                 type="button"
-                class="btn btn-primary input-group-text"
+                class="btn btn-header input-group-text"
                 @click="openFilterModal"
               >
-                <i class="fas fa-filter"></i>
+                <i class="fas fa-filter text-white"></i>
+              </button>
+              <button
+                v-if="isFilterActive"
+                type="button"
+                class="btn btn-warning input-group-text px-1"
+                @click="resetFilter"
+                style="font-size: 14px"
+              >
+                {{ t("crmlist-modal-filter-button-reset") }}
               </button>
             </div>
           </div>
           <div
-            class="col-sm-12 mt-2 mt-lg-0 col-lg text-center d-flex align-items-center justify-content-end gap-2"
+            class="col-auto"
+            v-if="
+              permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN) &&
+              user_role == 'sales'
+            "
+          >
+            <topHeader2 />
+          </div>
+          <div
+            class="col-auto mt-2 mt-lg-0 text-center d-flex align-items-center justify-content-end gap-2"
           >
             <button
-              class="btn btn-primary rounded-2 d-flex align-items-center"
+              class="btn btn-header rounded-2 d-flex align-items-center"
               @click="$router.back()"
               v-if="
                 permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN) &&
                 user_role == 'sales'
               "
             >
-              <i class="fa-solid fa-arrow-right me-2"></i>
-              <span>{{ t("crmlist-button-back") }}</span>
+              <i class="fa-solid fa-arrow-right me-2 text-white pt-1"></i>
+              <span class="text-white">{{ t("crmlist-button-back") }}</span>
             </button>
             <button
               class="btn btn-primary rounded-2 me-2 fs-7"
@@ -114,7 +132,7 @@
         "
         responsive="true"
         scrollable
-        scrollHeight="calc(90vh - 190px)"
+        scrollHeight="calc(90vh - 120px)"
       >
         <Column
           :selectionMode="
@@ -259,6 +277,7 @@ import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
+import TopHeader2 from "@/components/headers/TopHeader2.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();
@@ -301,7 +320,7 @@ const comments = ref([]);
 const tasks = ref([]);
 const user_role = Cookies.get("user_role");
 const selected_conversation = ref(null);
-
+const isFilterActive = ref(false);
 // Actions operations
 const actions = ref([
   { value: "changeStage", label: t("crmlist-action-changestage") },
@@ -535,7 +554,7 @@ const applyFilters = async (newFilters) => {
   try {
     loading.value = true;
     filters.value = { ...newFilters };
-
+    isFilterActive.value = true;
     // Build filters object in the correct format
     const apiFilters = {
       search: searchInput.value,
@@ -666,8 +685,7 @@ const resetFilter = () => {
   };
   selectedStatuses.value = [];
   searchInput.value = "";
-  console.log("resetFilter", filters.value);
-
+  isFilterActive.value = false;
   fetchData();
 };
 
@@ -1116,5 +1134,8 @@ select:focus {
 .clear-icon:hover {
   color: #fff;
   background: red;
+}
+.btn-header {
+  background-color: rgba(128, 128, 128, 0.8) !important;
 }
 </style>

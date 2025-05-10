@@ -17,14 +17,14 @@
                 <span class="iconAddKanban d-none">+</span>
               </button>
               <button
-                class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnKanban"
+                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnKanban"
                 @click="openCrmKanban"
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                :class="`btn btn-header text-white px-2 py-2 fs-7 btnKanban ${
+                :class="`btn btn-header text-white px-3 py-2 fs-7 btnKanban ${
                   permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
                   user_role == 'sales'
                     ? 'me-2'
@@ -36,7 +36,7 @@
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
               <router-link
-                class="btn btn-header text-white px-3 py-2 fs-7 btnKanban"
+                class="btn btn-header text-white px-1 py-2 me-2 fs-7 btnKanban"
                 v-if="
                   permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
                   user_role == 'sales'
@@ -48,7 +48,7 @@
             </div>
 
             <!-- Search Form -->
-            <div :class="lgIpadClass">
+            <div :class="lgIpadClass" v-if="showSearchInput">
               <div class="input-group">
                 <button
                   class="btn btn-header btnSearchIpad"
@@ -202,7 +202,7 @@
 
 <script>
 import { ref, watch, onMounted, onUnmounted, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
@@ -286,6 +286,10 @@ export default {
     const tomorrow_count = ref(0);
     const notasks_count = ref(0);
     const searchText = ref("");
+    const route = useRoute();
+    const showSearchInput = computed(() => {
+      return route.name !== "CrmList";
+    });
     const user_role = ref(Cookies.get("user_role"));
     // const openWhatsappModal = () => {
     //   try {
@@ -367,8 +371,8 @@ export default {
     };
     const lgIpadClass = computed(() => {
       return isSmallScreen.value
-        ? "col-md-auto mx-2"
-        : "col-md mx-2 flex-grow-1";
+        ? "col-md-auto me-2"
+        : "col-md me-2 flex-grow-1";
     });
     const setConversation = (data) => {
       conversation.value = data;
@@ -440,6 +444,7 @@ export default {
       computed_today_count,
       computed_tomorrow_count,
       computed_notasks_count,
+      showSearchInput,
     };
   },
 
