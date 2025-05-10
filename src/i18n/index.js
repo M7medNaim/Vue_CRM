@@ -5,8 +5,8 @@ import { saveUserLanguage } from "@/plugins/services/authService";
 
 const i18n = createI18n({
   legacy: false,
-  locale: localStorage.getItem("locale") || "en",
-  fallbackLocale: "en",
+  locale: localStorage.getItem("locale") || "ar",
+  fallbackLocale: "ar",
   messages: {
     en: {},
     ar: {},

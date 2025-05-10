@@ -73,6 +73,7 @@
                 :title="stage.name"
                 :style="{
                   backgroundColor: getStageClasses(stage.id).backgroundColor,
+                  color: getStageClasses(stage.id).textColor || 'white',
                 }"
               >
                 {{ truncateText(stage.name) }}
@@ -277,9 +278,13 @@
                 </div>
               </div>
               <div class="row">
-                <!-- <div class="col-6 pt-2">
-                  <h5>{{ t("kanban-modal-edit-history-heading") }}</h5>
-                </div> -->
+                <div class="col-6 pt-2">
+                  <h5
+                    v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+                  >
+                    {{ t("kanban-modal-edit-history-heading") }}
+                  </h5>
+                </div>
                 <div
                   class="col-6 d-flex justify-content-end align-items-center gap-2"
                   v-if="isEditMode"
@@ -724,7 +729,7 @@ export default {
         (s) => s.id === currentStageId.value
       );
 
-      const classes = { "text-white": true };
+      const classes = { "": true };
       let backgroundColor = "";
 
       if (hoveredStage.value) {
@@ -740,10 +745,16 @@ export default {
           classes["btn-secondary"] = true;
         }
       }
-
-      return { classes, backgroundColor };
+      const textColor = getContrastColor(backgroundColor);
+      return { classes, backgroundColor, textColor };
     };
-
+    const getContrastColor = (hexColor) => {
+      const r = parseInt(hexColor.slice(1, 3), 16);
+      const g = parseInt(hexColor.slice(3, 5), 16);
+      const b = parseInt(hexColor.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 170 ? "#000000" : "#FFFFFF";
+    };
     const startCall = () => {
       toast.info(t("success.startCall"), {
         timeout: 3000,
@@ -1063,6 +1074,7 @@ export default {
       handleStageUpdate,
       permissionStore,
       PERMISSIONS,
+      getContrastColor,
     };
   },
 };

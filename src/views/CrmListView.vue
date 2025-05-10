@@ -1,6 +1,9 @@
 <template>
-  <div class="me-2">
-    <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0">
+  <div class="mt-2">
+    <TopHeader2 :selected_conversation="selected_conversation" />
+  </div>
+  <div class="tableCrmList me-2">
+    <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0 w-100">
       <div class="controls mb-3">
         <div class="row">
           <div
@@ -113,6 +116,8 @@
             : null
         "
         responsive="true"
+        scrollable
+        scrollHeight="calc(90vh - 190px)"
       >
         <Column
           :selectionMode="
@@ -257,7 +262,7 @@ import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
-
+import TopHeader2 from "@/components/headers/TopHeader2.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();
@@ -276,7 +281,6 @@ const selectedStatuses = ref([]);
 const sources = ref([]);
 const stages = ref([]);
 const users = ref([]);
-
 const filters = ref({
   source: "",
   stage: "",
@@ -431,6 +435,12 @@ const fetchData = async () => {
       ...apiFilters,
       filters: formattedFilters,
     });
+    if (!dealsRes?.data?.data) {
+      toast.info(dealsRes.data.message || t("noDealsFound"));
+      rows.value = [];
+      totalRows.value = 0;
+      return;
+    }
     rows.value = dealsRes.data.data.map((deal) => {
       const matchedStage = stages.value.find(
         (stage) => stage.value === deal.stage_id
@@ -945,7 +955,6 @@ const addNewDeal = (newDeal) => {
 };
 
 const openWhatsappModal = (conversation) => {
-  console.log("selected conversation in Crm kanban component", conversation);
   selected_conversation.value = conversation;
 };
 
@@ -984,9 +993,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.crm-container {
-  width: 100%;
-}
 input:focus {
   box-shadow: none;
   border: 1px solid #333;
@@ -1002,17 +1008,12 @@ select:focus {
   border: 2px solid #eee;
   font-size: 14px;
 }
+
 :deep(.custom-table) {
   --easy-table-row-height: 45px;
   --easy-table-header-height: 30px;
   --easy-table-body-row-font-size: 15px;
   --easy-table-header-font-size: 13px;
-}
-/* media query for small screens */
-@media (max-width: 850px) {
-  .create-at-column {
-    display: none;
-  }
 }
 
 /* Better padding for action buttons */
@@ -1097,6 +1098,9 @@ select:focus {
 @media (max-width: 850px) {
   .fs-7 {
     font-size: 14px;
+  }
+  :deep(.note-column) {
+    max-width: 200px;
   }
 }
 .clear-icon {

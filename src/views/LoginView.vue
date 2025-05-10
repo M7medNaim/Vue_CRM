@@ -136,8 +136,9 @@ export default {
           );
           localStorage.setItem("locale", response.data.user.locale);
           const locale = localStorage.getItem("locale") || "en";
+          console.log("Locale:", locale);
           await initializeTranslations(locale);
-
+          this.$i18n.locale = locale;
           this.email = "";
           this.password = "";
           this.loginSuccess = true;

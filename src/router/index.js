@@ -167,16 +167,11 @@ const routes = [
     component: TasksKanban,
     beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
   },
-  // {
-  //   path: "/:pathMatch(.*)*",
-  //   name: "NotFound",
-  //   component: Unauthorized,
-  //   meta: {
-  //     requiresAuth: false,
-  //     hideNavigation: true,
-  //     title: "غير موجود",
-  //   },
-  // },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    redirect: "/crm-kanban",
+  },
 ];
 
 const router = createRouter({

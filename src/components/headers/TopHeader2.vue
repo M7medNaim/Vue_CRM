@@ -48,7 +48,14 @@
             </div>
 
             <!-- Search Form -->
-            <div :class="lgIpadClass">
+            <div
+              :class="lgIpadClass"
+              v-if="
+                permissionStore.hasPermission(
+                  PERMISSIONS.ADD_ASSIGNED_TO_DEAL
+                ) && user_role != 'sales'
+              "
+            >
               <div class="input-group">
                 <button
                   class="btn btn-header btnSearchIpad"
@@ -183,6 +190,7 @@
       </div>
     </nav>
     <FilterCrmList
+      v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
       v-model="filterData"
       @apply-filters="handleFilters"
       @reset-filter="handleResetFilter"

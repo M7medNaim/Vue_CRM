@@ -43,6 +43,14 @@
               >
                 {{ stage.deal_count ?? 0 }}
               </span>
+              <!-- <span class="ms-2" @click.stop="sortDealsByCreatedAt(stage.id)">
+                <button class="border-0 bg-transparent text-white p-0">
+                  <i
+                    class="fa-solid fa-arrow-down-wide-short"
+                    :style="{ color: getContrastColor(stage.color_code) }"
+                  ></i>
+                </button>
+              </span> -->
             </div>
             <button
               v-if="permissionStore.hasPermission('edit-stage')"
@@ -720,6 +728,23 @@ export default {
       };
       return iconMap[stageId] || "fa-solid fa-circle";
     };
+    // SORT DEALS BY CREATED AT
+    // function sortDealsByCreatedAt(stageId) {
+    //   const stage = stages.value.find((s) => s.id === stageId);
+    //   if (!stage) return;
+
+    //   const currentDirection = sortDirections.value[stageId] || "desc";
+
+    //   const newDirection = currentDirection === "asc" ? "desc" : "asc";
+    //   sortDirections.value[stageId] = newDirection;
+
+    //   stage.deals.sort((a, b) => {
+    //     const dateA = new Date(a.created_at);
+    //     const dateB = new Date(b.created_at);
+    //     console.log("", newDirection, stage.id, sortDirections.value[stageId]);
+    //     return newDirection === "asc" ? dateA - dateB : dateB - dateA;
+    //   });
+    // }
 
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
