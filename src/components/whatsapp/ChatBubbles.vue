@@ -320,8 +320,7 @@ export default {
       const totalMessages = this.messages.length;
       let messageIndex;
 
-      if (scrollTop === 0) {
-        console.log("At the top");
+      if (scrollTop === 0 && scrollHeight > clientHeight) {
         this.$emit("scroll-top-reached");
         messageIndex = 0;
       } else if (scrollTop + clientHeight >= scrollHeight - 10) {
