@@ -87,7 +87,11 @@
 <script>
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-import { updateDealStage, createComment } from "@/plugins/services/authService";
+import {
+  updateDealStage,
+  createComment,
+  getSpecialStages,
+} from "@/plugins/services/authService";
 
 export default {
   name: "TrashDeal",
@@ -106,15 +110,11 @@ export default {
       showModal2: false,
       comment: "",
       selectedStage: null,
-      trashStages: [
-        { id: 12, name: "Medicines" },
-        { id: 13, name: "Old Data" },
-        { id: 14, name: "No Response" },
-        { id: 16, name: "Trash" },
-      ],
+      trashStages: [],
     };
   },
   mounted() {
+    this.getTrashStages();
     const modal = document.getElementById("trashDealModal");
     modal.addEventListener("hidden.bs.modal", () => {
       const modalBackdrop = document.querySelector(".modal-backdrop");
@@ -179,6 +179,29 @@ export default {
         }
       } catch (error) {
         console.error("Error updating deal:", error);
+        this.toast.error(error.message, {
+          timeout: 3000,
+        });
+      }
+    },
+
+    async getTrashStages() {
+      try {
+        const response = await getSpecialStages();
+        if (response.status === 200) {
+          this.trashStages = response.data?.data;
+          if (this.trashStages.length < 1) {
+            this.toast.info(response.data.message, {
+              timeout: 3000,
+            });
+          }
+        } else {
+          this.toast.error(response.data.message, {
+            timeout: 3000,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching trash stages:", error);
         this.toast.error(error.message, {
           timeout: 3000,
         });
