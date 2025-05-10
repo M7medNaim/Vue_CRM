@@ -551,6 +551,7 @@ const handleShowDealModal = async (dealId) => {
   }
 };
 const applyFilters = async (newFilters) => {
+  filters.value = { ...newFilters };
   try {
     loading.value = true;
     filters.value = { ...newFilters };

@@ -181,10 +181,9 @@
         </div>
       </div>
     </nav>
-    <FilterCrmList
-      v-model="filterData"
-      @apply-filters="handleFilters"
-      @reset-filter="handleResetFilter"
+    <FilterHeader2
+      v-model:headerFilters="headerFilterData"
+      v-model:headerSelectedStatuses="headerSelectedStatuses"
     />
     <ImportModal ref="importModalRef" />
     <ExportModal ref="exportModalRef" />
@@ -202,7 +201,7 @@
 <script>
 import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import FilterCrmList from "@/components/modals/FilterCrmList.vue";
+import FilterHeader2 from "@/components/modals/FilterHeader2.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 import { Modal } from "bootstrap";
@@ -220,7 +219,7 @@ import Cookies from "js-cookie";
 export default {
   name: "TopHeader2",
   components: {
-    FilterCrmList,
+    FilterHeader2,
     ImportModal,
     ExportModal,
     CreateDealModal,
@@ -276,7 +275,8 @@ export default {
     const conversation = ref(null);
     const local_new_message = ref(null);
     const local_update_message = ref(null);
-    const filterData = ref({ ...props.initialFilters });
+    const headerFilterData = ref({ ...props.initialFilters });
+    const headerSelectedStatuses = ref([]);
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
     const whatsappModalRef = ref(null);
@@ -290,14 +290,6 @@ export default {
       return route.name !== "CrmList";
     });
     const user_role = ref(Cookies.get("user_role"));
-    // const openWhatsappModal = () => {
-    //   try {
-    //     const modal = new Modal(document.getElementById("whatsappModal"));
-    //     modal.show();
-    //   } catch (error) {
-    //     console.error("Error opening WhatsApp modal:", error);
-    //   }
-    // };
 
     const openWhatsappModal = async () => {
       try {
@@ -315,7 +307,8 @@ export default {
     watch(
       () => props.initialFilters,
       (newFilters) => {
-        filterData.value = { ...newFilters };
+        if (!newFilters) return;
+        headerFilterData.value = { ...newFilters };
       },
       { deep: true }
     );
@@ -409,7 +402,7 @@ export default {
       local_update_message.value = data;
     };
     return {
-      filterData,
+      headerFilterData,
       openFilterModal,
       handleFilters,
       handleResetFilter,
@@ -444,6 +437,7 @@ export default {
       computed_tomorrow_count,
       computed_notasks_count,
       showSearchInput,
+      headerSelectedStatuses,
     };
   },
 
