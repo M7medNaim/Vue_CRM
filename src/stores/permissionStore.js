@@ -12,7 +12,7 @@ export const PERMISSIONS = {
   TASKS_KANBAN: "view-tasks-kanban-page",
   ROLES_SETTINGS: "view-roles-settings-page",
   CREATE_DEAL: "create-deal",
-  UPDATE_DEAL: "update-deal",
+  UPDATE_DEAL: "edit-deal",
   DELETE_DEAL: "delete-deal",
   READ_DEAL: "read-deal",
   READ_TASK: "read-task",
@@ -22,6 +22,9 @@ export const PERMISSIONS = {
   CREATE_FOLDER: "create-folder",
   SHOW_HISTORY: "show-history",
   SHOW_ASSIGNED_TO: "show-assigned-to",
+  ADD_ASSIGN_BY_DEAL: "add-assign-by-deal",
+  ADD_ASSIGNED_TO_DEAL: "add-assigned-to-deal",
+  ADD_OWNER_DEAL: "add-owner-deal",
 };
 
 export const usePermissionStore = defineStore("permissions", {

@@ -1,5 +1,6 @@
 <template>
   <div class="mt-4 pe-3 bg-white rounded-3 p-3 me-2">
+    <button class="btn btn-primary mb-3" @click="OpenCreateModal">Add</button>
     <EasyDataTable
       :headers="headers"
       :items="items"
@@ -30,20 +31,44 @@
         </div>
       </template>
 
+      <!-- Important -->
+      <template #item-important="item">
+        <div class="d-flex gap-2 my-1 form-check form-switch">
+          <input
+            class="form-check-input shadow-none custom-switch"
+            type="checkbox"
+            :checked="item.important"
+            @change="updateImportant(item.id)"
+          />
+        </div>
+      </template>
+
+      <!-- Status -->
+      <template #item-status="item">
+        <div class="d-flex gap-2 my-1 form-check form-switch">
+          <input
+            class="form-check-input shadow-none custom-switch"
+            type="checkbox"
+            :checked="item.status"
+            @change="changeStatus(item.id)"
+          />
+        </div>
+      </template>
+
       <!-- Positions Column -->
       <template #item-positions="item">
         <div class="d-flex gap-2 my-1">
           <button
-            class="btn btn-sm btn-success"
-            v-show="!item.is_first"
+            :class="`btn btn-sm btn-${item.is_first ? 'secondary' : 'success'}`"
             @click="updatePosition(item.id, -1)"
+            :disabled="item.is_first"
           >
             <i class="fas fa-arrow-up"></i>
           </button>
           <button
-            class="btn btn-sm btn-warning"
-            v-show="!item.is_last"
+            :class="`btn btn-sm btn-${item.is_last ? 'secondary' : 'warning'}`"
             @click="updatePosition(item.id, 1)"
+            :disabled="item.is_last"
           >
             <i class="fas fa-arrow-down"></i>
           </button>
@@ -69,7 +94,7 @@
         <div class="text-center loading-container">
           <div class="position-relative d-inline-block">
             <img
-              src="../assets/new-nokta-logo.png"
+              src="@/assets/new-nokta-logo.png"
               class="loading-logo"
               style="width: 50px; height: 50px"
             />
@@ -79,6 +104,10 @@
       </template>
     </EasyDataTable>
   </div>
+  <BroadcastMessageCreateModal
+    @submit="submit"
+    @close-modal="closeCreateModal"
+  />
 </template>
 
 <script>
@@ -88,14 +117,19 @@ import "vue3-easy-data-table/dist/style.css";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import {
+  createBroadcast,
   getBroadcasts,
+  updateBroadcast,
   updateBroadcastPosition,
 } from "@/plugins/services/authService";
+import BroadcastMessageCreateModal from "@/components/modals/BroadcastMessageCreateModal.vue";
+import { Modal } from "bootstrap";
 
 export default {
   name: "BroadcastSettings",
   components: {
     EasyDataTable,
+    BroadcastMessageCreateModal,
   },
   setup() {
     const { t } = useI18n();
@@ -106,20 +140,32 @@ export default {
       { text: t("settings-broadcast-table-description"), value: "description" },
       { text: t("settings-broadcast-table-createdat"), value: "created_at" },
       {
-        text: t("settings-broadcast-table-actions"),
-        value: "actions",
-        sortable: false,
+        text: t("settings-broadcast-table-important"),
+        value: "important",
+      },
+      {
+        text: t("settings-broadcast-table-status"),
+        value: "status",
       },
       {
         text: t("settings-broadcast-table-positions"),
         value: "positions",
         sortable: false,
       },
+      {
+        text: t("settings-broadcast-table-actions"),
+        value: "actions",
+        sortable: false,
+      },
     ]);
     const fetchBroadcasts = async () => {
       const response = await getBroadcasts();
       if (response.status === 200) {
-        items.value = response.data.data;
+        items.value = response.data.data.map((item, index) => ({
+          ...item,
+          is_first: index === 0,
+          is_last: index === response.data.data.length - 1,
+        }));
         toast.success(response.data.message);
       } else {
         // Handle error response
@@ -138,6 +184,76 @@ export default {
       }
     };
 
+    const changeStatus = async (id) => {
+      // Logic to change status
+      const broadcast = items.value.find((item) => item.id === id);
+      if (broadcast) {
+        broadcast.status = broadcast.status ? 0 : 1;
+        const response = await updateBroadcast(id, null, broadcast.status);
+        if (response.status === 200) {
+          toast.success(response.data.message);
+        } else {
+          toast.error("Failed to update status");
+        }
+      }
+    };
+
+    const updateImportant = async (id) => {
+      // Logic to update important status
+      const broadcast = items.value.find((item) => item.id === id);
+      if (broadcast) {
+        broadcast.important = broadcast.important ? 0 : 1;
+        const response = await updateBroadcast(
+          id,
+          null,
+          null,
+          broadcast.important
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+        } else {
+          toast.error("Failed to update important status");
+        }
+      }
+    };
+
+    const OpenCreateModal = () => {
+      const item = document.getElementById("broadcastMessageCreateModal");
+      console.log(item);
+      if (!item) {
+        console.error("Modal element not found");
+        return;
+      }
+      const modal = new Modal(item);
+      modal.show();
+    };
+
+    const closeCreateModal = () => {
+      const item = document.getElementById("broadcastMessageCreateModal");
+      if (!item) {
+        console.error("Modal element not found");
+        return;
+      }
+      try {
+        const modal = Modal.getInstance(item) || new Modal(item);
+        modal.hide();
+      } catch (error) {
+        console.error("Failed to close modal:", error);
+      }
+    };
+
+    const submit = async (description) => {
+      // Logic to submit the form
+      const response = await createBroadcast(description);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        fetchBroadcasts();
+      } else {
+        toast.error("Failed to create broadcast");
+      }
+      closeCreateModal();
+    };
+
     onMounted(() => {
       fetchBroadcasts();
     });
@@ -152,6 +268,11 @@ export default {
       fetchBroadcasts,
       headers,
       updatePosition,
+      changeStatus,
+      updateImportant,
+      OpenCreateModal,
+      closeCreateModal,
+      submit,
     };
   },
 };

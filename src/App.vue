@@ -51,7 +51,7 @@ import Loader from "@/components/LoaderComponent.vue";
 import NewsBar from "@/components/NewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { logout, getBackgroundId } from "@/plugins/services/authService";
-import { PERMISSIONS, usePermissionStore } from "./stores/permissionStore";
+import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 
 export default {
   name: "App",
@@ -130,17 +130,19 @@ export default {
 
     async loadSavedBackground() {
       try {
-        let response = await getBackgroundId(Cookies.get("background_id"));
-        if (!response) {
-          console.error("No background image found");
-          return;
+        if (Cookies.get("background_id")) {
+          let response = await getBackgroundId(Cookies.get("background_id"));
+          if (!response) {
+            console.log("No background image found");
+            return;
+          }
+          const savedImage = response.data.data.url;
+          document.body.style.backgroundImage = `url(${savedImage})`;
+          document.body.style.backgroundSize = "cover";
+          document.body.style.backgroundPosition = "center";
+          document.body.style.backgroundRepeat = "no-repeat";
+          document.body.style.backgroundAttachment = "fixed";
         }
-        const savedImage = response.data.data.url;
-        document.body.style.backgroundImage = `url(${savedImage})`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-        document.body.style.backgroundRepeat = "no-repeat";
-        document.body.style.backgroundAttachment = "fixed";
       } catch (error) {
         console.error("Error loading background image:", error);
       }
@@ -181,6 +183,7 @@ export default {
 }
 .Vue-Toastification__container {
   max-width: 320px !important;
+  z-index: 999;
 }
 /* Scrollbar */
 ::-webkit-scrollbar {

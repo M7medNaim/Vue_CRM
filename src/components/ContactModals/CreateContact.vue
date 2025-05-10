@@ -259,14 +259,8 @@ export default {
           };
           showPhone2.value = !!contact.phone2;
           isEditing.value = true;
-          toast.success(t("success.editContact"), {
-            timeout: 3000,
-          });
         } else {
           resetForm();
-          // toast.success(t("success.addContact"), {
-          //   timeout: 3000,
-          // });
         }
         modalInstance.value.show();
       } catch (error) {
@@ -336,14 +330,6 @@ export default {
         ) {
           modalInstance.value.hide();
           resetForm();
-          toast.success(
-            t(
-              isEditing.value
-                ? "success.contactUpdated"
-                : "success.contactAdded"
-            ),
-            { timeout: 3000 }
-          );
         }
       } catch (error) {
         if (error.response?.data?.errors) {

@@ -23,22 +23,28 @@
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
-              <router-link
-                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnKanban"
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
-                "
-                to="/crmlist"
-              >
-                List
-              </router-link>
               <button
-                class="btn btn-header text-white px-2 py-2 fs-7 btnKanban"
+                :class="`btn btn-header text-white px-2 py-2 fs-7 btnKanban ${
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
+                  user_role == 'sales'
+                    ? 'me-2'
+                    : ''
+                }`"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
               >
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
+              <router-link
+                class="btn btn-header text-white px-3 py-2 fs-7 btnKanban"
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
+                  user_role == 'sales'
+                "
+                to="/crmlist"
+              >
+                {{ t("sidebar-nav-item-crmlist") }}
+              </router-link>
             </div>
 
             <!-- Search Form -->
@@ -78,7 +84,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
-                    >{{ overdue_count > 99 ? "+99" : overdue_count }}</span
+                    >{{ computed_overdue_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-overdue")
@@ -89,8 +95,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
-                  >
-                    {{ today_count > 99 ? "+99" : today_count }}</span
+                    >{{ computed_today_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-today")
@@ -101,8 +106,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-info fw-bold fs-6"
-                  >
-                    {{ tomorrow_count > 99 ? "+99" : tomorrow_count }}</span
+                    >{{ computed_tomorrow_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-tomorrow")
@@ -113,8 +117,7 @@
                 >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
-                  >
-                    {{ notasks_count > 99 ? "+99" : notasks_count }}</span
+                    >{{ computed_notasks_count }}</span
                   >
                   <span class="ms-1 text-white">{{
                     t("kanban-task-status-notasks")
@@ -204,7 +207,7 @@ import FilterCrmList from "@/components/modals/FilterCrmList.vue";
 import ImportModal from "@/components/modals/ImportModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 import { Modal } from "bootstrap";
-import CreateDealModal from "../kanban/CreateDealModal.vue";
+import CreateDealModal from "@/components/kanban/CreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
 import WhatsappModal from "@/components/modals/WhatsappModal.vue";
@@ -213,6 +216,7 @@ import {
   fetchTasksCountByStageName,
   getconversations,
 } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
 
 export default {
   name: "TopHeader2",
@@ -258,6 +262,18 @@ export default {
   },
   emits: ["filter-applied", "reset-filter"],
   setup(props, { emit }) {
+    const computed_overdue_count = computed(() =>
+      overdue_count.value > 99 ? "99+" : overdue_count.value
+    );
+    const computed_today_count = computed(() =>
+      today_count.value > 99 ? "99+" : today_count.value
+    );
+    const computed_tomorrow_count = computed(() =>
+      tomorrow_count.value > 99 ? "99+" : tomorrow_count.value
+    );
+    const computed_notasks_count = computed(() =>
+      notasks_count.value > 99 ? "99+" : notasks_count.value
+    );
     const conversation = ref(null);
     const local_new_message = ref(null);
     const local_update_message = ref(null);
@@ -270,6 +286,7 @@ export default {
     const tomorrow_count = ref(0);
     const notasks_count = ref(0);
     const searchText = ref("");
+    const user_role = ref(Cookies.get("user_role"));
     // const openWhatsappModal = () => {
     //   try {
     //     const modal = new Modal(document.getElementById("whatsappModal"));
@@ -355,6 +372,7 @@ export default {
     });
     const setConversation = (data) => {
       conversation.value = data;
+      console.log("setConversation in Top header 2 comp", conversation.value);
     };
     const setNewMessage = (data) => {
       local_new_message.value = data;
@@ -417,6 +435,11 @@ export default {
       handleSearch,
       searchText,
       updateMessage,
+      user_role,
+      computed_overdue_count,
+      computed_today_count,
+      computed_tomorrow_count,
+      computed_notasks_count,
     };
   },
 

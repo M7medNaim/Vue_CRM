@@ -52,16 +52,13 @@
           @click="openChat(chat, index)"
           :class="{ active: chat.isActive }"
         >
-          <div class="imgBx position-relative overflow-hidden h-25 me-2 mb-4">
-            <img
-              :src="
-                chat.img ||
-                require('@/assets/whatsappImage/default-userImage.jpg')
-              "
-              alt="user image"
-              class="rounded-circle w-100 h-100"
-            />
-          </div>
+          <CountryFlagAvatar
+            :phone="chat.phone"
+            :defaultImage="
+              chat.img ||
+              require('@/assets/whatsappImage/default-userImage.jpg')
+            "
+          />
           <div class="details position-relative w-100">
             <div class="rating mb-1" style="font-size: 12px">
               <template v-for="index in 7" :key="index">
@@ -81,7 +78,7 @@
                 {{ chat.name }}
                 <span class="text-muted ms-2">{{ chat.phone }}</span>
               </h4>
-              <span style="font-size: 12px" class="time text-success">{{
+              <span style="font-size: 14px" class="time text-success">{{
                 chat.time
               }}</span>
             </div>
@@ -92,17 +89,57 @@
                 class="msg pe-2 text-truncate"
                 :title="chat.message ?? chat.last_message?.text_body"
               >
-                <span
+                <!-- <span
                   :class="{
-                    'text-secondary': !chat.isRead,
-                    'text-info': chat.isRead,
+                    'text-secondary':
+                      chat.message_status === 'sent' ||
+                      chat.message_status === 'delivered',
+                    'text-info':
+                      chat.message_status === 'received' ||
+                      chat.message_status === 'read',
                   }"
                   class="pe-1"
                 >
                   <i class="fa-solid fa-check fs-6"></i>
+                </span> -->
+                <span v-if="chat.message_type === 'msg-me'">
+                  <span
+                    v-if="chat.message_status === 'sent'"
+                    class="text-secondary"
+                  >
+                    <i class="fa-solid fa-check fs-6"></i>
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'delivered'"
+                    class="text-secondary"
+                  >
+                    <i class="fa-solid fa-check fs-6"></i>
+                    <i class="fa-solid fa-check fs-6"></i>
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'read'"
+                    class="text-info"
+                  >
+                    <i class="fa-solid fa-check fs-6"></i>
+                    <i class="fa-solid fa-check fs-6"></i>
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'undelivered'"
+                    class="text-danger"
+                  >
+                    <i class="fa-solid fa-xmark"></i> (Not sent)
+                  </span>
+                  <span
+                    v-else-if="chat.message_status === 'error'"
+                    class="text-danger"
+                  >
+                    <i class="fa-solid fa-xmark"></i> (Not sent)
+                  </span>
                 </span>
                 {{
-                  truncatedMessage(chat.message ?? chat.last_message?.text_body)
+                  truncatedMessage(
+                    chat.message ?? chat.last_message?.text_body
+                  ) || "Media message"
                 }}
               </p>
               <div class="d-flex align-items-center gap-3">
@@ -131,6 +168,7 @@
 <script>
 import { Modal } from "bootstrap";
 import FilterModalConv from "@/components/whatsapp/FilterModalConv.vue";
+import CountryFlagAvatar from "@/components/whatsapp/CountryFlagAvatar.vue";
 import {
   getconversations,
   getMessageConv,
@@ -140,6 +178,7 @@ export default {
   name: "SidebarLeft",
   components: {
     FilterModalConv,
+    CountryFlagAvatar,
   },
   data() {
     return {
@@ -169,7 +208,7 @@ export default {
               conversation.img ||
               require("@/assets/whatsappImage/default-userImage.jpg"),
             name: conversation.name || conversation.contact?.name,
-            phone: conversation.phone?.phone || "",
+            phone: conversation.phone || "",
             rating: conversation.rating,
             unread_count: conversation.unread_count,
             time: last_message
@@ -182,9 +221,13 @@ export default {
               : "",
             created_at_last_message: last_message?.created_at || "",
             message: last_message?.text_body || "",
+            message_status: last_message?.status,
+            message_type:
+              last_message?.conversation_member?.type == "User"
+                ? "msg-me"
+                : "msg-frnd",
             sender: last_message?.conversation_member?.name || "",
             unread: false,
-            unreadCount: 0,
             isActive: false,
             pinned: conversation.pinned,
             label: "",
@@ -235,7 +278,7 @@ export default {
 
           this.chats[index].isActive = true;
           this.chats[index].unread_count = 0;
-
+          console.log("opening chat:", chat);
           this.$emit("select-chat", {
             ...chat,
             id: chat.id,
@@ -310,7 +353,7 @@ export default {
       let chatIndex = this.chats.findIndex((c) => c.id === chat.id);
       let processed_chat = null;
       if (chatIndex === -1) {
-        const processed_chat = {
+        processed_chat = {
           id: chat.id,
           created_at: chat.created_at,
           img:
@@ -329,6 +372,11 @@ export default {
             : "",
           created_at_last_message: chat.last_message?.created_at || "",
           message: chat.last_message?.text_body || "",
+          message_status: chat.last_message?.status,
+          message_type:
+            chat.last_message?.conversation_member?.type == "User"
+              ? "msg-me"
+              : "msg-frnd",
           sender: chat.last_message?.conversation_member?.name || "",
           unread: false,
           unreadCount: 0,
@@ -337,10 +385,10 @@ export default {
           label: "",
           messages: [],
           conversation_id: chat.id,
-          phone: chat.phone.phone,
+          phone: chat.phone.phone || chat.phone,
         };
         console.log("Processed chat:", processed_chat);
-        this.chats.push(processed_chat);
+        this.chats.unshift(processed_chat);
         chatIndex = this.chats.length - 1;
       } else {
         processed_chat = this.chats[chatIndex];

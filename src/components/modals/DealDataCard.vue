@@ -243,9 +243,7 @@
               <div
                 class="row mb-3"
                 @dblclick="handleDoubleClick"
-                v-if="
-                  permissionStore.hasPermission(PERMISSIONS.SHOW_ASSIGNED_TO)
-                "
+                v-if="permissionStore.hasPermission('add-assigned-to-deal')"
               >
                 <div class="col-2">
                   <label class="form-label"
@@ -265,55 +263,6 @@
                   </select>
                 </div>
               </div>
-
-              <!-- Packages -->
-              <!-- <div class="row mb-3" @dblclick="handleDoubleClick">
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-cubes"></i>
-                    {{ t("kanban-modal-edit-label-packages") }}</label
-                  >
-                </div>
-                <div class="col-10">
-                  <div class="" v-if="packages.length > 0">
-                    <div
-                      v-for="(item, index) in packages"
-                      :key="index"
-                      class="packages d-flex align-items-center gap-3 mb-2"
-                    >
-                      <select
-                        class="form-select bg-light"
-                        v-model="item.serviceSelect"
-                      >
-                        <option value="" disabled>
-                          {{ t("kanban-modal-edit-placeholder-packages-name") }}
-                        </option>
-                      </select>
-                      <input
-                        type="text"
-                        class="bg-light text-secondary p-2"
-                        v-model="item.serviceInput"
-                        :placeholder="
-                          t('kanban-modal-edit-placeholder-packages-quantity')
-                        "
-                      />
-                      <button
-                        class="btn btn-secondary"
-                        @click="removePackage(index)"
-                      >
-                        x
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="btn btn-primary mt-2 fs-5 px-3"
-                    @click="addNewPackage"
-                    :disabled="!isEditMode"
-                  >
-                    +
-                  </button>
-                </div>
-              </div> -->
               <!-- Deal Status -->
               <div class="row mb-3">
                 <div class="col-2">
@@ -353,7 +302,7 @@
               </div>
               <div
                 class="history ps-2 mt-2"
-                v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+                v-if="permissionStore.hasPermission('edit-stage')"
               >
                 <div
                   v-for="log in logs"
@@ -454,7 +403,7 @@
                   >
                     <div class="col-3">
                       <img
-                        src="../../assets/default-user-image.jpg"
+                        src="@/assets/default-user-image.jpg"
                         alt="Seals Image"
                         width="45"
                         height="45"
@@ -577,8 +526,8 @@
 
 <script>
 import { ref, reactive, computed, onMounted, nextTick } from "vue";
-import RatingStars from "../CreateDealElements/RatingStars.vue";
-import ViewReport from "../kanban/ViewReport.vue";
+import RatingStars from "@/components/CreateDealElements/RatingStars.vue";
+import ViewReport from "@/components/kanban/ViewReport.vue";
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
@@ -742,7 +691,7 @@ export default {
       try {
         currentStageId.value = stageId;
         const stageIndex = stages.value.findIndex((s) => s.id === stageId);
-        const stageName = stages.value.find((s) => s.id === stageId)?.name;
+        const stageName = stages.value[stageIndex].name;
 
         stages.value.forEach((stage, index) => {
           if (index <= stageIndex) {
@@ -754,7 +703,7 @@ export default {
 
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.data) {
-          emit("stage-change", props.deal.id, stageIndex, props.deal.stage_id);
+          emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
           toast.success(`${t("success.stageChanged")} ${stageName}`, {
             timeout: 3000,
           });
@@ -997,7 +946,9 @@ export default {
             img:
               selected_conversation.value.img ||
               require("@/assets/whatsappImage/default-userImage.jpg"),
-            phone: selected_conversation.value.phone?.phone || "",
+            phone:
+              selected_conversation.value.phone?.phone ||
+              selected_conversation.value.phone,
           },
           id
         );
@@ -1072,7 +1023,7 @@ export default {
         });
         return;
       }
-      emit("stage-change", data.dealId, data.newStage);
+      emit("stage-change", data.dealId, data.newStage, props.deal.stage_id, 0);
     };
     onMounted(() => {
       fetchSources();

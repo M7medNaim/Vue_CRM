@@ -128,7 +128,7 @@
       </router-link>
       <router-link
         v-if="permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)"
-        to="/stageing-settings"
+        to="/stage-settings"
         class="text-decoration-none text-white"
       >
         <div

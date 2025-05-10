@@ -11,13 +11,14 @@
     :key="message.id"
     :class="message.type"
     ref="messageElements"
+    @scroll="handleScroll"
   >
     <div
       :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
         message.status === 'undelivered'
           ? 'text-danger'
-          : message.status === 'no-whatsapp'
-          ? 'message-no-whatsapp'
+          : message.status === 'error'
+          ? 'message-error'
           : ''
       }`"
     >
@@ -70,16 +71,12 @@
       <div
         class="message-text"
         style="white-space: pre-line"
-        v-if="message.status !== 'no-whatsapp'"
+        v-if="message.status != 'error'"
       >
         {{ message.text }}
       </div>
-      <div
-        class="message-text"
-        style="white-space: pre-line"
-        v-if="message.status === 'no-whatsapp'"
-      >
-        أنا غير موجود عبر تطبيق واتساب، يرجى الإتصال بي!.
+      <div class="message-text" style="white-space: pre-line" v-else>
+        {{ t(message.text) }}
       </div>
       <button
         class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
@@ -88,7 +85,7 @@
       >
         <i
           class="fa-solid fa-ellipsis-vertical text-secondary"
-          :class="message.status === 'message-no-whatsapp' ? 'text-white' : ''"
+          :class="message.status === 'message-error' ? 'text-white' : ''"
         ></i>
       </button>
       <span class="d-block mt-1 opacity-50 fst-normal">
@@ -126,10 +123,7 @@
           >
             <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
-          <span
-            v-else-if="message.status === 'no-whatsapp'"
-            class="status-icon"
-          >
+          <span v-else-if="message.status === 'error'" class="status-icon">
             <i class="fa-solid fa-xmark"></i> (Message not sent)
           </span>
         </span>
@@ -192,6 +186,8 @@
   </button>
 </template>
 <script>
+import { useI18n } from "vue-i18n";
+
 export default {
   name: "ChatBubbles",
   props: {
@@ -303,13 +299,14 @@ export default {
       });
     },
     scrollToBottom() {
+      console.log("scrollToBottom triggered");
       const chatBox = this.$parent.$refs.chatBox;
       chatBox.scrollTo({
         top: chatBox.scrollHeight,
         behavior: "smooth",
       });
     },
-    handleScroll() {
+    async handleScroll() {
       const chatBox = this.$parent.$refs.chatBox;
       const scrollTop = chatBox.scrollTop;
       const scrollHeight = chatBox.scrollHeight;
@@ -324,6 +321,8 @@ export default {
       let messageIndex;
 
       if (scrollTop === 0) {
+        console.log("At the top");
+        this.$emit("scroll-top-reached");
         messageIndex = 0;
       } else if (scrollTop + clientHeight >= scrollHeight - 10) {
         messageIndex = totalMessages - 1;
@@ -397,6 +396,13 @@ export default {
       },
       immediate: true,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return {
+      t,
+    };
   },
 };
 </script>
@@ -540,17 +546,17 @@ export default {
 .addNote:hover i {
   color: #636262;
 }
-.message-no-whatsapp {
+.message-error {
   background-color: #d40000 !important;
   color: #fff !important;
 }
 
-.right-side .chatBx .msg-me .message-no-whatsapp::before {
+.right-side .chatBx .msg-me .message-error::before {
   border-top-color: #d40000 !important;
   border-right-color: #d40000 !important;
 }
 
-.right-side .chatBx .msg-frnd .message-no-whatsapp::before {
+.right-side .chatBx .msg-frnd .message-error::before {
   border-top-color: #d40000 !important;
   border-left-color: #d40000 !important;
 }
