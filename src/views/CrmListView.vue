@@ -45,6 +45,7 @@
                 :placeholder="t('crmlist-placeholder-search')"
                 v-model="searchInput"
                 @search="fetchData"
+                style="padding: 0.5rem 0"
               />
               <i
                 v-if="searchInput"

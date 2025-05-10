@@ -10,6 +10,7 @@
                 v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
                 class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnAddKanban"
                 @click="openCreateDealModal"
+                style="padding: 0.6rem 0.6rem"
               >
                 <span class="textAddKanban">{{
                   t("kanban-button-add-deal")
@@ -17,21 +18,24 @@
                 <span class="iconAddKanban d-none">+</span>
               </button>
               <button
-                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnKanban"
+                class="btn btn-header text-white me-2 fs-7 btnKanban"
                 @click="openCrmKanban"
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
+                style="padding: 0.6rem 0.9rem"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-header text-white px-3 me-2 py-2 fs-7 btnKanban"
+                class="btn btn-header text-white me-2 fs-7 btnKanban"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
+                style="padding: 0.6rem 0.8rem"
               >
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
               <router-link
-                class="btn btn-header text-white px-1 py-2 me-2 fs-7 btnKanban"
+                class="btn btn-header text-white me-2 fs-7 btnKanban"
+                style="padding: 0.6rem 0.4rem"
                 v-if="
                   permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
                   user_role == 'sales'
