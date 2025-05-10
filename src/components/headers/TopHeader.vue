@@ -79,9 +79,9 @@
             @click="refreshPage"
           >
             <i class="fa-solid fa-rotate"></i>
-            <span class="refresh-text" style="font-size: 14px"
-              >New Changes..</span
-            >
+            <span class="refresh-text" style="font-size: 14px">{{
+              $t("kanban-header-refresh")
+            }}</span>
             <!-- AR => تحديثات جديدة -->
           </button>
           <div class="lang">
@@ -144,6 +144,7 @@ import NotificationsHead from "@/components/headers/sub-menu/NotificationsHead.v
 import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
+import { useKanbanStore } from "@/stores/kanbanStore";
 import {
   ref,
   onMounted,
@@ -170,10 +171,11 @@ export default {
       name: Cookies.get("name") || "User",
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
-      hasNewChanges: false,
     };
   },
   setup() {
+    const kanbanStore = useKanbanStore();
+    const hasNewChanges = computed(() => kanbanStore.hasNewChanges);
     const user_role = Cookies.get("user_role");
     const loadingStore = useLoadingStore();
     const currentTime = ref("");
@@ -239,7 +241,10 @@ export default {
     });
 
     const permissionStore = usePermissionStore();
-
+    function refreshPage() {
+      kanbanStore.setHasNewChanges(false);
+      window.location.reload();
+    }
     return {
       currentTime,
       pageTitle,
@@ -249,6 +254,8 @@ export default {
       PERMISSIONS,
       loadingStore,
       user_role,
+      refreshPage,
+      hasNewChanges,
     };
   },
   methods: {
@@ -263,9 +270,9 @@ export default {
           localStorage.setItem("locale", newLang);
           this.currentLanguage = newLang;
 
-          this.toast.success("تم تغيير اللغة بنجاح!", { timeout: 3000 });
+          this.toast.success(response.data.message, { timeout: 3000 });
         } else {
-          throw new Error("فشل حفظ اللغة في API");
+          throw new Error("Error fetching language change");
         }
       } catch (error) {
         console.error("Error changing language:", error);
@@ -278,10 +285,6 @@ export default {
       } else {
         this.activeMenu = menu;
       }
-    },
-
-    refreshPage() {
-      window.location.reload();
     },
 
     handleClickOutside(event) {

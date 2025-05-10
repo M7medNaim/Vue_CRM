@@ -5,6 +5,7 @@
     tabindex="-1"
     aria-labelledby="filterModalLabel"
     aria-hidden="true"
+    ref="filterModal"
   >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -24,6 +25,9 @@
           <FilterCrmListFormVue
             :filters="filters"
             :selectedStatuses="localSelectedStatuses"
+            :stages="local_stages"
+            :sources="local_sources"
+            :users="local_users"
             @update:filters="updateFilters"
             @update:selectedStatuses="updateSelectedStatuses"
           />
@@ -41,8 +45,8 @@
 <script>
 import { ref, watch } from "vue";
 import { Modal } from "bootstrap";
-import FilterCrmListFormVue from "../filterElements/FilterCrmListForm.vue";
-import FilterButtonCrmList from "../filterElements/FilterButtonCrmList.vue";
+import FilterCrmListFormVue from "@/components/filterElements/FilterCrmListForm.vue";
+import FilterButtonCrmList from "@/components/filterElements/FilterButtonCrmList.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
@@ -66,6 +70,7 @@ export default {
     const local_stages = ref([]);
     const local_sources = ref([]);
     const local_users = ref([]);
+    const filterModal = ref(null);
 
     watch(
       () => props.modelValue,
@@ -93,13 +98,14 @@ export default {
 
     const closeFilterModal = () => {
       try {
-        const modal = document.getElementById("filterModal");
+        const modal = filterModal.value;
         const modalInstance = Modal.getInstance(modal);
         if (modalInstance) modalInstance.hide();
         document.querySelector(".modal-backdrop")?.remove();
         document.body.classList.remove("modal-open");
       } catch (error) {
         toast.error(t("error.closeModal"), { timeout: 3000 });
+        console.error("Error closing modal:", error);
       }
     };
 
@@ -129,22 +135,19 @@ export default {
     const resetFilter = () => {
       try {
         const emptyFilters = {
-          source: "",
-          stage: "",
-          supervisor: "",
-          representative: "",
-          package: "",
+          package_id: null,
           updated_at_start: null,
           updated_at_end: null,
           source_id: null,
           stage_id: null,
+          user_id: null,
           created_at_start: null,
           created_at_end: null,
           status: [],
         };
-        filters.value = { ...emptyFilters };
+        filters.value = emptyFilters;
         localSelectedStatuses.value = [];
-        emit("update:modelValue", { ...emptyFilters });
+        emit("update:modelValue", emptyFilters);
         emit("reset-filter");
         toast.success(t("success.resetFilters"), { timeout: 3000 });
       } catch (error) {
@@ -199,6 +202,7 @@ export default {
       local_stages,
       local_sources,
       local_users,
+      filterModal,
     };
   },
 };

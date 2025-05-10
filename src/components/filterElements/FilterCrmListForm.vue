@@ -30,7 +30,10 @@
         </div>
 
         <!-- Source Filter -->
-        <div class="row">
+        <div
+          class="row"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        >
           <div class="col-3 pt-2">
             <span>{{ t("crmlist-modal-filter-label-source") }}</span>
           </div>
@@ -40,8 +43,9 @@
                 v-model="localFilters.source_id"
                 class="form-select text-secondary"
               >
+                <option value="" selected>All</option>
                 <option
-                  v-for="source in sources"
+                  v-for="source in local_sources"
                   :key="source.value"
                   :value="source.value"
                 >
@@ -62,8 +66,9 @@
                 v-model="localFilters.stage_id"
                 class="form-select text-secondary"
               >
+                <option value="" selected>All</option>
                 <option
-                  v-for="stage in stages"
+                  v-for="stage in local_stages"
                   :key="stage.value"
                   :value="stage.value"
                 >
@@ -75,9 +80,12 @@
         </div>
 
         <!-- Supervisor Filter -->
-        <div class="row">
+        <div
+          class="row"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        >
           <div class="col-3 pt-2">
-            <span>{{ t("modals.supervisor") }}</span>
+            <span>{{ t("crmlist-modal-filter-label-user") }}</span>
           </div>
           <div class="col-9">
             <div class="mb-3">
@@ -85,12 +93,13 @@
                 v-model="localFilters.user_id"
                 class="form-select text-secondary"
               >
+                <option value="" selected>All</option>
                 <option
-                  v-for="user in users"
-                  :key="user.value"
-                  :value="user.value"
+                  v-for="user in local_users"
+                  :key="user.id"
+                  :value="user.id"
                 >
-                  {{ user.label }}
+                  {{ user.name }}
                 </option>
               </select>
             </div>
@@ -173,18 +182,17 @@
                 v-model="localFilters.sort_by"
                 class="form-select text-secondary"
               >
-                <option value="name">Full Name</option>
-                <option value="phone">Phone</option>
-                <option value="note">Notes</option>
-                <option value="responsible">Responsible</option>
+                <option value="" selected>None</option>
                 <option value="created_at">Created At</option>
-                <option value="source">Source</option>
-                <option value="stage">Stage</option>
+                <option value="updated_at">Updated At</option>
+                <option value="source_id">Source</option>
+                <option value="stage_id">Stage</option>
               </select>
               <select
                 v-model="localFilters.sort_order"
                 class="form-select text-secondary"
               >
+                <option value="" selected>None</option>
                 <option value="desc">Desc</option>
                 <option value="asc">Asc</option>
               </select>
@@ -197,8 +205,9 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "FilterCrmListFormVue",
@@ -237,14 +246,16 @@ export default {
       sort_order: "desc",
       ...props.filters,
     });
+    const local_stages = ref(props.stages);
+    const local_sources = ref(props.sources);
+    const local_users = ref([]);
+    const local_packages = ref([]);
 
     const statuses = ref([
-      { value: "unassigned", label: "Unassigned" },
       { value: "no_comments", label: "No Comments" },
       { value: "no_task", label: "No Task" },
       { value: "overdue", label: "Overdue" },
       { value: "new", label: "New" },
-      { value: "reclaimed", label: "Reclaimed" },
     ]);
 
     const updateLocalFilters = (newFilters) => {
@@ -254,6 +265,8 @@ export default {
         });
       }
     };
+
+    const permissionStore = usePermissionStore();
 
     updateLocalFilters(props.filters);
 
@@ -291,16 +304,68 @@ export default {
     watch(
       () => localFilters.value,
       (newFilters) => {
-        emit("update:filters", { ...newFilters });
+        console.log("filter reset", newFilters);
+        emit("update:filters", newFilters);
       },
       { deep: true }
     );
+
+    watch(
+      () => props.stages,
+      (newStages) => {
+        local_stages.value = newStages;
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.sources,
+      (newSources) => {
+        local_sources.value = newSources;
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.users,
+      (newUsers) => {
+        local_users.value = newUsers;
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => props.packages,
+      (newPackages) => {
+        local_packages.value = newPackages;
+      },
+      { deep: true }
+    );
+
+    onMounted(() => {
+      if (permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)) {
+        statuses.value.push({
+          value: "unassigned",
+          label: "Unassigned",
+        });
+        statuses.value.push({
+          value: "reclaimed",
+          label: "Reclaimed",
+        });
+      }
+    });
 
     return {
       localFilters,
       statuses,
       toggleStatus,
       t,
+      local_users,
+      local_packages,
+      local_stages,
+      local_sources,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };

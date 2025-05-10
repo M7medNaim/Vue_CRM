@@ -1,14 +1,13 @@
 <template>
-  <div class="mt-2">
-    <TopHeader2 />
-  </div>
   <div class="tableCrmList me-2">
     <div class="crm-container mt-3 bg-white rounded-3 me-2 p-3 pb-0 w-100">
       <div class="controls mb-3">
         <div class="row">
           <div
             class="col-sm-6 col-lg"
-            v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+            v-if="
+              permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)
+            "
           >
             <div class="input-group">
               <select
@@ -72,22 +71,23 @@
               class="btn btn-primary rounded-2 d-flex align-items-center"
               @click="$router.back()"
               v-if="
-                permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
+                permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN) &&
+                user_role == 'sales'
               "
             >
               <i class="fa-solid fa-arrow-right me-2"></i>
-              <span>رجوع</span>
+              <span>{{ t("crmlist-button-back") }}</span>
             </button>
             <button
               class="btn btn-primary rounded-2 me-2 fs-7"
-              v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+              v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
               @click="openDealModal"
             >
               <span>{{ t("kanban-button-add-deal") }}</span>
             </button>
             <button
               class="btn btn-primary rounded-2 fs-7"
-              v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+              v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
               @click="openImportModal"
             >
               <i class="fa-solid fa-upload me-2"></i>
@@ -96,104 +96,73 @@
           </div>
         </div>
       </div>
-      <div class="table-responsive-wrapper">
-        <DataTable
-          :value="rows"
-          :paginator="true"
-          :rows="rowsPerPage"
-          :rowsPerPageOptions="[10, 25, 50]"
-          :total-records="totalRows"
-          :lazy="true"
-          :loading="loading"
-          @page="onPageChange"
-          v-model:selection="selectedRows"
-          selectionMode="multiple"
-          responsive="true"
-          scrollable
-          scrollHeight="calc(90vh - 190px)"
-        >
-          <Column selectionMode="multiple" headerStyle="width: 3rem;"></Column>
-          <Column :header="'#'">
-            <template #body="slotProps">
-              {{ slotProps.index + 1 + currentPage * rowsPerPage }}
-            </template>
-          </Column>
-          <Column
-            field="name"
-            :header="t('crmlist-table-header-fullname')"
-          ></Column>
-          <Column
-            field="phone"
-            :header="t('crmlist-table-header-phone')"
-          ></Column>
-          <!-- <Column :header="t('contacts-table-header-phone')">
-        <template #body="slotProps">
-          {{
-            slotProps.data.phones && slotProps.data.phones.length > 0
-              ? slotProps.data.phones.join(", ")
-              : "N/A"
-          }}
-        </template>
-      </Column> -->
-          <Column
-            field="note"
-            :header="t('crmlist-table-header-notes')"
-            class="note-column"
-          ></Column>
-          <Column
-            field="responsible"
-            :header="t('crmlist-table-header-responsible')"
-            v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
-          ></Column>
-          <Column
-            class="d-lg-table-cell"
-            field="created_at"
-            :header="t('crmlist-table-header-createdat')"
-          ></Column>
-          <Column
-            field="source"
-            :header="t('crmlist-table-header-source')"
-          ></Column>
-          <Column
-            field="stage"
-            :header="t('crmlist-table-header-stage')"
-          ></Column>
-          <!-- <Column
-        field="responsible"
-        :header="t('crmlist-table-header-responsible')"
-      ></Column> -->
-          <Column :header="t('crmlist-table-header-action')">
-            <template #body="slotProps">
-              <div class="d-flex gap-2">
-                <button
-                  v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
-                  class="btn btn-sm btn-primary"
-                  @click="handleShowDeal(slotProps.data.id)"
-                >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button
-                  v-if="
-                    permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)
-                  "
-                  class="btn btn-sm btn-primary"
-                  @click="handleShowDealModal(slotProps.data.id)"
-                >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button
-                  class="btn btn-sm btn-danger"
-                  @click="deleteItem(slotProps.data.id)"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </template>
-          </Column>
-          <!-- <Column
-          :header="t('crmlist-table-header-action')"
-          v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)"
-        >
+
+      <DataTable
+        :value="rows"
+        :paginator="true"
+        :rows="rowsPerPage"
+        :rowsPerPageOptions="[10, 25, 50]"
+        :total-records="totalRows"
+        :lazy="true"
+        :loading="loading"
+        @page="onPageChange"
+        v-model:selection="selectedRows"
+        :selectionMode="
+          permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)
+            ? 'multiple'
+            : null
+        "
+        responsive="true"
+        scrollable
+        scrollHeight="calc(90vh - 190px)"
+      >
+        <Column
+          :selectionMode="
+            permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)
+              ? 'multiple'
+              : 'single'
+          "
+          headerStyle="width: 3rem;"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        ></Column>
+        <Column :header="'#'">
+          <template #body="slotProps">
+            {{ slotProps.index + 1 + currentPage * rowsPerPage }}
+          </template>
+        </Column>
+        <Column
+          field="name"
+          :header="t('crmlist-table-header-fullname')"
+        ></Column>
+        <Column
+          field="phone"
+          :header="t('crmlist-table-header-phone')"
+        ></Column>
+        <Column
+          field="note"
+          :header="t('crmlist-table-header-notes')"
+          class="note-column"
+        ></Column>
+        <Column
+          field="responsible"
+          :header="t('crmlist-table-header-responsible')"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        ></Column>
+        <Column
+          class="d-lg-table-cell"
+          field="created_at"
+          :header="t('crmlist-table-header-createdat')"
+        ></Column>
+        <Column
+          field="source"
+          :header="t('crmlist-table-header-source')"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
+        ></Column>
+        <Column
+          field="stage"
+          :header="t('crmlist-table-header-stage')"
+        ></Column>
+        <Column :header="t('crmlist-table-header-action')">
           <template #body="slotProps">
             <div class="d-flex gap-2">
               <button
@@ -210,23 +179,20 @@
               </button>
             </div>
           </template>
-        </Column> -->
-
-          <template #loading>
-            <div class="text-center loading-container">
-              <div class="position-relative d-inline-block">
-                <img
-                  src="../assets/new-nokta-logo.png"
-                  class="loading-logo"
-                  style="width: 50px; height: 50px"
-                />
-              </div>
-              <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
+        </Column>
+        <template #loading>
+          <div class="text-center loading-container">
+            <div class="position-relative d-inline-block">
+              <img
+                src="@/assets/new-nokta-logo.png"
+                class="loading-logo"
+                style="width: 50px; height: 50px"
+              />
             </div>
-          </template>
-        </DataTable>
-      </div>
-
+            <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
+          </div>
+        </template>
+      </DataTable>
       <ActionsDeal
         :selected-rows="selectedRows"
         @update-stage="(value) => handleBulkUpdate('stage_id', value)"
@@ -258,6 +224,12 @@
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
   />
+  <WhatsappModal
+    ref="whatsappModalRef"
+    :conversation="selected_conversation"
+    :new_message="local_new_message"
+    :updated_message="local_update_message"
+  />
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
@@ -274,6 +246,7 @@ import {
   bulkUpdateDeals,
   bulkDeleteDeals,
   getAllUsers,
+  updateDealStage,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
@@ -285,7 +258,7 @@ import Swal from "sweetalert2";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
-import TopHeader2 from "@/components/headers/TopHeader2.vue";
+import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();
@@ -304,7 +277,6 @@ const selectedStatuses = ref([]);
 const sources = ref([]);
 const stages = ref([]);
 const users = ref([]);
-const selected_conversation = ref(null);
 const filters = ref({
   source: "",
   stage: "",
@@ -327,6 +299,8 @@ const selectedDeal = ref(null);
 const logs = ref([]);
 const comments = ref([]);
 const tasks = ref([]);
+const user_role = Cookies.get("user_role");
+const selected_conversation = ref(null);
 
 // Actions operations
 const actions = ref([
@@ -457,9 +431,11 @@ const fetchData = async () => {
       ...apiFilters,
       filters: formattedFilters,
     });
-
-    if (!Array.isArray(dealsRes?.data?.data)) {
-      toast.info(t("noDealsFound"));
+    if (!dealsRes?.data?.data) {
+      toast.info(dealsRes.data.message || t("noDealsFound"));
+      rows.value = [];
+      totalRows.value = 0;
+      return;
     }
     rows.value = dealsRes.data.data.map((deal) => {
       const matchedStage = stages.value.find(
@@ -484,7 +460,7 @@ const fetchData = async () => {
     totalRows.value = dealsRes.data.meta.total;
   } catch (error) {
     console.error("Error fetching data:", error);
-    toast.error(t("error.fetchFailed"));
+    toast.error(error.message, { timeout: 3000 });
     rows.value = [];
     totalRows.value = 0;
   } finally {
@@ -513,48 +489,17 @@ const deleteItem = async (id) => {
     });
 
     if (result.isConfirmed) {
-      await deleteDeals([id]);
-      rows.value = rows.value.filter((item) => item.id !== id);
-      toast.success(t("success.deleteSuccess"), { timeout: 3000 });
+      const response = await deleteDeals([id]);
+      if (response.status === 204 || response.status === 200) {
+        rows.value = rows.value.filter((item) => item.id !== id);
+        toast.success(response.data.message, { timeout: 3000 });
+      } else {
+        throw new Error(response.data.message || t("error-default"));
+      }
     }
   } catch (error) {
-    toast.error(t("error.deleteFailed"), { timeout: 3000 });
+    toast.error(error.message, { timeout: 3000 });
     console.error("Delete Error:", error);
-  }
-};
-const handleShowDeal = async (dealId) => {
-  try {
-    const response = await showDeal(dealId);
-    const deal = response.data.data;
-    const matchedStage = stages.value.find(
-      (stage) => stage.value === deal.stage_id
-    );
-    const matchedSource = sources.value.find(
-      (source) => source.value === deal.source_id
-    );
-    dealData.value = {
-      name: deal.contact?.name || "Empty",
-      nickname: deal.contact?.nickname || "Empty",
-      address: deal.contact?.address || "Empty",
-      country: deal.contact?.country || "Empty",
-      email: deal.contact?.email || "Empty",
-      phone: deal.contact?.phones?.[0]?.phone || "Empty",
-      note: deal.note || "Empty",
-      rating: deal.rating || "Empty",
-      created_at: deal.created_at
-        ? new Date(deal.created_at).toISOString().split("T")[0]
-        : "",
-      updated_at: deal.updated_at
-        ? new Date(deal.updated_at).toISOString().split("T")[0]
-        : "",
-      stage_name: matchedStage?.name || "Empty",
-      source_name: matchedSource?.name || "Empty",
-      // responsablePerson: deal.responsible_user.name || "Not assigned",
-    };
-
-    showDataModal.value?.openShowData();
-  } catch (error) {
-    console.error("Error fetching deal data:", error);
   }
 };
 
@@ -1004,8 +949,24 @@ const addNewDeal = (newDeal) => {
     console.error("Error fetching user data for new deal:", error);
   }
 };
+
 const openWhatsappModal = (conversation) => {
   selected_conversation.value = conversation;
+};
+
+const changeDealStage = async (dealId, newStageId) => {
+  try {
+    const response = await updateDealStage(dealId, newStageId);
+    if (response.status === 200) {
+      toast.success(response.data.message, { timeout: 3000 });
+      fetchData();
+    } else {
+      toast.error(t("error.stageChangeFailed"), { timeout: 3000 });
+    }
+  } catch (error) {
+    console.error("Error changing deal stage:", error);
+    toast.error(t("error.stageChangeFailed"), { timeout: 3000 });
+  }
 };
 
 onMounted(async () => {

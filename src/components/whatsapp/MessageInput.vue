@@ -1,7 +1,7 @@
 <template>
   <div class="chat-input w-100 position-relative">
     <!-- message warning -->
-    <div
+    <!-- <div
       v-if="showWarning"
       class="message-warning bg-transparent text-dark position-absolute rounded-3 d-flex justify-content-between align-items-center"
     >
@@ -11,7 +11,7 @@
       >
         You must click here in order to send messages.
       </button>
-    </div>
+    </div> -->
     <div class="d-flex align-items-center gap-1">
       <div
         class="actions-group d-flex justify-content-center align-items-center gap-2 bg-success rounded-2 rounded-end-0"
@@ -34,7 +34,7 @@
               class="col-12 border-bottom border-secondary-subtle w-100 d-flex justify-content-between align-items-center py-2 bg-secondary-subtle position-sticky top-0"
             >
               <i class="fa-solid fa-xmark fs-5"></i>
-              <span>الردود السريعة</span>
+              <span>{{ t("kanban-modal-whatsapp-clipboard-heading") }}</span>
               <i class="fa-regular fa-clipboard fs-5"></i>
             </div>
             <div
@@ -125,7 +125,7 @@
           </form>
         </div>
         <div class="hiMessage">
-          <button class="btn p-0 text-white">
+          <button class="btn p-0 text-white" @click="sendGreetingMessage">
             <!-- <i class="fa-solid fa-handshake-simple"></i> -->
             <i class="fa-solid fa-hand"></i>
           </button>
@@ -290,6 +290,7 @@
 import { onMounted, ref, watch } from "vue";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { getInitMessages } from "@/plugins/services/authService";
+import { useI18n } from "vue-i18n";
 export default {
   name: "MessageInput",
   props: {
@@ -321,12 +322,17 @@ export default {
     };
   },
   setup(props, { emit }) {
+    const { t } = useI18n();
     const showWarning = ref(true);
     const init_messages = ref([]);
 
     const sendInitMessage = (id) => {
       showWarning.value = false;
       emit("send-init-message", id);
+    };
+
+    const sendGreetingMessage = () => {
+      emit("send-greeting-message");
     };
 
     const checkLastMessageTime = () => {
@@ -371,6 +377,8 @@ export default {
       sendInitMessage,
       fetchInitMessages,
       init_messages,
+      t,
+      sendGreetingMessage,
     };
   },
   methods: {

@@ -126,6 +126,14 @@ export const getSources = () => axios.get("/sources");
 
 // Get All Stages
 export const getStages = () => axios.get("/stages");
+
+export const getStageTimers = async () => {
+  return await axios.get("/settings/stages/timers");
+};
+
+export const updateStage = async (id, params) => {
+  return await axios.patch(`/stages/${id}`, params);
+};
 // ------------------------------------------------------------
 // Contacts
 // get all contacts
@@ -256,8 +264,10 @@ export const createConversation = (deal_id) => {
   });
 };
 // Get message by Conversation id
-export const getMessageConv = async (id) => {
-  return await axios.get(`/whatsapp/${id}`);
+export const getMessageConv = async (id, params) => {
+  return await axios.get(`/whatsapp/${id}`, {
+    params: params,
+  });
 };
 // send message
 export const sendMessage = (messageData) => {
@@ -289,8 +299,15 @@ export const sendInitMessage = (deal_id, conversation_id, init_message_id) => {
   });
 };
 
-export const getInitMessages = () => {
-  return axios.get("/whatsapp/init-messages");
+export const sendGreetingMessage = (deal_id, conversation_id) => {
+  return axios.post("/whatsapp/send-greeting", {
+    deal_id: deal_id,
+    conversation_id: conversation_id,
+  });
+};
+
+export const getInitMessages = (type = "marketing") => {
+  return axios.get(`/whatsapp/init-messages/${type}`);
 };
 
 export const changePinStatus = (id) => {
@@ -340,6 +357,10 @@ export const getBroadcasts = async () => {
   return await axios.get("/settings/broadcasts");
 };
 
+export const getKanbanBroadcasts = async () => {
+  return await axios.get("/kanban/broadcasts");
+};
+
 export const createBroadcast = async (description) => {
   return await axios.post("/settings/broadcasts", {
     description: description,
@@ -350,10 +371,11 @@ export const updateBroadcastPosition = async (id, direction) => {
   return await axios.patch(`/settings/broadcasts/position/${id}/${direction}`);
 };
 
-export const updateBroadcast = async (id, description, status) => {
+export const updateBroadcast = async (id, description, status, important) => {
   return await axios.patch(`/settings/broadcasts/${id}`, {
     description: description,
     status: status,
+    important: important,
   });
 };
 

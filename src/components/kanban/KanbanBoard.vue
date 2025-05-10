@@ -9,7 +9,7 @@
             :key="stage.id"
             class="stage-header position-relative"
             @click="
-              permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE) &&
+              permissionStore.hasPermission('edit-stage') &&
                 openUpdateStage(stage)
             "
             :title="stage.description || stage.name"
@@ -53,7 +53,7 @@
               </span> -->
             </div>
             <button
-              v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)"
+              v-if="permissionStore.hasPermission('edit-stage')"
               class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
               style="right: -2%; top: 3%"
             >
@@ -70,7 +70,6 @@
               item-key="id"
               class="deal-list"
               @start="drag = true"
-              @end="handleDragEnd"
               @change="handleDragChange($event, stage.id)"
               @scroll="handleDealContainerScroll($event, stage.id)"
             >
@@ -120,15 +119,22 @@
     @stage-change="changeDealStage"
   />
   <!-- selectedDeal -->
-  <div v-if="permissionStore.hasPermission(PERMISSIONS.EDIT_STAGE)">
+  <div v-if="permissionStore.hasPermission('edit-stage')">
     <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
   </div>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  onBeforeUnmount,
+  computed,
+  nextTick,
+} from "vue";
 import draggable from "vuedraggable";
-import CustomerCard from "./CustomerCard.vue";
+import CustomerCard from "@/components/kanban/CustomerCard.vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
@@ -145,6 +151,7 @@ import UpdateStage from "@/components/modals/UpdateStage.vue";
 import moveCardSound from "@/assets/move-card.wav";
 import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+import { useKanbanStore } from "@/stores/kanbanStore";
 export default {
   name: "KanbanBoard",
   components: {
@@ -164,6 +171,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const isIdle = ref(false);
     const route = useRoute();
     const dealsContainer = ref(null);
     let scrollInterval = null;
@@ -181,47 +189,23 @@ export default {
     const reachedBottom = ref(false);
     const moveSound = new Audio(moveCardSound);
     const permissionStore = usePermissionStore();
-    // const sortDirections = ref({});
+    const kanbanStore = useKanbanStore();
+    let idleTimer = null;
+    const idleTimeLimit = 5 * 60 * 1000;
 
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
         const deal = event.added.element;
-        const oldStageId = deal.stage_id;
-
-        try {
-          await updateDealStage(deal.id, newStageId);
-
-          deal.stage_id = newStageId;
-          toast.success(t("success.dealMoved"));
-        } catch (error) {
-          console.error("Error updating deal stage:", error.response?.data);
-
-          const oldStage = props.stages.find((s) => s.id === oldStageId);
-          if (oldStage) {
-            const currentStage = props.stages.find((s) => s.id === newStageId);
-            if (currentStage) {
-              const dealIndex = currentStage.deals.findIndex(
-                (d) => d.id === deal.id
-              );
-              if (dealIndex !== -1) {
-                const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
-                oldStage.deals.push(removedDeal);
-              }
-            }
-          }
-
-          toast.error(t("error.dealMoveFailed"));
-        }
+        console.log("deal", deal);
+        changeDealStage(deal.id, newStageId, event.added.element.stage_id);
       }
     };
 
-    const handleDragEnd = (evt) => {
-      if (evt.from !== evt.to) {
-        moveSound.currentTime = 0;
-        moveSound
-          .play()
-          .catch((error) => console.error("Failed to play sound:", error));
-      }
+    const playSound = () => {
+      moveSound.currentTime = 0;
+      moveSound
+        .play()
+        .catch((error) => console.error("Failed to play sound:", error));
     };
 
     // Removed duplicate definition of openDealDataCard
@@ -325,9 +309,9 @@ export default {
         scrollInterval = null;
       }
     };
-    const stages = ref(props.stages);
     // update Stage Color and Name
     const handleStageUpdate = (updatedStage) => {
+      const stages = ref(props.stages);
       const stageIndex = stages.value.findIndex(
         (stage) => stage.id === updatedStage.id
       );
@@ -374,6 +358,7 @@ export default {
         responsible_user: data.responsible_user,
         created_at: data.created_at,
         updated_at: data.updated_at,
+        phone: data.phone,
       };
       stages.value[stageIndex].deals.unshift(deal);
       toast.success(message);
@@ -381,66 +366,67 @@ export default {
 
     const dealUpdateEvent = (data, message) => {
       let stages = ref(props.stages);
-      const id = data.id;
-      const stageIndex = stages.value.findIndex(
-        (stage) => stage.id == data.stage_id
-      );
-
-      if (stageIndex === -1) {
-        console.error("Stage not found");
-        return;
-      }
-
-      const dealIndex = stages.value[stageIndex].deals.findIndex(
-        (deal) => deal.id == id
-      );
-
-      if (dealIndex === -1) {
-        const deal = {
-          id: data.id,
-          name: data.name,
-          phone: data.phone,
-          description: data.description,
-          stage_id: data.stage_id,
-          responsible_user: data.responsible_user,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          source_id: data.source_id,
-          view_count: data.view_count,
-          unread_count: data.unread_count,
-        };
-        stages.value[stageIndex].deals.unshift(deal);
-        stages.value[stageIndex].deal_count += 1;
-        return;
-      }
-
-      let deal = stages.value[stageIndex].deals[dealIndex];
-      deal.name = data.name ?? deal.name;
-      deal.description = data.description ?? deal.description;
-      deal.stage_id = data.stage_id ?? deal.stage_id;
-      deal.responsible_user = data.responsible_user ?? deal.responsible_user;
-      deal.updated_at = data.updated_at;
-      deal.source_id = data.source_id ?? deal.source_id;
-      deal.view_count = data.view_count ?? deal.view_count;
-      deal.unread_count = data.unread_count ?? deal.unread_count;
-      deal.phone = data.phone ?? deal.phone;
-
       const newStageIndex = stages.value.findIndex(
+        (stage) => stage.id == data.updated_data?.stage_id
+      );
+      const id = data.id;
+      const oldStageIndex = stages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );
 
-      // Update the deal in the UI
-      if (newStageIndex === stageIndex) {
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-        stages.value[newStageIndex].deals.unshift(deal);
-      } else if (newStageIndex !== -1) {
+      const deal = {
+        id: id,
+        name: data.updated_data.name,
+        phone: data.updated_data.phone,
+        description: data.updated_data.description,
+        stage_id: data.updated_data.stage_id,
+        responsible_user: data.updated_data.responsible_user,
+        created_at: data.updated_data.created_at,
+        updated_at: data.updated_data.updated_at,
+        source_id: data.updated_data.source_id,
+        view_count: data.updated_data.view_count,
+        unread_count: data.updated_data.unread_count,
+      };
+      console.log("updated data", deal);
+
+      if (oldStageIndex === -1) {
+        console.log("old stage not exists");
+        if (newStageIndex === -1) {
+          console.error(
+            "New stage not found, unrelated or something went wrong"
+          );
+          return;
+        }
         stages.value[newStageIndex].deals.unshift(deal);
         stages.value[newStageIndex].deal_count += 1;
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-        stages.value[stageIndex].deal_count -= 1;
       } else {
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-        stages.value[stageIndex].deal_count -= 1;
+        console.log("old stage exists");
+        const dealIndex = stages.value[oldStageIndex].deals.findIndex(
+          (deal) => deal.id == id
+        );
+
+        if (dealIndex === -1) {
+          console.log("Deal not found in view, unshifting deal to new stage");
+          stages.value[newStageIndex].deals.unshift(deal);
+          stages.value[oldStageIndex].deal_count -= 1;
+          stages.value[newStageIndex].deal_count += 1;
+          return;
+        } else {
+          console.log("deal exists in old stage, moving deal");
+          if (newStageIndex === oldStageIndex) {
+            stages.value[oldStageIndex].deals[dealIndex] = deal;
+          } else if (newStageIndex !== -1) {
+            console.log("moving deal to new stage");
+            stages.value[newStageIndex].deals.unshift(deal);
+            stages.value[newStageIndex].deal_count += 1;
+            stages.value[oldStageIndex].deals.splice(dealIndex, 1);
+            stages.value[oldStageIndex].deal_count -= 1;
+          } else {
+            console.log("new stage not exists, trash deal");
+            stages.value[oldStageIndex].deals.splice(dealIndex, 1);
+            stages.value[oldStageIndex].deal_count -= 1;
+          }
+        }
       }
       toast.success(message);
     };
@@ -529,6 +515,7 @@ export default {
     };
 
     const openWhatsappModal = (conversation, id) => {
+      console.log("openWhatsappModal in kanban comp", conversation);
       emit("open-whatsapp-modal", conversation);
       DecreaseUnreadCount(id);
     };
@@ -547,6 +534,11 @@ export default {
       const clientHeight = event.target.clientHeight;
       const stages = ref(props.stages);
       const stageIndex = stages.value.findIndex((s) => s.id === id);
+      if (
+        stages.value[stageIndex].deals.length ===
+        stages.value[stageIndex].deal_count
+      )
+        return;
       if (scrollTop + clientHeight >= scrollHeight - 1) {
         reachedBottom.value = true;
         fetchAdditionalDealsByStageId(
@@ -596,8 +588,123 @@ export default {
       }
     };
 
-    const changeDealStage = async (dealId, newStageIndex, oldStageId) => {
-      emit("change-deal-stage", dealId, newStageIndex, oldStageId);
+    const changeDealStage = async (
+      dealId,
+      newStageId,
+      oldStageId,
+      kanban = 1
+    ) => {
+      const stages = ref(props.stages);
+      const newStage = ref(
+        stages.value.find((stage) => stage.id == newStageId)
+      );
+      const oldStage = ref(
+        stages.value.find((stage) => stage.id == oldStageId)
+      );
+      console.log("newStage", newStage.value);
+      const deal =
+        newStage?.value?.deals.find((d) => d.id == dealId) ??
+        oldStage.value.deals.find((d) => d.id == dealId);
+      console.log("deal", deal);
+      try {
+        await updateDealStage(dealId, newStageId);
+        deal.stage_id = newStageId;
+        if (oldStage.value) oldStage.value.deal_count -= 1;
+        if (newStage.value) newStage.value.deal_count += 1;
+        if (!kanban) {
+          oldStage.value.deals.splice(
+            oldStage.value.deals.findIndex((d) => d.id == dealId),
+            1
+          );
+          if (newStage.value) newStage.value.deals.unshift(deal);
+        }
+        toast.success(t("success.dealMoved"));
+        playSound();
+      } catch (error) {
+        console.error("Error updating deal stage:", error);
+
+        const oldStage = props.stages.find((s) => s.id === oldStageId);
+        if (oldStage) {
+          const currentStage = props.stages.find((s) => s.id === newStageId);
+          if (currentStage) {
+            const dealIndex = currentStage.deals.findIndex(
+              (d) => d.id === deal.id
+            );
+            if (dealIndex !== -1) {
+              const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
+              oldStage.deals.push(removedDeal);
+            }
+          }
+        }
+        toast.error(t("error.dealMoveFailed"));
+      }
+    };
+    const refreshPage = () => {
+      window.location.reload();
+    };
+    const startIdleTimer = () => {
+      clearIdleTimer();
+      idleTimer = setTimeout(setIdle, idleTimeLimit);
+    };
+
+    const clearIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+    };
+
+    const setupUserActivityListeners = () => {
+      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
+        window.addEventListener(event, resetIdleTimer);
+      });
+    };
+
+    const removeUserActivityListeners = () => {
+      ["mousemove", "keydown", "mousedown", "touchstart"].forEach((event) => {
+        window.removeEventListener(event, resetIdleTimer);
+      });
+    };
+
+    const resetIdleTimer = () => {
+      if (isIdle.value) {
+        isIdle.value = false;
+        reconnectWebSocket();
+      }
+      startIdleTimer();
+    };
+
+    const setIdle = () => {
+      isIdle.value = true;
+      disconnectWebSocket();
+    };
+
+    const disconnectWebSocket = () => {
+      window.Echo.disconnect();
+      console.log("WebSocket disconnected due to inactivity");
+    };
+
+    const reconnectWebSocket = () => {
+      window.Echo.connect();
+      const userRole = Cookies.get("user_role");
+      const user_id = Cookies.get("user_id");
+      let userChannel;
+
+      if (userRole === "super-admin") {
+        userChannel = userRole;
+      } else {
+        userChannel = `${userRole}-${user_id}`;
+      }
+
+      if (window.Echo && userChannel) {
+        window.Echo.channel(userChannel).listen(
+          ".DealEvent",
+          ".TaskEvent",
+          ".CommentEvent",
+          ".LogEvent",
+          ".WhatsappEvent"
+        );
+      }
+
+      console.log("WebSocket reconnected on user activity");
+      kanbanStore.setHasNewChanges(true);
     };
 
     const getStageIconById = (stageId) => {
@@ -644,6 +751,8 @@ export default {
       document.addEventListener("mouseup", stopScrolling);
       document.addEventListener("mouseleave", stopScrolling);
       updateArrowVisibility();
+      startIdleTimer();
+      setupUserActivityListeners();
 
       try {
         // Initialize WebSocket connection
@@ -714,10 +823,15 @@ export default {
       // Close the WebSocket connection
       closeWebSocket();
     });
+
+    onBeforeUnmount(() => {
+      clearIdleTimer();
+      removeUserActivityListeners();
+    });
+
     return {
       // stages,
       drag,
-      handleDragEnd,
       getStageHeaderClass,
       dealsContainer,
       scrollDeals,
@@ -742,7 +856,18 @@ export default {
       permissionStore,
       PERMISSIONS,
       getStageIconById,
-      // sortDealsByCreatedAt,
+      isIdle,
+
+      // Methods
+      refreshPage,
+      startIdleTimer,
+      clearIdleTimer,
+      setupUserActivityListeners,
+      removeUserActivityListeners,
+      resetIdleTimer,
+      setIdle,
+      disconnectWebSocket,
+      reconnectWebSocket,
     };
   },
 };

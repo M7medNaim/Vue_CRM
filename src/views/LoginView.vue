@@ -6,7 +6,7 @@
           <form class="card-body" @submit.prevent="handleLogin">
             <div class="mb-3 text-center">
               <img
-                src="../../public/images/new-nokta-logo.png"
+                src="@/assets/new-nokta-logo.png"
                 class="img-fluid profile-image-pic"
                 alt="logo"
               />
@@ -134,9 +134,11 @@ export default {
             response.data.user.bg_image_id,
             cookieOptions
           );
-          const locale = localStorage.getItem("locale") || "ar";
+          localStorage.setItem("locale", response.data.user.locale);
+          const locale = localStorage.getItem("locale") || "en";
+          console.log("Locale:", locale);
           await initializeTranslations(locale);
-
+          this.$i18n.locale = locale;
           this.email = "";
           this.password = "";
           this.loginSuccess = true;

@@ -32,8 +32,8 @@
 
 <script>
 import { Modal } from "bootstrap";
-import DealForm from "../CreateDealElements/DealForm.vue";
-import DealButtons from "../CreateDealElements/DealButtons.vue";
+import DealForm from "@/components/CreateDealElements/DealForm.vue";
+import DealButtons from "@/components/CreateDealElements/DealButtons.vue";
 import { createDeal } from "@/plugins/services/authService";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";

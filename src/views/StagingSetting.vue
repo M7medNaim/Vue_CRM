@@ -24,7 +24,8 @@
                   <input
                     class="form-check-input shadow-none custom-switch"
                     type="checkbox"
-                    v-model="stage.status"
+                    :checked="stage.timer_status"
+                    @change="changeStageStatus(stage.id)"
                   />
                 </div>
               </div>
@@ -32,9 +33,10 @@
             <div class="col-4">
               <input
                 type="number"
-                v-model="stage.number"
+                v-model="stage.timer_allowed"
                 placeholder="Days Counts"
                 class="form-control"
+                @change="updateStageTimer(stage.id)"
               />
             </div>
           </div>
@@ -47,7 +49,7 @@
 <script>
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import { getStages } from "@/plugins/services/authService";
+import { getStageTimers, updateStage } from "@/plugins/services/authService";
 import { ref, onMounted } from "vue";
 
 export default {
@@ -59,10 +61,36 @@ export default {
 
     const getAllStages = async () => {
       try {
-        const response = await getStages();
+        const response = await getStageTimers();
         stages.value = response.data.data;
       } catch (error) {
         toast.error("Error loading stages");
+      }
+    };
+
+    const changeStageStatus = async (id) => {
+      try {
+        const stage = stages.value.find((stage) => stage.id == id);
+        if (stage) {
+          stage.timer_status = stage.timer_status ? 0 : 1;
+          console.log("Stage status:", stage.timer_status);
+          await updateStage(id, { timer_status: stage.timer_status });
+          toast.success("Stage status updated successfully");
+        }
+      } catch (error) {
+        toast.error("Error updating stage status");
+      }
+    };
+
+    const updateStageTimer = async (id) => {
+      try {
+        const stage = stages.value.find((stage) => stage.id == id);
+        if (stage) {
+          await updateStage(id, { timer_allowed: stage.timer_allowed });
+          toast.success("Stage timer updated successfully");
+        }
+      } catch (error) {
+        toast.error("Error updating stage timer");
       }
     };
 
@@ -70,7 +98,14 @@ export default {
       getAllStages();
     });
 
-    return { t, toast, stages, getAllStages };
+    return {
+      t,
+      toast,
+      stages,
+      getAllStages,
+      changeStageStatus,
+      updateStageTimer,
+    };
   },
 };
 </script>

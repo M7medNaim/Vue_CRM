@@ -103,6 +103,7 @@
           :messages="chatMessages"
           :searchQuery="searchQuery"
           @delete-message="handleDeleteMessage"
+          @scroll-top-reached="getMoreMessages"
         />
         <div
           ref="menu"
@@ -144,6 +145,7 @@
           @send-message="receiveMessage"
           @scroll-to-bottom="scrollToBottom"
           @send-init-message="sendInit"
+          @send-greeting-message="sendGreeting"
           :conversation-id="selectedChat.id"
           :lastMessageDate="lastMessageDate"
         />
@@ -155,8 +157,11 @@
 <script>
 import MessageInput from "@/components/whatsapp/MessageInput.vue";
 import ChatBubbles from "@/components/whatsapp/ChatBubbles.vue";
-import { sendInitMessage, sendMessage } from "@/plugins/services/authService";
-import Cookies from "js-cookie";
+import {
+  sendGreetingMessage,
+  sendInitMessage,
+  sendMessage,
+} from "@/plugins/services/authService";
 export default {
   emits: [
     "mark-as-unread",
@@ -175,12 +180,17 @@ export default {
       type: Object,
       required: true,
     },
+    scrollToBot: {
+      type: Boolean,
+      required: false,
+    },
   },
   data() {
     return {
       isSearchBarVisible: false,
       showListVisible: false,
       searchQuery: "",
+      chatBox_ref: this.$refs.chatBox,
     };
   },
   computed: {
@@ -203,12 +213,12 @@ export default {
       },
     },
     "selectedChat.messages": {
+      immediate: true,
       handler() {
         this.$nextTick(() => {
           this.scrollToBottom();
         });
       },
-      immediate: true,
     },
   },
   methods: {
@@ -221,8 +231,8 @@ export default {
           };
 
           if (!messageToSend.conversation_id) {
-            messageToSend.to = "971557893319";
-            delete messageToSend.conversation_id;
+            console.error("Conversation ID is missing.");
+            return;
           }
 
           const response = await sendMessage(messageToSend);
@@ -266,16 +276,11 @@ export default {
       }
     },
     sendInit(init_message_id) {
-      console.log("Sending init message...", init_message_id);
       if (this.selectedChat) {
-        console.log("Selected chat ID in sendInit:", this.selectedChat.id);
         sendInitMessage(null, this.selectedChat.id, init_message_id || null)
           .then((response) => {
-            console.log("Init message sent:", response);
-            const user_name = Cookies.get("name");
-            console.log("User name:", user_name);
             const newMessage = {
-              id: response.data?.data?.id || Date.now(),
+              id: response.data?.data?.last_message?.id || "",
               type: "msg-me",
               text: response.data?.data?.last_message?.text_body || "",
               time: new Date().toLocaleTimeString([], {
@@ -304,6 +309,42 @@ export default {
           });
       }
     },
+
+    sendGreeting() {
+      if (this.selectedChat) {
+        sendGreetingMessage(null, this.selectedChat.id)
+          .then((response) => {
+            const newMessage = {
+              id: response.data?.data?.last_message?.id || "",
+              type: "msg-me",
+              text: response.data?.data?.last_message?.text_body || "",
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              created_at: new Date().toISOString(),
+              sender: "You",
+              isCopied: false,
+              conversation_id: this.selectedChat.id,
+              isImage: false,
+              isDocument: false,
+              isAudio: false,
+              isVideo: false,
+              fileName: null,
+              fileUrl: null,
+              fileDownloadUrl: null,
+              fileMimeType: null,
+              status: "sent",
+            };
+            this.$emit("new-message", newMessage);
+            this.scrollToBottom();
+          })
+          .catch((error) => {
+            console.error("Error sending init message:", error);
+          });
+      }
+    },
+
     scrollToBottom() {
       this.$nextTick(() => {
         const chatBox = this.$refs.chatBox;
@@ -336,6 +377,9 @@ export default {
     handleDeleteMessage(index) {
       this.$emit("delete-message", index);
     },
+    async getMoreMessages() {
+      this.$emit("get-more-messages");
+    },
   },
   directives: {
     clickOutside: {
@@ -358,7 +402,7 @@ export default {
 <style scoped>
 .right-side {
   position: relative;
-  background-image: url(../../assets/whatsappImage/Default\ WhatsApp\ background.jpg);
+  background-image: url(@/assets/whatsappImage/Default\ WhatsApp\ background.jpg);
   background-size: contain;
   background-position: center;
 }
