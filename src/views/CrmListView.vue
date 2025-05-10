@@ -107,17 +107,21 @@
         :loading="loading"
         @page="onPageChange"
         v-model:selection="selectedRows"
-        selectionMode="multiple"
+        :selectionMode="
+          permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)
+            ? 'multiple'
+            : null
+        "
         responsive="true"
       >
         <Column
           :selectionMode="
-            permissionStore.hasPermission(PERMISSIONS.UPDATE_DEAL)
+            permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)
               ? 'multiple'
               : 'single'
           "
           headerStyle="width: 3rem;"
-          v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_DEAL)"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
         ></Column>
         <Column :header="'#'">
           <template #body="slotProps">
@@ -140,7 +144,7 @@
         <Column
           field="responsible"
           :header="t('crmlist-table-header-responsible')"
-          v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
         ></Column>
         <Column
           class="d-lg-table-cell"
@@ -150,6 +154,7 @@
         <Column
           field="source"
           :header="t('crmlist-table-header-source')"
+          v-if="permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)"
         ></Column>
         <Column
           field="stage"
@@ -173,28 +178,6 @@
             </div>
           </template>
         </Column>
-        <!-- <Column
-          :header="t('crmlist-table-header-action')"
-          v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST_KANBAN)"
-        >
-          <template #body="slotProps">
-            <div class="d-flex gap-2">
-              <button
-                class="btn btn-sm btn-primary"
-                @click="handleShowDealModal(slotProps.data.id)"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
-              <button
-                class="btn btn-sm btn-danger"
-                @click="deleteItem(slotProps.data.id)"
-              >
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </template>
-        </Column> -->
-
         <template #loading>
           <div class="text-center loading-container">
             <div class="position-relative d-inline-block">
@@ -208,7 +191,6 @@
           </div>
         </template>
       </DataTable>
-
       <ActionsDeal
         :selected-rows="selectedRows"
         @update-stage="(value) => handleBulkUpdate('stage_id', value)"
@@ -262,6 +244,7 @@ import {
   bulkUpdateDeals,
   bulkDeleteDeals,
   getAllUsers,
+  updateDealStage,
 } from "@/plugins/services/authService";
 import ActionsDeal from "@/components/modals/ActionsDeal.vue";
 import FilterCrmList from "@/components/modals/FilterCrmList.vue";
@@ -448,10 +431,6 @@ const fetchData = async () => {
       ...apiFilters,
       filters: formattedFilters,
     });
-
-    if (!Array.isArray(dealsRes?.data?.data)) {
-      toast.info(t("noDealsFound"));
-    }
     rows.value = dealsRes.data.data.map((deal) => {
       const matchedStage = stages.value.find(
         (stage) => stage.value === deal.stage_id
@@ -475,7 +454,7 @@ const fetchData = async () => {
     totalRows.value = dealsRes.data.meta.total;
   } catch (error) {
     console.error("Error fetching data:", error);
-    toast.error(t("error.fetchFailed"));
+    toast.error(error.message, { timeout: 3000 });
     rows.value = [];
     totalRows.value = 0;
   } finally {
@@ -504,12 +483,16 @@ const deleteItem = async (id) => {
     });
 
     if (result.isConfirmed) {
-      await deleteDeals([id]);
-      rows.value = rows.value.filter((item) => item.id !== id);
-      toast.success(t("success.deleteSuccess"), { timeout: 3000 });
+      const response = await deleteDeals([id]);
+      if (response.status === 204 || response.status === 200) {
+        rows.value = rows.value.filter((item) => item.id !== id);
+        toast.success(response.data.message, { timeout: 3000 });
+      } else {
+        throw new Error(response.data.message || t("error-default"));
+      }
     }
   } catch (error) {
-    toast.error(t("error.deleteFailed"), { timeout: 3000 });
+    toast.error(error.message, { timeout: 3000 });
     console.error("Delete Error:", error);
   }
 };
@@ -964,6 +947,21 @@ const addNewDeal = (newDeal) => {
 const openWhatsappModal = (conversation) => {
   console.log("selected conversation in Crm kanban component", conversation);
   selected_conversation.value = conversation;
+};
+
+const changeDealStage = async (dealId, newStageId) => {
+  try {
+    const response = await updateDealStage(dealId, newStageId);
+    if (response.status === 200) {
+      toast.success(response.data.message, { timeout: 3000 });
+      fetchData();
+    } else {
+      toast.error(t("error.stageChangeFailed"), { timeout: 3000 });
+    }
+  } catch (error) {
+    console.error("Error changing deal stage:", error);
+    toast.error(t("error.stageChangeFailed"), { timeout: 3000 });
+  }
 };
 
 onMounted(async () => {

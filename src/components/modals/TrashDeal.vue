@@ -30,7 +30,7 @@
             </h4>
             <textarea
               class="form-control"
-              placeholder="{{$t('kanban-trash-comments-placeholder')}}"
+              :placeholder="$t('kanban-trash-comments-placeholder')"
               rows="4"
               v-model="comment"
             ></textarea>
@@ -87,7 +87,6 @@
 <script>
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-import { useI18n } from "vue-i18n";
 import { updateDealStage, createComment } from "@/plugins/services/authService";
 
 export default {
@@ -99,9 +98,8 @@ export default {
     },
   },
   setup() {
-    const { t } = useI18n();
     const toast = useToast();
-    return { t, toast };
+    return { toast };
   },
   data() {
     return {
