@@ -250,7 +250,7 @@
   />
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import DataTable from "primevue/datatable";
@@ -320,7 +320,13 @@ const comments = ref([]);
 const tasks = ref([]);
 const user_role = Cookies.get("user_role");
 const selected_conversation = ref(null);
-const isFilterActive = ref(false);
+const isFilterActive = computed(() => {
+  return Object.entries(filters.value).some(([key, val]) => {
+    if (key === "sort_by" || key === "sort_order") return false;
+    if (Array.isArray(val)) return val.length > 0;
+    return val !== null && val !== "";
+  });
+});
 // Actions operations
 const actions = ref([
   { value: "changeStage", label: t("crmlist-action-changestage") },
@@ -554,7 +560,6 @@ const applyFilters = async (newFilters) => {
   try {
     loading.value = true;
     filters.value = { ...newFilters };
-    isFilterActive.value = true;
     // Build filters object in the correct format
     const apiFilters = {
       search: searchInput.value,
@@ -685,7 +690,6 @@ const resetFilter = () => {
   };
   selectedStatuses.value = [];
   searchInput.value = "";
-  isFilterActive.value = false;
   fetchData();
 };
 
