@@ -81,7 +81,7 @@
               user_role == 'sales'
             "
           >
-            <topHeader2 />
+            <topHeader2 :selected_conversation="selected_conversation" />
           </div>
           <div
             class="col-auto mt-2 mt-lg-0 text-center d-flex align-items-center justify-content-end gap-2"
@@ -243,12 +243,6 @@
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
   />
-  <WhatsappModal
-    ref="whatsappModalRef"
-    :conversation="selected_conversation"
-    :new_message="local_new_message"
-    :updated_message="local_update_message"
-  />
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
@@ -277,7 +271,6 @@ import Swal from "sweetalert2";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/DealDataCard.vue";
 import Cookies from "js-cookie";
-import WhatsappModal from "@/components/modals/WhatsappModal.vue";
 import TopHeader2 from "@/components/headers/TopHeader2.vue";
 const { t } = useI18n();
 const toast = useToast();
