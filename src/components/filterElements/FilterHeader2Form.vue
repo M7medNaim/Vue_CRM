@@ -66,7 +66,7 @@
                 v-model="localHeaderFilters.stage_id"
                 class="form-select text-secondary"
               >
-                <option value="" selected>All</option>
+                <option value="1" selected>All</option>
                 <option
                   v-for="stage in local_stages"
                   :key="stage.value"

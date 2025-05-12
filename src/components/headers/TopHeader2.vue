@@ -182,8 +182,11 @@
       </div>
     </nav>
     <FilterHeader2
-      v-model:headerFilters="headerFilterData"
+      v-if="!disableFilter"
+      v-model="headerFilterData"
       v-model:headerSelectedStatuses="headerSelectedStatuses"
+      @apply-filters="handleFilters"
+      @reset-filter="handleResetFilter"
     />
     <ImportModal ref="importModalRef" />
     <ExportModal ref="exportModalRef" />
@@ -242,7 +245,7 @@ export default {
         status: [],
       }),
     },
-
+    disableFilter: { type: Boolean, default: false },
     selected_conversation: {
       type: Object,
       default: null,
@@ -330,6 +333,7 @@ export default {
       modal.show();
     };
     const handleFilters = (filters) => {
+      console.log("TopHeader2 emits filter-applied", filters);
       emit("filter-applied", filters);
     };
 
