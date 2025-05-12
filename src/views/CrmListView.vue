@@ -80,7 +80,10 @@
               user_role == 'sales'
             "
           >
-            <topHeader2 :selected_conversation="selected_conversation" />
+            <topHeader2
+              :selected_conversation="selected_conversation"
+              :disableFilter="true"
+            />
           </div>
           <div
             class="col-auto mt-2 mt-lg-0 text-center d-flex align-items-center justify-content-end gap-2"
