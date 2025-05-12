@@ -38,14 +38,13 @@
             </div>
           </div>
           <div class="col">
-            <div class="input-group position-relative">
+            <div class="input-group position-relative h-100">
               <input
                 type="search"
                 class="form-control"
                 :placeholder="t('crmlist-placeholder-search')"
                 v-model="searchInput"
                 @search="fetchData"
-                style="padding: 0.5rem 0"
               />
               <i
                 v-if="searchInput"
@@ -1006,6 +1005,13 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
 input:focus {
   box-shadow: none;
   border: 1px solid #333;
