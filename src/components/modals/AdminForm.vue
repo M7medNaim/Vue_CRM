@@ -284,7 +284,9 @@ export default {
         formData.append("name", this.formData.username);
         formData.append("email", this.formData.email);
         formData.append("role", this.formData.role);
-        formData.append("parent_id", this.formData.reportTo.id);
+        formData.append(
+          "parent_id",
+          this.formData.reportTo?.id || this.formData.reportTo || "");
         formData.append("phone", this.formData.phoneNumber);
         formData.append("color_code", this.formData.color);
         if (!this.isEditMode) {
