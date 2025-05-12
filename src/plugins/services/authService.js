@@ -34,7 +34,7 @@ export const createUser = (formData) => {
 };
 // Update User
 export const updateUser = (userId, userData) =>
-  axios.put(`/users/${userId}`, userData);
+  axios.patch(`/users/${userId}`, userData);
 // Delete User
 export const deleteUser = (userId) => {
   const token = Cookies.get("authToken");
