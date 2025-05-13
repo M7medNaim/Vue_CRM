@@ -251,8 +251,10 @@ export const getDealsKanban = async (params = {}) => {
     params,
   });
 };
-export const getTasksKanban = async () => {
-  return await axios.get("/kanban/tasks");
+export const getTasksKanban = async (params) => {
+  return await axios.get("/kanban/tasks", {
+    params,
+  });
 };
 // Get Conversations
 export const getconversations = (search, rating, stage) =>
