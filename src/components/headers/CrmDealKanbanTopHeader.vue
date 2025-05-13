@@ -342,10 +342,10 @@ export default {
     };
     const router = useRouter();
     const openCrmTasks = () => {
-      router.push({ name: "CrmTasks" });
+      router.push({ name: "CrmDealTasksView" });
     };
     const openCrmKanban = () => {
-      router.push({ name: "CrmKanban" });
+      router.push({ name: "CrmDealKanbanView" });
     };
     const isSmallScreen = ref(window.innerWidth < 1050);
     const handleResize = () => {
