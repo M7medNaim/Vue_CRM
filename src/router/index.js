@@ -5,17 +5,17 @@ import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import UsersView from "@/views/UsersView.vue";
 import ContactsView from "@/views/ContactsView.vue";
-import GeneralSetting from "@/views/GeneralSetting.vue";
-import RoleSettings from "@/views/RoleSettings.vue";
-import DocumentsFolder from "@/views/DocumentsFolderView.vue";
-import DocumentsFiles from "@/views/FolderFilesView.vue";
-import CrmKanban from "@/views/CrmKanban.vue";
+import GeneralSettingView from "@/views/GeneralSettingView.vue";
+import RoleSettingsView from "@/views/RoleSettingsView.vue";
+import DocumentsFolderView from "@/views/DocumentsFolderView.vue";
+import FolderFilesView from "@/views/FolderFilesView.vue";
+import CrmDealKanbanView from "@/views/CrmDealKanbanView.vue";
 import Cookies from "js-cookie";
-import CrmTasks from "@/views/CrmTasks.vue";
-import CrmList from "@/views/CrmListView.vue";
-import TasksKanban from "@/views/CrmTasks.vue";
-import BroadcastSettings from "@/views/BroadcastSettings.vue";
-import SettingStageConv from "@/views/StagingSetting.vue";
+import CrmDealTasksView from "@/views/CrmDealTasksView.vue";
+import CrmListView from "@/views/CrmListView.vue";
+// import TasksKanban from "@/views/CrmDealTasksView.vue";
+import BroadcastSettingsView from "@/views/BroadcastSettingsView.vue";
+import StagingSettingView from "@/views/StagingSettingView.vue";
 
 const routes = [
   {
@@ -54,8 +54,8 @@ const routes = [
   },
   {
     path: "/crm-kanban",
-    name: "CrmKanban",
-    component: CrmKanban,
+    name: "CrmDealKanbanView",
+    component: CrmDealKanbanView,
     meta: {
       requiresAuth: true,
       title: "CRM Kanban",
@@ -64,8 +64,8 @@ const routes = [
   },
   {
     path: "/crm-tasks",
-    name: "CrmTasks",
-    component: CrmTasks,
+    name: "CrmDealTasksView",
+    component: CrmDealTasksView,
     meta: {
       requiresAuth: true,
       title: "CRM Tasks",
@@ -74,7 +74,7 @@ const routes = [
   },
   {
     path: "/users",
-    name: "Users",
+    name: "UsersView",
     component: UsersView,
     meta: {
       requiresAuth: true,
@@ -84,8 +84,8 @@ const routes = [
   },
   {
     path: "/crmlist",
-    name: "CrmList",
-    component: CrmList,
+    name: "CrmListView",
+    component: CrmListView,
     meta: {
       requiresAuth: true,
       title: "CRM List",
@@ -94,7 +94,7 @@ const routes = [
   },
   {
     path: "/contacts",
-    name: "Contacts",
+    name: "ContactsView",
     component: ContactsView,
     meta: {
       requiresAuth: true,
@@ -104,8 +104,8 @@ const routes = [
   },
   {
     path: "/general-settings",
-    name: "Settings",
-    component: GeneralSetting,
+    name: "GeneralSettingView",
+    component: GeneralSettingView,
     meta: {
       requiresAuth: true,
       title: "General Settings",
@@ -114,8 +114,8 @@ const routes = [
   },
   {
     path: "/stage-settings",
-    name: "StageSettings",
-    component: SettingStageConv,
+    name: "StagingSettingView",
+    component: StagingSettingView,
     meta: {
       requiresAuth: true,
       title: "Stage Settings",
@@ -124,8 +124,8 @@ const routes = [
   },
   {
     path: "/role-settings",
-    name: "RoleSettings",
-    component: RoleSettings,
+    name: "RoleSettingsView",
+    component: RoleSettingsView,
     meta: {
       requiresAuth: true,
       title: "Role Settings",
@@ -134,8 +134,8 @@ const routes = [
   },
   {
     path: "/broadcast-settings",
-    name: "BroadcastSettings",
-    component: BroadcastSettings,
+    name: "BroadcastSettingsView",
+    component: BroadcastSettingsView,
     meta: {
       requiresAuth: true,
       title: "Broadcast Settings",
@@ -144,8 +144,8 @@ const routes = [
   },
   {
     path: "/documents",
-    name: "Documents",
-    component: DocumentsFolder,
+    name: "DocumentsFolderView",
+    component: DocumentsFolderView,
     meta: {
       requiresAuth: true,
       title: "Documents Folders",
@@ -154,19 +154,19 @@ const routes = [
   },
   {
     path: "/documents/:folderName+",
-    name: "FolderFiles",
-    component: DocumentsFiles,
+    name: "FolderFilesView",
+    component: FolderFilesView,
     meta: {
       requiresAuth: true,
       title: "Documents Files",
     },
     beforeEnter: requirePermission(PERMISSIONS.DOCUMENTS),
   },
-  {
-    path: "/tasks-kanban",
-    component: TasksKanban,
-    beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
-  },
+  // {
+  //   path: "/tasks-kanban",
+  //   component: TasksKanban,
+  //   beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
+  // },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",

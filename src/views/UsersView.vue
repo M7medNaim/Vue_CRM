@@ -63,14 +63,18 @@
       </template>
 
       <template #item-status="item">
-        <FormSwitch
+        <UserViewStatusAccount
           v-model="item.status"
           @update:modelValue="toggleStatus(item)"
         />
       </template>
 
       <template #item-actions="item">
-        <ButtonsUser :item="item" @edit="editItem" @remove="removeUser" />
+        <UserViewActionButtons
+          :item="item"
+          @edit="editItem"
+          @remove="removeUser"
+        />
       </template>
       <!-- Loading -->
       <template #loading>
@@ -87,8 +91,11 @@
       </template>
     </EasyDataTable>
 
-    <AdminModal ref="adminModalRef" @user-updated="updateUserList" />
-    <FilterForm
+    <UserViewAddEditUserModal
+      ref="adminModalRef"
+      @user-updated="updateUserList"
+    />
+    <UserViewFilterModal
       ref="filterModalRef"
       @apply-filters="applyFilters"
       @reset-filters="resetFilters"
@@ -100,10 +107,10 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
-import AdminModal from "@/components/modals/AdminForm.vue";
-import ButtonsUser from "@/components/usersElements/ButtonsUser.vue";
-import FormSwitch from "@/components/usersElements/FormSwitch.vue";
-import FilterForm from "@/components/modals/FilterForm.vue";
+import UserViewAddEditUserModal from "@/components/modals/UserViewAddEditUserModal.vue";
+import UserViewActionButtons from "@/components/usersElements/UserViewActionButtons.vue";
+import UserViewStatusAccount from "@/components/usersElements/UserViewStatusAccount.vue";
+import UserViewFilterModal from "@/components/modals/UserViewFilterModal.vue";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
 // import { useLoadingStore } from "@/plugins/loadingStore";
@@ -119,10 +126,10 @@ export default {
   name: "UsersView",
   components: {
     EasyDataTable,
-    AdminModal,
-    ButtonsUser,
-    FormSwitch,
-    FilterForm,
+    UserViewAddEditUserModal,
+    UserViewActionButtons,
+    UserViewStatusAccount,
+    UserViewFilterModal,
   },
   setup() {
     const { t } = useI18n();

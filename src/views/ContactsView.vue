@@ -125,12 +125,12 @@
     </DataTable>
 
     <!-- Modals -->
-    <CreateContact
+    <ContactsViewCreateModal
       ref="contactCreateModalRef"
       :rows="rows"
       @contact-updated="updateContactList"
     />
-    <FilterContact
+    <ContactsViewFilterModal
       ref="filterModalRef"
       @apply-filters="applyFilters"
       @reset-filters="resetFilters"
@@ -147,8 +147,8 @@ import {
   deleteContact,
   showContact,
 } from "@/plugins/services/authService";
-import CreateContact from "@/components/ContactModals/CreateContact.vue";
-import FilterContact from "@/components/ContactModals/FilterContact.vue";
+import ContactsViewCreateModal from "@/components/ContactModals/ContactsViewCreateModal.vue";
+import ContactsViewFilterModal from "@/components/ContactModals/ContactsViewFilterModal.vue";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
 import { useI18n } from "vue-i18n";
@@ -161,8 +161,8 @@ export default {
   name: "ContactsView",
   components: {
     // Vue3EasyDataTable,
-    CreateContact,
-    FilterContact,
+    ContactsViewCreateModal,
+    ContactsViewFilterModal,
     DataTable,
     Column,
   },

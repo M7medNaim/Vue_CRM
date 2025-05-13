@@ -43,12 +43,12 @@
 <script>
 // import { ref, onMounted } from "vue";
 import axiosInstance from "@/plugins/axios";
-import TopHeader from "@/components/headers/TopHeader.vue";
-import LeftSidebar from "@/components/LeftSidebar.vue";
+import TopHeader from "@/components/headers/TheTopHeader.vue";
+import LeftSidebar from "@/components/TheLeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
 import Cookies from "js-cookie";
-import Loader from "@/components/LoaderComponent.vue";
-import NewsBar from "@/components/NewsBar.vue";
+import Loader from "@/components/TheLoaderComponent.vue";
+import NewsBar from "@/components/TheNewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { logout, getBackgroundId } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";

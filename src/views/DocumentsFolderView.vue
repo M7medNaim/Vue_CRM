@@ -102,7 +102,10 @@
     </EasyDataTable>
   </div>
   <!-- Add Modals -->
-  <FolderForm :folder="selectedFolder" @submit="handleFolderSubmit" />
+  <DocumentsFolderViewAddEditFolderModal
+    :folder="selectedFolder"
+    @submit="handleFolderSubmit"
+  />
 
   <ImportFolder @import="handleFolderImport" />
 </template>
@@ -111,7 +114,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import EasyDataTable from "vue3-easy-data-table";
-import FolderForm from "@/components/modals/FolderForm.vue";
+import DocumentsFolderViewAddEditFolderModal from "@/components/modals/DocumentsFolderViewAddEditFolderModal.vue";
 // import ImportFolder from "@/components/modals/ImportFolder.vue";
 import Modal from "bootstrap/js/dist/modal";
 import { useToast } from "vue-toastification";
@@ -128,7 +131,7 @@ export default {
   name: "DocumentsFolderView",
   components: {
     EasyDataTable,
-    FolderForm,
+    DocumentsFolderViewAddEditFolderModal,
     // ImportFolder,
   },
   setup() {
