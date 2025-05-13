@@ -364,7 +364,7 @@
                     :key="comment.id"
                     class="row mt-2"
                   >
-                    <div class="col-3">
+                    <div class="col-auto pe-0">
                       <img
                         src="@/assets/default-user-image.jpg"
                         alt="Seals Image"
@@ -373,7 +373,7 @@
                       />
                       <span class="ms-2">{{ comment.username }}</span>
                     </div>
-                    <div class="col-9">
+                    <div class="col">
                       <div
                         :class="[
                           'rounded-3 p-2',
@@ -381,7 +381,11 @@
                             ? 'adminComment'
                             : 'bg-primary text-white',
                         ]"
-                        style="width: fit-content"
+                        style="
+                          width: fit-content;
+                          word-break: break-word;
+                          overflow-wrap: break-word;
+                        "
                       >
                         <span>{{ comment.text_body }}</span
                         ><br />
