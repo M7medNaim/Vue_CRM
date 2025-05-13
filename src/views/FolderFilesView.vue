@@ -81,20 +81,22 @@
           </div>
           <div class="actions">
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_FOLDER)"
               class="btn btn-sm btn-primary me-2"
               @click.stop="editFolder(folder)"
               title="Edit"
             >
               <i class="fas fa-edit"></i>
             </button>
-            <button
+            <!-- <button
               class="btn btn-sm btn-success me-2"
               @click="downloadFolder(folder.id)"
               title="Download"
             >
               <i class="fas fa-download"></i>
-            </button>
+            </button> -->
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FOLDER)"
               class="btn btn-sm btn-danger"
               @click="deleteFolder(folder.id)"
               title="Delete"
@@ -118,20 +120,24 @@
           </div>
           <div class="actions">
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.VIEW_FILE)"
               class="btn btn-sm text-bg-primary me-2"
               @click="viewFile(file)"
               title="View"
             >
               <i class="fas fa-eye"></i>
             </button>
-            <button
+            <a
+              v-if="permissionStore.hasPermission(PERMISSIONS.VIEW_FILE)"
               class="btn btn-sm btn-success me-2"
-              @click="downloadFile(file)"
               title="Download"
+              :href="file.download_url"
+              download
             >
               <i class="fas fa-download"></i>
-            </button>
+            </a>
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FILE)"
               class="btn btn-sm btn-danger"
               @click="deleteFile(file.id)"
               title="Delete"
@@ -169,8 +175,8 @@ import {
   showDocuments,
   uploadFiles,
   deleteDocuments,
-  getDocuments,
 } from "@/plugins/services/authService";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "FolderFilesView",
@@ -188,6 +194,7 @@ export default {
     const fileInput = ref(null);
     const selectedFolder = ref(null);
     const folderFormModal = ref(null);
+    const permissionStore = usePermissionStore();
     const getFileIcon = (type) => {
       const icons = {
         pdf: "fas fa-file-pdf text-danger",
@@ -201,9 +208,13 @@ export default {
 
     const fetchFiles = async () => {
       try {
+        console.log(
+          "Fetching folder contents...",
+          route.params.folderName || route.params.fullPath
+        );
         const folderPath = route.params.folderName || route.params.fullPath;
         if (!folderPath) {
-          throw new Error("المسار غير صالح");
+          throw new Error("Folder path is not provided");
         }
 
         const response = await showDocuments(folderPath);
@@ -445,23 +456,15 @@ export default {
       if (event?.target?.closest("button")) {
         return;
       }
-
       try {
-        const response = await getDocuments();
-        const foldersData = response.data.folders;
-
+        const foldersData = folders.value;
         const currentFolder = foldersData.find(
           (folder) => folder.id === folderId
         );
-
         if (currentFolder && currentFolder.full_path) {
-          const cleanPath = currentFolder.full_path
-            .replace(/,/g, "/")
-            .replace(/^\/+/, "");
-
           router
             .push({
-              path: `/documents/${cleanPath}`,
+              path: `/documents${encodeURIComponent(currentFolder.full_path)}`,
               state: {
                 folderId: currentFolder.id,
                 folderName: currentFolder.name,
@@ -536,6 +539,8 @@ export default {
       navigateToCrumb,
       t,
       fetchFiles,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };
