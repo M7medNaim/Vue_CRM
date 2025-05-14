@@ -94,8 +94,6 @@
 
 <script>
 import { useI18n } from "vue-i18n";
-// import { ref, onMounted } from "vue";
-// import { getUser } from "@/plugins/services/authService";
 export default {
   name: "CustomerCard",
   props: {
@@ -106,7 +104,6 @@ export default {
   },
   setup(props, { emit }) {
     const { t } = useI18n();
-    // const responsibleUserName = ref("...");
 
     const formatDate = (dateString) => {
       if (!dateString) return "";
@@ -149,7 +146,7 @@ export default {
         case 9:
           return "fab fa-telegram";
         default:
-          return "fa-brands fa-microsoft";
+          return "fa-solid fa-recycle";
       }
     };
     return {
