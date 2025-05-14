@@ -116,7 +116,7 @@ export default {
 
 <style scoped>
 .tableStage {
-  height: 88vh;
+  height: 91vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }

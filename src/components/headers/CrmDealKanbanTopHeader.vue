@@ -211,7 +211,7 @@ import { Modal } from "bootstrap";
 import CreateDealModal from "@/components/kanban/CrmKanbanTopHeaderCreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
-import WhatsAppModal from "@/components/modals/WhatsAppModal.vue";
+import WhatsAppModal from "@/components/modals/CrmDealKanbanTopHeaderWhatsAppModal.vue";
 import SearchModalIpad from "@/components/headers/CrmKanbanTopHeaderSearchModalIpad.vue";
 import {
   fetchTasksCountByStageName,

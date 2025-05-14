@@ -345,7 +345,7 @@ export default {
 :deep(.custom-table) {
   display: flex;
   flex-direction: column;
-  height: 80vh !important;
+  max-height: 80vh !important;
   border-radius: 10px;
   overflow: hidden;
   border: none !important;

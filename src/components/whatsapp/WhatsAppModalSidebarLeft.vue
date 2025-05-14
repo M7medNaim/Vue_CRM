@@ -58,7 +58,7 @@
               chat.img ||
               require('@/assets/whatsappImage/default-userImage.jpg')
             "
-            style="width: 45px; height: 45px !important"
+            style="width: 45px; height: 40px !important"
           />
           <div class="details position-relative w-100">
             <div class="d-flex justify-content-between">
