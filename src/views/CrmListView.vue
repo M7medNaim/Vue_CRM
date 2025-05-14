@@ -80,7 +80,7 @@
               user_role == 'sales'
             "
           >
-            <topHeader2
+            <CrmKanbanHeader
               :selected_conversation="selected_conversation"
               :disableFilter="true"
             />
@@ -214,7 +214,7 @@
           </div>
         </template>
       </DataTable>
-      <ActionsDeal
+      <CrmListViewActionsDealModal
         :selected-rows="selectedRows"
         @update-stage="(value) => handleBulkUpdate('stage_id', value)"
         @update-user="(value) => handleBulkUpdate('user_id', value)"
@@ -223,7 +223,7 @@
     </div>
   </div>
   <!-- filter modal -->
-  <FilterCrmList
+  <CrmListViewFilterModal
     v-model:filters="filters"
     @apply-filters="applyFilters"
     @reset-filter="resetFilter"
@@ -233,7 +233,7 @@
     :users="users"
   />
   <!-- @add-deal="addNewDeal" -->
-  <DealModal @add-deal="addNewDeal" ref="dealModal" />
+  <CrmListCreateDealModal @add-deal="addNewDeal" ref="dealModal" />
   <ImportModal @import-complete="fetchData" />
   <ShowData :formData="dealData" ref="showDataModal" />
   <DealDataCard
@@ -263,17 +263,17 @@ import {
   getAllUsers,
   updateDealStage,
 } from "@/plugins/services/authService";
-import ActionsDeal from "@/components/modals/ActionsDeal.vue";
-import FilterCrmList from "@/components/modals/FilterCrmList.vue";
-import DealModal from "@/components/modals/CreateDeal.vue";
-import ImportModal from "@/components/modals/ImportModal.vue";
-import ShowData from "@/components/modals/ShowData.vue";
+import CrmListViewActionsDealModal from "@/components/modals/CrmListViewActionsDealModal.vue";
+import CrmListViewFilterModal from "@/components/modals/CrmListViewFilterModal.vue";
+import CrmListCreateDealModal from "@/components/modals/CrmListViewCreateDealModal.vue";
+import ImportModal from "@/components/modals/CrmListViewImportModal.vue";
+import ShowData from "@/components/modals/CrmListViewShowDataModal.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Swal from "sweetalert2";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
-import DealDataCard from "@/components/modals/DealDataCard.vue";
+import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
 import Cookies from "js-cookie";
-import TopHeader2 from "@/components/headers/TopHeader2.vue";
+import CrmKanbanHeader from "@/components/headers/CrmDealKanbanTopHeader.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();

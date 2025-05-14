@@ -159,13 +159,16 @@
       </div>
     </div>
   </div>
-  <FolderForm :folder="selectedFolder" @submit="handleFolderSubmit" />
+  <DocumentsFolderViewAddEditFolderModal
+    :folder="selectedFolder"
+    @submit="handleFolderSubmit"
+  />
 </template>
 
 <script>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import FolderForm from "@/components/modals/FolderForm.vue";
+import DocumentsFolderViewAddEditFolderModal from "@/components/modals/DocumentsFolderViewAddEditFolderModal.vue";
 import Modal from "bootstrap/js/dist/modal";
 import { useToast } from "vue-toastification";
 import Swal from "sweetalert2";
@@ -182,7 +185,7 @@ import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 export default {
   name: "FolderFilesView",
   components: {
-    FolderForm,
+    DocumentsFolderViewAddEditFolderModal,
   },
   setup() {
     const { t } = useI18n();
