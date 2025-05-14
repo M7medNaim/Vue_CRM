@@ -13,11 +13,11 @@
               <a
                 v-if="index < breadcrumbs.length - 1"
                 @click="navigateToCrumb(crumb.path)"
-                class="text-info text-decoration-none cursor-pointer"
+                class="text-info text-decoration-none cursor-pointer fs-7"
               >
                 {{ crumb.name }}
               </a>
-              <span v-else>{{ crumb.name }}</span>
+              <span v-else class="fs-7">{{ crumb.name }}</span>
             </li>
           </ol>
         </nav>
@@ -255,20 +255,7 @@ export default {
         console.log("API response:", response);
 
         if (response.data && response.data.result) {
-          files.value.push({
-            id: response.data.result.id,
-            name: response.data.result.name || file.name,
-            type: file.type || "default",
-            size: file.size,
-            created_at: new Date(
-              response.data.result.created_at
-            ).toLocaleDateString("ar-EG"),
-            url: response.data.result.full_path,
-          });
-
-          toast.success(t("success.uploaded"), {
-            timeout: 3000,
-          });
+          fetchFiles();
         } else {
           throw new Error("❌ استجابة غير صالحة من السيرفر");
         }
@@ -485,7 +472,7 @@ export default {
     const breadcrumbs = computed(() => {
       const paths = route.path.split("/").filter(Boolean);
       return paths.map((path, index) => ({
-        name: path.charAt(0).toUpperCase() + path.slice(1),
+        name: decodeURI(path.charAt(0).toUpperCase() + path.slice(1)),
         path: "/" + paths.slice(0, index + 1).join("/"),
       }));
     });
@@ -594,5 +581,9 @@ export default {
 
 .cursor-pointer:hover {
   text-decoration: underline;
+}
+
+.fs-7 {
+  font-size: 0.875rem;
 }
 </style>

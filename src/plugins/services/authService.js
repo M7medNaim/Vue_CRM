@@ -213,7 +213,7 @@ export const createDocuments = async (formData) => {
 };
 // update Documents
 export const updateDocuments = (documentsId, formData) =>
-  axios.put(`/documents/${documentsId}`, formData);
+  axios.patch(`/documents/${documentsId}`, formData);
 
 // Delete documents
 export const deleteDocuments = (documentsId) =>

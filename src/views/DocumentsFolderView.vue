@@ -66,14 +66,14 @@
           >
             <i class="fas fa-edit"></i>
           </button>
-          <a
+          <!-- <a
             class="btn btn-sm btn-success"
             title="Download"
             href="item.download_url"
             target="_blank"
           >
             <i class="fas fa-download"></i>
-          </a>
+          </a> -->
           <button
             v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FOLDER)"
             class="btn btn-sm btn-danger"
@@ -187,15 +187,7 @@ export default {
             name: folderData.name,
             parent_id: folderData.parent_id || 1,
           });
-
-          const index = items.value.findIndex((f) => f.id === folderData.id);
-          if (index !== -1) {
-            items.value[index] = {
-              ...items.value[index],
-              ...response.data.result,
-            };
-            toast.success(t("success.updated"), { timeout: 3000 });
-          }
+          fetchFolders();
         } else {
           response = await createDocuments({
             name: folderData.name,
