@@ -97,10 +97,6 @@ export default {
       isSubmitting.value = true;
       try {
         emit("submit", folderData.value);
-        toast.success(
-          isEdit.value ? t("success.updated") : t("success.saved"),
-          { timeout: 3000 }
-        );
       } catch (error) {
         toast.error(t("error.saveFailed"), { timeout: 3000 });
       } finally {

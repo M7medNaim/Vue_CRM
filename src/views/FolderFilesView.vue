@@ -196,6 +196,7 @@ export default {
     const selectedFolder = ref(null);
     const folderFormModal = ref(null);
     const permissionStore = usePermissionStore();
+    const parentFolder = ref(null);
     const getFileIcon = (type) => {
       const icons = {
         pdf: "fas fa-file-pdf text-danger",
@@ -227,6 +228,7 @@ export default {
           folderName.value = response.data.parent.name;
           folders.value = response.data.folders || [];
           files.value = response.data.files || [];
+          parentFolder.value = response.data.parent;
         }
       } catch (error) {
         console.error("Error fetching folder contents:", error);
@@ -354,32 +356,18 @@ export default {
       }
 
       try {
-        const folderPath = route.params.folderName || route.params.fullPath;
-        const response = await showDocuments(folderPath);
-
-        if (!response.data || !response.data.parent) {
-          throw new Error("the Folder is Not Found");
-        }
-
-        const parentId = response.data.parent.id;
+        const parentId = parentFolder.value.id;
 
         const createResponse = await createDocuments({
           name: folderData.name,
           parent_id: parentId,
         });
 
-        if (createResponse && createResponse.data.result) {
-          folders.value.unshift({
-            id: createResponse.data.result.id,
-            name: createResponse.data.result.name,
-            parentId: parentId,
-            created_at: new Date().toLocaleDateString("ar-EG"),
-          });
-
-          folderName.value = createResponse.data.result.name;
-          toast.success(t("success.saved"), { timeout: 3000 });
+        if (createResponse.data && createResponse.data.result) {
+          fetchFiles();
+          toast.success(createResponse.data.message, { timeout: 3000 });
         } else {
-          throw new Error("error in server");
+          throw new Error(createResponse.data.message);
         }
 
         folderFormModal.value.hide();

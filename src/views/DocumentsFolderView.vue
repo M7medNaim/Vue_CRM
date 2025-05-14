@@ -196,7 +196,7 @@ export default {
 
           if (response && response.data.result) {
             items.value.push(response.data.result);
-            toast.success(t("success.saved"), { timeout: 3000 });
+            toast.success(response.data.message, { timeout: 3000 });
           } else {
             throw new Error("❌ استجابة غير صالحة من السيرفر");
           }
