@@ -235,8 +235,8 @@ export default {
     const deleteFolder = async (id) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("documents-alert-delete-folder-title"),
+          text: t("documents-alert-delete-folder-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",

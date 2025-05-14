@@ -13,6 +13,7 @@
               <a
                 v-if="index < breadcrumbs.length - 1"
                 @click="navigateToCrumb(crumb.path)"
+                class="text-info text-decoration-none cursor-pointer"
               >
                 {{ crumb.name }}
               </a>
@@ -98,7 +99,7 @@
             <button
               v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FOLDER)"
               class="btn btn-sm btn-danger"
-              @click="deleteFolder(folder.id)"
+              @click.stop="deleteFolder(folder.id)"
               title="Delete"
             >
               <i class="fas fa-trash"></i>
@@ -212,9 +213,13 @@ export default {
           "Fetching folder contents...",
           route.params.folderName || route.params.fullPath
         );
-        const folderPath = route.params.folderName || route.params.fullPath;
+        var folderPath = route.params.folderName || route.params.fullPath;
         if (!folderPath) {
-          throw new Error("Folder path is not provided");
+          router.push({ path: "/documents" });
+          return;
+        }
+        if (Array.isArray(folderPath) && folderPath.length > 1) {
+          folderPath = folderPath.join("/");
         }
 
         const response = await showDocuments(folderPath);
@@ -223,8 +228,6 @@ export default {
           folders.value = response.data.folders || [];
           files.value = response.data.files || [];
         }
-
-        // console.log("Fetched folder contents:", folders.value, files.value);
       } catch (error) {
         console.error("Error fetching folder contents:", error);
         toast.error(t("error.fetchFailed"), { timeout: 3000 });
@@ -331,8 +334,8 @@ export default {
     const deleteFile = async (fileId) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("documents-alert-delete-file-title"),
+          text: t("documents-alert-delete-file-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
@@ -424,8 +427,8 @@ export default {
     const deleteFolder = async (folderId) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("documents-alert-delete-folder-title"),
+          text: t("documents-alert-delete-folder-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
@@ -462,14 +465,10 @@ export default {
           (folder) => folder.id === folderId
         );
         if (currentFolder && currentFolder.full_path) {
+          // console.log(`/documents${currentFolder.full_path}`);
           router
             .push({
-              path: `/documents${encodeURIComponent(currentFolder.full_path)}`,
-              state: {
-                folderId: currentFolder.id,
-                folderName: currentFolder.name,
-                folderPath: currentFolder.full_path,
-              },
+              path: `/documents${currentFolder.full_path}`,
             })
             .then(() => {
               fetchFiles();
@@ -492,7 +491,9 @@ export default {
     });
 
     const navigateToCrumb = (path) => {
-      router.push(path);
+      router.push(path).then(() => {
+        fetchFiles();
+      });
     };
     const handleRightClick = (event) => {
       event.preventDefault();
