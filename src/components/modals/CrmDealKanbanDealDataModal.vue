@@ -5,6 +5,7 @@
     tabindex="-1"
     aria-labelledby="dealDataCardLabel"
     aria-hidden="true"
+    data-bs-backdrop="false"
   >
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
@@ -333,22 +334,25 @@
               <!-- Comments Section -->
               <div class="row">
                 <div class="col-12 px-0">
-                  <div class="input-group">
+                  <div class="d-flex align-items-start">
                     <span
-                      class="btn btn-light text-primary me-1"
+                      class="btn btn-light text-primary me-1 px-4 rounded-end-0"
                       style="background-color: #eee"
                     >
                       {{ t("kanban-modal-edit-comment-heading") }}
                     </span>
-                    <input
-                      type="text"
-                      class="form-control bg-light text-secondary py-2 me-1"
+                    <textarea
+                      ref="commentInput"
                       v-model="customerData.comment"
-                      :placeholder="t('kanban-modal-edit-comment-placeholder')"
-                      @keyup.enter="handleAddComment"
-                    />
+                      placeholder="اكتب تعليقك هنا..."
+                      class="form-control comment-textarea bg-light text-secondary rounded-0 me-1"
+                      rows="1"
+                      style="resize: none"
+                      @input="autoResize"
+                      @keydown.enter="handleEnter"
+                    ></textarea>
                     <button
-                      class="btn btn-primary py-1 px-4"
+                      class="btn btn-primary rounded-start-0 fixed-action-btn"
                       type="submit"
                       @click="handleAddComment"
                     >
@@ -362,7 +366,7 @@
                     :key="comment.id"
                     class="row mt-2"
                   >
-                    <div class="col-3">
+                    <div class="col-auto pe-0">
                       <img
                         src="@/assets/default-user-image.jpg"
                         alt="Seals Image"
@@ -371,7 +375,7 @@
                       />
                       <span class="ms-2">{{ comment.username }}</span>
                     </div>
-                    <div class="col-9">
+                    <div class="col">
                       <div
                         :class="[
                           'rounded-3 p-2',
@@ -379,9 +383,15 @@
                             ? 'adminComment'
                             : 'bg-primary text-white',
                         ]"
-                        style="width: fit-content"
+                        style="
+                          width: fit-content;
+                          word-break: break-word;
+                          overflow-wrap: break-word;
+                        "
                       >
-                        <span>{{ comment.text_body }}</span
+                        <span style="white-space: pre-line">{{
+                          comment.text_body
+                        }}</span
                         ><br />
                         <span>{{ formatDate(comment.created_at) }}</span>
                       </div>
@@ -414,7 +424,7 @@
                       @keyup.enter="handleAddTask"
                     />
                     <button
-                      class="btn btn-primary py-1 px-4"
+                      class="btn btn-primary py-1 px-4 fixed-action-btn"
                       type="submit"
                       @click="handleAddTask"
                     >
@@ -937,6 +947,10 @@ export default {
 
           toast.success(t("success.commentAdded"));
           customerData.comment = "";
+          nextTick(() => {
+            const textarea = document.querySelector(".comment-textarea");
+            if (textarea) textarea.style.height = "30px";
+          });
         } else {
           toast.error(t("error.addingComment"));
         }
@@ -944,6 +958,17 @@ export default {
         console.error("Error adding comment:", error);
         toast.error(t("error.addingComment"));
       }
+    };
+    const handleEnter = (event) => {
+      if (!event.shiftKey) {
+        event.preventDefault();
+        handleAddComment();
+        resetTextareaSize(event);
+      }
+    };
+    const resetTextareaSize = (event) => {
+      const textarea = event.target;
+      textarea.style.height = "30px";
     };
     const handleAddTask = async () => {
       try {
@@ -1003,6 +1028,14 @@ export default {
       },
       { immediate: true }
     );
+    const autoResize = (event) => {
+      const textarea = event.target;
+      textarea.style.height = "30px";
+      const newHeight = textarea.scrollHeight;
+      const maxRows = 7;
+      const lineHeight = 22;
+      textarea.style.height = Math.min(newHeight, maxRows * lineHeight) + "px";
+    };
     onMounted(() => {
       fetchSources();
       fetchStages();
@@ -1055,6 +1088,9 @@ export default {
       getContrastColor,
       local_logs,
       fetchLogs,
+      handleEnter,
+      autoResize,
+      resetTextareaSize,
     };
   },
 };
@@ -1189,7 +1225,9 @@ label {
   font-weight: 500;
 }
 
-.modal-dialog {
+.modal-dialog,
+.modal-body,
+.modal-content {
   scrollbar-width: thin;
   scrollbar-color: #888 transparent;
 }
@@ -1311,5 +1349,39 @@ label {
 
 .text-lightgray {
   color: #d3d3d3;
+}
+
+.comment-textarea {
+  flex-grow: 1;
+  padding: 6.5px 10px;
+  font-size: 1rem;
+  scrollbar-width: thin;
+}
+
+.fixed-action-btn {
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  padding: 6px 0 !important;
+  white-space: normal;
+  text-align: center;
+  font-size: 1rem;
+}
+.comment-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.comment-textarea::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.comment-textarea::-webkit-scrollbar-thumb {
+  background: #888888cb;
+  border-radius: 4px;
+}
+
+.comment-textarea::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>

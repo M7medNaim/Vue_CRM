@@ -51,7 +51,7 @@
       :loading="loading"
       @page="onPageChange"
       scrollable
-      scrollHeight="calc(90vh - 140px)"
+      scrollHeight="calc(90vh - 120px)"
     >
       <Column :header="'#'">
         <template #body="slotProps">

@@ -211,7 +211,7 @@ import { Modal } from "bootstrap";
 import CreateDealModal from "@/components/kanban/CrmKanbanTopHeaderCreateDealModal.vue";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 import { useI18n } from "vue-i18n";
-import WhatsAppModal from "@/components/modals/WhatsappModal.vue";
+import WhatsAppModal from "@/components/modals/CrmDealKanbanTopHeaderWhatsAppModal.vue";
 import SearchModalIpad from "@/components/headers/CrmKanbanTopHeaderSearchModalIpad.vue";
 import {
   fetchTasksCountByStageName,
@@ -342,10 +342,10 @@ export default {
     };
     const router = useRouter();
     const openCrmTasks = () => {
-      router.push({ name: "CrmTasks" });
+      router.push({ name: "CrmDealTasksView" });
     };
     const openCrmKanban = () => {
-      router.push({ name: "CrmKanban" });
+      router.push({ name: "CrmDealKanbanView" });
     };
     const isSmallScreen = ref(window.innerWidth < 1050);
     const handleResize = () => {

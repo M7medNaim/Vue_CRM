@@ -45,15 +45,16 @@
                 :placeholder="t('crmlist-placeholder-search')"
                 v-model="searchInput"
                 @search="fetchData"
+                style="padding: 0.5rem 0.5rem"
               />
-              <i
+              <!-- <i
                 v-if="searchInput"
                 class="fas fa-times clear-icon p-2 rounded-2"
                 @click="clearSearch"
                 title="Clear Search"
               >
                 CLR
-              </i>
+              </i> -->
               <button
                 :title="t('buttons.filter')"
                 type="button"
@@ -135,7 +136,7 @@
         "
         responsive="true"
         scrollable
-        scrollHeight="calc(90vh - 120px)"
+        scrollHeight="calc(90vh - 110px)"
       >
         <Column
           :selectionMode="
@@ -284,7 +285,7 @@ const loading = ref(false);
 const totalRows = ref(0);
 const currentPage = ref(0);
 const rowsPerPage = ref(10);
-const search = ref("");
+// const search = ref("");
 const searchInput = ref("");
 const selectedRows = ref([]);
 const selectedAction = ref("");
@@ -662,11 +663,11 @@ const openDealModal = () => {
   modal.show();
 };
 
-const clearSearch = () => {
-  searchInput.value = "";
-  search.value = "";
-  fetchData();
-};
+// const clearSearch = () => {
+//   searchInput.value = "";
+//   search.value = "";
+//   fetchData();
+// };
 
 const resetFilter = () => {
   filters.value = {
