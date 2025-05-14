@@ -103,7 +103,7 @@
       <template #empty>
         <div class="text-center py-5 text-muted">
           <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-          <p>{{ t("tables.noFolders") }}</p>
+          <p>{{ t("documents-table-no-files") }}</p>
         </div>
       </template>
     </EasyDataTable>
