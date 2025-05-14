@@ -38,7 +38,7 @@
             </div>
           </div>
           <div class="col">
-            <div class="input-group position-relative">
+            <div class="input-group position-relative h-100">
               <input
                 type="search"
                 class="form-control"
@@ -211,7 +211,7 @@
                 style="width: 50px; height: 50px"
               />
             </div>
-            <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
+            <div class="mt-2 text-primary">{{ t("tables-loading") }}</div>
           </div>
         </template>
       </DataTable>
@@ -500,7 +500,7 @@ const deleteItem = async (id) => {
   try {
     const result = await Swal.fire({
       title: t("error.deleteTitle"),
-      text: t("error.deleteText"),
+      text: t("crmlist-modal-deal-delete-description"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -513,7 +513,7 @@ const deleteItem = async (id) => {
     if (result.isConfirmed) {
       const response = await deleteDeals([id]);
       if (response.status === 204 || response.status === 200) {
-        rows.value = rows.value.filter((item) => item.id !== id);
+        fetchData();
         toast.success(response.data.message, { timeout: 3000 });
       } else {
         throw new Error(response.data.message || t("error-default"));
@@ -906,7 +906,7 @@ const bulkDeleteItems = async () => {
 
     const result = await Swal.fire({
       title: t("error.deleteTitle"),
-      text: t("error.deleteText"),
+      text: t("crmlist-modal-deal-delete-description"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -921,11 +921,10 @@ const bulkDeleteItems = async () => {
       const response = await bulkDeleteDeals(ids);
       console.log("Delete response:", response);
 
-      if (response.status === 204 || response.data?.success) {
-        rows.value = rows.value.filter((item) => !ids.includes(item.id));
+      if (response.status === 200) {
         selectedRows.value = [];
         selectedAction.value = "";
-
+        fetchData();
         toast.success(t("success.deleteSuccess"), { timeout: 3000 });
       } else {
         throw new Error(response.data.message || t("error.deleteFailed"));
@@ -990,7 +989,6 @@ const changeDealStage = async (dealId, newStageId) => {
 };
 
 onMounted(async () => {
-  // await fetchStagesAndSources();
   await fetchData();
   fetchUsers();
   const modalElements = document.querySelectorAll(".modal");

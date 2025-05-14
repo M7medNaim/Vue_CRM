@@ -3,7 +3,11 @@
     <!-- Buttons Section -->
     <div class="row mb-3">
       <div class="col-12 text-end">
-        <!-- <button class="btn btn-primary me-2" @click="openImportModal">
+        <!-- <button
+          class="btn btn-primary me-2"
+          @click="openImportModal"
+          v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_FILE)"
+        >
           {{ t("documents-modal-importdocument-heading") }}
           <i class="fas fa-file-import me-1"></i>
         </button> -->
@@ -55,20 +59,23 @@
       <template #item-actions="item">
         <div class="d-flex gap-2">
           <button
+            v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_FOLDER)"
             class="btn btn-sm btn-primary"
             @click="editFolder(item)"
             title="Edit"
           >
             <i class="fas fa-edit"></i>
           </button>
-          <button
+          <!-- <a
             class="btn btn-sm btn-success"
-            @click="downloadFolder(item.id)"
             title="Download"
+            href="item.download_url"
+            target="_blank"
           >
             <i class="fas fa-download"></i>
-          </button>
+          </a> -->
           <button
+            v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FOLDER)"
             class="btn btn-sm btn-danger"
             @click="deleteFolder(item.id)"
             title="Delete"
@@ -88,7 +95,7 @@
               style="width: 50px; height: 50px"
             />
           </div>
-          <div class="mt-2 text-primary">{{ t("tables.loading") }}</div>
+          <div class="mt-2 text-primary">{{ t("tables-loading") }}</div>
         </div>
       </template>
 
@@ -96,7 +103,7 @@
       <template #empty>
         <div class="text-center py-5 text-muted">
           <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-          <p>{{ t("tables.noFolders") }}</p>
+          <p>{{ t("documents-table-no-files") }}</p>
         </div>
       </template>
     </EasyDataTable>
@@ -107,7 +114,7 @@
     @submit="handleFolderSubmit"
   />
 
-  <ImportFolder @import="handleFolderImport" />
+  <!-- <ImportFolder @import="handleFolderImport" /> -->
 </template>
 
 <script>
@@ -141,7 +148,7 @@ export default {
     const items = ref([]);
     const permissionStore = usePermissionStore();
     const folderFormModal = ref(null);
-    const importFolderModal = ref(null);
+    // const importFolderModal = ref(null);
     const selectedFolder = ref(null);
     const { t } = useI18n();
     const headers = [
@@ -183,15 +190,7 @@ export default {
             name: folderData.name,
             parent_id: folderData.parent_id || 1,
           });
-
-          const index = items.value.findIndex((f) => f.id === folderData.id);
-          if (index !== -1) {
-            items.value[index] = {
-              ...items.value[index],
-              ...response.data.result,
-            };
-            toast.success(t("success.updated"), { timeout: 3000 });
-          }
+          fetchFolders();
         } else {
           response = await createDocuments({
             name: folderData.name,
@@ -200,7 +199,7 @@ export default {
 
           if (response && response.data.result) {
             items.value.push(response.data.result);
-            toast.success(t("success.saved"), { timeout: 3000 });
+            toast.success(response.data.message, { timeout: 3000 });
           } else {
             throw new Error("❌ استجابة غير صالحة من السيرفر");
           }
@@ -213,26 +212,26 @@ export default {
       }
     };
 
-    const handleFolderImport = async (files) => {
-      try {
-        console.log("Importing files:", files);
-        importFolderModal.value.hide();
-        toast.success(t("success.imported"), {
-          timeout: 3000,
-        });
-      } catch (error) {
-        toast.error(t("error.importFailed"), {
-          timeout: 3000,
-        });
-        console.error("Error importing files:", error);
-      }
-    };
+    // const handleFolderImport = async (files) => {
+    //   try {
+    //     console.log("Importing files:", files);
+    //     importFolderModal.value.hide();
+    //     toast.success(t("success.imported"), {
+    //       timeout: 3000,
+    //     });
+    //   } catch (error) {
+    //     toast.error(t("error.importFailed"), {
+    //       timeout: 3000,
+    //     });
+    //     console.error("Error importing files:", error);
+    //   }
+    // };
 
     const deleteFolder = async (id) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("documents-alert-delete-folder-title"),
+          text: t("documents-alert-delete-folder-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
@@ -287,30 +286,15 @@ export default {
       }
     };
 
-    const fetchFolderFiles = async () => {
-      // try {
-      //   const response = await axios.get(/documents/${folderId});
-      //   return response.data.files;
-      // } catch (error) {
-      //   toast.error(t("error.fetchFilesFailed"), {
-      //     timeout: 3000,
-      //   });
-      //   console.error("Error fetching folder files:", error);
-      //   return [];
-      // }
-    };
-
     const handleRowClick = async (item, event) => {
       if (event?.target?.closest("button")) {
         return;
       }
 
       try {
-        const response = await getDocuments();
-        const folders = response.data.folders;
-
+        console.log("Row clicked:", item);
+        const folders = items.value;
         const currentFolder = folders.find((folder) => folder.id === item.id);
-
         if (currentFolder && currentFolder.full_path) {
           const cleanPath = currentFolder.full_path.startsWith("/")
             ? currentFolder.full_path.substring(1)
@@ -370,10 +354,9 @@ export default {
       editFolder,
       deleteFolder,
       handleFolderSubmit,
-      handleFolderImport,
+      // handleFolderImport,
       handleRowClick,
       downloadFolder,
-      fetchFolderFiles,
       t,
       permissionStore,
       PERMISSIONS,

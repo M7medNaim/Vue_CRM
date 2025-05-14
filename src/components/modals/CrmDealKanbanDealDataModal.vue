@@ -303,32 +303,30 @@
               </div>
               <div
                 class="history ps-2 mt-2"
-                v-if="permissionStore.hasPermission('edit-stage')"
+                v-if="
+                  permissionStore.hasPermission(
+                    PERMISSIONS.ADD_ASSIGNED_TO_DEAL
+                  )
+                "
               >
                 <div
-                  v-for="log in logs"
+                  v-for="log in local_logs"
                   :key="log.id"
                   class="row bg-light pt-2 text-secondary border border-top"
                 >
                   <div class="col-3">
-                    <p>{{ log.date }}</p>
-                  </div>
-                  <div class="col-9">
-                    <!-- <p>{{ log.message }}</p> -->
-                    <p>{{ log.note }}</p>
-                  </div>
-                </div>
-                <!-- <div class="row bg-light text-secondary border border-top">
-                  <div class="col-3">
-                    <p>Wed Feb 19 2025 10:14 ص</p>
+                    <p>{{ new Date(log.created_at).toLocaleString() }}</p>
                   </div>
                   <div class="col-9">
                     <p>
-                      Super Admin moved the deal from "Processing" to "Not
-                      Responding 2" stage.
+                      {{
+                        log.description.length > 200
+                          ? log.description.substring(0, 200) + "..."
+                          : log.description
+                      }}
                     </p>
                   </div>
-                </div> -->
+                </div>
               </div>
             </div>
             <!-- right section Comments And Tasks -->
@@ -498,7 +496,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
 import RatingStars from "@/components/CreateDealElements/CrmDealKanbanDealDataModalRatingStars.vue";
 import ViewReport from "@/components/kanban/CrmDealKanbanDealDataModalReportModal.vue";
 import { Modal } from "bootstrap";
@@ -515,6 +513,7 @@ import {
   updateDealStage,
   updateDeal,
   createConversation,
+  getLogsByDealId,
 } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 export default {
@@ -523,10 +522,6 @@ export default {
   props: {
     deal: {
       type: Object,
-      required: true,
-    },
-    logs: {
-      type: Array,
       required: true,
     },
     comments: {
@@ -549,6 +544,7 @@ export default {
     const isEditMode = ref(false);
     const hoveredStage = ref(null);
     const stageColors = reactive({});
+    const local_logs = ref([]);
     const customerData = reactive({
       id: props.deal?.id,
       name: props.deal?.contact.name || "Custome Name",
@@ -1013,6 +1009,25 @@ export default {
       }
       emit("stage-change", data.dealId, data.newStage, props.deal.stage_id, 0);
     };
+    const fetchLogs = async () => {
+      try {
+        const response = await getLogsByDealId(props.deal?.id);
+        if (response.data) {
+          local_logs.value = response.data.data;
+        }
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      }
+    };
+    watch(
+      () => props.deal,
+      (newDeal) => {
+        if (newDeal) {
+          fetchLogs(newDeal.id);
+        }
+      },
+      { immediate: true }
+    );
     const autoResize = (event) => {
       const textarea = event.target;
       textarea.style.height = "30px";
@@ -1071,6 +1086,8 @@ export default {
       permissionStore,
       PERMISSIONS,
       getContrastColor,
+      local_logs,
+      fetchLogs,
       handleEnter,
       autoResize,
       resetTextareaSize,

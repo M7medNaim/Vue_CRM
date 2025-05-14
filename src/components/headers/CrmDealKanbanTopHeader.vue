@@ -48,7 +48,7 @@
 
             <!-- Search Form -->
             <div :class="lgIpadClass" v-if="showSearchInput">
-              <div class="input-group">
+              <div class="input-group px-1">
                 <button
                   class="btn btn-header btnSearchIpad"
                   @click="openSearchModalIpad"

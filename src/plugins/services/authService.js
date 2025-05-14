@@ -34,7 +34,7 @@ export const createUser = (formData) => {
 };
 // Update User
 export const updateUser = (userId, userData) =>
-  axios.put(`/users/${userId}`, userData);
+  axios.patch(`/users/${userId}`, userData);
 // Delete User
 export const deleteUser = (userId) => {
   const token = Cookies.get("authToken");
@@ -49,7 +49,6 @@ export const getRoles = () => axios.get("/roles");
 // Get All Deals
 export const getDeals = async (params = {}) => {
   const token = Cookies.get("authToken");
-  console.log("Fetching getDeals with params:", params);
 
   const { filters, ...restParams } = params;
 
@@ -206,7 +205,6 @@ export const getAllUsers = async () => {
 export const createDocuments = async (formData) => {
   try {
     const response = await axios.post("/documents", formData);
-    console.log("📥 استجابة السيرفر بعد إنشاء المجلد:", response.data);
     return response;
   } catch (error) {
     console.error("❌ خطأ أثناء إنشاء المجلد:", error);
@@ -215,7 +213,7 @@ export const createDocuments = async (formData) => {
 };
 // update Documents
 export const updateDocuments = (documentsId, formData) =>
-  axios.put(`/documents/${documentsId}`, formData);
+  axios.patch(`/documents/${documentsId}`, formData);
 
 // Delete documents
 export const deleteDocuments = (documentsId) =>
@@ -253,8 +251,10 @@ export const getDealsKanban = async (params = {}) => {
     params,
   });
 };
-export const getTasksKanban = async () => {
-  return await axios.get("/kanban/tasks");
+export const getTasksKanban = async (params) => {
+  return await axios.get("/kanban/tasks", {
+    params,
+  });
 };
 // Get Conversations
 export const getconversations = (search, rating, stage) =>
@@ -288,8 +288,6 @@ export const sendMessage = (messageData) => {
   if (messageData.conversation_id) {
     formData.append("conversation_id", messageData.conversation_id);
   }
-
-  console.log("FormData before sending:", formData);
 
   return axios.post("/whatsapp/send", formData, {
     headers: {
@@ -388,4 +386,8 @@ export const updateBroadcast = async (id, description, status, important) => {
 
 export const deleteBroadcast = async (id) => {
   return await axios.delete(`/settings/broadcasts/${id}`);
+};
+
+export const getLogsByDealId = async (dealId) => {
+  return await axios.get(`/logs/deal/${dealId}`);
 };

@@ -13,10 +13,11 @@
               <a
                 v-if="index < breadcrumbs.length - 1"
                 @click="navigateToCrumb(crumb.path)"
+                class="text-info text-decoration-none cursor-pointer fs-7"
               >
                 {{ crumb.name }}
               </a>
-              <span v-else>{{ crumb.name }}</span>
+              <span v-else class="fs-7">{{ crumb.name }}</span>
             </li>
           </ol>
         </nav>
@@ -81,22 +82,24 @@
           </div>
           <div class="actions">
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.UPDATE_FOLDER)"
               class="btn btn-sm btn-primary me-2"
               @click.stop="editFolder(folder)"
               title="Edit"
             >
               <i class="fas fa-edit"></i>
             </button>
-            <button
+            <!-- <button
               class="btn btn-sm btn-success me-2"
               @click="downloadFolder(folder.id)"
               title="Download"
             >
               <i class="fas fa-download"></i>
-            </button>
+            </button> -->
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FOLDER)"
               class="btn btn-sm btn-danger"
-              @click="deleteFolder(folder.id)"
+              @click.stop="deleteFolder(folder.id)"
               title="Delete"
             >
               <i class="fas fa-trash"></i>
@@ -118,20 +121,24 @@
           </div>
           <div class="actions">
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.VIEW_FILE)"
               class="btn btn-sm text-bg-primary me-2"
               @click="viewFile(file)"
               title="View"
             >
               <i class="fas fa-eye"></i>
             </button>
-            <button
+            <a
+              v-if="permissionStore.hasPermission(PERMISSIONS.VIEW_FILE)"
               class="btn btn-sm btn-success me-2"
-              @click="downloadFile(file)"
               title="Download"
+              :href="file.download_url"
+              download
             >
               <i class="fas fa-download"></i>
-            </button>
+            </a>
             <button
+              v-if="permissionStore.hasPermission(PERMISSIONS.DELETE_FILE)"
               class="btn btn-sm btn-danger"
               @click="deleteFile(file.id)"
               title="Delete"
@@ -148,7 +155,7 @@
         class="text-center py-5 text-muted"
       >
         <i class="fas fa-folder-open mb-3" style="font-size: 48px"></i>
-        <p>{{ t("tables.noFiles") }}</p>
+        <p>{{ t("documents-table-no-files") }}</p>
       </div>
     </div>
   </div>
@@ -172,8 +179,8 @@ import {
   showDocuments,
   uploadFiles,
   deleteDocuments,
-  getDocuments,
 } from "@/plugins/services/authService";
+import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "FolderFilesView",
@@ -191,6 +198,8 @@ export default {
     const fileInput = ref(null);
     const selectedFolder = ref(null);
     const folderFormModal = ref(null);
+    const permissionStore = usePermissionStore();
+    const parentFolder = ref(null);
     const getFileIcon = (type) => {
       const icons = {
         pdf: "fas fa-file-pdf text-danger",
@@ -204,9 +213,17 @@ export default {
 
     const fetchFiles = async () => {
       try {
-        const folderPath = route.params.folderName || route.params.fullPath;
+        console.log(
+          "Fetching folder contents...",
+          route.params.folderName || route.params.fullPath
+        );
+        var folderPath = route.params.folderName || route.params.fullPath;
         if (!folderPath) {
-          throw new Error("المسار غير صالح");
+          router.push({ path: "/documents" });
+          return;
+        }
+        if (Array.isArray(folderPath) && folderPath.length > 1) {
+          folderPath = folderPath.join("/");
         }
 
         const response = await showDocuments(folderPath);
@@ -214,9 +231,8 @@ export default {
           folderName.value = response.data.parent.name;
           folders.value = response.data.folders || [];
           files.value = response.data.files || [];
+          parentFolder.value = response.data.parent;
         }
-
-        // console.log("Fetched folder contents:", folders.value, files.value);
       } catch (error) {
         console.error("Error fetching folder contents:", error);
         toast.error(t("error.fetchFailed"), { timeout: 3000 });
@@ -244,20 +260,7 @@ export default {
         console.log("API response:", response);
 
         if (response.data && response.data.result) {
-          files.value.push({
-            id: response.data.result.id,
-            name: response.data.result.name || file.name,
-            type: file.type || "default",
-            size: file.size,
-            created_at: new Date(
-              response.data.result.created_at
-            ).toLocaleDateString("ar-EG"),
-            url: response.data.result.full_path,
-          });
-
-          toast.success(t("success.uploaded"), {
-            timeout: 3000,
-          });
+          fetchFiles();
         } else {
           throw new Error("❌ استجابة غير صالحة من السيرفر");
         }
@@ -323,8 +326,8 @@ export default {
     const deleteFile = async (fileId) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("documents-alert-delete-file-title"),
+          text: t("documents-alert-delete-file-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
@@ -356,32 +359,18 @@ export default {
       }
 
       try {
-        const folderPath = route.params.folderName || route.params.fullPath;
-        const response = await showDocuments(folderPath);
-
-        if (!response.data || !response.data.parent) {
-          throw new Error("the Folder is Not Found");
-        }
-
-        const parentId = response.data.parent.id;
+        const parentId = parentFolder.value.id;
 
         const createResponse = await createDocuments({
           name: folderData.name,
           parent_id: parentId,
         });
 
-        if (createResponse && createResponse.data.result) {
-          folders.value.unshift({
-            id: createResponse.data.result.id,
-            name: createResponse.data.result.name,
-            parentId: parentId,
-            created_at: new Date().toLocaleDateString("ar-EG"),
-          });
-
-          folderName.value = createResponse.data.result.name;
-          toast.success(t("success.saved"), { timeout: 3000 });
+        if (createResponse.data && createResponse.data.result) {
+          fetchFiles();
+          toast.success(createResponse.data.message, { timeout: 3000 });
         } else {
-          throw new Error("error in server");
+          throw new Error(createResponse.data.message);
         }
 
         folderFormModal.value.hide();
@@ -416,8 +405,8 @@ export default {
     const deleteFolder = async (folderId) => {
       try {
         const result = await Swal.fire({
-          title: t("error.deleteTitle"),
-          text: t("error.deleteText"),
+          title: t("documents-alert-delete-folder-title"),
+          text: t("documents-alert-delete-folder-description"),
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#d33",
@@ -448,28 +437,16 @@ export default {
       if (event?.target?.closest("button")) {
         return;
       }
-
       try {
-        const response = await getDocuments();
-        const foldersData = response.data.folders;
-
+        const foldersData = folders.value;
         const currentFolder = foldersData.find(
           (folder) => folder.id === folderId
         );
-
         if (currentFolder && currentFolder.full_path) {
-          const cleanPath = currentFolder.full_path
-            .replace(/,/g, "/")
-            .replace(/^\/+/, "");
-
+          // console.log(`/documents${currentFolder.full_path}`);
           router
             .push({
-              path: `/documents/${cleanPath}`,
-              state: {
-                folderId: currentFolder.id,
-                folderName: currentFolder.name,
-                folderPath: currentFolder.full_path,
-              },
+              path: `/documents${currentFolder.full_path}`,
             })
             .then(() => {
               fetchFiles();
@@ -486,13 +463,15 @@ export default {
     const breadcrumbs = computed(() => {
       const paths = route.path.split("/").filter(Boolean);
       return paths.map((path, index) => ({
-        name: path.charAt(0).toUpperCase() + path.slice(1),
+        name: decodeURI(path.charAt(0).toUpperCase() + path.slice(1)),
         path: "/" + paths.slice(0, index + 1).join("/"),
       }));
     });
 
     const navigateToCrumb = (path) => {
-      router.push(path);
+      router.push(path).then(() => {
+        fetchFiles();
+      });
     };
     const handleRightClick = (event) => {
       event.preventDefault();
@@ -539,6 +518,8 @@ export default {
       navigateToCrumb,
       t,
       fetchFiles,
+      permissionStore,
+      PERMISSIONS,
     };
   },
 };
@@ -591,5 +572,9 @@ export default {
 
 .cursor-pointer:hover {
   text-decoration: underline;
+}
+
+.fs-7 {
+  font-size: 0.875rem;
 }
 </style>
