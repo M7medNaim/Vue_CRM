@@ -156,10 +156,17 @@
           field="name"
           :header="t('crmlist-table-header-fullname')"
         ></Column>
-        <Column
-          field="phone"
-          :header="t('crmlist-table-header-phone')"
-        ></Column>
+        <Column field="phone" :header="t('crmlist-table-header-phone')">
+          <template #body="slotProps">
+            <div class="d-flex align-items-center gap-1">
+              <CountryFlagAvatar
+                :phone="slotProps.data.phone"
+                style="width: 25px; height: 20px !important"
+              />
+              <span>{{ slotProps.data.phone }}</span>
+            </div>
+          </template></Column
+        >
         <Column
           field="note"
           :header="t('crmlist-table-header-notes')"
@@ -275,6 +282,7 @@ import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
 import Cookies from "js-cookie";
 import CrmKanbanHeader from "@/components/headers/CrmDealKanbanTopHeader.vue";
+import CountryFlagAvatar from "@/components/whatsapp/WhatsAppModalSidebarLeftCountryFlagAvatar.vue";
 const { t } = useI18n();
 const toast = useToast();
 const permissionStore = usePermissionStore();

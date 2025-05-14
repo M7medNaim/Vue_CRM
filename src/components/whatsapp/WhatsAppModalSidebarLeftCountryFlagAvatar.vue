@@ -1,5 +1,5 @@
 <template>
-  <div class="imgBx position-relative overflow-hidden h-25 me-2 mb-4">
+  <div class="imgBx position-relative overflow-hidden h-25 me-2">
     <img
       v-if="flagUrl"
       :src="flagUrl"
