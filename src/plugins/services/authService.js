@@ -391,3 +391,7 @@ export const deleteBroadcast = async (id) => {
 export const getLogsByDealId = async (dealId) => {
   return await axios.get(`/logs/deal/${dealId}`);
 };
+
+export const getKanbanQuestions = async (deal_id) => {
+  return await axios.get(`/kanban/qa/${deal_id}`);
+};

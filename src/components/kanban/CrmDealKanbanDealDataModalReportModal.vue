@@ -26,7 +26,7 @@
         <div class="modal-body">
           <form @submit.prevent="submitForm">
             <!-- age -->
-            <div class="question bg-light ps-2 py-2 mb-2">
+            <!-- <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">{{ t("modals.whatIsYourAge") }}</p>
               <div class="form-check">
                 <input
@@ -65,7 +65,7 @@
                 <label class="form-check-label" for="60">55 - 60+</label>
               </div>
             </div>
-            <!-- weight -->
+            // weight
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">{{ t("modals.whatIsYourWeight") }}</p>
               <div class="form-check">
@@ -113,7 +113,7 @@
                 }}</label>
               </div>
             </div>
-            <!-- height -->
+            // height
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">{{ t("modals.whatIsYourHeight") }}</p>
               <div class="form-check">
@@ -150,7 +150,7 @@
                 }}</label>
               </div>
             </div>
-            <!-- chronic diseases -->
+            // chronic diseases
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.doYouSufferFromAnyChronicDiseases") }}
@@ -168,7 +168,7 @@
                   t("modals.yes")
                 }}</label>
               </div>
-              <!-- showDiseases -->
+              // showDiseases
               <div
                 v-if="showDiseases"
                 class="disease-options ms-4 my-1 ps-3"
@@ -244,7 +244,7 @@
                 }}</label>
               </div>
             </div>
-            <!-- surgeries -->
+            // surgeries
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.haveYouUndergoneAnyPreviousSurgeries") }}
@@ -292,7 +292,7 @@
               </div>
             </div>
 
-            <!-- smoking and alcohol -->
+            //smoking and alcohol 
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.doYouSmokeOrDrinkAlcohol") }}
@@ -343,7 +343,7 @@
               </div>
             </div>
 
-            <!-- erectile stimulants -->
+            // erectile stimulants
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.doYouUseErectileStimulants") }}
@@ -361,7 +361,7 @@
                   t("modals.yes")
                 }}</label>
               </div>
-              <!-- Stimulants Details -->
+              // Stimulants Details
               <div
                 v-if="showStimulantsDetails"
                 class="question bg-light ms-4 ps-4 py-2"
@@ -484,7 +484,7 @@
                 }}</label>
               </div>
             </div>
-            <!-- erection level -->
+            // erection level
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{
@@ -550,7 +550,7 @@
               </div>
             </div>
 
-            <!-- erection flexibility -->
+            // erection flexibility
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{
@@ -594,7 +594,7 @@
               </div>
             </div>
 
-            <!-- premature ejaculation -->
+            // premature ejaculation
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.doYouExperiencePrematureEjaculation") }}
@@ -634,7 +634,7 @@
               </div>
             </div>
 
-            <!-- problem duration -->
+            // problem duration
             <div class="question bg-light ps-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.whenDidYourSexualDysfunctionProblemStart") }}
@@ -684,7 +684,7 @@
                 }}</label>
               </div>
             </div>
-            <!-- Additional Note: -->
+            // Additional Note:
             <div class="question bg-light px-2 py-2 mb-2">
               <p class="fw-medium">
                 {{ t("modals.additionalNote") }}
@@ -696,7 +696,12 @@
                   class="note w-100 rounded-3 p-2"
                 />
               </div>
-            </div>
+            </div> -->
+            <QuestionsDiv
+              v-for="(question, index) in questions"
+              :key="index"
+              :question="question"
+            />
             <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
               <button type="submit" class="btn btn-primary">
                 {{ t("buttons.submit") }}
@@ -717,12 +722,17 @@
 </template>
 
 <script>
+import { getKanbanQuestions } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
+import QuestionsDiv from "./CrmDealKanbanDealDataModalReportModalQuestions.vue";
 export default {
   name: "CrmDealKanbanDealDataModalReportModal",
   setup() {
     const { t } = useI18n();
     return { t };
+  },
+  components: {
+    QuestionsDiv,
   },
   data() {
     return {
@@ -733,14 +743,27 @@ export default {
       showStimulantsDetails: null,
       selectedViagraDosages: [],
       selectedCialisDosages: [],
+      questions: [],
     };
   },
   methods: {
+    async fetchQuestions() {
+      const response = await getKanbanQuestions();
+      if (response.status === 200) {
+        this.questions = response.data.data;
+        console.log("Fetched questions: ", this.questions);
+      } else {
+        console.error("Failed to fetch questions: ", response.data.message);
+      }
+    },
     submitForm() {
       // Handle form submission logic here
       console.log("Form submitted");
       console.log("Selected diseases:", this.selectedDiseases);
     },
+  },
+  mounted() {
+    this.fetchQuestions();
   },
 };
 </script>
