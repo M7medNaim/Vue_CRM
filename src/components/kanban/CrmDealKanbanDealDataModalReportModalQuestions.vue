@@ -100,11 +100,12 @@ export default {
     },
     handleCheckboxChange(event) {
       const choiceId = event.target.value;
+      console.log("Checkbox changed:", choiceId);
       if (!this.local_question.answers) {
         this.local_question.answers = [];
       }
       const index = this.local_question.answers.findIndex(
-        (answer) => answer.id == choiceId
+        (answer) => answer.choice_id == choiceId
       );
       if (index > -1) {
         this.local_question.answers.splice(index, 1);

@@ -5,10 +5,10 @@
       type="checkbox"
       :value="choice.id"
       :checked="answer_included"
-      :id="`c-${choice.id}`"
+      :id="`q-${question_id}-c-${choice.id}`"
       :name="`q-${question_id}`"
     />
-    <label class="form-check-label" :for="`c-${choice.id}`">{{
+    <label class="form-check-label" :for="`q-${question_id}-c-${choice.id}`">{{
       choice.value
     }}</label>
   </div>
