@@ -1,7 +1,7 @@
 <template>
   <div class="form-check">
     <input
-      class="form-check-input bg-secondary-subtle p-2"
+      class="form-check-input p-2"
       type="checkbox"
       :value="choice.id"
       :checked="answer_included"
@@ -48,3 +48,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.form-check-input:checked {
+  background-color: var(--bs-dark);
+  border-color: var(--bs-dark-subtle);
+}
+</style>
