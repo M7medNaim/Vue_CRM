@@ -87,7 +87,7 @@ export default {
       selectedCialisDosages: [],
       questions: [],
       answers: [],
-      toast: useToast(),
+      toast: null,
     };
   },
   methods: {
@@ -110,7 +110,6 @@ export default {
       let formData = [];
       this.questions.forEach((question) => {
         const questionAnswers = this.getFormDataByQuestion(question);
-        console.log("Question Answers", questionAnswers);
         formData.push(...questionAnswers);
       });
       const response = await updateAnswersByDealId(this.deal_id, formData);
@@ -140,7 +139,6 @@ export default {
       if (question.child_questions && question.child_questions.length > 0) {
         question.child_questions.forEach((childQuestion) => {
           const childFormData = this.getFormDataByQuestion(childQuestion);
-          console.log("Child question form data: ", childFormData);
           formData.push(...childFormData);
         });
       }
@@ -149,6 +147,7 @@ export default {
   },
   mounted() {
     this.fetchQuestions();
+    this.toast = useToast();
   },
 };
 </script>
