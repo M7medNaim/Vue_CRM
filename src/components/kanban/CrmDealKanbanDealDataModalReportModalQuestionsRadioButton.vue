@@ -4,9 +4,13 @@
       class="form-check-input bg-secondary-subtle p-2"
       type="radio"
       :value="choice.id"
-      :selected="choice.id == answer_id"
+      :checked="is_answer"
+      :id="`c-${choice.id}`"
+      :name="`q-${question_id}`"
     />
-    <label class="form-check-label" for="35">{{ choice.value }}</label>
+    <label class="form-check-label" :for="`c-${choice.id}`">{{
+      choice.value
+    }}</label>
   </div>
 </template>
 
@@ -14,6 +18,10 @@
 export default {
   name: "RadioButton",
   props: {
+    question_id: {
+      type: Number,
+      required: true,
+    },
     choice: {
       type: Object,
       required: true,
@@ -24,21 +32,24 @@ export default {
     },
   },
   computed: {
-    answer_id() {
+    is_answer() {
       if (this.answers) {
-        const answer = JSON.parse(this.answers);
-        return answer[0].id;
+        const answers = this.answers;
+        if (Array.isArray(answers)) {
+          return answers.some((answer) => {
+            return answer.choice_id == this.choice.id;
+          });
+        } else {
+          return false;
+        }
       }
-      return null;
+      return false;
     },
   },
   data() {
     return {
       selectedValue: null,
     };
-  },
-  methods: {
-    // handleAgeChange(event)
   },
 };
 </script>

@@ -3,16 +3,24 @@
     <input
       class="form-check-input bg-secondary-subtle p-2"
       type="checkbox"
-      value="{{ choice.id }}"
+      :value="choice.id"
       :checked="answer_included"
+      :id="`c-${choice.id}`"
+      :name="`q-${question_id}`"
     />
-    <label class="form-check-label" for="viagra25">{{ choice.value }}</label>
+    <label class="form-check-label" :for="`c-${choice.id}`">{{
+      choice.value
+    }}</label>
   </div>
 </template>
 <script>
 export default {
   name: "CheckboxButton",
   props: {
+    question_id: {
+      type: Number,
+      required: true,
+    },
     choice: {
       type: Object,
       required: true,
@@ -25,7 +33,9 @@ export default {
   computed: {
     answer_included() {
       if (this.answers) {
-        return this.answers.some((answer) => answer.id == this.choice.id);
+        return this.answers.some(
+          (answer) => answer.choice_id == this.choice.id
+        );
       }
       return false;
     },

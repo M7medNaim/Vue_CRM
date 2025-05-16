@@ -192,7 +192,6 @@
     <ExportModal ref="exportModalRef" />
     <CreateDealModal ref="createDealModalRef" />
     <WhatsAppModal
-      ref="whatsappModalRef"
       :conversation="conversation"
       :new_message="local_new_message"
       :updated_message="local_update_message"
@@ -282,7 +281,6 @@ export default {
     const headerSelectedStatuses = ref([]);
     const permissionStore = usePermissionStore();
     const { t } = useI18n();
-    const whatsappModalRef = ref(null);
     const overdue_count = ref(0);
     const today_count = ref(0);
     const tomorrow_count = ref(0);
@@ -298,7 +296,6 @@ export default {
       try {
         const response = await getconversations();
         const conversations = response.data.data;
-        // whatsappModalRef.value.loadConversations(conversations);
         emit("load-conversations", conversations);
 
         const modal = new Modal(document.getElementById("whatsappModal"));
@@ -418,7 +415,6 @@ export default {
       permissionStore,
       PERMISSIONS,
       t,
-      whatsappModalRef,
       openWhatsappModal,
       openSearchModalIpad,
       lgIpadClass,
