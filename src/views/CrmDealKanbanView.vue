@@ -36,9 +36,7 @@ export default {
   setup() {
     const { t } = useI18n();
     const toast = useToast();
-    // const stages = ref(kanbanStages);
     const stages = ref([]);
-    // const whatsappModalRef = ref(null);
     const selected_conversation = ref(null);
     const filters = ref({
       source: "",

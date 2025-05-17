@@ -487,7 +487,7 @@
       </div>
     </div>
   </div>
-  <ViewReport ref="questionsModalRef" />
+  <ViewReport ref="questionsModalRef" :deal_id="deal?.id" />
   <TrashDeal
     ref="trashDealModalRef"
     :dealId="deal?.id"
@@ -864,9 +864,6 @@ export default {
       try {
         const modal = new Modal(document.getElementById("questionsModal"));
         modal.show();
-        toast.info(t("success.openQuestionsModal"), {
-          timeout: 3000,
-        });
       } catch (error) {
         console.error("Error opening questions modal:", error);
         toast.error(t("error.openQuestionsModal"), {
@@ -877,11 +874,6 @@ export default {
 
     const toggleEditMode = () => {
       isEditMode.value = !isEditMode.value;
-      if (isEditMode.value) {
-        // toast.info(t("success.editMode"), {
-        //   timeout: 3000,
-        // });
-      }
     };
 
     const handleDoubleClick = () => {
