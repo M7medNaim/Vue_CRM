@@ -290,7 +290,7 @@ export default {
     const searchText = ref("");
     const route = useRoute();
     const showSearchInput = computed(() => {
-      return route.name !== "CrmList";
+      return route.name !== "CrmListView";
     });
     const user_role = ref(Cookies.get("user_role"));
 

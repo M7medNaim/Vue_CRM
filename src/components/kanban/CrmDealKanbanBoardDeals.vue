@@ -701,6 +701,27 @@ export default {
           ".LogEvent",
           ".WhatsappEvent"
         );
+        // window.Echo.channel(userChannel)
+        //   .listen(".DealEvent", (event) => {
+        //     console.log("DealEvent received:", event);
+        //     handleDealEvent(event);
+        //   })
+        //   .listen(".TaskEvent", (event) => {
+        //     console.log("TaskEvent received:", event);
+        //     handleTaskEvent(event);
+        //   })
+        //   .listen(".CommentEvent", (event) => {
+        //     console.log("CommentEvent received:", event);
+        //     handleCommentEvent(event);
+        //   })
+        //   .listen(".LogEvent", (event) => {
+        //     console.log("LogEvent received:", event);
+        //     handleLogEvent(event);
+        //   })
+        //   .listen(".WhatsappEvent", (event) => {
+        //     console.log("WhatsappEvent received:", event);
+        //     handleWhatsappEvent(event);
+        //   });
       }
 
       console.log("WebSocket reconnected on user activity");
