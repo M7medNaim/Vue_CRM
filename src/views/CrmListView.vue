@@ -709,67 +709,6 @@ const openImportModal = () => {
   const modal = new Modal(modalElement);
   modal.show();
 };
-// const handleDelete = async () => {
-//   try {
-//     const selectedIds = selectedRows.value.map((row) => row.id);
-
-//     const result = await Swal.fire({
-//       title: t("error.deleteTitle"),
-//       text: t("error.deleteText"),
-//       icon: "warning",
-//       showCancelButton: true,
-//       confirmButtonColor: "#d33",
-//       cancelButtonColor: "#3085d6",
-//       confirmButtonText: t("success.deleteConfirm"),
-//       cancelButtonText: t("error.deleteCancel"),
-//       reverseButtons: true,
-//     });
-
-//     if (result.isConfirmed) {
-//       const response = await deleteDeals(selectedIds);
-
-//       if (response.data.success) {
-//         rows.value = rows.value.filter(
-//           (item) => !selectedIds.includes(item.id)
-//         );
-//         selectedRows.value = [];
-//         selectedAction.value = "";
-
-//         toast.success(t("success.deleteSuccess"), {
-//           timeout: 3000,
-//         });
-//       } else {
-//         throw new Error(response.data.message || t("error.deleteFailed"));
-//       }
-//     }
-//   } catch (error) {
-//     toast.error(error.response?.data?.message || t("error.deleteFailed"), {
-//       timeout: 3000,
-//     });
-//     console.error("Delete Error:", error);
-//   }
-// };
-
-// const handleRowClick = (item, event) => {
-//   if (event?.target?.closest("button")) {
-//     return;
-//   }
-
-//   const checkbox = event.currentTarget.querySelector('input[type="checkbox"]');
-//   const isSelected = selectedRows.value.some((row) => row.id === item.id);
-
-//   if (isSelected) {
-//     selectedRows.value = selectedRows.value.filter((row) => row.id !== item.id);
-//     if (checkbox) {
-//       checkbox.checked = false;
-//     }
-//   } else {
-//     selectedRows.value = [...selectedRows.value, item];
-//     if (checkbox) {
-//       checkbox.checked = true;
-//     }
-//   }
-// };
 const handleRightClick = (event) => {
   event.preventDefault();
   const modalElements = document.querySelectorAll(".modal");
@@ -826,22 +765,6 @@ const fetchUsers = async () => {
     console.error("Error fetching users:", error);
   }
 };
-
-// const loadCarsLazy = async (event) => {
-//   try {
-//     const response = await getDeals({
-//       page: event.page + 1,
-//       per_page: event.rows,
-//       sort_by: "created_at",
-//       sort_order: "desc",
-//     });
-//     rows.value = response.data.data;
-//     totalRows.value = response.data.meta.total;
-//   } catch (error) {
-//     console.error("Error fetching lazy data:", error);
-//     toast.error(t("error.fetchFailed"));
-//   }
-// };
 
 const handleBulkUpdate = async (key, value) => {
   try {
