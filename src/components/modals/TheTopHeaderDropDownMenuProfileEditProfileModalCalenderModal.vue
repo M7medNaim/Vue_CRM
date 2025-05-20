@@ -23,9 +23,9 @@
         </div>
         <form @submit.prevent="submitForm">
           <div class="modal-body">
-            <CalenderForm v-model="calender" />
+            <calender-form v-model="calender" />
           </div>
-          <CalenderButtons :loading="loading" @close="closeCalenderModal" />
+          <calender-buttons :loading="loading" @close="closeCalenderModal" />
         </form>
       </div>
     </div>

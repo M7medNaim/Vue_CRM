@@ -109,7 +109,7 @@
     </EasyDataTable>
   </div>
   <!-- Add Modals -->
-  <DocumentsFolderViewAddEditFolderModal
+  <documents-folder-view-add-edit-folder-modal
     :folder="selectedFolder"
     @submit="handleFolderSubmit"
   />
@@ -136,11 +136,13 @@ import {
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 export default {
   name: "DocumentsFolderView",
+
   components: {
     EasyDataTable,
     DocumentsFolderViewAddEditFolderModal,
     // ImportFolder,
   },
+
   setup() {
     const toast = useToast();
     const router = useRouter();
@@ -151,6 +153,7 @@ export default {
     // const importFolderModal = ref(null);
     const selectedFolder = ref(null);
     const { t } = useI18n();
+
     const headers = [
       { text: t("documents-table-header-name"), value: "name" },
       { text: t("documents-table-header-date"), value: "created_at" },
@@ -180,6 +183,7 @@ export default {
       selectedFolder.value = { ...folder };
       folderFormModal.value.show();
     };
+
     const handleFolderSubmit = async (folderData) => {
       try {
         // console.log("📤 بيانات المجلد المرسلة:", folderData);

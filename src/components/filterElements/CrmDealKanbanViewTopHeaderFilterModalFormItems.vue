@@ -45,9 +45,9 @@
               >
                 <option value="" selected>All</option>
                 <option
-                  v-for="source in local_sources"
-                  :key="source.value"
-                  :value="source.value"
+                  v-for="source in sources"
+                  :key="source.id"
+                  :value="source.id"
                 >
                   {{ source.name }}
                 </option>
@@ -66,11 +66,11 @@
                 v-model="localHeaderFilters.stage_id"
                 class="form-select text-secondary"
               >
-                <option value="1" selected>All</option>
+                <option value="" selected>All</option>
                 <option
-                  v-for="stage in local_stages"
-                  :key="stage.value"
-                  :value="stage.value"
+                  v-for="stage in stages"
+                  :key="stage.id"
+                  :value="stage.id"
                 >
                   {{ stage.name }}
                 </option>
@@ -94,11 +94,7 @@
                 class="form-select text-secondary"
               >
                 <option value="" selected>All</option>
-                <option
-                  v-for="user in local_users"
-                  :key="user.id"
-                  :value="user.id"
-                >
+                <option v-for="user in users" :key="user.id" :value="user.id">
                   {{ user.name }}
                 </option>
               </select>
@@ -208,24 +204,13 @@
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+import { getStages, getSources, getUser } from "@/plugins/services/authService";
 
 export default {
   name: "CrmDealKanbanViewTopHeaderFilterModalFormItems",
   props: {
     headerFilters: { type: Object, required: true },
     headerSelectedStatuses: { type: Array, required: true },
-    stages: {
-      type: Array,
-      default: () => [],
-    },
-    sources: {
-      type: Array,
-      default: () => [],
-    },
-    users: {
-      type: Array,
-      default: () => [],
-    },
   },
   emits: ["update:headerFilters", "update:headerSelectedStatuses"],
   setup(props, { emit }) {
@@ -243,9 +228,9 @@ export default {
       sort_order: "desc",
       ...props.headerFilters,
     });
-    const local_stages = ref(props.stages);
-    const local_sources = ref(props.sources);
-    const local_users = ref([]);
+    const stages = ref([]);
+    const sources = ref([]);
+    const users = ref([]);
     const local_packages = ref([]);
 
     const statuses = ref([
@@ -318,30 +303,6 @@ export default {
     );
 
     watch(
-      () => props.stages,
-      (newStages) => {
-        local_stages.value = newStages;
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.sources,
-      (newSources) => {
-        local_sources.value = newSources;
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.users,
-      (newUsers) => {
-        local_users.value = newUsers;
-      },
-      { deep: true }
-    );
-
-    watch(
       () => props.packages,
       (newPackages) => {
         local_packages.value = newPackages;
@@ -350,6 +311,10 @@ export default {
     );
 
     onMounted(() => {
+      handleFetchStages();
+      handleFetchSources();
+      handleFetchUsers();
+
       if (permissionStore.hasPermission(PERMISSIONS.ADD_ASSIGNED_TO_DEAL)) {
         statuses.value.push({
           value: "unassigned",
@@ -362,15 +327,40 @@ export default {
       }
     });
 
+    async function handleFetchStages() {
+      try {
+        const response = await getStages();
+        stages.value = response.data.data || response;
+      } catch (e) {
+        stages.value = [];
+      }
+    }
+    async function handleFetchSources() {
+      try {
+        const response = await getSources();
+        sources.value = response.data.data || response;
+      } catch (e) {
+        sources.value = [];
+      }
+    }
+    async function handleFetchUsers() {
+      try {
+        const response = await getUser();
+        users.value = response.data.data || response;
+      } catch (e) {
+        users.value = [];
+      }
+    }
+
     return {
       localHeaderFilters,
       statuses,
       toggleStatus,
       t,
-      local_users,
+      users,
       local_packages,
-      local_stages,
-      local_sources,
+      stages,
+      sources,
       permissionStore,
       PERMISSIONS,
     };

@@ -15,7 +15,10 @@
 export default {
   name: "UserViewStatusAccount",
   props: {
-    modelValue: Boolean,
+    modelValue: {
+      type: Boolean,
+      required: true,
+    },
   },
   emits: ["update:modelValue"],
   methods: {

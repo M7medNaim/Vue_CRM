@@ -74,7 +74,7 @@
               @scroll="handleDealContainerScroll($event, stage.id)"
             >
               <template #item="{ element: deal }">
-                <CustomerCard
+                <ticket-card
                   :deal="deal"
                   @open-deal-data-card="openDealDataCard(deal.id, stage.id)"
                 />
@@ -109,7 +109,7 @@
     </div>
   </div>
   <!-- :key="selectedDeal?.id" -->
-  <DealDataCard
+  <deal-data-card
     :key="selectedDeal?.id"
     :deal="selectedDeal"
     :logs="logs"
@@ -120,7 +120,7 @@
   />
   <!-- selectedDeal -->
   <div v-if="permissionStore.hasPermission('edit-stage')">
-    <UpdateStage :stage="selectedStage" @update-stage="handleStageUpdate" />
+    <update-stage :stage="selectedStage" @update-stage="handleStageUpdate" />
   </div>
 </template>
 
@@ -134,7 +134,7 @@ import {
   nextTick,
 } from "vue";
 import draggable from "vuedraggable";
-import CustomerCard from "@/components/kanban/CrmDealKanbanBoardDealsTicketCard.vue";
+import TicketCard from "@/components/kanban/CrmDealKanbanBoardDealsTicketCard.vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
@@ -156,7 +156,7 @@ export default {
   name: "CrmDealKanbanBoardDeals",
   components: {
     draggable,
-    CustomerCard,
+    TicketCard,
     DealDataCard,
     UpdateStage,
   },

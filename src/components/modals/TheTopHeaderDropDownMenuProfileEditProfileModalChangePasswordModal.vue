@@ -23,9 +23,9 @@
         </div>
         <form @submit.prevent="submitForm">
           <div class="modal-body">
-            <ChangePasswordForm v-model="password" />
+            <change-password-form v-model="password" />
           </div>
-          <ChangePasswordButtons
+          <change-password-buttons
             :loading="loading"
             @close="closeChangePassword"
           />

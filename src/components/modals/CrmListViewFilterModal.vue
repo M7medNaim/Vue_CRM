@@ -22,7 +22,7 @@
           ></button>
         </div>
         <form @submit.prevent="submitFilters">
-          <CrmListViewFilterModalForm
+          <crm-list-view-filter-modal-form
             :filters="filters"
             :selectedStatuses="localSelectedStatuses"
             :stages="local_stages"
@@ -31,7 +31,7 @@
             @update:filters="updateFilters"
             @update:selectedStatuses="updateSelectedStatuses"
           />
-          <CrmListViewFilterModalButtons
+          <crm-list-view-filter-modal-buttons
             @reset-filter="resetFilter"
             @close-modal="closeFilterModal"
             @submit-filters="submitFilters"
@@ -55,10 +55,10 @@ export default {
   components: { CrmListViewFilterModalForm, CrmListViewFilterModalButtons },
   props: {
     modelValue: { type: Object, required: true },
-    selectedStatuses: { type: Array, default: () => [] },
-    stages: { type: Array, default: () => [] },
-    sources: { type: Array, default: () => [] },
-    users: { type: Array, default: () => [] },
+    selectedStatuses: { type: Array, required: true, default: () => [] },
+    stages: { type: Array, required: true, default: () => [] },
+    sources: { type: Array, required: true, default: () => [] },
+    users: { type: Array, required: true, default: () => [] },
   },
   emits: ["update:modelValue", "apply-filters", "reset-filter"],
 

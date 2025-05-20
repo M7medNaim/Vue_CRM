@@ -25,7 +25,7 @@
         </div>
         <div class="modal-body">
           <form @submit.prevent="submitForm">
-            <QuestionsDiv
+            <questions-div
               v-for="(question, index) in questions"
               :key="index"
               :question="question"

@@ -26,7 +26,7 @@
             </h5>
           </div>
           <div class="rating">
-            <RatingStars v-model="customerData.rating" />
+            <rating-stars v-model="customerData.rating" />
           </div>
           <div class="source">
             <i class="fa-solid fa-circle-exclamation me-1"></i>
@@ -487,8 +487,8 @@
       </div>
     </div>
   </div>
-  <ViewReport ref="questionsModalRef" :deal_id="deal?.id" />
-  <TrashDeal
+  <view-report ref="questionsModalRef" :deal_id="deal?.id" />
+  <trash-deal
     ref="trashDealModalRef"
     :dealId="deal?.id"
     @stage-updated="handleStageUpdate"

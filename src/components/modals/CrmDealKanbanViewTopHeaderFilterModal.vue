@@ -22,19 +22,15 @@
           ></button>
         </div>
         <form @submit.prevent="submitFilters">
-          <FilterHeader2Form
+          <filter-modal-form-items
             :headerFilters="headerFilterData"
             :headerSelectedStatuses="headerSelectedStatuses"
-            :stages="local_stages"
-            :sources="local_sources"
-            :users="local_users"
             @update:headerFilters="updateFilters"
             @update:headerSelectedStatuses="updateSelectedStatuses"
           />
-          <FilterButtonsHeader2
+          <filter-modal-buttons-items
             @reset-filter="resetFilter"
             @close-modal="closeFilterModal"
-            @submit-filters="submitFilters"
           />
         </form>
       </div>
@@ -45,20 +41,17 @@
 <script>
 import { ref, watch } from "vue";
 import { Modal } from "bootstrap";
-import FilterHeader2Form from "@/components/filterElements/CrmDealKanbanViewTopHeaderFilterModalFormItems.vue";
-import FilterButtonsHeader2 from "@/components/filterElements/CrmDealKanbanViewTopHeaderFilterModalButtonsItems.vue";
+import FilterModalFormItems from "@/components/filterElements/CrmDealKanbanViewTopHeaderFilterModalFormItems.vue";
+import FilterModalButtonsItems from "@/components/filterElements/CrmDealKanbanViewTopHeaderFilterModalButtonsItems.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 
 export default {
   name: "CrmDealKanbanViewTopHeaderFilterModal",
-  components: { FilterHeader2Form, FilterButtonsHeader2 },
+  components: { FilterModalFormItems, FilterModalButtonsItems },
   props: {
     modelValue: { type: Object, required: true },
-    selectedStatuses: { type: Array, default: () => [] },
-    stages: { type: Array, default: () => [] },
-    sources: { type: Array, default: () => [] },
-    users: { type: Array, default: () => [] },
+    selectedStatuses: { type: Array, required: true, default: () => [] },
   },
   emits: ["update:modelValue", "apply-filters", "reset-filter"],
 
@@ -67,9 +60,6 @@ export default {
     const toast = useToast();
     const headerFilterData = ref({ ...props.modelValue });
     const headerSelectedStatuses = ref([]);
-    const local_stages = ref([]);
-    const local_sources = ref([]);
-    const local_users = ref([]);
     const filterModal = ref(null);
 
     watch(
@@ -118,7 +108,6 @@ export default {
         emit("update:modelValue", { ...headerFilterData.value });
         emit("apply-filters", { ...headerFilterData.value });
 
-        toast.success(t("success.applyFilters"), { timeout: 3000 });
         // closeFilterModal();
       } catch (error) {
         toast.error(t("error.applyFilters"), { timeout: 3000 });
@@ -149,7 +138,6 @@ export default {
         headerSelectedStatuses.value = [];
         emit("update:modelValue", emptyFilters);
         emit("reset-filter");
-        toast.success(t("success.resetFilters"), { timeout: 3000 });
       } catch (error) {
         toast.error(t("error.resetFilters"), { timeout: 3000 });
       }
@@ -163,33 +151,6 @@ export default {
       }
     };
 
-    watch(
-      () => props.stages,
-      (newStages) => {
-        local_stages.value = newStages;
-        console.log("filters local_stages", local_stages.value);
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.sources,
-      (newSources) => {
-        local_sources.value = newSources;
-        console.log("filters local_sources", local_sources.value);
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => props.users,
-      (newUsers) => {
-        console.log("filters new users", newUsers);
-        local_users.value = newUsers;
-      },
-      { deep: true }
-    );
-
     return {
       headerFilterData,
       headerSelectedStatuses,
@@ -199,9 +160,6 @@ export default {
       updateSelectedStatuses,
       resetFilter,
       t,
-      local_stages,
-      local_sources,
-      local_users,
       filterModal,
     };
   },

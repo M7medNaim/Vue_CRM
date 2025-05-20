@@ -15,8 +15,14 @@
 export default {
   name: "TheTopHeaderDropDownMenuProfileMenuItem",
   props: {
-    title: String,
-    icon: String,
+    title: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      required: true,
+    },
   },
 };
 </script>

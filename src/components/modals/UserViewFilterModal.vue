@@ -23,14 +23,14 @@
         </div>
         <form @submit.prevent="submitFilters">
           <div class="modal-body">
-            <FilterForm
+            <filter-form
               v-model:role="role"
               v-model:status="status"
               v-model:createdAt="createdAt"
               v-model:perPage="perPage"
             />
           </div>
-          <FilterButtons
+          <filter-buttons
             :loading="loading"
             @close="closeFilterModal"
             @reset-filters="resetFilters"

@@ -13,169 +13,28 @@
     ref="messageElements"
     @scroll="handleScroll"
   >
-    <div
-      :class="`textMessage position-relative py-2 text-start px-3 start-0 rounded-2 fst-normal text-break text-wrap lh-base ${
-        message.status === 'undelivered'
-          ? 'text-danger'
-          : message.status === 'error'
-          ? 'message-error'
-          : ''
-      }`"
-    >
-      <button
-        class="addNote border-0 position-absolute bottom-0 fs-6 rounded-2"
-      >
-        <i class="fa-solid fa-paste"></i>
-      </button>
-      <div v-if="message.isImage">
-        <img
-          :src="message.fileUrl"
-          alt="صورة مرسلة"
-          class="img-fluid rounded-2"
-          @click="openFullScreenImage(message.fileUrl)"
-        />
-      </div>
-      <div v-else-if="message.isVideo">
-        <video
-          :src="message.fileUrl"
-          controls
-          class="img-fluid rounded-2"
-        ></video>
-      </div>
-      <div v-else-if="message.isAudio">
-        <audio controls>
-          <source :src="message.fileUrl" :type="message.fileMimeType" />
-          Your browser does not support the audio element.
-        </audio>
-      </div>
-      <div v-else-if="message.isDocument">
-        <a
-          :href="message.fileDownloadUrl"
-          target="_blank"
-          class="text-decoration-none text-primary"
-        >
-          <i class="fa-solid fa-file-lines"></i> {{ message.fileName }}
-        </a>
-      </div>
-      <div
-        v-if="isFullScreenImageOpen"
-        class="full-screen-image-modal"
-        @click="closeFullScreenImage"
-      >
-        <img
-          :src="fullScreenImageUrl"
-          alt="صورة كاملة الشاشة"
-          class="full-screen-image"
-        />
-      </div>
-      <div
-        class="message-text"
-        style="white-space: pre-line"
-        v-if="message.status != 'error'"
-      >
-        {{ message.text }}
-      </div>
-      <div class="message-text" style="white-space: pre-line" v-else>
-        {{ t(message.text) }}
-      </div>
-      <button
-        class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
-        @click.stop="toggleMenu(index)"
-        v-click-outside="closeMenu"
-      >
-        <i
-          class="fa-solid fa-ellipsis-vertical text-secondary"
-          :class="message.status === 'message-error' ? 'text-white' : ''"
-        ></i>
-      </button>
-      <span class="d-block mt-1 opacity-50 fst-normal">
-        <div class="d-flex justify-content-between">
-          <span class="me-2">{{ message.time }}</span>
-          <!-- <button class="border-0 bg-white fs-6">
-            <i class="fa-solid fa-paste text-secondary"></i>
-          </button> -->
-        </div>
-        <!-- Message status -->
-        <span v-if="message.type === 'msg-me'">
-          <span
-            v-if="message.status === 'sent'"
-            class="status-icon text-secondary"
-          >
-            <i class="fa-solid fa-check fs-6"></i>
-          </span>
-          <span
-            v-else-if="message.status === 'delivered'"
-            class="status-icon text-secondary"
-          >
-            <i class="fa-solid fa-check fs-6"></i>
-            <i class="fa-solid fa-check fs-6"></i>
-          </span>
-          <span
-            v-else-if="message.status === 'read'"
-            class="status-icon text-info"
-          >
-            <i class="fa-solid fa-check fs-6"></i>
-            <i class="fa-solid fa-check fs-6"></i>
-          </span>
-          <span
-            v-else-if="message.status === 'undelivered'"
-            class="status-icon"
-          >
-            <i class="fa-solid fa-xmark"></i> (Message not sent)
-          </span>
-          <span v-else-if="message.status === 'error'" class="status-icon">
-            <i class="fa-solid fa-xmark"></i> (Message not sent)
-          </span>
-        </span>
-      </span>
-      <!-- menu list -->
-      <div
-        v-if="activeMenu === index"
-        class="menu-list position-absolute bg-light border rounded shadow-sm z-3 bottom-100"
-      >
-        <ul class="list-unstyled mb-0 m-auto px-2 lh-lg">
-          <li v-if="message.fileDownloadUrl">
-            <a
-              class="text-decoration-none text-primary"
-              :href="message.fileDownloadUrl"
-              :download="message.fileName"
-              target="_blank"
-              >Download</a
-            >
-          </li>
-          <li>
-            <a
-              class="text-decoration-none text-primary"
-              href="#"
-              @click.prevent="copyMessage(message)"
-              >Copy</a
-            >
-          </li>
-          <li>
-            <a
-              class="text-decoration-none text-primary"
-              href="#"
-              @click.prevent="replyToMessage(message)"
-              >Reply</a
-            >
-          </li>
-          <li>
-            <a
-              class="text-decoration-none text-primary"
-              href="#"
-              @click.prevent="deleteMessage(index)"
-              >Delete</a
-            >
-          </li>
-        </ul>
-      </div>
-      <div
-        v-if="message.isCopied"
-        class="copy-message position-absolute bg-secondary-subtle py-1 px-2 rounded-1 bottom-100 text-center"
-      >
-        Message Copied!
-      </div>
-    </div>
+    <chat-message-item
+      :message="message"
+      :index="index"
+      :activeMenu="activeMenu"
+      @toggle-menu="toggleMenu"
+      @close-menu="closeMenu"
+      @copy-message="copyMessage"
+      @reply-message="replyToMessage"
+      @delete-message="deleteMessage"
+      @open-fullscreen="openFullScreenImage"
+    />
+  </div>
+  <div
+    v-if="isFullScreenImageOpen"
+    class="full-screen-image-modal"
+    @click="closeFullScreenImage"
+  >
+    <img
+      :src="fullScreenImageUrl"
+      alt="صورة كاملة الشاشة"
+      class="full-screen-image"
+    />
   </div>
   <button
     v-if="showScrollButton"
@@ -187,9 +46,11 @@
 </template>
 <script>
 import { useI18n } from "vue-i18n";
+import ChatMessageItem from "@/components/whatsapp/WhatsAppModalSidebarRightChatMessageContainerMessages.vue";
 
 export default {
   name: "WhatsAppModalSidebarRightChatMessageContainer",
+  components: { ChatMessageItem },
   props: {
     messages: {
       type: Array,
@@ -199,6 +60,7 @@ export default {
     searchQuery: {
       type: String,
       default: "",
+      required: true,
     },
   },
   data() {
@@ -342,6 +204,7 @@ export default {
       this.fullScreenImageUrl = imageUrl;
       this.isFullScreenImageOpen = true;
     },
+
     closeFullScreenImage() {
       this.isFullScreenImageOpen = false;
       this.fullScreenImageUrl = "";
@@ -376,6 +239,7 @@ export default {
 
     this.setupIntersectionObserver();
   },
+
   beforeUnmount() {
     if (this.observer) {
       this.observer.disconnect();
@@ -383,6 +247,7 @@ export default {
     const chatBox = this.$parent.$refs.chatBox;
     chatBox.removeEventListener("scroll", this.handleScroll);
   },
+
   watch: {
     messages: {
       handler() {

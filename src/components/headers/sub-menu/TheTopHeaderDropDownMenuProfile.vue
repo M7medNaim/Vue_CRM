@@ -18,48 +18,48 @@
     </div>
     <hr class="my-2" />
     <ul class="list-unstyled mb-0 lh-lg">
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-user"
         :title="t('header-user-menu-item-profile')"
         @click="openEditProfileModal"
       />
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-calendar-days"
         :title="t('header-user-menu-item-calendar')"
         @click="openCalenderModal"
       />
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-image"
         :title="t('header-user-menu-item-background')"
         @click="changeBackground"
       />
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-rotate"
         :title="t('header-user-menu-item-refresh')"
         @click="reloadPage"
       />
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-lock"
         :title="t('header-user-menu-item-password')"
         @click="openChangePasswordModal"
       />
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-globe"
         :title="t('header-user-menu-item-language')"
         @click="openChangeLangModal"
       />
-      <ProfileMenuItem
+      <profile-menu-item
         icon="fa-right-from-bracket"
         :title="t('header-user-menu-item-logout')"
         @click="handleLogout"
       />
     </ul>
   </div>
-  <EditProfile ref="editProfileModal" />
-  <ChangePassword ref="changePasswordModal" />
-  <ChangeLang ref="changeLangModal" />
-  <CalenderModal ref="CalenderModal" />
-  <CustomBackground />
+  <edit-profile ref="editProfileModal" />
+  <change-password ref="changePasswordModal" />
+  <change-lang ref="changeLangModal" />
+  <calender-modal ref="CalenderModal" />
+  <custom-background />
 </template>
 <script>
 import Cookies from "js-cookie";

@@ -297,10 +297,12 @@ export default {
     conversationId: {
       type: [String, Number],
       default: null,
+      required: true,
     },
     lastMessageDate: {
       type: String,
       default: null,
+      required: true,
     },
   },
   data() {

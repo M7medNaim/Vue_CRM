@@ -63,7 +63,7 @@
         >
           <i class="fa-solid fa-bell fs-4 ms-2 pt-1 text-white"></i>
           <transition name="fade">
-            <NotificationsHead
+            <notifications-head
               v-if="activeMenu === 'notifications'"
               :style="listNotifiStyle"
             />
@@ -121,7 +121,7 @@
               <i class="fa-solid fa-chevron-down"></i>
 
               <transition name="fade">
-                <MenuProfile
+                <menu-profile
                   v-if="activeMenu === 'profile'"
                   :style="listProfileStyle"
                   @logout="$emit('logout')"

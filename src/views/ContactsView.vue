@@ -125,12 +125,12 @@
     </DataTable>
 
     <!-- Modals -->
-    <ContactsViewCreateModal
+    <contacts-view-create-modal
       ref="contactCreateModalRef"
       :rows="rows"
       @contact-updated="updateContactList"
     />
-    <ContactsViewFilterModal
+    <contacts-view-filter-modal
       ref="filterModalRef"
       @apply-filters="applyFilters"
       @reset-filters="resetFilters"
@@ -159,6 +159,7 @@ import Column from "primevue/column";
 
 export default {
   name: "ContactsView",
+
   components: {
     // Vue3EasyDataTable,
     ContactsViewCreateModal,
@@ -166,6 +167,7 @@ export default {
     DataTable,
     Column,
   },
+
   setup() {
     const { t } = useI18n();
     const toast = useToast();
@@ -296,6 +298,7 @@ export default {
         filterModalRef.value.openFilterModal();
       }
     };
+
     // open edit modal
     const editItem = async (item) => {
       try {
@@ -345,11 +348,13 @@ export default {
         toast.error(t("error.deleteFailed"));
       }
     };
+
     const refreshTable = async () => {
       loading.value = true;
       await fetchData(currentPage.value, rowsPerPage.value);
       loading.value = false;
     };
+
     const applyFilters = async (filters) => {
       try {
         loading.value = true;
@@ -430,6 +435,7 @@ export default {
       fetchData(currentPage.value, rowsPerPage.value);
       window.addEventListener("contextmenu", handleRightClick);
     });
+
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
     });

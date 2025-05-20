@@ -42,11 +42,8 @@
             <i class="fa fa-close fs-5 py-1"></i>
           </button>
           <div class="row mx-0">
-            <WhatsAppModalSidebarLeft
-              @select-chat="setSelectedChat"
-              ref="leftSidebar"
-            />
-            <WhatsAppModalSidebarRight
+            <sidebar-left @select-chat="setSelectedChat" ref="leftSidebar" />
+            <sidebar-right
               :selectedChat="selectedChat"
               v-if="selectedChat"
               @mark-as-unread="handleMarkAsUnread"
@@ -63,40 +60,42 @@
       </div>
     </div>
   </div>
-  <WhatsAppModalChatNameModal
+  <chat-name-modal
     ref="labelModal"
     :chat-name="selectedChat?.name"
     @save-label="handleSaveLabel"
   />
 </template>
-@/components/whatsapp/WhatsAppModalSidebarRight.vue
 <script>
-import WhatsAppModalSidebarLeft from "@/components/whatsapp/WhatsAppModalSidebarLeft.vue";
-import WhatsAppModalSidebarRight from "@/components/whatsapp/WhatsAppModalSidebarRight.vue";
+import SidebarLeft from "@/components/whatsapp/WhatsAppModalSidebarLeft.vue";
+import SidebarRight from "@/components/whatsapp/WhatsAppModalSidebarRight.vue";
 import {
   changePinStatus,
   getMessageConv,
 } from "@/plugins/services/authService";
-import WhatsAppModalChatNameModal from "@/components/whatsapp/WhatsAppModalChatNameModal.vue";
+import ChatNameModal from "@/components/whatsapp/WhatsAppModalChatNameModal.vue";
 import Cookies from "js-cookie";
 export default {
   name: "WhatsappModal",
   components: {
-    WhatsAppModalSidebarLeft,
-    WhatsAppModalSidebarRight,
-    WhatsAppModalChatNameModal,
+    SidebarLeft,
+    SidebarRight,
+    ChatNameModal,
   },
   props: {
     conversation: {
       type: Object,
+      required: true,
       default: null,
     },
     new_message: {
       type: Object,
+      required: true,
       default: null,
     },
     updated_message: {
       type: Object,
+      required: true,
       default: null,
     },
   },

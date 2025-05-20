@@ -1,7 +1,7 @@
 <template>
   <div class="modal-footer d-flex justify-content-between align-items-center">
     <div class="btns d-flex justify-content-end align-items-center gap-3">
-      <button type="submit" class="btn btn-primary" @click="submitFilters">
+      <button type="submit" class="btn btn-primary">
         {{ t("crmlist-modal-filter-button-submit") }}
       </button>
       <button type="button" class="btn btn-warning" @click="removeFilter">
@@ -23,7 +23,7 @@
 import { useI18n } from "vue-i18n";
 export default {
   name: "CrmDealKanbanViewTopHeaderFilterModalButtonsItems",
-  emits: ["reset-filter", "close-modal", "submit-filters"],
+  emits: ["reset-filter", "close-modal"],
   setup(props, { emit }) {
     const { t } = useI18n();
 

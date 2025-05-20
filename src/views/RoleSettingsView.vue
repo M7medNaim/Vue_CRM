@@ -79,7 +79,7 @@
       </template>
     </EasyDataTable>
 
-    <RoleSettingsViewAddEditRoleModal
+    <role-settings-view-add-edit-role-modal
       ref="roleModal"
       :is-editing="isEditing"
       :current-role="currentRole"

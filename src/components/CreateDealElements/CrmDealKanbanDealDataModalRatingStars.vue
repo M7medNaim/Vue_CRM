@@ -34,6 +34,7 @@ export default {
     modelValue: {
       type: Number,
       default: 0,
+      required: true,
     },
   },
   emits: ["update:modelValue"],

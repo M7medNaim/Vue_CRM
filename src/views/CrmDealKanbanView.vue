@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2">
-    <CrmKanbanHeader
+    <crm-kanban-header
       :initialFilters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
@@ -10,7 +10,7 @@
       :update_message="update_message"
     />
   </div>
-  <CrmKanbanKanbanBoard
+  <crm-kanban-kanban-board
     :stages="stages"
     defaultColor="#333"
     @open-whatsapp-modal="openWhatsappModal"
@@ -29,30 +29,37 @@ import { useI18n } from "vue-i18n";
 import { getDealsKanban } from "@/plugins/services/authService";
 export default {
   name: "CrmDealKanbanView",
+
   components: {
     CrmKanbanHeader,
     CrmKanbanKanbanBoard,
   },
+
   setup() {
     const { t } = useI18n();
     const toast = useToast();
     const stages = ref([]);
     const selected_conversation = ref(null);
+
     const filters = ref({
-      source: "",
-      stage: "",
-      supervisor: "",
-      representative: "",
-      package: "",
+      source_id: "",
+      stage_id: "",
+      supervisor_id: "",
+      representative_id: "",
+      package_id: "",
       created_at_start: "",
       created_at_end: "",
       updated_at_start: "",
       updated_at_end: "",
       status: [],
+      sort_by: "",
+      sort_order: "",
     });
+
     const new_message = ref(null);
     const update_message = ref(null);
     const searching = ref(false);
+
     const fetchStages = async (searchText) => {
       if (searching.value) return;
       try {
@@ -77,51 +84,62 @@ export default {
       }
       searching.value = false;
     };
+
     const applyFilters = async (newFilters) => {
       filters.value = { ...newFilters };
       try {
-        const apiFilters = {
-          filters: { ...filters.value },
-        };
-
         const formattedFilters = {};
 
-        if (apiFilters.filters.source_id) {
-          formattedFilters["filters[source_id]"] = apiFilters.filters.source_id;
+        if (filters.value.source_id) {
+          formattedFilters["filters[source_id]"] = filters.value.source_id;
         }
-        if (apiFilters.filters.stage_id) {
-          formattedFilters["filters[stage_id]"] = apiFilters.filters.stage_id;
+        if (filters.value.stage_id) {
+          formattedFilters["filters[stage_id]"] = filters.value.stage_id;
         }
-        if (apiFilters.filters.user_id) {
-          formattedFilters["filters[user_id]"] = apiFilters.filters.user_id;
+        if (filters.value.user_id) {
+          formattedFilters["filters[user_id]"] = filters.value.user_id;
         }
-        if (apiFilters.filters.created_at_start) {
+        if (filters.value.created_at_start) {
           formattedFilters["filters[created_at_start]"] =
-            apiFilters.filters.created_at_start;
+            filters.value.created_at_start;
         }
-        if (apiFilters.filters.created_at_end) {
+        if (filters.value.created_at_end) {
           formattedFilters["filters[created_at_end]"] =
-            apiFilters.filters.created_at_end;
+            filters.value.created_at_end;
         }
-        if (Array.isArray(apiFilters.filters.status)) {
-          if (apiFilters.filters.status.includes("unassigned")) {
+        if (filters.value.updated_at_start) {
+          formattedFilters["filters[updated_at_start]"] =
+            filters.value.updated_at_start;
+        }
+        if (filters.value.updated_at_end) {
+          formattedFilters["filters[updated_at_end]"] =
+            filters.value.updated_at_end;
+        }
+        if (Array.isArray(filters.value.status)) {
+          if (filters.value.status.includes("unassigned")) {
             formattedFilters["filters[unassigned]"] = 1;
           }
-          if (apiFilters.filters.status.includes("no_comments")) {
+          if (filters.value.status.includes("no_comments")) {
             formattedFilters["filters[uncommented]"] = 1;
           }
-          if (apiFilters.filters.status.includes("no_task")) {
+          if (filters.value.status.includes("no_task")) {
             formattedFilters["filters[no_tasks]"] = 1;
           }
-          if (apiFilters.filters.status.includes("overdue")) {
+          if (filters.value.status.includes("overdue")) {
             formattedFilters["filters[overdue]"] = 1;
           }
-          if (apiFilters.filters.status.includes("new")) {
+          if (filters.value.status.includes("new")) {
             formattedFilters["filters[new]"] = 1;
           }
-          if (apiFilters.filters.status.includes("reclaimed")) {
+          if (filters.value.status.includes("reclaimed")) {
             formattedFilters["filters[reclaimed]"] = 1;
           }
+        }
+        if (filters.value.sort_by) {
+          formattedFilters["sort_by"] = filters.value.sort_by;
+        }
+        if (filters.value.sort_order) {
+          formattedFilters["sort_order"] = filters.value.sort_order;
         }
 
         const response = await getDealsKanban(formattedFilters);
@@ -132,14 +150,110 @@ export default {
           return;
         }
 
-        stages.value = response.data.data.map((stage) => ({
-          id: stage.id,
-          name: stage.name,
-          description: stage.description || null,
-          color_code: stage.color_code,
-          deal_count: stage.deal_count,
-          deals: stage.deals || [],
-        }));
+        const sortDeals = (deals, sortBy, sortOrder) => {
+          if (!sortBy || !sortOrder) return deals;
+          return [...deals].sort((a, b) => {
+            let aValue = a[sortBy];
+            let bValue = b[sortBy];
+
+            if (sortBy === "created_at" || sortBy === "updated_at") {
+              aValue = new Date(aValue);
+              bValue = new Date(bValue);
+            }
+
+            if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+            if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+            return 0;
+          });
+        };
+
+        const filterDealsByUserAndDate = (
+          deals,
+          userId,
+          createdStart,
+          createdEnd,
+          updatedStart,
+          updatedEnd
+        ) => {
+          const getEndOfDay = (dateStr) => {
+            if (!dateStr) return null;
+            const d = new Date(dateStr);
+            d.setHours(23, 59, 59, 999);
+            return d;
+          };
+
+          return deals.filter((deal) => {
+            const byUser = userId ? deal.user_id == userId : true;
+
+            const createdAt = new Date(deal.created_at);
+            const afterCreatedStart = createdStart
+              ? createdAt >= new Date(createdStart)
+              : true;
+            const beforeCreatedEnd = createdEnd
+              ? createdAt <= getEndOfDay(createdEnd)
+              : true;
+
+            const updatedAt = new Date(deal.updated_at);
+            const afterUpdatedStart = updatedStart
+              ? updatedAt >= new Date(updatedStart)
+              : true;
+            const beforeUpdatedEnd = updatedEnd
+              ? updatedAt <= getEndOfDay(updatedEnd)
+              : true;
+
+            return (
+              byUser &&
+              afterCreatedStart &&
+              beforeCreatedEnd &&
+              afterUpdatedStart &&
+              beforeUpdatedEnd
+            );
+          });
+        };
+
+        if (filters.value.stage_id) {
+          stages.value = response.data.data
+            .filter((stage) => stage.id == filters.value.stage_id)
+            .map((stage) => ({
+              id: stage.id,
+              name: stage.name,
+              description: stage.description || null,
+              color_code: stage.color_code,
+              deal_count: stage.deal_count,
+              deals: sortDeals(
+                filterDealsByUserAndDate(
+                  stage.deals || [],
+                  filters.value.user_id,
+                  filters.value.created_at_start,
+                  filters.value.created_at_end,
+                  filters.value.updated_at_start,
+                  filters.value.updated_at_end
+                ),
+                filters.value.sort_by,
+                filters.value.sort_order
+              ),
+            }));
+        } else {
+          stages.value = response.data.data.map((stage) => ({
+            id: stage.id,
+            name: stage.name,
+            description: stage.description || null,
+            color_code: stage.color_code,
+            deal_count: stage.deal_count,
+            deals: sortDeals(
+              filterDealsByUserAndDate(
+                stage.deals || [],
+                filters.value.user_id,
+                filters.value.created_at_start,
+                filters.value.created_at_end,
+                filters.value.updated_at_start,
+                filters.value.updated_at_end
+              ),
+              filters.value.sort_by,
+              filters.value.sort_order
+            ),
+          }));
+        }
 
         toast.success(t("success.applyFilters"), { timeout: 3000 });
       } catch (error) {
@@ -152,16 +266,18 @@ export default {
     const resetFilter = async () => {
       try {
         filters.value = {
-          source: "",
-          stage: "",
-          supervisor: "",
-          representative: "",
-          package: "",
+          source_id: "",
+          stage_id: "",
+          supervisor_id: "",
+          representative_id: "",
+          package_id: "",
           created_at_start: "",
           created_at_end: "",
           updated_at_start: "",
           updated_at_end: "",
           status: [],
+          sort_by: "",
+          sort_order: "",
         };
         await fetchStages();
         // console.log("reset filter kanban");

@@ -81,7 +81,7 @@
               user_role == 'sales'
             "
           >
-            <CrmKanbanHeader
+            <crm-kanban-header
               :selected_conversation="selected_conversation"
               :disableFilter="true"
             />
@@ -159,7 +159,7 @@
         <Column field="phone" :header="t('crmlist-table-header-phone')">
           <template #body="slotProps">
             <div class="d-flex align-items-center gap-1">
-              <CountryFlagAvatar
+              <country-flag-avatar
                 :phone="slotProps.data.phone"
                 style="width: 25px; height: 20px !important"
               />
@@ -222,7 +222,7 @@
           </div>
         </template>
       </DataTable>
-      <CrmListViewActionsDealModal
+      <crm-list-view-actions-deal-modal
         :selected-rows="selectedRows"
         @update-stage="(value) => handleBulkUpdate('stage_id', value)"
         @update-user="(value) => handleBulkUpdate('user_id', value)"
@@ -231,7 +231,7 @@
     </div>
   </div>
   <!-- filter modal -->
-  <CrmListViewFilterModal
+  <crm-list-view-filter-modal
     v-model:filters="filters"
     @apply-filters="applyFilters"
     @reset-filter="resetFilter"
@@ -241,10 +241,10 @@
     :users="users"
   />
   <!-- @add-deal="addNewDeal" -->
-  <CrmListCreateDealModal @add-deal="addNewDeal" ref="dealModal" />
-  <ImportModal @import-complete="fetchData" />
-  <ShowData :formData="dealData" ref="showDataModal" />
-  <DealDataCard
+  <crm-list-create-deal-modal @add-deal="addNewDeal" ref="dealModal" />
+  <import-modal @import-complete="fetchData" />
+  <show-data :formData="dealData" ref="showDataModal" />
+  <deal-data-card
     :key="selectedDeal?.id"
     :deal="selectedDeal"
     :logs="logs"
@@ -301,6 +301,7 @@ const selectedStatuses = ref([]);
 const sources = ref([]);
 const stages = ref([]);
 const users = ref([]);
+
 const filters = ref({
   source: "",
   stage: "",
@@ -317,6 +318,7 @@ const filters = ref({
   sort_by: "created_at",
   sort_order: "desc",
 });
+
 const dealData = ref(null);
 const showDataModal = ref(null);
 const selectedDeal = ref(null);
@@ -325,6 +327,7 @@ const comments = ref([]);
 const tasks = ref([]);
 const user_role = Cookies.get("user_role");
 const selected_conversation = ref(null);
+
 const isFilterActive = computed(() => {
   return Object.entries(filters.value).some(([key, val]) => {
     if (key === "sort_by" || key === "sort_order") return false;
@@ -339,6 +342,7 @@ const actions = ref([
   { value: "changeSource", label: t("crmlist-action-changesource") },
   { value: "delete", label: t("crmlist-action-delete") },
 ]);
+
 const executeAction = () => {
   if (!selectedAction.value || selectedRows.value.length === 0) {
     alert("Please select an action and at least one item.");
@@ -504,6 +508,7 @@ const onPageChange = (event) => {
   rowsPerPage.value = event.rows;
   applyFilters(filters.value);
 };
+
 const deleteItem = async (id) => {
   try {
     const result = await Swal.fire({
@@ -561,6 +566,7 @@ const handleShowDealModal = async (dealId) => {
     console.error("Error fetching deal data:", error);
   }
 };
+
 const applyFilters = async (newFilters) => {
   filters.value = { ...newFilters };
   try {
@@ -704,11 +710,13 @@ const openFilterModal = () => {
   const modal = new Modal(modalElement);
   modal.show();
 };
+
 const openImportModal = () => {
   const modalElement = document.getElementById("importModal");
   const modal = new Modal(modalElement);
   modal.show();
 };
+
 const handleRightClick = (event) => {
   event.preventDefault();
   const modalElements = document.querySelectorAll(".modal");
@@ -721,6 +729,7 @@ const handleRightClick = (event) => {
     }
   });
 };
+
 const fetchStagesAndSources = async () => {
   try {
     if (stages.value.length === 0 || sources.value.length === 0) {
@@ -932,6 +941,7 @@ onMounted(async () => {
   });
   window.addEventListener("contextmenu", handleRightClick);
 });
+
 onUnmounted(() => {
   window.removeEventListener("contextmenu", handleRightClick);
 });

@@ -149,7 +149,10 @@ export default {
     RatingStars,
   },
   props: {
-    formData: Object,
+    formData: {
+      type: Object,
+      required: true,
+    },
   },
   emit: ["update:formData"],
   setup(props, { emit }) {

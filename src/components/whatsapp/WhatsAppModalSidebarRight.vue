@@ -99,7 +99,7 @@
         class="chatBx position-relative w-100 overflow-auto px-5 pt-5 pb-5"
         ref="chatBox"
       >
-        <ChatBubbles
+        <chat-message-container
           :messages="chatMessages"
           :searchQuery="searchQuery"
           @delete-message="handleDeleteMessage"
@@ -141,7 +141,7 @@
         </div>
       </div>
       <div class="message-input m-auto">
-        <MessageInput
+        <message-input
           @send-message="receiveMessage"
           @scroll-to-bottom="scrollToBottom"
           @send-init-message="sendInit"
@@ -156,7 +156,7 @@
 
 <script>
 import MessageInput from "@/components/whatsapp/WhatsAppModalSidebarRightMessageInput.vue";
-import ChatBubbles from "@/components/whatsapp/WhatsAppModalSidebarRightChatMessageContainer.vue";
+import ChatMessageContainer from "@/components/whatsapp/WhatsAppModalSidebarRightChatMessageContainer.vue";
 import {
   sendGreetingMessage,
   sendInitMessage,
@@ -172,7 +172,7 @@ export default {
   ],
   components: {
     MessageInput,
-    ChatBubbles,
+    ChatMessageContainer,
   },
   name: "WhatsAppModalSidebarRight",
   props: {

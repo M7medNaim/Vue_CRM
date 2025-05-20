@@ -181,29 +181,29 @@
         </div>
       </div>
     </nav>
-    <FilterHeader2
+    <filter-modal
       v-if="!disableFilter"
       v-model="headerFilterData"
       v-model:headerSelectedStatuses="headerSelectedStatuses"
       @apply-filters="handleFilters"
       @reset-filter="handleResetFilter"
     />
-    <ImportModal ref="importModalRef" />
-    <ExportModal ref="exportModalRef" />
-    <CreateDealModal ref="createDealModalRef" />
-    <WhatsAppModal
+    <import-modal ref="importModalRef" />
+    <export-modal ref="exportModalRef" />
+    <create-deal-modal ref="createDealModalRef" />
+    <whats-app-modal
       :conversation="conversation"
       :new_message="local_new_message"
       :updated_message="local_update_message"
     />
-    <SearchModalIpad ref="searchModalIpadRef" />
+    <search-modal-ipad ref="searchModalIpadRef" />
   </header>
 </template>
 
 <script>
 import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import FilterHeader2 from "@/components/modals/CrmDealKanbanViewTopHeaderFilterModal.vue";
+import FilterModal from "@/components/modals/CrmDealKanbanViewTopHeaderFilterModal.vue";
 import ImportModal from "@/components/modals/CrmListViewImportModal.vue";
 import ExportModal from "@/components/modals/CrmKanbanTopHeaderExportModal.vue";
 import { Modal } from "bootstrap";
@@ -221,7 +221,7 @@ import Cookies from "js-cookie";
 export default {
   name: "CrmDealKanbanTopHeader",
   components: {
-    FilterHeader2,
+    FilterModal,
     ImportModal,
     ExportModal,
     CreateDealModal,
@@ -232,32 +232,36 @@ export default {
     initialFilters: {
       type: Object,
       default: () => ({
-        source: "",
-        stage: "",
-        supervisor: "",
-        representative: "",
-        package: "",
+        source_id: "",
+        stage_id: "",
+        supervisor_id: "",
+        representative_id: "",
+        package_id: "",
         created_at_start: "",
         created_at_end: "",
         updated_at_start: "",
         updated_at_end: "",
         status: [],
       }),
+      required: true,
     },
-    disableFilter: { type: Boolean, default: false },
+    disableFilter: { type: Boolean, required: true, default: false },
     selected_conversation: {
       type: Object,
       default: null,
+      required: true,
     },
 
     new_message: {
       type: Object,
       default: null,
+      required: true,
     },
 
     update_message: {
       type: Object,
       default: null,
+      required: true,
     },
   },
   emits: ["filter-applied", "reset-filter"],
@@ -330,7 +334,7 @@ export default {
       modal.show();
     };
     const handleFilters = (filters) => {
-      console.log("TopHeader2 emits filter-applied", filters);
+      // console.log("TopHeader2 emits filter-applied", filters);
       emit("filter-applied", filters);
     };
 

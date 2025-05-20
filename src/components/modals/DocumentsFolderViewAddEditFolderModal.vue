@@ -69,6 +69,7 @@ export default {
     folder: {
       type: Object,
       default: null,
+      required: true,
     },
   },
   emits: ["submit"],

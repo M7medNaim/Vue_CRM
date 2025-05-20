@@ -219,14 +219,17 @@ export default {
     },
     stages: {
       type: Array,
+      required: true,
       default: () => [],
     },
     sources: {
       type: Array,
+      required: true,
       default: () => [],
     },
     users: {
       type: Array,
+      required: true,
       default: () => [],
     },
   },

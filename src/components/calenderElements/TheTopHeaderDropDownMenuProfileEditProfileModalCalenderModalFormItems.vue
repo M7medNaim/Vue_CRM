@@ -25,7 +25,7 @@ import { useI18n } from "vue-i18n";
 export default {
   name: "TheTopHeaderDropDownMenuProfileEditProfileModalCalenderModalFormItems",
   props: {
-    modelValue: { type: String, default: "" },
+    modelValue: { type: String, default: "", required: true },
   },
   setup() {
     const { t } = useI18n();

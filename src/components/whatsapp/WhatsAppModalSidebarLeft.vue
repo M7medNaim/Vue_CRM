@@ -52,7 +52,7 @@
           @click="openChat(chat, index)"
           :class="{ active: chat.isActive }"
         >
-          <CountryFlagAvatar
+          <country-flag-avatar
             :phone="chat.phone"
             :defaultImage="
               chat.img ||
@@ -170,7 +170,7 @@
       </div>
     </div>
   </div>
-  <FilterModalConv @filter-by-rating="handleFilterByRating" />
+  <filter-modal-conv @filter-by-rating="handleFilterByRating" />
 </template>
 
 <script>

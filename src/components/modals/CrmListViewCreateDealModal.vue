@@ -22,8 +22,8 @@
           ></button>
         </div>
         <form @submit.prevent="submitForm">
-          <DealForm v-model:formData="formData" />
-          <DealButtons @close-modal="closeDealModal" @submit="submitForm" />
+          <deal-form v-model:formData="formData" />
+          <deal-buttons @close-modal="closeDealModal" @submit="submitForm" />
         </form>
       </div>
     </div>

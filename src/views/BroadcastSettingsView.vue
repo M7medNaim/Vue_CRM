@@ -104,7 +104,7 @@
       </template>
     </EasyDataTable>
   </div>
-  <BroadcastMessageCreateModal
+  <broadcast-message-create-modal
     @submit="submit"
     @close-modal="closeCreateModal"
   />
@@ -127,14 +127,17 @@ import { Modal } from "bootstrap";
 
 export default {
   name: "BroadcastSettingsView",
+
   components: {
     EasyDataTable,
     BroadcastMessageCreateModal,
   },
+
   setup() {
     const { t } = useI18n();
     const toast = useToast();
     const items = ref([]);
+
     const headers = ref([
       { text: `#`, value: "id" },
       { text: t("settings-broadcast-table-description"), value: "description" },
@@ -158,6 +161,7 @@ export default {
         sortable: false,
       },
     ]);
+
     const fetchBroadcasts = async () => {
       const response = await getBroadcasts();
       if (response.status === 200) {

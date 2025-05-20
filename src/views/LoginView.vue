@@ -90,6 +90,7 @@ export default {
       loadingStore,
     };
   },
+
   data() {
     return {
       email: "",
@@ -103,6 +104,7 @@ export default {
       },
     };
   },
+
   methods: {
     async handleLogin() {
       try {
@@ -186,6 +188,7 @@ export default {
 
       return valid;
     },
+
     mounted() {
       if (Cookies.get("authToken")) {
         this.$router.push("/crm-kanban");

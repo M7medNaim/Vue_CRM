@@ -13,7 +13,10 @@
 export default {
   name: "UserViewActionButtons",
   props: {
-    item: Object,
+    item: {
+      type: Object,
+      required: true,
+    },
   },
   emits: ["edit", "remove"],
   methods: {

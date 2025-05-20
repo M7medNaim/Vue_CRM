@@ -2,7 +2,7 @@
   <div class="question bg-light ps-2 py-2 mb-2 rounded-3">
     <p class="fw-medium">{{ local_question.question }}</p>
     <span v-if="local_question.type == 'radio'">
-      <RadioButton
+      <radio-button
         v-for="(choice, index) in local_question.choices"
         :key="index"
         :choice="choice"
@@ -12,7 +12,7 @@
       />
     </span>
     <span v-else-if="local_question.type == 'checkbox'">
-      <CheckboxButton
+      <checkbox-button
         v-for="(choice, index) in local_question.choices"
         :key="index"
         :choice="choice"
@@ -22,14 +22,14 @@
       />
     </span>
     <span v-else-if="local_question.type == 'text'">
-      <TextInput :answers="local_question.answers" @change="handleChange" />
+      <text-input :answers="local_question.answers" @change="handleChange" />
     </span>
     <div
       v-for="(childQuestion, index) in local_question.child_questions"
       class="mx-2 mt-2 mb-0 border-start border-2 border-secondary-subtle"
       :key="index"
     >
-      <QuestionsDiv
+      <questions-div
         v-show="answerSelected(childQuestion.required_choice)"
         :question="childQuestion"
       />

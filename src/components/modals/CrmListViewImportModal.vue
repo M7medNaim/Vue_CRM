@@ -22,8 +22,8 @@
           ></button>
         </div>
         <form @submit.prevent="submitImports">
-          <ImportForm ref="importFormRef" />
-          <ImportButtons
+          <import-form ref="importFormRef" />
+          <import-buttons
             @close-modal="closeImportModal"
             @submit="submitImports"
           />

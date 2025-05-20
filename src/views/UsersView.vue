@@ -9,6 +9,7 @@
             :placeholder="t('users-placeholder-search')"
             v-model="search"
           />
+
           <i
             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3"
           ></i>
@@ -22,6 +23,7 @@
           </button>
         </div>
       </div>
+
       <div class="col-4 col-md-4 col-lg-4 mb-3">
         <div class="text-end">
           <button type="button" class="btn btn-primary" @click="openModal">
@@ -63,14 +65,14 @@
       </template>
 
       <template #item-status="item">
-        <UserViewStatusAccount
+        <user-view-status-account
           v-model="item.status"
           @update:modelValue="toggleStatus(item)"
         />
       </template>
 
       <template #item-actions="item">
-        <UserViewActionButtons
+        <user-view-action-buttons
           :item="item"
           @edit="editItem"
           @remove="removeUser"
@@ -91,11 +93,11 @@
       </template>
     </EasyDataTable>
 
-    <UserViewAddEditUserModal
+    <user-view-add-edit-user-modal
       ref="adminModalRef"
       @user-updated="updateUserList"
     />
-    <UserViewFilterModal
+    <user-view-filter-modal
       ref="filterModalRef"
       @apply-filters="applyFilters"
       @reset-filters="resetFilters"
@@ -122,6 +124,7 @@ import {
   updateUser,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
+
 export default {
   name: "UsersView",
   components: {
@@ -131,6 +134,7 @@ export default {
     UserViewStatusAccount,
     UserViewFilterModal,
   },
+
   setup() {
     const { t } = useI18n();
     const toast = useToast();
@@ -153,6 +157,7 @@ export default {
         selectedRole.value || selectedStatus.value || selectedCreatedAt.value
       );
     });
+
     const filteredItems = computed(() => {
       return items.value.filter((item) => {
         return (
@@ -167,6 +172,7 @@ export default {
         );
       });
     });
+
     // apply Filters
     const applyFilters = async (filters) => {
       const query = {
@@ -186,6 +192,7 @@ export default {
         // tableLoading.value = false;
       }
     };
+
     const fetchUsers = async () => {
       try {
         tableLoading.value = true;
@@ -228,11 +235,13 @@ export default {
         });
       }
     };
+
     const openModal = () => {
       if (adminModalRef.value) {
         adminModalRef.value.openModal();
       }
     };
+
     const filterModalRef = ref(null);
     const openFilterModal = () => {
       if (filterModalRef.value) {
@@ -300,6 +309,7 @@ export default {
         // tableLoading.value = false;
       }
     };
+
     const handleRightClick = (event) => {
       event.preventDefault();
       const modalElements = document.querySelectorAll(".modal");
@@ -319,6 +329,7 @@ export default {
       // loadingStore.stopLoading();
       window.addEventListener("contextmenu", handleRightClick);
     });
+
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
     });

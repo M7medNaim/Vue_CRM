@@ -21,7 +21,7 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-12 mb-3">
-              <RatingStars v-model="selectedRating" />
+              <rating-stars v-model="selectedRating" />
             </div>
             <div class="col-12 mb-3">
               <h6>Filter by</h6>

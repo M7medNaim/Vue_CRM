@@ -23,9 +23,9 @@
         </div>
         <form @submit.prevent="submitForm">
           <div class="modal-body">
-            <ProfileForm :name="name" :email="email" />
+            <profile-form :name="name" :email="email" />
           </div>
-          <ProfileButtons :loading="loading" @close="closeEditProfile" />
+          <profile-buttons :loading="loading" @close="closeEditProfile" />
         </form>
       </div>
     </div>

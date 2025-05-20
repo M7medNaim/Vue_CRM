@@ -268,11 +268,13 @@ export default {
   components: {
     Multiselect,
   },
+
   setup() {
     const { t } = useI18n();
     const toast = useToast();
     return { toast, t };
   },
+
   data() {
     return {
       settings: {
@@ -284,6 +286,7 @@ export default {
           flag: "https://flagcdn.com/w20/tr.png",
           dialCode: "90",
         },
+
         currency: { label: "United States Dollar", value: "USD", symbol: "$" },
         enableRecaptcha: false,
         googleCaptchaKey: "",
@@ -293,6 +296,7 @@ export default {
         appLogo: defaultImage,
         favicon: defaultImage,
       },
+
       currencies: [
         { label: "United States Dollar", value: "USD", symbol: "$" },
         { label: "Euro", value: "EUR", symbol: "€" },
@@ -302,6 +306,7 @@ export default {
         { label: "Indian Rupee", value: "INR", symbol: "₹" },
         { label: "Chinese Yuan", value: "CNY", symbol: "¥" },
       ],
+
       languages: [
         { label: "English", value: "en" },
         { label: "Turkish", value: "tr" },
@@ -311,6 +316,7 @@ export default {
         { label: "Spanish", value: "es" },
         { label: "Chinese", value: "zh" },
       ],
+
       countries: [
         {
           value: "TR",
@@ -318,18 +324,21 @@ export default {
           flag: "https://flagcdn.com/w20/tr.png",
           dialCode: "90",
         },
+
         {
           value: "TO",
           label: "Tonga",
           flag: "https://flagcdn.com/w20/to.png",
           dialCode: "676",
         },
+
         {
           value: "TT",
           label: "Trinidad and Tobago",
           flag: "https://flagcdn.com/w20/tt.png",
           dialCode: "1",
         },
+
         {
           value: "TN",
           label: "Tunisia (تونس)",
@@ -339,6 +348,7 @@ export default {
       ],
     };
   },
+
   methods: {
     saveSettings() {
       try {
@@ -396,6 +406,7 @@ export default {
         });
       }
     },
+
     handleLogoUpload(event) {
       try {
         const file = event.target.files[0];
@@ -418,6 +429,7 @@ export default {
         });
       }
     },
+
     handleFaviconUpload(event) {
       try {
         const file = event.target.files[0];
@@ -441,6 +453,7 @@ export default {
       }
     },
   },
+
   watch: {
     "settings.enableRecaptcha"(newValue) {
       if (!newValue) {
@@ -449,6 +462,7 @@ export default {
       }
     },
   },
+
   computed: {
     selectedCountryText() {
       if (!this.settings.defaultCountry) return "";

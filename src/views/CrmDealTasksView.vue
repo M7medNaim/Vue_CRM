@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2">
-    <CrmKanbanHeader
+    <crm-kanban-header
       :initial-filters="filters"
       @filter-applied="applyFilters"
       @reset-filter="resetFilter"
@@ -16,7 +16,7 @@
       <div class="text-white"><i class="fa-brands fa-whatsapp"></i></div>
     </button>
   </div> -->
-  <CrmKanbanKanbanBoard
+  <crm-kanban-kanban-board
     :stages="stages"
     defaultColor="#333"
     @open-whatsapp-modal="openWhatsappModal"
@@ -37,15 +37,18 @@ import { useI18n } from "vue-i18n";
 
 export default {
   name: "CrmDealTasksView",
+
   components: {
     CrmKanbanHeader,
     CrmKanbanKanbanBoard,
     // WhatsappModal,
   },
+
   setup() {
     const toast = useToast();
     const { t } = useI18n();
     const stages = ref([]);
+
     const filters = ref({
       source: "",
       stage: "",
@@ -58,6 +61,7 @@ export default {
       updated_at_end: "",
       status: [],
     });
+
     const selected_conversation = ref(null);
     const new_message = ref(null);
     const update_message = ref(null);
@@ -84,6 +88,7 @@ export default {
         status: [],
       };
     };
+
     const handleRightClick = (event) => {
       event.preventDefault();
       const modalElements = document.querySelectorAll(".modal");
@@ -96,6 +101,7 @@ export default {
         }
       });
     };
+
     const fetchStages = async (params = null) => {
       try {
         const response = await getTasksKanban(params);
@@ -118,6 +124,7 @@ export default {
         toast.error(t("error.loadKanban"));
       }
     };
+
     const openWhatsappModal = (conversation) => {
       console.log(
         "selected conversation in Crm kanban component",
@@ -168,6 +175,7 @@ export default {
       fetchStages();
       window.addEventListener("contextmenu", handleRightClick);
     });
+
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
     });

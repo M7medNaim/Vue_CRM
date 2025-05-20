@@ -159,7 +159,7 @@
       </div>
     </div>
   </div>
-  <DocumentsFolderViewAddEditFolderModal
+  <documents-folder-view-add-edit-folder-modal
     :folder="selectedFolder"
     @submit="handleFolderSubmit"
   />
@@ -184,9 +184,11 @@ import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
 
 export default {
   name: "FolderFilesView",
+
   components: {
     DocumentsFolderViewAddEditFolderModal,
   },
+
   setup() {
     const { t } = useI18n();
     const toast = useToast();
@@ -200,6 +202,7 @@ export default {
     const folderFormModal = ref(null);
     const permissionStore = usePermissionStore();
     const parentFolder = ref(null);
+
     const getFileIcon = (type) => {
       const icons = {
         pdf: "fas fa-file-pdf text-danger",
@@ -244,6 +247,7 @@ export default {
         fileInput.value.click();
       }
     };
+
     const uploadFile = async (file) => {
       const folderPath = route.params.folderName || route.params.fullPath;
       const response = await showDocuments(folderPath);
@@ -316,6 +320,7 @@ export default {
         });
       }
     };
+
     const editFolder = (folder) => {
       selectedFolder.value = { ...folder };
       folderFormModal.value = new Modal(
@@ -323,6 +328,7 @@ export default {
       );
       folderFormModal.value.show();
     };
+
     const deleteFile = async (fileId) => {
       try {
         const result = await Swal.fire({
@@ -388,6 +394,7 @@ export default {
       );
       folderFormModal.value.show();
     };
+
     const downloadFolder = async (folderId) => {
       try {
         console.log("Downloading folder:", folderId);
@@ -402,6 +409,7 @@ export default {
         });
       }
     };
+
     const deleteFolder = async (folderId) => {
       try {
         const result = await Swal.fire({
@@ -473,6 +481,7 @@ export default {
         fetchFiles();
       });
     };
+
     const handleRightClick = (event) => {
       event.preventDefault();
       const modalElements = document.querySelectorAll(".modal");
@@ -491,6 +500,7 @@ export default {
       fetchFiles();
       window.addEventListener("contextmenu", handleRightClick);
     });
+
     onUnmounted(() => {
       window.removeEventListener("contextmenu", handleRightClick);
     });

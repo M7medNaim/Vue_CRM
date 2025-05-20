@@ -24,10 +24,12 @@ export default {
     phone: {
       type: String,
       default: "",
+      required: true,
     },
     defaultImage: {
       type: String,
       default: require("@/assets/whatsappImage/default-userImage.jpg"),
+      required: true,
     },
   },
   data() {
