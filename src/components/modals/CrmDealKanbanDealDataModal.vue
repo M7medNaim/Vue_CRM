@@ -354,15 +354,24 @@
                     <button
                       class="btn btn-primary rounded-start-0 fixed-action-btn"
                       type="submit"
-                      @click="handleAddComment"
+                      @click="
+                        editingCommentId
+                          ? handleUpdateComment
+                          : handleAddComment
+                      "
                     >
-                      {{ t("kanban-modal-edit-comment-button-submit") }}
+                      {{
+                        // ? t("kanban-modal-edit-comment-button-update")
+                        editingCommentId
+                          ? "Edit"
+                          : t("kanban-modal-edit-comment-button-submit")
+                      }}
                     </button>
                   </div>
                 </div>
                 <div class="col-12 mt-2 bg-light showComments py-2 rounded-3">
                   <div
-                    v-for="comment in customerData.comments.slice().reverse()"
+                    v-for="comment in sortedComments"
                     :key="comment.id"
                     class="row mt-2"
                   >
@@ -375,7 +384,7 @@
                       />
                       <span class="ms-2">{{ comment.username }}</span>
                     </div>
-                    <div class="col">
+                    <div class="col position-relative">
                       <div
                         :class="[
                           'rounded-3 p-2',
@@ -393,7 +402,58 @@
                           comment.text_body
                         }}</span
                         ><br />
-                        <span>{{ formatDate(comment.created_at) }}</span>
+                        <div class="d-flex">
+                          <span>{{ formatDate(comment.created_at) }}</span>
+                          <!-- pin button -->
+                          <button
+                            class="btn btn-sm p-0 ms-2"
+                            @click="togglePin(comment)"
+                            :title="comment.isPinned ? 'Unpin' : 'Pin'"
+                            style="z-index: 2"
+                          >
+                            <i
+                              :class="[
+                                'fa-solid',
+                                'fa-thumbtack',
+                                comment.isPinned
+                                  ? 'text-warning'
+                                  : 'text-white',
+                                comment.isPinned ? '' : 'opacity-50',
+                              ]"
+                              style="transform: rotate(-30deg)"
+                            ></i>
+                          </button>
+                          <!-- comment menu button -->
+                          <button
+                            class="btn btn-sm p-0 ms-2"
+                            @click="toggleMenu(comment.id)"
+                            style="z-index: 2"
+                          >
+                            <i
+                              class="fa-solid fa-ellipsis-vertical text-white"
+                            ></i>
+                          </button>
+                          <!-- comment menu -->
+                          <div
+                            v-if="activeMenu === comment.id"
+                            class="comment-menu bg-white border rounded shadow-sm d-flex ms-2"
+                            style="top: 30px; right: 0; z-index: 10"
+                          >
+                            <a
+                              href="#"
+                              class="dropdown-item text-dark"
+                              @click.prevent="copyComment(comment.text_body)"
+                              >Copy</a
+                            >
+                            |
+                            <a
+                              href="#"
+                              class="dropdown-item text-dark"
+                              @click.prevent="editComment(comment)"
+                              >Edit</a
+                            >
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -496,7 +556,15 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  onMounted,
+  nextTick,
+  watch,
+  onBeforeUnmount,
+} from "vue";
 import RatingStars from "@/components/CreateDealElements/CrmDealKanbanDealDataModalRatingStars.vue";
 import ViewReport from "@/components/kanban/CrmDealKanbanDealDataModalReportModal.vue";
 import { Modal } from "bootstrap";
@@ -565,6 +633,7 @@ export default {
           username: comment.user.name || "No user",
           isAdmin:
             comment.user && comment.user.role === "super-admin" ? true : false,
+          isPinned: comment.isPinned || false,
         })) || [],
     });
     const formatDateForInput = (dateString) => {
@@ -1028,10 +1097,82 @@ export default {
       const lineHeight = 22;
       textarea.style.height = Math.min(newHeight, maxRows * lineHeight) + "px";
     };
+    const activeMenu = ref(null);
+    const toggleMenu = (commentId) => {
+      activeMenu.value = activeMenu.value === commentId ? null : commentId;
+    };
+    const copyComment = (text) => {
+      navigator.clipboard.writeText(text);
+      activeMenu.value = null;
+      toast?.success?.("Copied!");
+    };
+    const editingCommentId = ref(null);
+    const editComment = (comment) => {
+      customerData.comment = comment.text_body;
+      editingCommentId.value = comment.id;
+      nextTick(() => {
+        const textarea = document.querySelector(".comment-textarea");
+        if (textarea) {
+          textarea.style.height = "30px";
+          autoResize({ target: textarea });
+        }
+      });
+    };
+    const handleUpdateComment = async () => {
+      try {
+        const formData = {
+          text_body: customerData.comment,
+          comment_id: editingCommentId.value,
+        };
+        const response = await createComment(formData);
+        // const response = await updateComment(formData);
+        if (response.data) {
+          const idx = customerData.comments.findIndex(
+            (c) => c.id === editingCommentId.value
+          );
+          if (idx !== -1) {
+            customerData.comments[idx].text_body = customerData.comment;
+          }
+          toast.success(t("success.commentUpdated"));
+          customerData.comment = "";
+          editingCommentId.value = null;
+        } else {
+          toast.error(t("error.updatingComment"));
+        }
+      } catch (error) {
+        console.error("Error updating comment:", error);
+        toast.error(t("error.updatingComment"));
+      }
+    };
+    const togglePin = (comment) => {
+      comment.isPinned = !comment.isPinned;
+      toast.success(
+        comment.isPinned ? t("تم تثبيت التعليق") : t("تم إلغاء التثبيت")
+      );
+    };
+    const sortedComments = computed(() => {
+      return customerData.comments.slice().sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    });
     onMounted(() => {
       fetchSources();
       fetchStages();
+      document.addEventListener("click", handleClickOutside);
     });
+    onBeforeUnmount(() => {
+      document.removeEventListener("click", handleClickOutside);
+    });
+    const handleClickOutside = (e) => {
+      if (
+        !e.target.closest(".comment-menu") &&
+        !e.target.closest(".fa-ellipsis-vertical")
+      ) {
+        activeMenu.value = null;
+      }
+    };
     return {
       stages,
       currentStage,
@@ -1083,6 +1224,15 @@ export default {
       handleEnter,
       autoResize,
       resetTextareaSize,
+      activeMenu,
+      toggleMenu,
+      copyComment,
+      handleClickOutside,
+      editingCommentId,
+      editComment,
+      handleUpdateComment,
+      togglePin,
+      sortedComments,
     };
   },
 };
@@ -1375,5 +1525,19 @@ label {
 
 .comment-textarea::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.comment-menu {
+  width: fit-content;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+}
+.comment-menu .dropdown-item {
+  cursor: pointer;
+  padding: 0px 7px !important;
+}
+.comment-menu .dropdown-item:hover {
+  background: #f1f1f1;
+  border-radius: 4px;
 }
 </style>
