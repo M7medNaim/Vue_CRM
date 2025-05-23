@@ -333,6 +333,9 @@ export const getMoreConversations = (offset, limit, filters, search) => {
 export const createComment = (formData) => {
   return axios.post("/comments", formData);
 };
+export const updateComments = async (id, formData) => {
+  return await axios.patch(`/comments/${id}`, formData);
+};
 // create new task
 export const createTask = (formData) => {
   return axios.post("/tasks", formData);
