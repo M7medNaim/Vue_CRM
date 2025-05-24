@@ -598,8 +598,10 @@ export default {
         oldStage.value.deals.find((d) => d.id == dealId);
       console.log("deal", deal);
       try {
-        await updateDealStage(dealId, newStageId);
-        deal.stage_id = newStageId;
+        if (newStageId !== -1) {
+          await updateDealStage(dealId, newStageId);
+          deal.stage_id = newStageId;
+        }
         if (oldStage.value) oldStage.value.deal_count -= 1;
         if (newStage.value) newStage.value.deal_count += 1;
         if (!kanban) {
