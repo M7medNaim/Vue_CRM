@@ -50,6 +50,58 @@
           ></i>
         </template>
       </div>
+      <div class="d-flex gap-1 align-items-center p-0 flex-wrap">
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-trash"></i>
+          Trash</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-moon"></i>
+          Stopped Responding</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-phone-slash"></i>
+          No Response</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-capsules"></i>
+          Medicine</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-fire"></i>
+          Hot</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-snowflake"></i>
+          Idle</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-street-view"></i>
+          Refernce</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-plus"></i>
+          New</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-repeat"></i>
+          Re-contact</span
+        >
+        <span class="p-0 badge bg-Tages p-1">
+          <i class="fa-solid fa-user-slash"></i>
+          Low Potential</span
+        >
+      </div>
+      <!-- <div class="d-flex gap-1 align-items-center p-0 flex-wrap">
+        <span
+          v-for="tag in deal.tags"
+          :key="tag.id"
+          class="p-0 badge bg-Tages p-1"
+        >
+          <i class="fa-solid" :class="tagIcon(tag.name)"></i>
+          {{ tag.name }}
+        </span>
+      </div> -->
     </div>
 
     <!-- ملاحظة إدارية -->
@@ -149,6 +201,32 @@ export default {
           return "fa-solid fa-recycle";
       }
     };
+    const tagIcon = (tagName) => {
+      switch (tagName.toLowerCase()) {
+        case "new":
+          return "fa-plus";
+        case "hot":
+          return "fa-fire";
+        case "idle":
+          return "fa-snowflake";
+        case "medicine":
+          return "fa-capsules";
+        case "no response":
+          return "fa-phone-slash";
+        case "stopped responding":
+          return "fa-moon";
+        case "reference":
+          return "fa-street-view";
+        case "re-contact":
+          return "fa-repeat";
+        case "low potential":
+          return "fa-user-slash";
+        case "trash":
+          return "fa-trash";
+        default:
+          return "fa-tag";
+      }
+    };
     return {
       t,
       formatDate,
@@ -156,6 +234,7 @@ export default {
       getUserColor,
       borderRight,
       getIcon,
+      tagIcon,
     };
   },
   methods: {},
@@ -212,5 +291,12 @@ export default {
   bottom: 5px;
   right: 5px;
   font-size: 14px;
+}
+.bg-Tages {
+  background-color: rgba(76, 74, 74, 0.453);
+}
+
+.bg-Tages i {
+  margin-inline-end: 1px;
 }
 </style>

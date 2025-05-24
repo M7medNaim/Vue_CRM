@@ -354,18 +354,9 @@
                     <button
                       class="btn btn-primary rounded-start-0 fixed-action-btn"
                       type="submit"
-                      @click="
-                        editingCommentId
-                          ? handleUpdateComment
-                          : handleAddComment
-                      "
+                      @click="handleAddComment"
                     >
-                      {{
-                        // ? t("kanban-modal-edit-comment-button-update")
-                        editingCommentId
-                          ? "Edit"
-                          : t("kanban-modal-edit-comment-button-submit")
-                      }}
+                      {{ t("kanban-modal-edit-comment-button-submit") }}
                     </button>
                   </div>
                 </div>
@@ -382,7 +373,7 @@
                         width="45"
                         height="45"
                       />
-                      <span class="ms-2">{{ comment.username }}</span>
+                      <!-- <span class="ms-2">{{ comment.username }}</span> -->
                     </div>
                     <div class="col position-relative">
                       <div
@@ -393,20 +384,65 @@
                             : 'bg-primary text-white',
                         ]"
                         style="
-                          width: fit-content;
+                          width: 100%;
                           word-break: break-word;
                           overflow-wrap: break-word;
                         "
                       >
-                        <span style="white-space: pre-line">{{
-                          comment.text_body
-                        }}</span
-                        ><br />
-                        <div class="d-flex">
-                          <span>{{ formatDate(comment.created_at) }}</span>
+                        <h6
+                          class="mb-2"
+                          style="font-size: 16px; font-weight: 600"
+                        >
+                          {{ comment.username }}
+                        </h6>
+                        <template v-if="editingCommentId === comment.id">
+                          <textarea
+                            :id="`edit-textarea-${comment.id}`"
+                            v-model="editingCommentText"
+                            class="form-control rounded-2 bg-white text-dark ps-2"
+                            style="
+                              resize: none;
+                              overflow-y: hidden;
+                              min-height: 30px;
+                              width: 100%;
+                              font-size: 14px;
+                            "
+                            @input="
+                              (e) => {
+                                e.target.style.height = '30px';
+                                e.target.style.height =
+                                  e.target.scrollHeight + 'px';
+                              }
+                            "
+                          ></textarea>
+                          <div class="d-flex justify-content-end gap-2 mt-1">
+                            <button
+                              class="btn btn-success btn-sm"
+                              @click="handleUpdateComment(comment)"
+                              style="font-size: 10px"
+                            >
+                              <i class="fa fa-check"></i>
+                            </button>
+                            <button
+                              class="btn btn-danger btn-sm"
+                              @click="cancelEditComment"
+                              style="font-size: 10px"
+                            >
+                              <i class="fa fa-times"></i>
+                            </button>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <span style="white-space: pre-line">{{
+                            comment.text_body
+                          }}</span>
+                        </template>
+                        <div
+                          class="d-flex justify-content-end align-items-center gap-2 mt-2"
+                        >
                           <!-- pin button -->
                           <button
-                            class="btn btn-sm p-0 ms-2"
+                            class="btn btn-sm p-0"
                             @click="togglePin(comment)"
                             :title="comment.isPinned ? 'Unpin' : 'Pin'"
                             style="z-index: 2"
@@ -415,16 +451,43 @@
                               :class="[
                                 'fa-solid',
                                 'fa-thumbtack',
-                                comment.isPinned
-                                  ? 'text-warning'
-                                  : 'text-white',
-                                comment.isPinned ? '' : 'opacity-50',
+                                comment.isPinned ? 'text-warning' : '',
+                                comment.isAdmin ? '' : 'text-white',
                               ]"
-                              style="transform: rotate(-30deg)"
+                              style="transform: rotate(-30deg); font-size: 12px"
                             ></i>
                           </button>
-                          <!-- comment menu button -->
                           <button
+                            v-if="editingCommentId !== comment.id"
+                            class="btn btn-sm p-0"
+                            @click="editComment(comment)"
+                            :class="[
+                              comment.isAdmin ? 'text-dark' : 'text-white',
+                            ]"
+                          >
+                            <i
+                              class="fa-solid fa-pencil"
+                              style="font-size: 12px"
+                            ></i>
+                          </button>
+                          <button
+                            class="btn btn-sm p-0"
+                            @click.prevent="copyComment(comment.text_body)"
+                            :class="[
+                              comment.isAdmin ? 'text-dark' : 'text-white',
+                            ]"
+                          >
+                            <i
+                              class="fa-solid fa-copy"
+                              style="font-size: 12px"
+                            ></i>
+                          </button>
+                          <span style="font-size: 10px">{{
+                            formatDate(comment.created_at)
+                          }}</span>
+
+                          <!-- comment menu button -->
+                          <!-- <button
                             class="btn btn-sm p-0 ms-2"
                             @click="toggleMenu(comment.id)"
                             style="z-index: 2"
@@ -432,9 +495,9 @@
                             <i
                               class="fa-solid fa-ellipsis-vertical text-white"
                             ></i>
-                          </button>
+                          </button> -->
                           <!-- comment menu -->
-                          <div
+                          <!-- <div
                             v-if="activeMenu === comment.id"
                             class="comment-menu bg-white border rounded shadow-sm d-flex ms-2"
                             style="top: 30px; right: 0; z-index: 10"
@@ -452,7 +515,7 @@
                               @click.prevent="editComment(comment)"
                               >Edit</a
                             >
-                          </div>
+                          </div> -->
                         </div>
                       </div>
                     </div>
@@ -576,6 +639,7 @@ import {
   getSources,
   getStages,
   createComment,
+  updateComments,
   createTask,
   updateTask,
   updateDealStage,
@@ -1107,35 +1171,36 @@ export default {
       toast?.success?.("Copied!");
     };
     const editingCommentId = ref(null);
+    const editingCommentText = ref("");
     const editComment = (comment) => {
-      customerData.comment = comment.text_body;
       editingCommentId.value = comment.id;
+      editingCommentText.value = comment.text_body;
       nextTick(() => {
-        const textarea = document.querySelector(".comment-textarea");
+        const textarea = document.getElementById(`edit-textarea-${comment.id}`);
         if (textarea) {
           textarea.style.height = "30px";
-          autoResize({ target: textarea });
+          textarea.style.height = textarea.scrollHeight + "px";
+          textarea.focus();
         }
       });
     };
-    const handleUpdateComment = async () => {
+    const handleUpdateComment = async (comment) => {
       try {
         const formData = {
-          text_body: customerData.comment,
-          comment_id: editingCommentId.value,
+          text_body: editingCommentText.value,
+          comment_id: comment.id,
         };
-        const response = await createComment(formData);
-        // const response = await updateComment(formData);
+        const response = await updateComments(comment.id, formData);
         if (response.data) {
           const idx = customerData.comments.findIndex(
-            (c) => c.id === editingCommentId.value
+            (c) => c.id === comment.id
           );
           if (idx !== -1) {
-            customerData.comments[idx].text_body = customerData.comment;
+            customerData.comments[idx].text_body = editingCommentText.value;
           }
           toast.success(t("success.commentUpdated"));
-          customerData.comment = "";
           editingCommentId.value = null;
+          editingCommentText.value = "";
         } else {
           toast.error(t("error.updatingComment"));
         }
@@ -1157,6 +1222,10 @@ export default {
         return new Date(b.created_at) - new Date(a.created_at);
       });
     });
+    const cancelEditComment = () => {
+      editingCommentId.value = null;
+      editingCommentText.value = "";
+    };
     onMounted(() => {
       fetchSources();
       fetchStages();
@@ -1229,10 +1298,12 @@ export default {
       copyComment,
       handleClickOutside,
       editingCommentId,
+      editingCommentText,
       editComment,
       handleUpdateComment,
       togglePin,
       sortedComments,
+      cancelEditComment,
     };
   },
 };
