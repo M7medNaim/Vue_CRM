@@ -22,8 +22,7 @@
             >
               <span>
                 <i
-                  :class="getStageIconById(stage.id)"
-                  class="me-2"
+                  :class="`me-2 fa-solid fa-${stage.icon}`"
                   :style="{ color: getContrastColor(stage.color_code) }"
                 ></i>
               </span>
