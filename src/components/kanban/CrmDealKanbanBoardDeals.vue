@@ -42,13 +42,23 @@
                 {{ stage.deal_count ?? 0 }}
               </span>
             </div>
-            <button
-              v-if="permissionStore.hasPermission('edit-stage')"
-              class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
-              style="right: -2%; top: 3%"
+            <div
+              class="btnPlusStage bg-transparent text-white position-absolute top-0 d-none"
+              style="right: -2%"
             >
-              <span class="bg-primary px-2 py-2 fs-5">+</span>
-            </button>
+              <button
+                v-if="permissionStore.hasPermission('create-stage')"
+                class="border-0 bg-transparent text-white p-0"
+              >
+                <span class="bg-secondary px-2 py-2 fs-5">=</span>
+              </button>
+              <button
+                v-if="permissionStore.hasPermission('create-stage')"
+                class="border-0 bg-transparent text-white ps-0"
+              >
+                <span class="bg-primary px-2 py-2 fs-5">+</span>
+              </button>
+            </div>
           </div>
         </div>
         <!-- Scrollable Deals Container -->
