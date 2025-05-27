@@ -713,24 +713,6 @@ export default {
       kanbanStore.setHasNewChanges(true);
     };
 
-    const getStageIconById = (stageId) => {
-      const iconMap = {
-        1: "fa-solid fa-moon",
-        2: "fa-solid fa-user-plus",
-        3: "fa-solid fa-hourglass-end",
-        4: "fa-solid fa-phone-volume",
-        5: "fa-solid fa-message",
-        6: "fa-solid fa-comments",
-        7: "fa-solid fa-people-arrows",
-        8: "fa-solid fa-calendar-plus",
-        9: "fa-solid fa-calendar-check",
-        10: "fa-solid fa-spinner",
-        11: "fa-solid fa-circle-check",
-        12: "fa-solid fa-trash-can",
-      };
-      return iconMap[stageId] || "fa-solid fa-circle";
-    };
-
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
       document.addEventListener("mouseup", stopScrolling);
@@ -838,7 +820,6 @@ export default {
       changeDealStage,
       permissionStore,
       PERMISSIONS,
-      getStageIconById,
       isIdle,
 
       // Methods
