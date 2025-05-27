@@ -224,7 +224,7 @@ export default {
         case "trash":
           return "fa-trash";
         default:
-          return "fa-tag";
+          return "fa-recycle";
       }
     };
     return {

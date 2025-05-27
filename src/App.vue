@@ -15,12 +15,12 @@
         v-if="!$route.meta.hideNavigation"
         class="row g-0 flex-nowrap app-layout"
       >
-        <div
+        <!-- <div
           :class="['sidebar', sidebarClass, isSidebarCollapsed]"
           v-if="showSidebar"
         >
           <the-left-sidebar @toggle="handleSidebarToggle" />
-        </div>
+        </div> -->
 
         <div :class="headerClass" class="ms-2 main-content">
           <the-top-header @logout="handleLogout" />
@@ -34,7 +34,7 @@
         <router-view />
       </div>
 
-      <!-- شريط الإعلانات -->
+      <!-- News Bar -->
       <theNewsBar v-if="showNewsBar" />
     </div>
   </div>
@@ -44,7 +44,7 @@
 // import { ref, onMounted } from "vue";
 import axiosInstance from "@/plugins/axios";
 import TheTopHeader from "@/components/headers/TheTopHeader.vue";
-import TheLeftSidebar from "@/components/TheLeftSidebar.vue";
+// import TheLeftSidebar from "@/components/TheLeftSidebar.vue";
 import LoginView from "@/views/LoginView.vue";
 import Cookies from "js-cookie";
 import TheLoaderComponent from "@/components/TheLoaderComponent.vue";
@@ -57,7 +57,7 @@ export default {
   name: "App",
   components: {
     TheTopHeader,
-    TheLeftSidebar,
+    // TheLeftSidebar,
     LoginView,
     TheLoaderComponent,
     TheNewsBar,
@@ -221,6 +221,7 @@ export default {
 }
 
 .main-content {
+  height: 100vh;
   width: 100%;
   min-width: 0;
   flex-grow: 1;
