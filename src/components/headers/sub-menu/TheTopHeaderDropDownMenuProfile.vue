@@ -10,22 +10,23 @@
           alt="profile image"
         />
       </div>
-      <div class="data">
+      <div class="data w-100">
         <div
-          class="profileStatus d-flex justify-content-between align-items-center"
+          class="profileStatus d-flex justify-content-between align-items-center w-100"
         >
           <span class="">{{ name }}</span>
           <div class="form-check form-switch">
             <input
+              ref="customSwitchInput"
               class="form-check-input shadow-none custom-switch"
               style="padding: 10px 20px"
               type="checkbox"
+              @click.stop="handleSwitchClick"
               checked
-              @click.stop
             />
           </div>
         </div>
-        <span class="text-secondary userEmail">{{ userEmail }}</span>
+        <!-- <span class="text-secondary userEmail">{{ userEmail }}</span> -->
       </div>
     </div>
     <hr class="my-2" />
@@ -84,6 +85,7 @@ import CustomBackground from "@/components/headers/sub-menu/profileMenuItems/The
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
+import { ref, onMounted, onUnmounted, onBeforeUnmount, nextTick } from "vue";
 
 export default {
   name: "TheTopHeaderDropDownMenuProfile",
@@ -98,7 +100,35 @@ export default {
   setup() {
     const toast = useToast();
     const { t } = useI18n();
-    return { toast, t };
+
+    const customSwitchInput = ref(null);
+
+    const handleSwitchClick = () => {
+      nextTick(() => {
+        if (customSwitchInput.value) {
+          customSwitchInput.value.blur();
+        }
+      });
+    };
+
+    onMounted(() => {
+      // ... باقي الـ onMounted
+    });
+
+    onUnmounted(() => {
+      // ... باقي الـ onUnmounted
+    });
+
+    onBeforeUnmount(() => {
+      // ... باقي الـ onBeforeUnmount
+    });
+
+    return {
+      toast,
+      t,
+      customSwitchInput,
+      handleSwitchClick,
+    };
   },
   data() {
     return {
@@ -158,7 +188,8 @@ export default {
 .dropdown-menu {
   top: 40px;
   right: 100%;
-  width: fit-content !important;
+  width: 250px !important;
+  min-width: 250px !important;
 }
 .profileImage img {
   min-width: 45px;

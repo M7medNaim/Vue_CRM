@@ -33,25 +33,24 @@
             </button>
           </div>
           <div v-else class="kanban-stage">
-            <div
-              class="stage-header position-relative"
-              @click="
+            <!-- @click="
                 permissionStore.hasPermission('edit-stage') &&
                   openFilterStage(stage)
-              "
+              " -->
+            <div
+              class="stage-header position-relative"
               :title="stage.description || stage.name"
             >
               <div
-                class="stageName py-1 p-0"
-                :style="{ backgroundColor: stage.color_code }"
+                class="stageName p-0 d-flex justify-content-between align-items-center"
               >
-                <button
+                <!-- <button
                   v-if="permissionStore.hasPermission('edit-stage')"
                   class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
                   style="right: -2%; top: -3%"
-                >
-                  <!-- <span class="bg-primary px-2 py-2 fs-5">+</span> -->
-                  <i
+                > -->
+                <!-- <span class="bg-primary px-2 py-2 fs-5">+</span> -->
+                <!-- <i
                     class="fa-solid fa-filter bg-primary px-2 pe-3"
                     style="
                       font-size: 14px;
@@ -60,45 +59,54 @@
                       padding-top: 10px;
                     "
                   ></i>
-                </button>
+                </button> -->
                 <button
-                  class="btn btn-sm btn-light me-1 position-relative"
+                  class="btn btn-sm h-100 rounded-0"
+                  style="background-color: #cecfce"
                   @click.stop="hiddenStages[stage.id] = true"
-                  style="
-                    font-size: 14px;
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 20px;
-                  "
+                >
+                  <i
+                    class="fa-solid fa-minus text-white"
+                    style="font-size: 12px"
+                  ></i>
+                </button>
+                <div class="">
+                  <span>
+                    <i
+                      :class="getStageIconById(stage.id)"
+                      class="me-1"
+                      :style="{ color: stage.color_code }"
+                    ></i>
+                  </span>
+                  <span class="" :style="{ color: stage.color_code }">{{
+                    stage.name
+                  }}</span>
+                  <span
+                    class="badge ms-1 text-white"
+                    style="font-size: 14px"
+                    :style="{
+                      backgroundColor: stage.color_code,
+                    }"
+                  >
+                    {{ stage.deal_count ?? 0 }}
+                  </span>
+                </div>
+                <button
+                  class="btn btn-sm h-100 rounded-0 p-0 pe-1"
+                  style=""
+                  @click="openFilterStage(stage)"
                 >
                   <span
-                    class="position-absolute top-0"
-                    style="right: 50%; transform: translate(50%, 0)"
-                    >−</span
-                  >
+                    ><i
+                      class="fa-solid fa-sliders bg-white"
+                      style="
+                        background-color: #fffeff;
+                        color: #6e6f70;
+                        padding: 4px;
+                      "
+                    ></i
+                  ></span>
                 </button>
-                <span>
-                  <i
-                    :class="getStageIconById(stage.id)"
-                    class="me-1"
-                    :style="{ color: getContrastColor(stage.color_code) }"
-                  ></i>
-                </span>
-                <span
-                  class=""
-                  :style="{ color: getContrastColor(stage.color_code) }"
-                  >{{ stage.name }}</span
-                >
-                <span
-                  class="badge ms-1"
-                  style="font-size: 14px"
-                  :style="{
-                    backgroundColor: getContrastColor(stage.color_code),
-                    color: stage.color_code,
-                  }"
-                >
-                  {{ stage.deal_count ?? 0 }}
-                </span>
               </div>
             </div>
             <div class="stage-column">
@@ -984,16 +992,17 @@ export default {
   padding-left: 3px;
   transition: all 0.5s;
   cursor: pointer;
-  clip-path: polygon(
+  /* clip-path: polygon(
     0 0,
     calc(100% - 15px) 0,
     100% 50%,
     calc(100% - 15px) 100%,
     0 100%
-  );
+  ); */
 }
 .stageName {
-  padding-left: 4px !important;
+  background-color: #f4f4f4;
+  border: 2px solid #d2d5d6;
 }
 .stage-header:hover .btnPlusStage {
   display: block !important;

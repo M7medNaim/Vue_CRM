@@ -1,5 +1,9 @@
 <template>
-  <div class="me-2" ref="gaugeChart" style="width: 50px; height: 50px"></div>
+  <div
+    class="me-2 pt-1"
+    ref="gaugeChart"
+    style="width: 50px; height: 50px"
+  ></div>
 </template>
 <script>
 import * as echarts from "echarts";
@@ -7,7 +11,7 @@ import * as echarts from "echarts";
 export default {
   data() {
     return {
-      score: 75,
+      score: 50,
     };
   },
   mounted() {
@@ -17,59 +21,43 @@ export default {
     initGauge() {
       const chart = echarts.init(this.$refs.gaugeChart);
 
+      const getScoreColor = (score) => {
+        if (score <= 25) return "#A00000";
+        if (score >= 26 && score <= 35) return "#FF0000";
+        if (score >= 36 && score <= 60) return "#FFA500";
+        if (score >= 61 && score <= 75) return "#90EE90";
+        if (score >= 76 && score <= 100) return "#006400";
+        return "#eee";
+      };
+
+      const scoreColor = getScoreColor(this.score);
+
       const option = {
         series: [
           {
-            // name: "Speed",
             type: "gauge",
-            radius: "90%",
+            radius: "85%",
             startAngle: 225,
             endAngle: -45,
             min: 0,
             max: 100,
-            // splitNumber: 10,
             axisLine: {
               lineStyle: {
-                // width: 10,
                 width: 5,
                 color: [
-                  [0.333, "#ff0000"],
-                  [0.666, "#f48e00"],
+                  [this.score / 100, scoreColor],
                   [1, "#eee"],
                 ],
               },
             },
-            // axisTick: {
-            //   length: 12,
-            //   lineStyle: {
-            //     color: "#ddd",
-            //     width: 1,
-            //   },
-            // },
-            // axisLabel: {
-            //   distance: 20,
-            //   fontSize: 12,
-            //   color: "#333",
-            // },
             pointer: { show: false },
-            // title: {
-            //   offsetCenter: [0, "-40%"],
-            //   fontSize: 14,
-            //   color: "#333",
-            // },
-            // detail: {
-            //   valueAnimation: true,
-            //   formatter: "{value} km/h",
-            //   color: "#333",
-            //   fontSize: 20,
-            // },
             detail: {
               show: true,
               valueAnimation: true,
               formatter: "{value}",
               color: "#fff",
-              fontSize: 16,
-              offsetCenter: [0, "10%"],
+              fontSize: 12,
+              offsetCenter: [0, "13%"],
             },
             title: { show: false },
             splitLine: { show: false },
@@ -78,7 +66,6 @@ export default {
             data: [
               {
                 value: this.score,
-                // name: "Speed",
               },
             ],
           },
