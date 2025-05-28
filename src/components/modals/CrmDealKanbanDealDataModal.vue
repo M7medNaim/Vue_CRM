@@ -255,11 +255,18 @@
                 <div class="col-10">
                   <select
                     class="form-select bg-light text-secondary py-2"
-                    v-model="customerData.representative"
+                    v-model="customerData.assigned_to"
                     :readonly="!isEditMode"
                   >
                     <option value="" disabled>
                       {{ t("kanban-modal-edit-placeholder-representative") }}
+                    </option>
+                    <option
+                      v-for="user in users"
+                      :key="user.id"
+                      :value="user.id"
+                    >
+                      {{ user.name }}
                     </option>
                   </select>
                 </div>
@@ -395,7 +402,7 @@
                         >
                           {{ comment.isAdmin ? "System" : comment.username }}
                         </h6>
-                        <template v-if="editingCommentId === comment.id">
+                        <div v-if="editingCommentId === comment.id">
                           <textarea
                             :id="`edit-textarea-${comment.id}`"
                             v-model="editingCommentText"
@@ -431,12 +438,12 @@
                               <i class="fa fa-times"></i>
                             </button>
                           </div>
-                        </template>
-                        <template v-else>
+                        </div>
+                        <div v-else>
                           <span style="white-space: pre-line">{{
                             comment.text_body
                           }}</span>
-                        </template>
+                        </div>
                         <div
                           class="d-flex justify-content-end align-items-center gap-2 mt-2"
                         >
@@ -451,8 +458,11 @@
                               :class="[
                                 'fa-solid',
                                 'fa-thumbtack',
-                                comment.isPinned ? 'text-warning' : '',
-                                comment.isAdmin ? '' : 'text-white',
+                                comment.isPinned
+                                  ? 'text-warning'
+                                  : comment.isAdmin
+                                  ? ''
+                                  : 'text-white',
                               ]"
                               style="transform: rotate(-30deg); font-size: 12px"
                             ></i>
@@ -646,6 +656,7 @@ import {
   updateDeal,
   createConversation,
   getLogsByDealId,
+  getUser,
 } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 export default {
@@ -677,6 +688,7 @@ export default {
     const hoveredStage = ref(null);
     const stageColors = reactive({});
     const local_logs = ref([]);
+    const users = ref([]);
     const customerData = reactive({
       id: props.deal?.id,
       name: props.deal?.contact.name || "Custome Name",
@@ -699,6 +711,7 @@ export default {
             comment.user && comment.user.role === "super-admin" ? true : false,
           isPinned: comment.isPinned || false,
         })) || [],
+      assigned_to: props.deal?.user_id || "",
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -707,6 +720,14 @@ export default {
     };
     const formatDate = (dateString) => {
       return dateString ? dateString.split("T")[0] : "No date";
+    };
+    const fetchUsers = async () => {
+      try {
+        const response = await getUser();
+        users.value = response.data.data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
     };
     const fetchSources = async () => {
       try {
@@ -887,6 +908,7 @@ export default {
           email: customerData.email || "",
           note: customerData.note || "",
           rating: customerData.rating || 0,
+          user_id: customerData.assigned_to || "",
           // source_id: customerData.source_id,
           // stage_id: customerData.stage_id,
           // tasks: customerData.tasks,
@@ -1229,6 +1251,7 @@ export default {
     onMounted(() => {
       fetchSources();
       fetchStages();
+      fetchUsers();
       document.addEventListener("click", handleClickOutside);
     });
     onBeforeUnmount(() => {
@@ -1304,6 +1327,7 @@ export default {
       togglePin,
       sortedComments,
       cancelEditComment,
+      users,
     };
   },
 };

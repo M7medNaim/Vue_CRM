@@ -4,15 +4,169 @@
       <div
         class="col-3 col-md-4 d-flex align-items-center text-white fs-6 pt-1"
       >
+        <!-- v-show="user_role === 'sales'" -->
+
         <img
-          v-show="user_role === 'sales'"
           class="me-2"
           src="@/assets/new-nokta-logo.png"
           style="width: 40px; height: 40px"
           alt=""
         />
-        <span>{{ pageTitle }}</span>
-        <router-link
+        <div class="toggleMenuBar position-relative ms-2">
+          <div
+            ref="menuButton"
+            class="btnShowMenu d-flex justify-content-center align-items-center gap-1"
+            @click="showMainMenu"
+          >
+            <i
+              :class="[
+                'menu-anim-icon',
+                showDropdown
+                  ? 'fa-solid fa-xmark'
+                  : 'fa-solid fa-bars-staggered',
+                'fs-5',
+              ]"
+            ></i>
+            <span>Main Menu</span>
+          </div>
+          <transition name="dropdown-fade">
+            <div
+              v-if="showDropdown"
+              ref="dropdownMenu"
+              class="dropdown-menu-custom"
+            >
+              <div class="dropdown-link">
+                <router-link
+                  to="/crm-kanban"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <i class="fa-solid fa-chart-column fs-5 me-2"></i>
+                  <span>{{ $t("sidebar-nav-item-kanban") }}</span>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+                  to="/crmlist"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-crmlist')"
+                  >
+                    <i class="fa-solid fa-table-list fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-crmlist") }}</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="permissionStore.hasPermission(PERMISSIONS.USERS)"
+                  to="/users"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-users')"
+                  >
+                    <i class="fa-solid fa-users fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-users") }}</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="permissionStore.hasPermission(PERMISSIONS.CONTACTS)"
+                  to="/contacts"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-contacts')"
+                  >
+                    <i class="fa-regular fa-address-book fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-contacts") }}</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)"
+                  to="/documents"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-documents')"
+                  >
+                    <i class="fa-regular fa-folder-open fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-documents") }}</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
+                  to="/dashboard"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-dashboard')"
+                  >
+                    <i class="fa-solid fa-chart-pie fs-5 me-2"></i>
+
+                    <span>{{ $t("sidebar-nav-item-dashboard") }}</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="
+                    permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+                  "
+                  to="/general-settings"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-settings')"
+                  >
+                    <i class="fa-solid fa-cog fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-settings") }}</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="
+                    permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+                  "
+                  to="/stage-settings"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-settings')"
+                  >
+                    <i class="fa-solid fa-sliders fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-settings") }}</span>
+                  </div>
+                </router-link>
+              </div>
+            </div>
+          </transition>
+        </div>
+        <!-- <span>{{ pageTitle }}</span> -->
+        <!-- <router-link
           v-if="
             ($route.path === '/general-settings' ||
               $route.path === '/broadcast-settings') &&
@@ -50,7 +204,7 @@
           <span class="text-white px-3">{{
             $t("header-subnav-item-settings-broadcast")
           }}</span>
-        </router-link>
+        </router-link> -->
       </div>
       <div
         class="col-3 col-md-3 d-flex justify-content-end align-items-center g-3 pt-0 mt-0"
@@ -83,6 +237,8 @@
               $t("header-refresh-button")
             }}</span>
           </button>
+          <ScoureUser />
+
           <div class="lang">
             <button
               class="btnLang border-0 bg-transparent d-flex align-items-center justify-content-center gap-2 text-white position-relative rounded-2 mt-1"
@@ -143,6 +299,7 @@ import Cookies from "js-cookie";
 import { changeLanguage } from "@/i18n";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { useKanbanStore } from "@/stores/kanbanStore";
+import ScoureUser from "@/components/headers/ScoureUser.vue";
 import {
   ref,
   onMounted,
@@ -159,6 +316,7 @@ export default {
   components: {
     MenuProfile,
     NotificationsHead,
+    ScoureUser,
   },
   data() {
     return {
@@ -169,6 +327,7 @@ export default {
       name: Cookies.get("name") || "User",
       userImage: Cookies.get("image") || "",
       currentLanguage: localStorage.getItem("locale") || "en",
+      showDropdown: false,
     };
   },
   setup() {
@@ -281,13 +440,26 @@ export default {
 
     handleClickOutside(event) {
       if (
-        this.activeMenu &&
-        !this.$refs.langButton?.contains(event.target) &&
-        !this.$refs.profileButton?.contains(event.target) &&
-        !this.$refs.notifiButton?.contains(event.target)
+        this.$refs.dropdownMenu &&
+        !this.$refs.dropdownMenu.contains(event.target) &&
+        this.$refs.menuButton &&
+        !this.$refs.menuButton.contains(event.target)
       ) {
-        this.activeMenu = null;
+        this.showDropdown = false;
+        document.removeEventListener("mousedown", this.handleClickOutside);
       }
+    },
+    showMainMenu() {
+      this.showDropdown = !this.showDropdown;
+      if (this.showDropdown) {
+        document.addEventListener("mousedown", this.handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", this.handleClickOutside);
+      }
+    },
+    closeDropdown() {
+      this.showDropdown = false;
+      document.removeEventListener("mousedown", this.handleClickOutside);
     },
   },
   mounted() {
@@ -296,6 +468,7 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener("mousedown", this.handleClickOutside);
   },
   computed: {
     nextLanguage() {
@@ -363,5 +536,123 @@ export default {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* main menu dropdown */
+
+.toggleMenuBar {
+  position: relative;
+  display: inline-block;
+}
+.toggleMenuBar .btnShowMenu {
+  cursor: pointer;
+}
+.dropdown-menu-custom {
+  position: absolute;
+  top: 35px !important;
+  left: -40px;
+  min-width: 230px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: dropdownIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-menu-custom .router-link,
+.dropdown-menu-custom .dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.3rem 1.3rem;
+  color: #222;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 10px;
+  background: transparent;
+  position: relative;
+  transition: background 0.22s, color 0.22s, box-shadow 0.22s;
+  box-shadow: none;
+}
+
+.dropdown-menu-custom .router-link:not(:last-child),
+.dropdown-menu-custom .dropdown-link:not(:last-child) {
+  margin-bottom: 0.15rem;
+}
+
+.dropdown-menu-custom .router-link:hover,
+.dropdown-menu-custom .dropdown-link:hover {
+  background: linear-gradient(90deg, #e3f0ff 0%, #f7faff 100%);
+  color: #1976d2;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+}
+
+.dropdown-menu-custom .router-link:hover::after,
+.dropdown-menu-custom .dropdown-link:hover::after {
+  content: "\f054"; /* FontAwesome arrow-right */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 0.9em;
+  color: #1976d2;
+  margin-left: auto;
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.dropdown-menu-custom .router-link::after,
+.dropdown-menu-custom .dropdown-link::after {
+  content: "";
+  opacity: 0;
+  margin-left: auto;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.dropdown-fade-enter-active,
+.dropdown-fade-leave-active {
+  transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dropdown-fade-enter-from,
+.dropdown-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-18px) scale(0.95);
+}
+.dropdown-fade-enter-to,
+.dropdown-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@media (max-width: 600px) {
+  .dropdown-menu-custom {
+    min-width: 140px;
+    font-size: 15px;
+    left: 0;
+    right: auto;
+    padding: 0.7rem 0.2rem 0.7rem 0.2rem;
+    border-radius: 10px;
+  }
+  .dropdown-menu-custom .router-link,
+  .dropdown-menu-custom .dropdown-link {
+    padding: 0.7rem 0.7rem;
+    font-size: 15px;
+  }
+}
+
+.menu-anim-icon {
+  display: inline-block;
+  transition: transform 0.8s cubic-bezier(0.4, 2, 0.6, 1), opacity 0.5s;
+}
+.menu-anim-icon.fa-xmark {
+  transform: rotate(90deg) scale(1.1);
+  opacity: 1;
+}
+.menu-anim-icon.fa-bars-staggered {
+  transform: rotate(0deg) scale(1);
+  opacity: 1;
 }
 </style>

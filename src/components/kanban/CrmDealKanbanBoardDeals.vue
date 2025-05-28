@@ -1,87 +1,126 @@
 <template>
   <div class="position-relative">
-    <div class="kanban-wrapper mt-3" ref="dealsContainer">
-      <div class="kanban-board">
-        <!-- Fixed Stages Header -->
-        <div class="stages-header d-flex">
+    <div class="kanban-wrapper overflow-y-hidden mt-3" ref="dealsContainer">
+      <div class="kanban-board d-flex">
+        <template v-for="stage in stages" :key="stage.id">
           <div
-            v-for="stage in stages"
-            :key="stage.id"
-            class="stage-header position-relative"
-            @click="
-              permissionStore.hasPermission('edit-stage') &&
-                openUpdateStage(stage)
+            v-if="hiddenStages[stage.id]"
+            class="kanban-stage"
+            style="
+              width: 30px;
+              min-width: 30px;
+              margin-right: 10px;
+              display: flex;
+              flex-direction: column;
+              border-right: 2px dashed #eee;
+              height: 100%;
+              align-items: flex-start;
+              justify-content: flex-start;
             "
-            :title="stage.description || stage.name"
           >
-            <div
-              class="stageName py-1 p-0"
-              :style="{
-                backgroundColor: stage.color_code,
-              }"
+            <button
+              class="btn btn-sm btn-light mt-2 d-flex justify-content-center align-items-center"
+              @click.stop="hiddenStages[stage.id] = false"
+              style="
+                font-size: 14px;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                align-self: flex-start;
+              "
             >
-              <span>
-                <i
-                  :class="`me-2 fa-solid fa-${stage.icon}`"
+              <span>+</span>
+            </button>
+          </div>
+          <div v-else class="kanban-stage">
+            <div
+              class="stage-header position-relative"
+              @click="
+                permissionStore.hasPermission('edit-stage') &&
+                  openFilterStage(stage)
+              "
+              :title="stage.description || stage.name"
+            >
+              <div
+                class="stageName py-1 p-0"
+                :style="{ backgroundColor: stage.color_code }"
+              >
+                <button
+                  v-if="permissionStore.hasPermission('edit-stage')"
+                  class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
+                  style="right: -2%; top: -3%"
+                >
+                  <!-- <span class="bg-primary px-2 py-2 fs-5">+</span> -->
+                  <i
+                    class="fa-solid fa-filter bg-primary px-2 pe-3"
+                    style="
+                      font-size: 14px;
+                      width: 35px;
+                      height: 50px;
+                      padding-top: 10px;
+                    "
+                  ></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-light me-1 position-relative"
+                  @click.stop="hiddenStages[stage.id] = true"
+                  style="
+                    font-size: 14px;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                  "
+                >
+                  <span
+                    class="position-absolute top-0"
+                    style="right: 50%; transform: translate(50%, 0)"
+                    >−</span
+                  >
+                </button>
+                <span>
+                  <i
+                    :class="getStageIconById(stage.id)"
+                    class="me-1"
+                    :style="{ color: getContrastColor(stage.color_code) }"
+                  ></i>
+                </span>
+                <span
+                  class=""
                   :style="{ color: getContrastColor(stage.color_code) }"
-                ></i>
-              </span>
-              <span
-                class="me-2"
-                :style="{ color: getContrastColor(stage.color_code) }"
-                >{{ stage.name }}</span
-              >
-              <span
-                class="badge"
-                style="font-size: 14px"
-                :style="{
-                  backgroundColor: getContrastColor(stage.color_code),
-                  color: stage.color_code,
-                }"
-              >
-                {{ stage.deal_count ?? 0 }}
-              </span>
+                  >{{ stage.name }}</span
+                >
+                <span
+                  class="badge ms-1"
+                  style="font-size: 14px"
+                  :style="{
+                    backgroundColor: getContrastColor(stage.color_code),
+                    color: stage.color_code,
+                  }"
+                >
+                  {{ stage.deal_count ?? 0 }}
+                </span>
+              </div>
             </div>
-            <div
-              class="btnPlusStage bg-transparent text-white position-absolute top-0 d-none"
-              style="right: -2%"
-            >
-              <button
-                v-if="permissionStore.hasPermission('create-stage')"
-                class="border-0 bg-transparent text-white p-0"
+            <div class="stage-column">
+              <draggable
+                v-model="stage.deals"
+                :group="{ name: 'deals' }"
+                item-key="id"
+                class="deal-list"
+                @start="drag = true"
+                @change="handleDragChange($event, stage.id)"
+                @scroll="handleDealContainerScroll($event, stage.id)"
               >
-                <span class="bg-secondary px-2 py-2 fs-5">=</span>
-              </button>
-              <button
-                v-if="permissionStore.hasPermission('create-stage')"
-                class="border-0 bg-transparent text-white ps-0"
-              >
-                <span class="bg-primary px-2 py-2 fs-5">+</span>
-              </button>
+                <template #item="{ element: deal }">
+                  <ticket-card
+                    :deal="deal"
+                    @open-deal-data-card="openDealDataCard(deal.id, stage.id)"
+                  />
+                </template>
+              </draggable>
             </div>
           </div>
-        </div>
-        <!-- Scrollable Deals Container -->
-        <div class="deals-container d-flex">
-          <div v-for="stage in stages" :key="stage.id" class="stage-column">
-            <draggable
-              v-model="stage.deals"
-              :group="{ name: 'deals' }"
-              item-key="id"
-              class="deal-list"
-              @start="drag = true"
-              @change="handleDragChange($event, stage.id)"
-              @scroll="handleDealContainerScroll($event, stage.id)"
-            >
-              <template #item="{ element: deal }">
-                <ticket-card
-                  :deal="deal"
-                  @open-deal-data-card="openDealDataCard(deal.id, stage.id)"
-                />
-              </template>
-            </draggable>
-          </div>
-        </div>
+        </template>
       </div>
     </div>
     <div
@@ -120,7 +159,8 @@
   />
   <!-- selectedDeal -->
   <div v-if="permissionStore.hasPermission('edit-stage')">
-    <update-stage :stage="selectedStage" @update-stage="handleStageUpdate" />
+    <!-- <update-stage :stage="selectedStage" @update-stage="handleStageUpdate" /> -->
+    <filter-stage-modal :stage="selectedStage" />
   </div>
 </template>
 
@@ -147,7 +187,8 @@ import {
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
 import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
-import UpdateStage from "@/components/modals/CrmDealKanbanBoardDealsUpdateStageModal.vue";
+// import UpdateStage from "@/components/modals/CrmDealKanbanBoardDealsUpdateStageModal.vue";
+import FilterStageModal from "@/components/modals/CrmDealKanbanBoardDealsFilterStageModal.vue";
 import moveCardSound from "@/assets/move-card.wav";
 import { closeWebSocket, initializeWebSocket } from "@/plugins/websocket";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
@@ -158,7 +199,8 @@ export default {
     draggable,
     TicketCard,
     DealDataCard,
-    UpdateStage,
+    // UpdateStage,
+    FilterStageModal,
   },
   props: {
     stages: {
@@ -192,6 +234,7 @@ export default {
     const kanbanStore = useKanbanStore();
     let idleTimer = null;
     const idleTimeLimit = 5 * 60 * 1000;
+    const hiddenStages = ref({});
 
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
@@ -259,9 +302,9 @@ export default {
       }
     };
 
-    const openUpdateStage = (stage) => {
+    const openFilterStage = (stage) => {
       selectedStage.value = stage;
-      const modal = new Modal(document.getElementById("updateStage"));
+      const modal = new Modal(document.getElementById("filterStage"));
       modal.show();
     };
     const getStageHeaderClass = (stageId) => {
@@ -408,7 +451,10 @@ export default {
         if (dealIndex === -1) {
           console.log("Deal not found in view, unshifting deal to new stage");
           stages.value[newStageIndex].deals.unshift(deal);
-          stages.value[oldStageIndex].deal_count -= 1;
+          stages.value[oldStageIndex].deal_count = Math.max(
+            0,
+            stages.value[oldStageIndex].deal_count - 1
+          );
           stages.value[newStageIndex].deal_count += 1;
           return;
         } else {
@@ -420,11 +466,17 @@ export default {
             stages.value[newStageIndex].deals.unshift(deal);
             stages.value[newStageIndex].deal_count += 1;
             stages.value[oldStageIndex].deals.splice(dealIndex, 1);
-            stages.value[oldStageIndex].deal_count -= 1;
+            stages.value[oldStageIndex].deal_count = Math.max(
+              0,
+              stages.value[oldStageIndex].deal_count - 1
+            );
           } else {
             console.log("new stage not exists, trash deal");
             stages.value[oldStageIndex].deals.splice(dealIndex, 1);
-            stages.value[oldStageIndex].deal_count -= 1;
+            stages.value[oldStageIndex].deal_count = Math.max(
+              0,
+              stages.value[oldStageIndex].deal_count - 1
+            );
           }
         }
       }
@@ -453,7 +505,6 @@ export default {
 
     const handleTaskEvent = (event) => {
       const { action, data } = event;
-
       if (action === "create") {
         tasks.value.push(data);
       } else if (action === "update") {
@@ -774,6 +825,10 @@ export default {
       } catch (error) {
         console.error("Error mounting component:", error);
       }
+
+      props.stages.forEach((stage) => {
+        hiddenStages.value[stage.id] = false;
+      });
     });
 
     onUnmounted(() => {
@@ -814,7 +869,8 @@ export default {
       showLeft,
       showRight,
       openDealDataCard,
-      openUpdateStage,
+      // openUpdateStage,
+      openFilterStage,
       isTasksView,
       selectedStage,
       handleStageUpdate,
@@ -842,6 +898,7 @@ export default {
       setIdle,
       disconnectWebSocket,
       reconnectWebSocket,
+      hiddenStages,
     };
   },
 };
@@ -854,8 +911,8 @@ export default {
   overflow-x: auto;
 }
 .kanban-board {
-  display: inline-flex;
-  flex-direction: column;
+  display: flex;
+  flex-direction: row;
   min-width: 300px;
   width: 300px;
   height: 100%;
@@ -869,8 +926,8 @@ export default {
 }
 
 .stage-header {
-  min-width: 285px;
-  width: 285px;
+  min-width: 265px;
+  width: 265px;
   margin-right: 10px;
   text-align: start;
   padding-left: 3px;
@@ -885,7 +942,7 @@ export default {
   );
 }
 .stageName {
-  padding-left: 10px !important;
+  padding-left: 4px !important;
 }
 .stage-header:hover .btnPlusStage {
   display: block !important;
@@ -898,16 +955,16 @@ export default {
 }
 
 .stage-column {
-  width: 295px;
-  min-width: 295px;
+  width: 273px;
+  min-width: 273px;
   height: 100%;
   padding: 0.5rem 1rem 0 0;
   border-right: 2px dashed #eee;
 }
 
 .deal-list {
-  width: 290px;
-  min-width: 290px;
+  width: 270px;
+  min-width: 270px;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;

@@ -11,8 +11,20 @@
         />
       </div>
       <div class="data">
-        <span class="">{{ name }}</span
-        ><br />
+        <div
+          class="profileStatus d-flex justify-content-between align-items-center"
+        >
+          <span class="">{{ name }}</span>
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input shadow-none custom-switch"
+              style="padding: 10px 20px"
+              type="checkbox"
+              checked
+              @click.stop
+            />
+          </div>
+        </div>
         <span class="text-secondary userEmail">{{ userEmail }}</span>
       </div>
     </div>
@@ -145,7 +157,7 @@ export default {
 <style scoped>
 .dropdown-menu {
   top: 40px;
-  left: -97px;
+  right: 100%;
   width: fit-content !important;
 }
 .profileImage img {
