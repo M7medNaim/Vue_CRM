@@ -50,7 +50,6 @@
                   class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
                   style="right: -2%; top: -3%"
                 >
-                  <!-- <span class="bg-primary px-2 py-2 fs-5">+</span> -->
                   <i
                     class="fa-solid fa-filter bg-primary px-2 pe-3"
                     style="
@@ -79,18 +78,21 @@
                 </button>
                 <span>
                   <i
-                    :class="getStageIconById(stage.id)"
-                    class="me-1"
+                    :class="`me-1 fa-solid fa-${stage.icon}`"
                     :style="{ color: getContrastColor(stage.color_code) }"
                   ></i>
                 </span>
                 <span
                   class=""
                   :style="{ color: getContrastColor(stage.color_code) }"
-                  >{{ stage.name }}</span
+                  >{{
+                    stage.name.length > 13
+                      ? stage.name.slice(0, 13) + "…"
+                      : stage.name
+                  }}</span
                 >
                 <span
-                  class="badge ms-1"
+                  class="badge ms-3"
                   style="font-size: 14px"
                   :style="{
                     backgroundColor: getContrastColor(stage.color_code),
