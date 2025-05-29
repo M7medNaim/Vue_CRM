@@ -39,13 +39,29 @@
             </h4>
             <div class="btn-group mt-2">
               <button
-                v-for="stage in trashStages"
-                :key="stage.id"
-                class="btn bg-white"
-                @click="selectedStage = stage.id"
-                :class="{ active: selectedStage === stage.id }"
+                v-for="tag in trashTags"
+                :key="tag.id"
+                class="btn"
+                @click="selectedTag = tag.id"
+                :style="{
+                  backgroundColor:
+                    selectedTag === tag.id ? tag.color_code : 'white',
+                  color:
+                    selectedTag === tag.id
+                      ? getContrastColor(tag.color_code)
+                      : 'gray',
+                }"
               >
-                {{ $t(stage.name) }}
+                <i
+                  :class="`fa-solid fa-${tag.icon}`"
+                  :style="{
+                    color:
+                      selectedTag === tag.id
+                        ? getContrastColor(tag.color_code)
+                        : 'gray',
+                  }"
+                ></i>
+                {{ tag.name }}
               </button>
             </div>
           </div>
@@ -74,7 +90,7 @@
             class="btn bg-white py-2 px-4"
             style="color: red; font-size: 14px"
             @click="handleTrashDeal"
-            :disabled="!selectedStage || !comment"
+            :disabled="!selectedTag || !comment"
           >
             {{ $t("kanban-trash-confin-button") }}
           </button>
@@ -88,9 +104,9 @@
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import {
-  updateDealStage,
   createComment,
-  getSpecialStages,
+  getTrashTags,
+  addTagToDeal,
 } from "@/plugins/services/authService";
 
 export default {
@@ -103,18 +119,25 @@ export default {
   },
   setup() {
     const toast = useToast();
-    return { toast };
+    const getContrastColor = (color) => {
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 125 ? "#000000" : "#FFFFFF";
+    };
+    return { toast, getContrastColor };
   },
   data() {
     return {
       showModal2: false,
       comment: "",
-      selectedStage: null,
-      trashStages: [],
+      selectedTag: null,
+      trashTags: [],
     };
   },
   mounted() {
-    this.getTrashStages();
+    this.getTrashTags();
     const modal = document.getElementById("trashDealModal");
     modal.addEventListener("hidden.bs.modal", () => {
       const modalBackdrop = document.querySelector(".modal-backdrop");
@@ -128,7 +151,7 @@ export default {
     resetModal() {
       this.showModal2 = false;
       this.comment = "";
-      this.selectedStage = null;
+      this.selectedTag = null;
     },
     closeTrashDealModal() {
       const trashDealModal = Modal.getInstance(
@@ -145,22 +168,22 @@ export default {
     },
     async handleTrashDeal() {
       try {
-        if (!this.selectedStage || !this.comment) {
+        if (!this.selectedTag || !this.comment) {
           this.toast.error(this.t("error.requiredFields"), {
             timeout: 3000,
           });
           return;
         }
-        const selectedStage = this.selectedStage;
+        const selectedTag = this.selectedTag;
 
         const commentResponse = await createComment({
           text_body: this.comment,
           deal_id: this.dealId,
         });
         if (commentResponse.data) {
-          this.$emit("stage-updated", {
+          this.$emit("deal-trashed", {
             dealId: this.dealId,
-            newStage: selectedStage,
+            tagId: selectedTag,
           });
         } else {
           this.toast.error(commentResponse.data.message, {
@@ -168,7 +191,7 @@ export default {
           });
         }
         // Update the deal stage
-        const response = await updateDealStage(this.dealId, selectedStage);
+        const response = await addTagToDeal(this.dealId, [selectedTag]);
         if (response.status !== 200) {
           this.toast.error(response.data.message, {
             timeout: 3000,
@@ -185,12 +208,12 @@ export default {
       }
     },
 
-    async getTrashStages() {
+    async getTrashTags() {
       try {
-        const response = await getSpecialStages();
+        const response = await getTrashTags();
         if (response.status === 200) {
-          this.trashStages = response.data?.data;
-          if (this.trashStages.length < 1) {
+          this.trashTags = response.data?.data;
+          if (this.trashTags.length < 1) {
             this.toast.info(response.data.message, {
               timeout: 3000,
             });

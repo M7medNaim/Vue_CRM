@@ -120,6 +120,12 @@ export const updateDealStage = (dealId, stageId) => {
   });
 };
 
+export const addTagToDeal = (dealId, tags) => {
+  return axios.post(`/deals/${dealId}/add-tags`, {
+    tags: tags,
+  });
+};
+
 // Get All Sources
 export const getSources = () => axios.get("/sources");
 
@@ -402,4 +408,8 @@ export const getKanbanQuestions = async (deal_id) => {
 export const updateAnswersByDealId = async (deal_id, formData) => {
   console.log("formData", formData);
   return await axios.put(`/answers/${deal_id}`, { answers: formData });
+};
+
+export const getTrashTags = async () => {
+  return await axios.get("/tags/trash");
 };

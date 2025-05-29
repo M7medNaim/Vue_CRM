@@ -73,13 +73,14 @@
                 <div class="">
                   <span>
                     <i
-                      :class="getStageIconById(stage.id)"
-                      class="me-1"
+                      :class="`me-1 fa fa-soild fa-${stage.icon}`"
                       :style="{ color: stage.color_code }"
                     ></i>
                   </span>
                   <span class="" :style="{ color: stage.color_code }">{{
-                    stage.name
+                    stage.name.length > 10
+                      ? stage.name.slice(0, 10) + "…"
+                      : stage.name
                   }}</span>
                   <span
                     class="badge ms-1 text-white"
@@ -663,13 +664,11 @@ export default {
         oldStage.value.deals.find((d) => d.id == dealId);
       console.log("deal", deal);
       try {
-        await updateDealStage(dealId, newStageId);
-        deal.stage_id = newStageId;
-        if (oldStage.value)
-          oldStage.value.deal_count = Math.max(
-            0,
-            oldStage.value.deal_count - 1
-          );
+        if (newStageId !== -1) {
+          await updateDealStage(dealId, newStageId);
+          deal.stage_id = newStageId;
+        }
+        if (oldStage.value) oldStage.value.deal_count -= 1;
         if (newStage.value) newStage.value.deal_count += 1;
         if (!kanban) {
           oldStage.value.deals.splice(
@@ -754,78 +753,32 @@ export default {
       }
 
       if (window.Echo && userChannel) {
-        window.Echo.channel(userChannel).listen(
-          ".DealEvent",
-          ".TaskEvent",
-          ".CommentEvent",
-          ".LogEvent",
-          ".WhatsappEvent"
-        );
-        // window.Echo.channel(userChannel)
-        //   .listen(".DealEvent", (event) => {
-        //     console.log("DealEvent received:", event);
-        //     handleDealEvent(event);
-        //   })
-        //   .listen(".TaskEvent", (event) => {
-        //     console.log("TaskEvent received:", event);
-        //     handleTaskEvent(event);
-        //   })
-        //   .listen(".CommentEvent", (event) => {
-        //     console.log("CommentEvent received:", event);
-        //     handleCommentEvent(event);
-        //   })
-        //   .listen(".LogEvent", (event) => {
-        //     console.log("LogEvent received:", event);
-        //     handleLogEvent(event);
-        //   })
-        //   .listen(".WhatsappEvent", (event) => {
-        //     console.log("WhatsappEvent received:", event);
-        //     handleWhatsappEvent(event);
-        //   });
+        window.Echo.channel(userChannel)
+          .listen(".DealEvent", (event) => {
+            console.log("DealEvent received:", event);
+            handleDealEvent(event);
+          })
+          .listen(".TaskEvent", (event) => {
+            console.log("TaskEvent received:", event);
+            handleTaskEvent(event);
+          })
+          .listen(".CommentEvent", (event) => {
+            console.log("CommentEvent received:", event);
+            handleCommentEvent(event);
+          })
+          .listen(".LogEvent", (event) => {
+            console.log("LogEvent received:", event);
+            handleLogEvent(event);
+          })
+          .listen(".WhatsappEvent", (event) => {
+            console.log("WhatsappEvent received:", event);
+            handleWhatsappEvent(event);
+          });
       }
 
       console.log("WebSocket reconnected on user activity");
       kanbanStore.setHasNewChanges(true);
     };
-
-    const getStageIconById = (stageId) => {
-      const iconMap = {
-        1: "fa-solid fa-user-plus",
-        2: "fa-solid fa-hourglass",
-        3: "fa-solid fa-hourglass-end",
-        4: "fa-solid fa-phone-volume",
-        5: "fa-solid fa-message",
-        6: "fa-solid fa-comments",
-        7: "fa-solid fa-people-arrows",
-        8: "fa-solid fa-calendar-plus",
-        9: "fa-solid fa-calendar-check",
-        10: "fa-solid fa-spinner",
-        11: "fa-solid fa-circle-check",
-        12: "fa-solid fa-capsules",
-        13: "fa-solid fa-moon",
-        14: "fa-solid fa-phone-slash",
-        15: "fa-solid fa-repeat",
-        16: "fa-solid fa-trash-can",
-      };
-      return iconMap[stageId] || "fa-solid fa-circle";
-    };
-    // SORT DEALS BY CREATED AT
-    // function sortDealsByCreatedAt(stageId) {
-    //   const stage = stages.value.find((s) => s.id === stageId);
-    //   if (!stage) return;
-
-    //   const currentDirection = sortDirections.value[stageId] || "desc";
-
-    //   const newDirection = currentDirection === "asc" ? "desc" : "asc";
-    //   sortDirections.value[stageId] = newDirection;
-
-    //   stage.deals.sort((a, b) => {
-    //     const dateA = new Date(a.created_at);
-    //     const dateB = new Date(b.created_at);
-    //     console.log("", newDirection, stage.id, sortDirections.value[stageId]);
-    //     return newDirection === "asc" ? dateA - dateB : dateB - dateA;
-    //   });
-    // }
 
     onMounted(async () => {
       dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
@@ -838,8 +791,6 @@ export default {
       try {
         // Initialize WebSocket connection
         await initializeWebSocket();
-        // const user_id = 1;
-        // const userRole = "sales";
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
         let userChannel;
@@ -941,7 +892,6 @@ export default {
       changeDealStage,
       permissionStore,
       PERMISSIONS,
-      getStageIconById,
       isIdle,
 
       // Methods

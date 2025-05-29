@@ -50,58 +50,26 @@
           ></i>
         </template>
       </div>
-      <div class="d-flex gap-1 align-items-center p-0 flex-wrap">
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-trash"></i>
-          Trash</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-moon"></i>
-          Stopped Responding</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-phone-slash"></i>
-          No Response</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-capsules"></i>
-          Medicine</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-fire"></i>
-          Hot</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-snowflake"></i>
-          Idle</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-street-view"></i>
-          Refernce</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-plus"></i>
-          New</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-repeat"></i>
-          Re-contact</span
-        >
-        <span class="p-0 badge bg-Tages p-1">
-          <i class="fa-solid fa-user-slash"></i>
-          Low Potential</span
-        >
-      </div>
-      <!-- <div class="d-flex gap-1 align-items-center p-0 flex-wrap">
+      <div
+        class="d-flex gap-1 align-items-center p-0 flex-wrap"
+        v-if="deal.tags && deal.tags.length"
+      >
         <span
           v-for="tag in deal.tags"
           :key="tag.id"
-          class="p-0 badge bg-Tages p-1"
+          class="p-0 badge p-1"
+          :style="{
+            backgroundColor: tag.color_code,
+            color: getContrastColor(tag.color_code),
+          }"
+          data-toggle="tooltip"
+          data-placement="top"
+          :title="tag.name"
         >
-          <i class="fa-solid" :class="tagIcon(tag.name)"></i>
-          {{ tag.name }}
+          <i :class="`fa-solid fa-${tag.icon}`"></i>
+          {{ tag.name.length > 10 ? tag.name.slice(0, 10) + "…" : tag.name }}
         </span>
-      </div> -->
+      </div>
     </div>
 
     <!-- ملاحظة إدارية -->
@@ -227,6 +195,13 @@ export default {
           return "fa-recycle";
       }
     };
+    const getContrastColor = (hexColor) => {
+      const r = parseInt(hexColor.slice(1, 3), 16);
+      const g = parseInt(hexColor.slice(3, 5), 16);
+      const b = parseInt(hexColor.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 170 ? "#000000" : "#FFFFFF";
+    };
     return {
       t,
       formatDate,
@@ -235,6 +210,7 @@ export default {
       borderRight,
       getIcon,
       tagIcon,
+      getContrastColor,
     };
   },
   methods: {},

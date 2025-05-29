@@ -400,7 +400,7 @@
                           class="mb-2"
                           style="font-size: 16px; font-weight: 600"
                         >
-                          {{ comment.username }}
+                          {{ comment.isAdmin ? "System" : comment.username }}
                         </h6>
                         <div v-if="editingCommentId === comment.id">
                           <textarea
@@ -624,7 +624,7 @@
   <trash-deal
     ref="trashDealModalRef"
     :dealId="deal?.id"
-    @stage-updated="handleStageUpdate"
+    @deal-trashed="handleStageUpdate"
   />
 </template>
 
@@ -1147,14 +1147,14 @@ export default {
     const activeTasks = computed(() => {
       return customerData.tasks.filter((task) => task.status === "active");
     });
-    const handleStageUpdate = (data) => {
+    const handleStageUpdate = () => {
       if (!props.deal?.id) {
         toast.error(t("error.dealNotFound"), {
           timeout: 3000,
         });
         return;
       }
-      emit("stage-change", data.dealId, data.newStage, props.deal.stage_id, 0);
+      emit("stage-change", props.deal.id, -1, props.deal.stage_id, 0);
     };
     const fetchLogs = async () => {
       try {
