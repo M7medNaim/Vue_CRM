@@ -54,6 +54,7 @@
               @get-more-messages="getMoreMessages"
               :scrollToBot="scrollToBot"
               ref="SidebarRight"
+              @close-rightSidebar="closeRightSidebarChat"
             />
           </div>
         </div>
@@ -75,6 +76,7 @@ import {
 } from "@/plugins/services/authService";
 import ChatNameModal from "@/components/whatsapp/WhatsAppModalChatNameModal.vue";
 import Cookies from "js-cookie";
+
 export default {
   name: "WhatsappModal",
   components: {
@@ -293,6 +295,10 @@ export default {
           );
         }
       }
+    },
+    closeRightSidebarChat() {
+      this.selectedChat = null;
+      console.log("WhatsApp right sidebar closed");
     },
   },
   watch: {

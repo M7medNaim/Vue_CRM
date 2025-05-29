@@ -91,6 +91,14 @@
             >
               <i class="fa fa-window-restore fs-6 pt-2 ps-1 text-white"></i>
             </button>
+            <button
+              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
+              @click="handleLoginClick"
+              style="border: 1px solid #eee !important"
+            >
+              <i class="fa-solid fa-right-to-bracket"></i>
+              Login
+            </button>
           </div>
         </div>
       </div>
@@ -169,6 +177,7 @@ export default {
     "open-label",
     "delete-chat",
     "new-message",
+    "close-rightSidebar",
   ],
   components: {
     MessageInput,
@@ -386,6 +395,9 @@ export default {
     },
     async getMoreMessages() {
       this.$emit("get-more-messages");
+    },
+    handleLoginClick() {
+      this.$emit("close-rightSidebar");
     },
   },
   directives: {
