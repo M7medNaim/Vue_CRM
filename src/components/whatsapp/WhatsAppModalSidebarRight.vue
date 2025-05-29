@@ -255,11 +255,15 @@ export default {
   },
   methods: {
     async checkWhatsAppStatus() {
+      console.log("status check called ");
       try {
         const response = await checkstatus();
+        console.log(response);
         if (response.data.connected) {
           this.isConnected = true;
           this.connectedUser = response.data.user;
+        } else {
+          this.isConnected = false;
         }
         return response.data;
       } catch (error) {
