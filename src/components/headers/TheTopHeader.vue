@@ -15,18 +15,10 @@
         <div class="toggleMenuBar position-relative ms-2">
           <div
             ref="menuButton"
-            class="btnShowMenu d-flex justify-content-center align-items-center gap-1"
+            class="btnShowMenu btn text-white btn-menu d-flex justify-content-center align-items-center gap-1"
             @click="showMainMenu"
           >
-            <i
-              :class="[
-                'menu-anim-icon',
-                showDropdown
-                  ? 'fa-solid fa-xmark'
-                  : 'fa-solid fa-bars-staggered',
-                'fs-5',
-              ]"
-            ></i>
+            <i class="fa-solid fa-bars-staggered fs-5"></i>
             <span>Main Menu</span>
           </div>
           <transition name="dropdown-fade">
@@ -505,6 +497,9 @@ export default {
 .btn-header {
   background-color: rgba(128, 128, 128, 0.8) !important;
 }
+.btn-menu {
+  background-color: rgba(128, 128, 128, 0.305) !important;
+}
 .btnLang {
   background-color: hsla(0, 0%, 100%, 0.322) !important;
 }
@@ -549,7 +544,7 @@ export default {
 }
 .dropdown-menu-custom {
   position: absolute;
-  top: 35px !important;
+  top: 45px !important;
   left: -40px;
   min-width: 230px;
   background: #fff;
