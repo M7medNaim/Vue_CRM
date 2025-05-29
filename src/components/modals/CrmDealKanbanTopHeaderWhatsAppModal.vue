@@ -26,12 +26,39 @@
         <!-- b75f3f2c -->
         <div class="modal-body p-0 overflow-hidden">
           <div class="backgroundImage position-absolute">
-            <img src="@/assets/whatsappImage/Art_WA.png" alt="" /><br />
-            <span>
-              Always start with conversations that have today's tasks or overdue
-              ones.
-            </span>
-            <h1 class="text-center fw-bolder">GOOD LUCK!</h1>
+            <div v-if="!isConnected && !qrCode && !isLoading">
+              <img src="@/assets/whatsappImage/Art_WA.png" alt="" /><br />
+              <span>
+                Always start with conversations that have today's tasks or
+                overdue ones.
+              </span>
+              <h1 class="text-center fw-bolder">GOOD LUCK!</h1>
+            </div>
+            <button
+              v-if="!isConnected && !qrCode && !isLoading"
+              @click="startWhatsApp"
+              class="btn btn-sm btn-success align-center"
+            >
+              Start Whatsapp
+            </button>
+            <div v-if="isLoading" class="loading-state">
+              <p>Initializing WhatsApp client...</p>
+            </div>
+            <!-- QR Code section -->
+            <div v-if="qrCode && !isConnected" class="qr-section">
+              <h3>Scan the QR Code with WhatsApp:</h3>
+              <img :src="qrCodeImage" alt="WhatsApp QR Code" class="qr-image" />
+              <p class="qr-instruction">
+                Open WhatsApp → Settings → Linked Devices → Link a Device
+              </p>
+              <div class="qr-status">
+                <p>Waiting for scan...</p>
+                <div class="spinner"></div>
+              </div>
+            </div>
+            <div v-if="isConnected">
+              <h1 class="text-center fw-bolder">Connected</h1>
+            </div>
           </div>
           <button
             class="btnCloseWhatsapp text-white border-0 position-absolute rounded-2"
@@ -71,11 +98,16 @@
 </template>
 @/components/whatsapp/WhatsAppModalSidebarRight.vue
 <script>
+import expressApi from "@/plugins/expressApi";
 import WhatsAppModalSidebarLeft from "@/components/whatsapp/WhatsAppModalSidebarLeft.vue";
 import WhatsAppModalSidebarRight from "@/components/whatsapp/WhatsAppModalSidebarRight.vue";
 import {
   changePinStatus,
   getMessageConv,
+  webstart,
+  webqrcode,
+  getUserId,
+  checkstatus,
 } from "@/plugins/services/authService";
 import WhatsAppModalChatNameModal from "@/components/whatsapp/WhatsAppModalChatNameModal.vue";
 import Cookies from "js-cookie";
@@ -107,9 +139,183 @@ export default {
       total: 0,
       scrollToBot: false,
       isFetching: false,
+      qrCode: null,
+      qrCodeImage: null,
+      isConnected: false,
+      connectedUser: null,
+      phoneNumber: "",
+      message: "",
+      isLoading: false,
+      statusMessage: "",
+      statusType: "",
+      statusCheckInterval: null,
+      qrCheckInterval: null,
     };
   },
+  mounted() {
+    window.addEventListener("beforeunload", this.cleanup);
+  },
+
+  unmounted() {
+    this.cleanup();
+    window.removeEventListener("beforeunload", this.cleanup);
+  },
+
+  beforeRouteLeave(to, from, next) {
+    this.cleanup();
+    next();
+  },
+
   methods: {
+    showStatus(message, type = "info") {
+      this.statusMessage = message;
+      this.statusType = type;
+      setTimeout(() => {
+        this.statusMessage = "";
+      }, 3000);
+    },
+
+    cleanup() {
+      // Clean up intervals
+      if (this.statusCheckInterval) {
+        clearInterval(this.statusCheckInterval);
+        this.statusCheckInterval = null;
+      }
+      if (this.qrCheckInterval) {
+        clearInterval(this.qrCheckInterval);
+        this.qrCheckInterval = null;
+      }
+    },
+
+    async logoutWhatsApp() {
+      try {
+        this.showStatus("Logging out WhatsApp...", "info");
+
+        const userId = getUserId();
+        await expressApi.post(`stop-client`, {
+          userId,
+        });
+
+        // Reset component state
+        this.isConnected = false;
+        this.connectedUser = null;
+        this.qrCode = null;
+        this.qrCodeImage = null;
+        this.phoneNumber = "";
+        this.message = "";
+        this.isLoading = false;
+
+        // Cleanup intervals
+        this.cleanup();
+
+        this.showStatus("WhatsApp logged out successfully!", "success");
+      } catch (error) {
+        console.error("Error logging out WhatsApp:", error);
+        this.showStatus("Failed to logout WhatsApp", "error");
+      }
+    },
+
+    async startWhatsApp() {
+      try {
+        this.isLoading = true;
+        this.showStatus("Starting WhatsApp client...", "info");
+
+        // Start WhatsApp client
+        await webstart();
+
+        // Wait a moment for initialization
+        setTimeout(() => {
+          this.startQrCodeCheck();
+          this.startStatusCheck();
+        }, 2000);
+      } catch (error) {
+        console.error("Error starting WhatsApp:", error);
+        this.showStatus("Failed to start WhatsApp client", "error");
+        this.isLoading = false;
+      }
+    },
+
+    startQrCodeCheck() {
+      this.qrCheckInterval = setInterval(async () => {
+        if (!this.isConnected) {
+          await this.fetchQrCode();
+        }
+      }, 3000);
+
+      // Initial QR code fetch
+      this.fetchQrCode();
+    },
+
+    startStatusCheck() {
+      this.statusCheckInterval = setInterval(async () => {
+        await this.checkWhatsAppStatus();
+      }, 2000);
+
+      // Initial status check
+      this.checkWhatsAppStatus();
+    },
+
+    async fetchQrCode() {
+      try {
+        const response = await webqrcode();
+
+        if (response.data.status === "already_connected") {
+          this.isConnected = true;
+          this.qrCode = null;
+          this.qrCodeImage = null;
+          this.isLoading = false;
+          this.showStatus("WhatsApp is already connected!", "success");
+          return;
+        }
+
+        if (response.data && response.data.qr) {
+          this.qrCode = response.data.qr;
+          this.qrCodeImage = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+            this.qrCode
+          )}`;
+          this.isLoading = false;
+          console.log("QR Code retrieved successfully");
+        }
+      } catch (error) {
+        console.error("Error fetching QR code:", error);
+        if (error.response?.status === 404) {
+          console.log("QR code not yet available, retrying...");
+        }
+      }
+    },
+
+    async checkWhatsAppStatus() {
+      try {
+        const response = await checkstatus();
+
+        if (response.data.connected) {
+          this.isConnected = true;
+          this.connectedUser = response.data.user;
+          this.qrCode = null;
+          this.qrCodeImage = null;
+          this.isLoading = false;
+
+          // Clear intervals when connected
+          if (this.statusCheckInterval) {
+            clearInterval(this.statusCheckInterval);
+            this.statusCheckInterval = null;
+          }
+          if (this.qrCheckInterval) {
+            clearInterval(this.qrCheckInterval);
+            this.qrCheckInterval = null;
+          }
+
+          this.showStatus("WhatsApp connected successfully!", "success");
+          console.log("WhatsApp connected successfully!");
+        } else if (response.data.status === "initializing") {
+          this.isLoading = true;
+          console.log("WhatsApp is still initializing...");
+        }
+      } catch (error) {
+        console.error("Error checking WhatsApp status:", error);
+      }
+    },
+
     loadConversations(conversations) {
       if (this.$refs.leftSidebar) {
         this.$refs.leftSidebar.chats = conversations;
