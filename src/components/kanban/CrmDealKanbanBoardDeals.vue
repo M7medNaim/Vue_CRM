@@ -93,18 +93,15 @@
                   </span>
                 </div>
                 <button
-                  class="btn btn-sm h-100 rounded-0 p-0 pe-1"
+                  class="btn btn-sm h-100 rounded-0 p-0"
                   style=""
                   @click="openFilterStage(stage)"
                 >
+                  <!-- background-color: #fffeff;  -->
                   <span
                     ><i
-                      class="fa-solid fa-sliders bg-white"
-                      style="
-                        background-color: #fffeff;
-                        color: #6e6f70;
-                        padding: 4px;
-                      "
+                      class="fa-solid fa-sliders fs-6"
+                      style="color: #6e6f70; padding: 4px"
                     ></i
                   ></span>
                 </button>
