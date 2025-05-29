@@ -48,8 +48,9 @@
                   v-if="permissionStore.hasPermission('edit-stage')"
                   class="btnPlusStage border-0 bg-transparent text-white position-absolute d-none"
                   style="right: -2%; top: -3%"
-                >
-                  <i
+                > -->
+                <!-- <span class="bg-primary px-2 py-2 fs-5">+</span> -->
+                <!-- <i
                     class="fa-solid fa-filter bg-primary px-2 pe-3"
                     style="
                       font-size: 14px;
@@ -69,31 +70,42 @@
                     style="font-size: 12px"
                   ></i>
                 </button>
-                <span>
-                  <i
-                    :class="`me-1 fa-solid fa-${stage.icon}`"
-                    :style="{ color: getContrastColor(stage.color_code) }"
-                  ></i>
-                </span>
-                <span
-                  class=""
-                  :style="{ color: getContrastColor(stage.color_code) }"
-                  >{{
-                    stage.name.length > 13
-                      ? stage.name.slice(0, 13) + "…"
-                      : stage.name
-                  }}</span
+                <div class="">
+                  <span>
+                    <i
+                      :class="`me-1 fa-soild fa-${stage.icon}`"
+                      :style="{ color: stage.color_code }"
+                    ></i>
+                  </span>
+                  <span class="" :style="{ color: stage.color_code }">{{
+                    stage.name
+                  }}</span>
+                  <span
+                    class="badge ms-1 text-white"
+                    style="font-size: 14px"
+                    :style="{
+                      backgroundColor: stage.color_code,
+                    }"
+                  >
+                    {{ stage.deal_count ?? 0 }}
+                  </span>
+                </div>
+                <button
+                  class="btn btn-sm h-100 rounded-0 p-0 pe-1"
+                  style=""
+                  @click="openFilterStage(stage)"
                 >
-                <span
-                  class="badge ms-3"
-                  style="font-size: 14px"
-                  :style="{
-                    backgroundColor: getContrastColor(stage.color_code),
-                    color: stage.color_code,
-                  }"
-                >
-                  {{ stage.deal_count ?? 0 }}
-                </span>
+                  <span
+                    ><i
+                      class="fa-solid fa-sliders bg-white"
+                      style="
+                        background-color: #fffeff;
+                        color: #6e6f70;
+                        padding: 4px;
+                      "
+                    ></i
+                  ></span>
+                </button>
               </div>
             </div>
             <div class="stage-column">
