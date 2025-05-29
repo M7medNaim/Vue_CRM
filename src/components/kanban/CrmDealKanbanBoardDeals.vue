@@ -73,12 +73,14 @@
                 <div class="">
                   <span>
                     <i
-                      :class="`me-1 fa-soild fa-${stage.icon}`"
+                      :class="`me-1 fa fa-soild fa-${stage.icon}`"
                       :style="{ color: stage.color_code }"
                     ></i>
                   </span>
                   <span class="" :style="{ color: stage.color_code }">{{
-                    stage.name
+                    stage.name.length > 10
+                      ? stage.name.slice(0, 10) + "…"
+                      : stage.name
                   }}</span>
                   <span
                     class="badge ms-1 text-white"
