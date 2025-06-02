@@ -298,11 +298,15 @@ export default {
 
         const response = await createDeal(dealData);
         if (response.data) {
-          this.toast.success(this.t("success.deal_created"), { timeout: 3000 });
+          this.toast.success(response.data.message, { timeout: 3000 });
           this.resetForm();
+        } else {
+          this.toast.error(response.data.message, {
+            timeout: 3000,
+          });
         }
       } catch (error) {
-        this.toast.error(this.t("error.deal_creation_failed"), {
+        this.toast.error(this.t("error.deal_not_created"), {
           timeout: 3000,
         });
         console.error("Error submitting form:", error);

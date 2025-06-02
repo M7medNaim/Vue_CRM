@@ -665,20 +665,27 @@ export default {
       console.log("deal", deal);
       try {
         if (newStageId !== -1) {
-          await updateDealStage(dealId, newStageId);
-          deal.stage_id = newStageId;
+          const response = await updateDealStage(dealId, newStageId);
+          console.log("response", response.status);
+          if (response.status !== 200) {
+            console.error("Error updating deal stage:", response.data.message);
+            toast.error(response.data.message);
+            return;
+          } else {
+            deal.stage_id = newStageId;
+            if (oldStage.value) oldStage.value.deal_count -= 1;
+            if (newStage.value) newStage.value.deal_count += 1;
+            if (!kanban) {
+              oldStage.value.deals.splice(
+                oldStage.value.deals.findIndex((d) => d.id == dealId),
+                1
+              );
+              if (newStage.value) newStage.value.deals.unshift(deal);
+            }
+            toast.success(response.data.message);
+            playSound();
+          }
         }
-        if (oldStage.value) oldStage.value.deal_count -= 1;
-        if (newStage.value) newStage.value.deal_count += 1;
-        if (!kanban) {
-          oldStage.value.deals.splice(
-            oldStage.value.deals.findIndex((d) => d.id == dealId),
-            1
-          );
-          if (newStage.value) newStage.value.deals.unshift(deal);
-        }
-        toast.success(t("success.dealMoved"));
-        playSound();
       } catch (error) {
         console.error("Error updating deal stage:", error);
 
