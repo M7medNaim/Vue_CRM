@@ -77,6 +77,19 @@
               </button>
             </div>
             <button
+              v-if="isConnected"
+              class="border-0 bg-transparent"
+              @click="WhatasppLogout()"
+            >
+              <i class="fa-solid fa-sign-out fs-6 text-white"></i>
+              Logout
+            </button>
+            <button v-else class="border-0 bg-transparent">
+              <i class="fa-solid fa-sign-in fs-6 text-white"></i>
+              Login
+            </button>
+
+            <button
               @click.stop="showList()"
               aria-label="list chat (menu)"
               class="border-0 bg-transparent"
@@ -169,6 +182,8 @@ import {
   sendGreetingMessage,
   sendInitMessage,
   sendMessage,
+  checkstatus,
+  weblogout,
 } from "@/plugins/services/authService";
 export default {
   emits: [
@@ -198,6 +213,8 @@ export default {
     return {
       isSearchBarVisible: false,
       showListVisible: false,
+      isConnected: false,
+      statusInterval: null,
       searchQuery: "",
       chatBox_ref: this.$refs.chatBox,
     };
@@ -237,7 +254,38 @@ export default {
       },
     },
   },
+  mounted() {
+    this.statusInterval = setInterval(() => {
+      this.checkWhatsAppStatus();
+    }, 5000);
+  },
+  beforeUnmount() {
+    clearInterval(this.statusInterval);
+  },
   methods: {
+    async checkWhatsAppStatus() {
+      try {
+        const response = await checkstatus();
+        if (response.data.connected) {
+          this.isConnected = true;
+          this.connectedUser = response.data.user;
+        } else {
+          this.isConnected = false;
+        }
+        return response.data;
+      } catch (error) {
+        console.error("Failed to check WhatsApp status:", error);
+        this.isConnected = false;
+        this.connectedUser = null;
+      }
+    },
+    async WhatasppLogout() {
+      const response = await weblogout();
+      console.log(response);
+      if (response.success) {
+        this.isConnected = false;
+      }
+    },
     async receiveMessage(messageData) {
       if (this.selectedChat) {
         try {

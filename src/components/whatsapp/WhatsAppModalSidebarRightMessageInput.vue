@@ -449,12 +449,18 @@ export default {
       this.isClipboardVisible = false;
     },
     handleFileUpload(event) {
-      this.isProcessing = true;
       const files = event.target.files;
+      if (files.length === 0 && this.attachedFile === null) {
+        return;
+      }
+      if (this.isProcessing) {
+        return;
+      }
+      this.isProcessing = true;
       if (files.length > 0) {
+        this.selectedFiles = Array.from(files);
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-
           if (file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -463,6 +469,7 @@ export default {
               this.attachedFileName = file.name;
               this.attachedFileType = "image";
               this.isModalOpen = true;
+              this.isProcessing = false;
             };
             reader.readAsDataURL(file);
           } else {
@@ -471,21 +478,21 @@ export default {
             this.attachedFileName = file.name;
             this.attachedFileType = "file";
             this.isModalOpen = true;
+            this.isProcessing = false;
           }
         }
       } else {
         console.log("No files were selected.");
+        this.selectedFiles = [];
+        this.isProcessing = false;
       }
-      this.isProcessing = false;
     },
     removeFile() {
       this.attachedFile = null;
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = null;
-        this.$refs.fileInput.dispatchEvent(new Event("change"));
-      }
       this.attachedFileName = "";
       this.attachedFileType = "";
+      this.attachedFilePreview = null;
+      this.selectedFiles = [];
       this.isModalOpen = false;
     },
     openModal() {
