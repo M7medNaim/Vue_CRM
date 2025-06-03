@@ -1,8 +1,15 @@
 <template>
   <div class="position-relative">
     <div class="kanban-wrapper overflow-y-hidden mt-3" ref="dealsContainer">
-      <div class="kanban-board d-flex">
-        <template v-for="stage in stages" :key="stage.id">
+      <div
+        class="kanban-board d-flex"
+        :style="
+          permissionStore.hasPermission('edit-stage')
+            ? { minWidth: '350px', width: '350px' }
+            : { minWidth: '350px', width: '350px' }
+        "
+      >
+        <template v-for="stage in displayStages" :key="stage.id">
           <div
             v-if="hiddenStages[stage.id]"
             class="kanban-stage"
@@ -39,10 +46,16 @@
               " -->
             <div
               class="stage-header position-relative"
-              :title="stage.description || stage.name"
+              :title="stage.name"
+              :style="
+                permissionStore.hasPermission('edit-stage')
+                  ? { minWidth: '301px', width: '301px' }
+                  : { minWidth: '307px', width: '307px' }
+              "
             >
               <div
                 class="stageName p-0 d-flex justify-content-between align-items-center"
+                :style="{ borderBottom: '2px solid ' + stage.color_code }"
               >
                 <!-- <button
                   v-if="permissionStore.hasPermission('edit-stage')"
@@ -61,6 +74,7 @@
                   ></i>
                 </button> -->
                 <button
+                  v-if="!expandedStages[stage.id] && !stage.parent_id"
                   class="btn btn-sm h-100 rounded-0"
                   style="background-color: #cecfce"
                   @click.stop="hiddenStages[stage.id] = true"
@@ -70,6 +84,39 @@
                     style="font-size: 12px"
                   ></i>
                 </button>
+                <button
+                  v-if="!expandedStages[stage.id] && stage.parent_id"
+                  class="btn btn-sm h-100 rounded-0"
+                  style="background-color: #f4f4f4"
+                >
+                  <i
+                    class="fa-regular fa-square-caret-left"
+                    style="font-size: 12px"
+                  ></i>
+                </button>
+                <button
+                  v-if="
+                    expandedStages[stage.id] &&
+                    [
+                      'tickets',
+                      'reaching out',
+                      'idle',
+                      'خامل',
+                      'بانتظار الرد',
+                      'تذكرة',
+                    ].includes(stage.name.toLowerCase())
+                  "
+                  class="btn btn-sm h-100 rounded-0"
+                  style="background-color: #cecfce"
+                  @click="toggleExpandStage(stage)"
+                >
+                  <span v-if="expandedStages[stage.id]"
+                    ><i class="fa-solid fa-compress text-white"></i
+                  ></span>
+                  <span v-else
+                    ><i class="fa-solid fa-expand text-white"></i
+                  ></span>
+                </button>
                 <div class="">
                   <span>
                     <i
@@ -77,14 +124,18 @@
                       :style="{ color: stage.color_code }"
                     ></i>
                   </span>
-                  <span class="" :style="{ color: stage.color_code }">{{
-                    stage.name.length > 10
-                      ? stage.name.slice(0, 10) + "…"
-                      : stage.name
-                  }}</span>
+                  <span
+                    style="font-size: 14px"
+                    :style="{ color: stage.color_code }"
+                    >{{
+                      stage.name.length > 20
+                        ? stage.name.slice(0, 20) + "…"
+                        : stage.name
+                    }}</span
+                  >
                   <span
                     class="badge ms-1 text-white"
-                    style="font-size: 14px"
+                    style="font-size: 12px"
                     :style="{
                       backgroundColor: stage.color_code,
                     }"
@@ -92,27 +143,73 @@
                     {{ stage.deal_count ?? 0 }}
                   </span>
                 </div>
-                <button
-                  class="btn btn-sm h-100 rounded-0 p-0"
-                  style=""
-                  @click="openFilterStage(stage)"
+                <div
+                  class="d-flex justify-content-end align-items-center gap-1"
                 >
-                  <!-- background-color: #fffeff;  -->
-                  <span
-                    ><i
-                      class="fa-solid fa-sliders fs-6"
-                      style="color: #6e6f70; padding: 4px"
-                    ></i
-                  ></span>
-                </button>
+                  <button
+                    v-if="
+                      !stage.parent_id &&
+                      [
+                        'tickets',
+                        'reaching out',
+                        'idle',
+                        'خامل',
+                        'بانتظار الرد',
+                        'تذكرة',
+                      ].includes(stage.name.toLowerCase())
+                    "
+                    class="btn btn-sm h-100 rounded-0 p-0"
+                    style=""
+                    @click="toggleExpandStage(stage)"
+                  >
+                    <span v-if="expandedStages[stage.id]"
+                      ><i
+                        class="fa-solid fa-compress d-none fs-6"
+                        style="color: #6e6f70; padding: 4px"
+                      ></i
+                    ></span>
+                    <span v-else
+                      ><i
+                        class="fa-solid fa-expand fs-6"
+                        style="color: #6e6f70; padding: 4px"
+                      ></i
+                    ></span>
+                  </button>
+                  <button
+                    class="btn btn-sm h-100 rounded-0 p-0"
+                    style=""
+                    @click="openFilterStage(stage)"
+                  >
+                    <span
+                      ><i
+                        class="fa-solid fa-sliders fs-6"
+                        style="color: #6e6f70; padding: 4px"
+                      ></i
+                    ></span>
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="stage-column">
+            <div
+              class="stage-column"
+              :style="
+                permissionStore.hasPermission('edit-stage')
+                  ? { minWidth: '307px', width: '307px' }
+                  : { minWidth: '312px', width: '313px' }
+              "
+            >
+              <div class="line"></div>
               <draggable
+                v-if="!expandedStages[stage.id]"
                 v-model="stage.deals"
                 :group="{ name: 'deals' }"
                 item-key="id"
-                class="deal-list"
+                class="deal-list mt-3"
+                :style="
+                  permissionStore.hasPermission('edit-stage')
+                    ? { minWidth: '303px', width: '303px' }
+                    : { minWidth: '309px', width: '309px' }
+                "
                 @start="drag = true"
                 @change="handleDragChange($event, stage.id)"
                 @scroll="handleDealContainerScroll($event, stage.id)"
@@ -124,6 +221,22 @@
                   />
                 </template>
               </draggable>
+              <div
+                v-else
+                class="deal-list d-flex flex-column align-items-center justify-content-center w-100 mt-3"
+                style="background-color: #ffffff64"
+              >
+                <span class="mb-3 text-white">
+                  لإعادة دمج المراحل إضغط هنا
+                </span>
+                <button
+                  class="btn btn-primary"
+                  @click="toggleExpandStage(stage)"
+                >
+                  <i class="fa-solid fa-compress me-2"></i>
+                  Merge
+                </button>
+              </div>
             </div>
           </div>
         </template>
@@ -132,6 +245,7 @@
     <div
       class="arrowsBoar w-100 position-absolute top-50 end-0"
       style="pointer-events: none"
+      v-if="permissionStore.hasPermission('edit-stage')"
     >
       <div
         v-if="showRight"
@@ -178,6 +292,7 @@ import {
   onBeforeUnmount,
   computed,
   nextTick,
+  watch,
 } from "vue";
 import draggable from "vuedraggable";
 import TicketCard from "@/components/kanban/CrmDealKanbanBoardDealsTicketCard.vue";
@@ -189,6 +304,7 @@ import {
   showDeal,
   fetchAdditionalDealsByStageId,
   addViewCount,
+  getStagesChildren,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -241,12 +357,150 @@ export default {
     let idleTimer = null;
     const idleTimeLimit = 5 * 60 * 1000;
     const hiddenStages = ref({});
+    const expandedStages = ref({});
+    const displayStages = ref([]);
+
+    watch(
+      () => props.stages,
+      (newStages) => {
+        displayStages.value = newStages.filter(
+          (stage) => stage.parent_id === null || stage.parent_id === undefined
+        );
+      },
+      { immediate: true }
+    );
+
+    const fetchChildStages = async (parentId) => {
+      try {
+        const response = await getStagesChildren(parentId);
+
+        if (response.data && response.data.data) {
+          const childStages = response.data.data.map((child) => ({
+            ...child,
+            parent_id: parentId,
+            deals: [],
+          }));
+          return childStages;
+        } else {
+          console.error(
+            "API response did not contain expected data:",
+            response
+          );
+          throw new Error("Invalid API response structure");
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching child stages for parent",
+          parentId,
+          error
+        );
+        throw error;
+      }
+    };
+
+    const toggleExpandStage = async (parentStage) => {
+      const isExpanded = expandedStages.value[parentStage.id];
+
+      if (isExpanded) {
+        expandedStages.value[parentStage.id] = false;
+        displayStages.value = displayStages.value.filter(
+          (stage) => stage.parent_id !== parentStage.id
+        );
+      } else {
+        expandedStages.value[parentStage.id] = true;
+        try {
+          const childStages = await fetchChildStages(parentStage.id);
+
+          const parentIndex = displayStages.value.findIndex(
+            (stage) => stage.id === parentStage.id
+          );
+          if (parentIndex !== -1) {
+            const newDisplayStages = [...displayStages.value];
+            newDisplayStages.splice(parentIndex + 1, 0, ...childStages);
+            displayStages.value = newDisplayStages;
+          }
+        } catch (error) {
+          expandedStages.value[parentStage.id] = false;
+          toast.error(
+            t("error.fetchChildStagesFailed", { stageName: parentStage.name })
+          );
+        }
+      }
+    };
 
     const handleDragChange = async (event, newStageId) => {
       if (event.added) {
         const deal = event.added.element;
-        console.log("deal", deal);
-        changeDealStage(deal.id, newStageId, event.added.element.stage_id);
+        const oldStageId = deal.stage_id;
+
+        const newStageInDisplay = displayStages.value.find(
+          (stage) => stage.id === newStageId
+        );
+        if (newStageInDisplay) {
+          const dealInNewStage = newStageInDisplay.deals.find(
+            (d) => d.id === deal.id
+          );
+          if (dealInNewStage) {
+            dealInNewStage.stage_id = newStageId;
+          }
+        }
+
+        try {
+          await updateDealStage(deal.id, newStageId);
+          const oldStageInDisplay = displayStages.value.find(
+            (s) => s.id === oldStageId
+          );
+          const newStageInDisplayForCount = displayStages.value.find(
+            (s) => s.id === newStageId
+          );
+
+          if (oldStageInDisplay)
+            oldStageInDisplay.deal_count = Math.max(
+              0,
+              oldStageInDisplay.deal_count - 1
+            );
+          if (newStageInDisplayForCount)
+            newStageInDisplayForCount.deal_count =
+              (newStageInDisplayForCount.deal_count || 0) + 1;
+        } catch (error) {
+          const newStageInDisplayToRevert = displayStages.value.find(
+            (s) => s.id === newStageId
+          );
+          const dealIndexInNewStage = newStageInDisplayToRevert
+            ? newStageInDisplayToRevert.deals.findIndex((d) => d.id === deal.id)
+            : -1;
+
+          if (newStageInDisplayToRevert && dealIndexInNewStage !== -1) {
+            const [revertedDeal] = newStageInDisplayToRevert.deals.splice(
+              dealIndexInNewStage,
+              1
+            );
+            const oldStageInDisplay = displayStages.value.find(
+              (s) => s.id === oldStageId
+            );
+            if (oldStageInDisplay) {
+              oldStageInDisplay.deals.unshift(revertedDeal);
+              revertedDeal.stage_id = oldStageId;
+            }
+          }
+
+          const oldStageInDisplayForRevertCount = displayStages.value.find(
+            (s) => s.id === oldStageId
+          );
+          const newStageInDisplayForRevertCount = displayStages.value.find(
+            (s) => s.id === newStageId
+          );
+          if (oldStageInDisplayForRevertCount)
+            oldStageInDisplayForRevertCount.deal_count =
+              (oldStageInDisplayForRevertCount.deal_count || 0) + 1;
+          if (newStageInDisplayForRevertCount)
+            newStageInDisplayForRevertCount.deal_count = Math.max(
+              0,
+              newStageInDisplayForRevertCount.deal_count - 1
+            );
+
+          toast.error(t("error.dealMoveFailed"));
+        }
       }
     };
 
@@ -257,7 +511,6 @@ export default {
         .catch((error) => console.error("Failed to play sound:", error));
     };
 
-    // Removed duplicate definition of openDealDataCard
     const openDealDataCard = async (dealId, currentStageId = null) => {
       try {
         addViewCount(dealId);
@@ -266,14 +519,23 @@ export default {
           const deal = dealData.data.data;
           const checkStageLoaded = () => {
             if (isTasksView.value) {
-              return props.stages.find((stage) => stage.id === currentStageId);
+              return displayStages.value.find(
+                (stage) => stage.id === currentStageId
+              );
             } else {
-              return props.stages.some((stage) => stage.id === deal.stage_id);
+              return displayStages.value.some(
+                (stage) => stage.id === deal.stage_id
+              );
             }
           };
           const waitForStage = () => {
             return new Promise((resolve) => {
               if (checkStageLoaded()) {
+                resolve();
+              } else {
+                console.warn(
+                  `Deal's stage (ID: ${deal.stage_id}) not currently displayed.`
+                );
                 resolve();
               }
             });
@@ -304,7 +566,7 @@ export default {
           console.error("No matching deal found for ID:", dealId);
         }
       } catch (error) {
-        console.error("Error fetching deal data:", error);
+        toast.error(t("error.fetchDealDataFailed"));
       }
     };
 
@@ -358,15 +620,15 @@ export default {
         scrollInterval = null;
       }
     };
-    // update Stage Color and Name
     const handleStageUpdate = (updatedStage) => {
-      const stages = ref(props.stages);
-      const stageIndex = stages.value.findIndex(
+      const displayStageIndex = displayStages.value.findIndex(
         (stage) => stage.id === updatedStage.id
       );
-      if (stageIndex !== -1) {
-        stages.value[stageIndex].name = updatedStage.name;
-        stages.value[stageIndex].color = updatedStage.color;
+      if (displayStageIndex !== -1) {
+        displayStages.value[displayStageIndex] = {
+          ...displayStages.value[displayStageIndex],
+          ...updatedStage,
+        };
       }
     };
 
@@ -391,122 +653,132 @@ export default {
     };
 
     const dealCreateEvent = (data, message) => {
-      let stages = ref(props.stages);
-      const stageIndex = stages.value.findIndex(
+      const stageIndex = displayStages.value.findIndex(
         (stage) => stage.id == data.stage_id
       );
-      if (stageIndex === -1) {
-        console.error("Stage not found");
-        return;
+
+      if (stageIndex !== -1 && !expandedStages.value[data.stage_id]) {
+        const newDeal = {
+          id: data.id,
+          name: data.name,
+          s: data.description,
+          stage_id: data.stage_id,
+          responsible_user: data.responsible_user,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          phone: data.phone,
+          source_id: data.source_id,
+          view_count: data.view_count,
+          unread_count: data.unread_count,
+        };
+        displayStages.value[stageIndex].deals.unshift(newDeal);
+        displayStages.value[stageIndex].deal_count =
+          (displayStages.value[stageIndex].deal_count || 0) + 1;
+        toast.success(message);
       }
-      const deal = {
-        id: data.id,
-        name: data.name,
-        description: data.description,
-        stage_id: data.stage_id,
-        responsible_user: data.responsible_user,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        phone: data.phone,
-      };
-      stages.value[stageIndex].deals.unshift(deal);
-      toast.success(message);
     };
 
     const dealUpdateEvent = (data, message) => {
-      let stages = ref(props.stages);
-      const newStageIndex = stages.value.findIndex(
-        (stage) => stage.id == data.updated_data?.stage_id
-      );
       const id = data.id;
-      const oldStageIndex = stages.value.findIndex(
-        (stage) => stage.id == data.stage_id
+      const updatedData = data.updated_data;
+      const oldStageId = data.stage_id;
+      const newStageId = updatedData?.stage_id;
+
+      const oldStageIndexInDisplay = displayStages.value.findIndex(
+        (stage) => stage.id == oldStageId
       );
+      const dealIndexInOldStage =
+        oldStageIndexInDisplay !== -1
+          ? displayStages.value[oldStageIndexInDisplay].deals.findIndex(
+              (deal) => deal.id == id
+            )
+          : -1;
 
-      const deal = {
-        id: id,
-        name: data.updated_data.name,
-        phone: data.updated_data.phone,
-        description: data.updated_data.description,
-        stage_id: data.updated_data.stage_id,
-        responsible_user: data.updated_data.responsible_user,
-        created_at: data.updated_data.created_at,
-        updated_at: data.updated_data.updated_at,
-        source_id: data.updated_data.source_id,
-        view_count: data.updated_data.view_count,
-        unread_count: data.updated_data.unread_count,
-      };
-      console.log("updated data", deal);
-
-      if (oldStageIndex === -1) {
-        console.log("old stage not exists");
-        if (newStageIndex === -1) {
-          console.error(
-            "New stage not found, unrelated or something went wrong"
+      if (oldStageId != newStageId) {
+        if (
+          oldStageIndexInDisplay !== -1 &&
+          dealIndexInOldStage !== -1 &&
+          !expandedStages.value[oldStageId]
+        ) {
+          displayStages.value[oldStageIndexInDisplay].deals.splice(
+            dealIndexInOldStage,
+            1
           );
-          return;
+          displayStages.value[oldStageIndexInDisplay].deal_count = Math.max(
+            0,
+            displayStages.value[oldStageIndexInDisplay].deal_count - 1
+          );
+        } else if (
+          oldStageIndexInDisplay !== -1 &&
+          expandedStages.value[oldStageId]
+        ) {
+          displayStages.value[oldStageIndexInDisplay].deal_count = Math.max(
+            0,
+            displayStages.value[oldStageIndexInDisplay].deal_count - 1
+          );
         }
-        stages.value[newStageIndex].deals.unshift(deal);
-        stages.value[newStageIndex].deal_count += 1;
-      } else {
-        console.log("old stage exists");
-        const dealIndex = stages.value[oldStageIndex].deals.findIndex(
-          (deal) => deal.id == id
+
+        const newStageIndexInDisplay = displayStages.value.findIndex(
+          (stage) => stage.id == newStageId
         );
 
-        if (dealIndex === -1) {
-          console.log("Deal not found in view, unshifting deal to new stage");
-          stages.value[newStageIndex].deals.unshift(deal);
-          stages.value[oldStageIndex].deal_count = Math.max(
-            0,
-            stages.value[oldStageIndex].deal_count - 1
+        if (
+          newStageIndexInDisplay !== -1 &&
+          !expandedStages.value[newStageId]
+        ) {
+          const updatedDeal = { ...data, ...updatedData, stage_id: newStageId };
+          displayStages.value[newStageIndexInDisplay].deals.unshift(
+            updatedDeal
           );
-          stages.value[newStageIndex].deal_count += 1;
-          return;
-        } else {
-          console.log("deal exists in old stage, moving deal");
-          if (newStageIndex === oldStageIndex) {
-            stages.value[oldStageIndex].deals[dealIndex] = deal;
-          } else if (newStageIndex !== -1) {
-            console.log("moving deal to new stage");
-            stages.value[newStageIndex].deals.unshift(deal);
-            stages.value[newStageIndex].deal_count += 1;
-            stages.value[oldStageIndex].deals.splice(dealIndex, 1);
-            stages.value[oldStageIndex].deal_count = Math.max(
-              0,
-              stages.value[oldStageIndex].deal_count - 1
-            );
-          } else {
-            console.log("new stage not exists, trash deal");
-            stages.value[oldStageIndex].deals.splice(dealIndex, 1);
-            stages.value[oldStageIndex].deal_count = Math.max(
-              0,
-              stages.value[oldStageIndex].deal_count - 1
-            );
-          }
+          displayStages.value[newStageIndexInDisplay].deal_count =
+            (displayStages.value[newStageIndexInDisplay].deal_count || 0) + 1;
+        } else if (
+          newStageIndexInDisplay !== -1 &&
+          expandedStages.value[newStageId]
+        ) {
+          displayStages.value[newStageIndexInDisplay].deal_count =
+            (displayStages.value[newStageIndexInDisplay].deal_count || 0) + 1;
+        }
+      } else {
+        if (
+          oldStageIndexInDisplay !== -1 &&
+          dealIndexInOldStage !== -1 &&
+          !expandedStages.value[oldStageId]
+        ) {
+          Object.assign(
+            displayStages.value[oldStageIndexInDisplay].deals[
+              dealIndexInOldStage
+            ],
+            updatedData
+          );
         }
       }
       toast.success(message);
     };
 
     const dealDeleteEvent = (deal, message) => {
-      let stages = ref(props.stages);
-      const deal_id = deal.id;
-      const stage_id = deal.stage_id;
-      const stageIndex = stages.value.findIndex(
-        (stage) => stage.id == stage_id
+      const stageIndex = displayStages.value.findIndex(
+        (stage) => stage.id == deal.stage_id
       );
-      if (stageIndex == -1) {
-        console.error("Stage not found");
-        return;
+
+      if (stageIndex !== -1 && !expandedStages.value[deal.stage_id]) {
+        const dealIndex = displayStages.value[stageIndex].deals.findIndex(
+          (d) => d.id == deal.id
+        );
+        if (dealIndex != -1) {
+          displayStages.value[stageIndex].deals.splice(dealIndex, 1);
+          displayStages.value[stageIndex].deal_count = Math.max(
+            0,
+            displayStages.value[stageIndex].deal_count - 1
+          );
+          toast.success(message);
+        }
+      } else if (stageIndex !== -1 && expandedStages.value[deal.stage_id]) {
+        displayStages.value[stageIndex].deal_count = Math.max(
+          0,
+          displayStages.value[stageIndex].deal_count - 1
+        );
       }
-      const dealIndex = stages.value[stageIndex].deals.findIndex(
-        (d) => d.id == deal_id
-      );
-      if (dealIndex != -1) {
-        stages.value[stageIndex].deals.splice(dealIndex, 1);
-      }
-      toast.success(message);
     };
 
     const handleTaskEvent = (event) => {
@@ -585,116 +857,131 @@ export default {
     };
 
     const handleDealContainerScroll = async (event, id) => {
-      if (reachedBottom.value) return;
+      if (reachedBottom.value || expandedStages.value[id]) return;
+
       const scrollTop = event.target.scrollTop;
       const scrollHeight = event.target.scrollHeight;
       const clientHeight = event.target.clientHeight;
-      const stages = ref(props.stages);
-      const stageIndex = stages.value.findIndex((s) => s.id === id);
-      if (
-        stages.value[stageIndex].deals.length ===
-        stages.value[stageIndex].deal_count
-      )
+
+      const stage = displayStages.value.find((s) => s.id === id);
+      if (!stage) return;
+
+      if (stage.deals.length >= stage.deal_count) {
         return;
+      }
+
       if (scrollTop + clientHeight >= scrollHeight - 1) {
         reachedBottom.value = true;
-        fetchAdditionalDealsByStageId(
-          id,
-          10,
-          stages.value[stageIndex].deals.length,
-          []
-        )
-          .then((additional_deals) => {
-            if (additional_deals.data) {
-              if (stageIndex !== -1) {
-                stages.value[stageIndex].deals.push(
-                  ...additional_deals.data.data
-                );
-              }
+
+        try {
+          const additional_deals = await fetchAdditionalDealsByStageId(
+            id,
+            10,
+            stage.deals.length,
+            []
+          );
+
+          if (additional_deals.data && additional_deals.data.data.length > 0) {
+            const currentStage = displayStages.value.find((s) => s.id === id);
+            if (currentStage) {
+              currentStage.deals.push(...additional_deals.data.data);
             }
-          })
-          .finally(() => {
-            reachedBottom.value = false;
-          });
+          }
+        } catch (error) {
+          toast.error(t("error.fetchDealsFailed"));
+        } finally {
+          reachedBottom.value = false;
+        }
       }
     };
 
     const IncreaseUnreadCount = (dealId) => {
       console.log("IncreaseUnreadCount", dealId);
-      const stages = ref(props.stages);
-      for (let i = 0; i < stages.value.length; i++) {
-        const stage = stages.value[i];
-        const dealIndex = stage.deals.findIndex((d) => d.id === dealId);
-        if (dealIndex !== -1) {
-          console.log("dealIndex", dealIndex);
-          stage.deals[dealIndex].unread_count += 1;
-          break;
+      for (const stage of displayStages.value) {
+        if (stage.deals) {
+          const deal = stage.deals.find((d) => d.id === dealId);
+          if (deal) {
+            deal.unread_count = (deal.unread_count || 0) + 1;
+            return;
+          }
         }
       }
     };
 
     const DecreaseUnreadCount = (dealId) => {
-      const stages = ref(props.stages);
-      for (let i = 0; i < stages.value.length; i++) {
-        const stage = stages.value[i];
-        const dealIndex = stage.deals.findIndex((d) => d.id === dealId);
-        if (dealIndex !== -1) {
-          stage.deals[dealIndex].unread_count = 0;
-          break;
+      for (const stage of displayStages.value) {
+        if (stage.deals) {
+          const deal = stage.deals.find((d) => d.id === dealId);
+          if (deal) {
+            deal.unread_count = 0;
+            return;
+          }
         }
       }
     };
 
-    const changeDealStage = async (
-      dealId,
-      newStageId,
-      oldStageId,
-      kanban = 1
-    ) => {
-      const stages = ref(props.stages);
-      const newStage = ref(
-        stages.value.find((stage) => stage.id == newStageId)
-      );
-      const oldStage = ref(
-        stages.value.find((stage) => stage.id == oldStageId)
-      );
-      console.log("newStage", newStage.value);
-      const deal =
-        newStage?.value?.deals.find((d) => d.id == dealId) ??
-        oldStage.value.deals.find((d) => d.id == dealId);
-      console.log("deal", deal);
+    const changeDealStage = async (dealId, newStageId, oldStageId) => {
       try {
-        if (newStageId !== -1) {
-          await updateDealStage(dealId, newStageId);
-          deal.stage_id = newStageId;
-        }
-        if (oldStage.value) oldStage.value.deal_count -= 1;
-        if (newStage.value) newStage.value.deal_count += 1;
-        if (!kanban) {
-          oldStage.value.deals.splice(
-            oldStage.value.deals.findIndex((d) => d.id == dealId),
-            1
-          );
-          if (newStage.value) newStage.value.deals.unshift(deal);
-        }
+        await updateDealStage(dealId, newStageId);
         toast.success(t("success.dealMoved"));
         playSound();
-      } catch (error) {
-        console.error("Error updating deal stage:", error);
 
-        const oldStage = props.stages.find((s) => s.id === oldStageId);
-        if (oldStage) {
-          const currentStage = props.stages.find((s) => s.id === newStageId);
-          if (currentStage) {
-            const dealIndex = currentStage.deals.findIndex(
-              (d) => d.id === deal.id
-            );
-            if (dealIndex !== -1) {
-              const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
-              oldStage.deals.push(removedDeal);
-            }
+        const oldStageInDisplay = displayStages.value.find(
+          (s) => s.id === oldStageId
+        );
+        const newStageInDisplay = displayStages.value.find(
+          (s) => s.id === newStageId
+        );
+
+        if (oldStageInDisplay) {
+          oldStageInDisplay.deal_count = Math.max(
+            0,
+            oldStageInDisplay.deal_count - 1
+          );
+        }
+        if (newStageInDisplay) {
+          newStageInDisplay.deal_count =
+            (newStageInDisplay.deal_count || 0) + 1;
+        }
+      } catch (error) {
+        const stageAfterMoveInDisplay = displayStages.value.find(
+          (s) => s.id === newStageId
+        );
+        const dealIndexInNewStage = stageAfterMoveInDisplay
+          ? stageAfterMoveInDisplay.deals.findIndex((d) => d.id === dealId)
+          : -1;
+
+        if (stageAfterMoveInDisplay && dealIndexInNewStage !== -1) {
+          const [revertedDeal] = stageAfterMoveInDisplay.deals.splice(
+            dealIndexInNewStage,
+            1
+          );
+
+          const oldStageInDisplay = displayStages.value.find(
+            (s) => s.id === oldStageId
+          );
+          if (oldStageInDisplay) {
+            oldStageInDisplay.deals.unshift(revertedDeal);
+            revertedDeal.stage_id = oldStageId;
           }
         }
+
+        const oldStageInDisplayForRevertCount = displayStages.value.find(
+          (s) => s.id === oldStageId
+        );
+        const newStageAfterRevertInDisplay = displayStages.value.find(
+          (s) => s.id === newStageId
+        );
+
+        if (oldStageInDisplayForRevertCount)
+          oldStageInDisplayForRevertCount.deal_count =
+            (oldStageInDisplayForRevertCount.deal_count || 0) + 1;
+        if (newStageAfterRevertInDisplay)
+          newStageAfterRevertInDisplay.deal_count = Math.max(
+            0,
+            newStageAfterRevertInDisplay.deal_count - 1
+          );
+
         toast.error(t("error.dealMoveFailed"));
       }
     };
@@ -736,60 +1023,80 @@ export default {
     };
 
     const disconnectWebSocket = () => {
-      window.Echo.disconnect();
-      console.log("WebSocket disconnected due to inactivity");
+      if (window.Echo) {
+        window.Echo.disconnect();
+        console.log("WebSocket disconnected due to inactivity");
+      }
     };
 
     const reconnectWebSocket = () => {
-      window.Echo.connect();
-      const userRole = Cookies.get("user_role");
-      const user_id = Cookies.get("user_id");
-      let userChannel;
+      if (
+        window.Echo &&
+        !window.Echo.connector.pusher.connection.isConnected()
+      ) {
+        window.Echo.connect();
+        console.log("Attempting to reconnect WebSocket");
 
-      if (userRole === "super-admin") {
-        userChannel = userRole;
+        window.Echo.connector.pusher.connection.bind("connected", () => {
+          console.log("WebSocket reconnected.");
+          const userRole = Cookies.get("user_role");
+          const user_id = Cookies.get("user_id");
+          let userChannel;
+
+          if (userRole === "super-admin") {
+            userChannel = userRole;
+          } else {
+            userChannel = `${userRole}-${user_id}`;
+          }
+
+          if (window.Echo && userChannel) {
+            window.Echo.channel(userChannel)
+              .listen(".DealEvent", (event) => {
+                console.log("DealEvent received:", event);
+                handleDealEvent(event);
+              })
+              .listen(".TaskEvent", (event) => {
+                console.log("TaskEvent received:", event);
+                handleTaskEvent(event);
+              })
+              .listen(".CommentEvent", (event) => {
+                console.log("CommentEvent received:", event);
+                handleCommentEvent(event);
+              })
+              .listen(".LogEvent", (event) => {
+                console.log("LogEvent received:", event);
+                handleLogEvent(event);
+              })
+              .listen(".WhatsappEvent", (event) => {
+                console.log("WhatsappEvent received:", event);
+                handleWhatsappEvent(event);
+              });
+            console.log(`Re-subscribed to channel: ${userChannel}`);
+          }
+          kanbanStore.setHasNewChanges(true);
+        });
+      } else if (
+        window.Echo &&
+        window.Echo.connector.pusher.connection.isConnected()
+      ) {
+        console.log("WebSocket is already connected.");
       } else {
-        userChannel = `${userRole}-${user_id}`;
+        console.error("WebSocket is not initialized.");
       }
-
-      if (window.Echo && userChannel) {
-        window.Echo.channel(userChannel)
-          .listen(".DealEvent", (event) => {
-            console.log("DealEvent received:", event);
-            handleDealEvent(event);
-          })
-          .listen(".TaskEvent", (event) => {
-            console.log("TaskEvent received:", event);
-            handleTaskEvent(event);
-          })
-          .listen(".CommentEvent", (event) => {
-            console.log("CommentEvent received:", event);
-            handleCommentEvent(event);
-          })
-          .listen(".LogEvent", (event) => {
-            console.log("LogEvent received:", event);
-            handleLogEvent(event);
-          })
-          .listen(".WhatsappEvent", (event) => {
-            console.log("WhatsappEvent received:", event);
-            handleWhatsappEvent(event);
-          });
-      }
-
-      console.log("WebSocket reconnected on user activity");
-      kanbanStore.setHasNewChanges(true);
     };
 
     onMounted(async () => {
-      dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
-      document.addEventListener("mouseup", stopScrolling);
-      document.addEventListener("mouseleave", stopScrolling);
-      updateArrowVisibility();
+      if (dealsContainer.value) {
+        dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
+        document.addEventListener("mouseup", stopScrolling);
+        document.addEventListener("mouseleave", stopScrolling);
+        updateArrowVisibility();
+      }
+
       startIdleTimer();
       setupUserActivityListeners();
 
       try {
-        // Initialize WebSocket connection
         await initializeWebSocket();
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
@@ -800,7 +1107,6 @@ export default {
           userChannel = `${userRole}-${user_id}`;
         }
 
-        // Listen to the appropriate channel
         if (window.Echo && userChannel) {
           window.Echo.channel(userChannel)
             .listen(".DealEvent", (event) => {
@@ -823,6 +1129,7 @@ export default {
               console.log("WhatsappEvent received:", event);
               handleWhatsappEvent(event);
             });
+          console.log(`Subscribed to channel: ${userChannel}`);
         } else {
           console.error(
             "WebSocket or userChannel is not initialized properly."
@@ -830,10 +1137,12 @@ export default {
         }
       } catch (error) {
         console.error("Error mounting component:", error);
+        toast.error(t("error.websocketInitFailed"));
       }
 
       props.stages.forEach((stage) => {
         hiddenStages.value[stage.id] = false;
+        expandedStages.value[stage.id] = false;
       });
     });
 
@@ -847,17 +1156,31 @@ export default {
       document.removeEventListener("mouseup", stopScrolling);
       document.removeEventListener("mouseleave", stopScrolling);
 
-      const user_id = 1;
-      const userRole = "sales";
+      const user_id = Cookies.get("user_id");
+      const userRole = Cookies.get("user_role");
 
-      let userChannel =
-        userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
+      if (window.Echo && user_id && userRole) {
+        let userChannel =
+          userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
+        window.Echo.leave(userChannel);
+        console.log(`Unsubscribed from channel: ${userChannel}`);
+      } else {
+        console.warn("Could not determine user channel to leave on unmount.");
+      }
 
-      // Leave the WebSocket channel
-      window.Echo.leave(userChannel);
-
-      // Close the WebSocket connection
-      closeWebSocket();
+      if (
+        window.Echo &&
+        window.Echo.connector.pusher.connection.isConnected()
+      ) {
+        closeWebSocket();
+      } else if (
+        window.Echo &&
+        !window.Echo.connector.pusher.connection.isConnected()
+      ) {
+        console.log("WebSocket already disconnected on unmount.");
+      } else {
+        console.warn("WebSocket not initialized on unmount.");
+      }
     });
 
     onBeforeUnmount(() => {
@@ -866,7 +1189,7 @@ export default {
     });
 
     return {
-      // stages,
+      displayStages,
       drag,
       getStageHeaderClass,
       dealsContainer,
@@ -875,7 +1198,6 @@ export default {
       showLeft,
       showRight,
       openDealDataCard,
-      // openUpdateStage,
       openFilterStage,
       isTasksView,
       selectedStage,
@@ -893,8 +1215,10 @@ export default {
       permissionStore,
       PERMISSIONS,
       isIdle,
+      hiddenStages,
+      expandedStages,
+      toggleExpandStage,
 
-      // Methods
       refreshPage,
       startIdleTimer,
       clearIdleTimer,
@@ -904,7 +1228,6 @@ export default {
       setIdle,
       disconnectWebSocket,
       reconnectWebSocket,
-      hiddenStages,
     };
   },
 };
@@ -919,8 +1242,8 @@ export default {
 .kanban-board {
   display: flex;
   flex-direction: row;
-  min-width: 300px;
-  width: 300px;
+  /* min-width: 350px;
+  width: 350px; */
   height: 100%;
 }
 
@@ -932,11 +1255,11 @@ export default {
 }
 
 .stage-header {
-  min-width: 265px;
-  width: 265px;
+  /* min-width: 301px;
+  width: 301px; */
   margin-right: 10px;
   text-align: start;
-  padding-left: 3px;
+  /* padding-left: 3px; */
   transition: all 0.5s;
   cursor: pointer;
   /* clip-path: polygon(
@@ -962,20 +1285,29 @@ export default {
 }
 
 .stage-column {
-  width: 273px;
-  min-width: 273px;
+  /* width: 307px;
+  min-width: 307px; */
   height: 100%;
-  padding: 0.5rem 1rem 0 0;
+  padding: 0.5rem 0rem 0 0;
+  /* border-right: 2px dashed #eee; */
+  position: relative;
+}
+.stage-column .line {
+  position: absolute;
+  right: 0px;
+  bottom: 0;
+  width: 2px;
+  height: 97%;
+  background-color: transparent;
   border-right: 2px dashed #eee;
 }
-
 .deal-list {
-  width: 270px;
-  min-width: 270px;
+  /* width: 300px;
+  min-width: 300px; */
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 3px;
+  padding: 0 3px 0 0;
 }
 
 /* Scrollbar Styling */

@@ -131,6 +131,9 @@ export const getSources = () => axios.get("/sources");
 
 // Get All Stages
 export const getStages = () => axios.get("/stages");
+// getStagesChildren
+export const getStagesChildren = (parentId) =>
+  axios.get(`/stages/${parentId}/children`);
 
 export const getSpecialStages = () => axios.get("/stages/specials");
 

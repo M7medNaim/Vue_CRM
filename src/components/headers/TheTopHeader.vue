@@ -154,6 +154,24 @@
                   </div>
                 </router-link>
               </div>
+              <div class="dropdown-link">
+                <router-link
+                  v-if="
+                    permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+                  "
+                  to="/patient-registration"
+                  class="text-decoration-none text-black mb-2"
+                  @click="closeDropdown"
+                >
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-settings')"
+                  >
+                    <i class="fa-solid fa-sliders fs-5 me-2"></i>
+                    <span>Patient Reg...</span>
+                  </div>
+                </router-link>
+              </div>
             </div>
           </transition>
         </div>
