@@ -74,6 +74,7 @@ export default {
             icon: stage.icon || "cricle",
             deal_count: stage.deal_count,
             deals: stage.deals || [],
+            filterable_tags: stage.filterable_tags || [],
           }));
           toast.success(t("success.loadKanban"));
         } else {

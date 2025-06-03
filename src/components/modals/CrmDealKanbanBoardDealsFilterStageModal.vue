@@ -32,8 +32,15 @@
                   v-model="selectedCheckboxes"
                   :value="cb.value"
                 />
-                <label class="form-check-label" :for="cb.value">
-                  {{ cb.label }}
+                <label
+                  class="form-check-label px-2 py-1 rounded fs-7"
+                  :for="cb.value"
+                  :style="{
+                    backgroundColor: cb.color_code,
+                    color: getContrastColor(cb.color_code),
+                  }"
+                >
+                  <i :class="`fa-solid fa-${cb.icon} me-1`"> </i>{{ cb.label }}
                 </label>
               </div>
             </div>
@@ -72,30 +79,25 @@ export default {
   setup() {
     const toast = useToast();
     const { t } = useI18n();
-    return { toast, t };
+    const getContrastColor = (hexColor) => {
+      const r = parseInt(hexColor.slice(1, 3), 16);
+      const g = parseInt(hexColor.slice(3, 5), 16);
+      const b = parseInt(hexColor.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 170 ? "#000000" : "#FFFFFF";
+    };
+    return { toast, t, getContrastColor };
   },
   methods: {},
   computed: {
     checkboxes() {
       if (!this.stage) return [];
-      if (this.stage.name === "Active" || this.stage.name === "نشط") {
-        return [
-          { label: "إنشاء في", value: "create_in" },
-          { label: "تعديل في", value: "edit_in" },
-        ];
-      }
-      if (
-        this.stage.name === "Waiting For Response" ||
-        this.stage.name === "بانتظار الرد"
-      ) {
-        return [
-          { label: "No Response 1", value: "nr1" },
-          { label: "No Response 2", value: "nr2" },
-          { label: "No Response 3", value: "nr3" },
-          { label: "No Response 4", value: "nr4" },
-        ];
-      }
-      return [];
+      return this.stage.filterable_tags.map((tag) => ({
+        value: tag.id,
+        label: tag.name,
+        icon: tag.icon,
+        color_code: tag.color_code,
+      }));
     },
   },
   data() {
@@ -105,3 +107,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.fs-7 {
+  font-size: 0.875rem;
+}
+</style>
