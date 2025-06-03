@@ -1023,80 +1023,68 @@ export default {
     };
 
     const disconnectWebSocket = () => {
-      if (window.Echo) {
-        window.Echo.disconnect();
-        console.log("WebSocket disconnected due to inactivity");
-      }
+      window.Echo.disconnect();
+      console.log("WebSocket disconnected due to inactivity");
     };
 
     const reconnectWebSocket = () => {
-      if (
-        window.Echo &&
-        !window.Echo.connector.pusher.connection.isConnected()
-      ) {
-        window.Echo.connect();
-        console.log("Attempting to reconnect WebSocket");
+      window.Echo.connect();
+      const userRole = Cookies.get("user_role");
+      const user_id = Cookies.get("user_id");
+      let userChannel;
 
-        window.Echo.connector.pusher.connection.bind("connected", () => {
-          console.log("WebSocket reconnected.");
-          const userRole = Cookies.get("user_role");
-          const user_id = Cookies.get("user_id");
-          let userChannel;
-
-          if (userRole === "super-admin") {
-            userChannel = userRole;
-          } else {
-            userChannel = `${userRole}-${user_id}`;
-          }
-
-          if (window.Echo && userChannel) {
-            window.Echo.channel(userChannel)
-              .listen(".DealEvent", (event) => {
-                console.log("DealEvent received:", event);
-                handleDealEvent(event);
-              })
-              .listen(".TaskEvent", (event) => {
-                console.log("TaskEvent received:", event);
-                handleTaskEvent(event);
-              })
-              .listen(".CommentEvent", (event) => {
-                console.log("CommentEvent received:", event);
-                handleCommentEvent(event);
-              })
-              .listen(".LogEvent", (event) => {
-                console.log("LogEvent received:", event);
-                handleLogEvent(event);
-              })
-              .listen(".WhatsappEvent", (event) => {
-                console.log("WhatsappEvent received:", event);
-                handleWhatsappEvent(event);
-              });
-            console.log(`Re-subscribed to channel: ${userChannel}`);
-          }
-          kanbanStore.setHasNewChanges(true);
-        });
-      } else if (
-        window.Echo &&
-        window.Echo.connector.pusher.connection.isConnected()
-      ) {
-        console.log("WebSocket is already connected.");
+      if (userRole === "super-admin") {
+        userChannel = userRole;
       } else {
-        console.error("WebSocket is not initialized.");
+        userChannel = `${userRole}-${user_id}`;
       }
+
+      if (window.Echo && userChannel) {
+        window.Echo.channel(userChannel).listen(
+          ".DealEvent",
+          ".TaskEvent",
+          ".CommentEvent",
+          ".LogEvent",
+          ".WhatsappEvent"
+        );
+        // window.Echo.channel(userChannel)
+        //   .listen(".DealEvent", (event) => {
+        //     console.log("DealEvent received:", event);
+        //     handleDealEvent(event);
+        //   })
+        //   .listen(".TaskEvent", (event) => {
+        //     console.log("TaskEvent received:", event);
+        //     handleTaskEvent(event);
+        //   })
+        //   .listen(".CommentEvent", (event) => {
+        //     console.log("CommentEvent received:", event);
+        //     handleCommentEvent(event);
+        //   })
+        //   .listen(".LogEvent", (event) => {
+        //     console.log("LogEvent received:", event);
+        //     handleLogEvent(event);
+        //   })
+        //   .listen(".WhatsappEvent", (event) => {
+        //     console.log("WhatsappEvent received:", event);
+        //     handleWhatsappEvent(event);
+        //   });
+      }
+
+      console.log("WebSocket reconnected on user activity");
+      kanbanStore.setHasNewChanges(true);
     };
 
     onMounted(async () => {
-      if (dealsContainer.value) {
-        dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
-        document.addEventListener("mouseup", stopScrolling);
-        document.addEventListener("mouseleave", stopScrolling);
-        updateArrowVisibility();
-      }
+      dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
+      document.addEventListener("mouseup", stopScrolling);
+      document.addEventListener("mouseleave", stopScrolling);
+      updateArrowVisibility();
 
       startIdleTimer();
       setupUserActivityListeners();
 
       try {
+        // Initialize WebSocket connection
         await initializeWebSocket();
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
@@ -1129,7 +1117,6 @@ export default {
               console.log("WhatsappEvent received:", event);
               handleWhatsappEvent(event);
             });
-          console.log(`Subscribed to channel: ${userChannel}`);
         } else {
           console.error(
             "WebSocket or userChannel is not initialized properly."
@@ -1145,6 +1132,64 @@ export default {
         expandedStages.value[stage.id] = false;
       });
     });
+    onMounted(async () => {
+      dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
+      document.addEventListener("mouseup", stopScrolling);
+      document.addEventListener("mouseleave", stopScrolling);
+      updateArrowVisibility();
+      startIdleTimer();
+      setupUserActivityListeners();
+
+      try {
+        // Initialize WebSocket connection
+        await initializeWebSocket();
+        // const user_id = 1;
+        // const userRole = "sales";
+        const userRole = Cookies.get("user_role");
+        const user_id = Cookies.get("user_id");
+        let userChannel;
+        if (userRole === "super-admin") {
+          userChannel = userRole;
+        } else {
+          userChannel = `${userRole}-${user_id}`;
+        }
+
+        // Listen to the appropriate channel
+        if (window.Echo && userChannel) {
+          window.Echo.channel(userChannel)
+            .listen(".DealEvent", (event) => {
+              console.log("DealEvent received:", event);
+              handleDealEvent(event);
+            })
+            .listen(".TaskEvent", (event) => {
+              console.log("TaskEvent received:", event);
+              handleTaskEvent(event);
+            })
+            .listen(".CommentEvent", (event) => {
+              console.log("CommentEvent received:", event);
+              handleCommentEvent(event);
+            })
+            .listen(".LogEvent", (event) => {
+              console.log("LogEvent received:", event);
+              handleLogEvent(event);
+            })
+            .listen(".WhatsappEvent", (event) => {
+              console.log("WhatsappEvent received:", event);
+              handleWhatsappEvent(event);
+            });
+        } else {
+          console.error(
+            "WebSocket or userChannel is not initialized properly."
+          );
+        }
+      } catch (error) {
+        console.error("Error mounting component:", error);
+      }
+
+      props.stages.forEach((stage) => {
+        hiddenStages.value[stage.id] = false;
+      });
+    });
 
     onUnmounted(() => {
       if (dealsContainer.value) {
@@ -1156,31 +1201,17 @@ export default {
       document.removeEventListener("mouseup", stopScrolling);
       document.removeEventListener("mouseleave", stopScrolling);
 
-      const user_id = Cookies.get("user_id");
-      const userRole = Cookies.get("user_role");
+      const user_id = 1;
+      const userRole = "sales";
 
-      if (window.Echo && user_id && userRole) {
-        let userChannel =
-          userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
-        window.Echo.leave(userChannel);
-        console.log(`Unsubscribed from channel: ${userChannel}`);
-      } else {
-        console.warn("Could not determine user channel to leave on unmount.");
-      }
+      let userChannel =
+        userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
 
-      if (
-        window.Echo &&
-        window.Echo.connector.pusher.connection.isConnected()
-      ) {
-        closeWebSocket();
-      } else if (
-        window.Echo &&
-        !window.Echo.connector.pusher.connection.isConnected()
-      ) {
-        console.log("WebSocket already disconnected on unmount.");
-      } else {
-        console.warn("WebSocket not initialized on unmount.");
-      }
+      // Leave the WebSocket channel
+      window.Echo.leave(userChannel);
+
+      // Close the WebSocket connection
+      closeWebSocket();
     });
 
     onBeforeUnmount(() => {
