@@ -78,17 +78,22 @@
             </div>
             <button
               v-if="isConnected"
-              class="border-0 bg-transparent"
+              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
               @click="WhatasppLogout()"
+              style="border: 1px solid #eee !important"
             >
-              <i class="fa-solid fa-sign-out fs-6 text-white"></i>
+              <i class="fa-solid fa-sign-out"></i>
               Logout
             </button>
-            <button v-else class="border-0 bg-transparent">
-              <i class="fa-solid fa-sign-in fs-6 text-white"></i>
+            <button
+              v-else
+              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
+              @click="handleLoginClick"
+              style="border: 1px solid #eee !important"
+            >
+              <i class="fa-solid fa-sign-in"></i>
               Login
             </button>
-
             <button
               @click.stop="showList()"
               aria-label="list chat (menu)"
@@ -103,14 +108,6 @@
               aria-label="Close"
             >
               <i class="fa fa-window-restore fs-6 pt-2 ps-1 text-white"></i>
-            </button>
-            <button
-              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
-              @click="handleLoginClick"
-              style="border: 1px solid #eee !important"
-            >
-              <i class="fa-solid fa-right-to-bracket"></i>
-              Login
             </button>
           </div>
         </div>
@@ -284,6 +281,7 @@ export default {
       console.log(response);
       if (response.success) {
         this.isConnected = false;
+        this.handleLoginClick();
       }
     },
     async receiveMessage(messageData) {
