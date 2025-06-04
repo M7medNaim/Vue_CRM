@@ -167,7 +167,7 @@
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-settings')"
                   >
-                    <i class="fa-solid fa-sliders fs-5 me-2"></i>
+                    <i class="fa-solid fa-user-group fs-5 me-2"></i>
                     <span>Patient Reg...</span>
                   </div>
                 </router-link>

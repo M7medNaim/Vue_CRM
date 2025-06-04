@@ -245,7 +245,6 @@
     <div
       class="arrowsBoar w-100 position-absolute top-50 end-0"
       style="pointer-events: none"
-      v-if="permissionStore.hasPermission('edit-stage')"
     >
       <div
         v-if="showRight"
@@ -598,21 +597,26 @@ export default {
       scrollInterval = requestAnimationFrame(animate);
     };
 
-    let firstLoad = true;
+    // let firstLoad = true;
     const updateArrowVisibility = () => {
       if (!dealsContainer.value) return;
 
       const { scrollLeft, scrollWidth, clientWidth } = dealsContainer.value;
 
       showLeft.value = scrollLeft > 0;
-
-      if (firstLoad) {
-        showRight.value = true;
-        firstLoad = false;
-      } else {
-        showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
-      }
+      showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
     };
+
+    // Add watcher for displayStages
+    watch(
+      () => displayStages.value,
+      () => {
+        nextTick(() => {
+          updateArrowVisibility();
+        });
+      },
+      { deep: true }
+    );
 
     const stopScrolling = () => {
       if (scrollInterval) {
@@ -857,41 +861,37 @@ export default {
     };
 
     const handleDealContainerScroll = async (event, id) => {
-      if (reachedBottom.value || expandedStages.value[id]) return;
-
+      if (reachedBottom.value) return;
       const scrollTop = event.target.scrollTop;
       const scrollHeight = event.target.scrollHeight;
       const clientHeight = event.target.clientHeight;
-
-      const stage = displayStages.value.find((s) => s.id === id);
-      if (!stage) return;
-
-      if (stage.deals.length >= stage.deal_count) {
+      const stages = ref(props.stages);
+      const stageIndex = stages.value.findIndex((s) => s.id === id);
+      if (
+        stages.value[stageIndex].deals.length ===
+        stages.value[stageIndex].deal_count
+      )
         return;
-      }
-
       if (scrollTop + clientHeight >= scrollHeight - 1) {
         reachedBottom.value = true;
-
-        try {
-          const additional_deals = await fetchAdditionalDealsByStageId(
-            id,
-            10,
-            stage.deals.length,
-            []
-          );
-
-          if (additional_deals.data && additional_deals.data.data.length > 0) {
-            const currentStage = displayStages.value.find((s) => s.id === id);
-            if (currentStage) {
-              currentStage.deals.push(...additional_deals.data.data);
+        fetchAdditionalDealsByStageId(
+          id,
+          10,
+          stages.value[stageIndex].deals.length,
+          []
+        )
+          .then((additional_deals) => {
+            if (additional_deals.data) {
+              if (stageIndex !== -1) {
+                stages.value[stageIndex].deals.push(
+                  ...additional_deals.data.data
+                );
+              }
             }
-          }
-        } catch (error) {
-          toast.error(t("error.fetchDealsFailed"));
-        } finally {
-          reachedBottom.value = false;
-        }
+          })
+          .finally(() => {
+            reachedBottom.value = false;
+          });
       }
     };
 
@@ -1075,25 +1075,37 @@ export default {
     };
 
     onMounted(async () => {
-      dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
-      document.addEventListener("mouseup", stopScrolling);
-      document.addEventListener("mouseleave", stopScrolling);
-      updateArrowVisibility();
+      if (dealsContainer.value) {
+        dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
+        document.addEventListener("mouseup", stopScrolling);
+        document.addEventListener("mouseleave", stopScrolling);
+
+        // Force update arrows visibility after a short delay
+        setTimeout(() => {
+          updateArrowVisibility();
+        }, 500);
+
+        // Add resize observer
+        const resizeObserver = new ResizeObserver(() => {
+          updateArrowVisibility();
+        });
+
+        resizeObserver.observe(dealsContainer.value);
+
+        onUnmounted(() => {
+          resizeObserver.disconnect();
+        });
+      }
 
       startIdleTimer();
       setupUserActivityListeners();
 
       try {
-        // Initialize WebSocket connection
         await initializeWebSocket();
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
-        let userChannel;
-        if (userRole === "super-admin") {
-          userChannel = userRole;
-        } else {
-          userChannel = `${userRole}-${user_id}`;
-        }
+        let userChannel =
+          userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
 
         if (window.Echo && userChannel) {
           window.Echo.channel(userChannel)
@@ -1117,77 +1129,14 @@ export default {
               console.log("WhatsappEvent received:", event);
               handleWhatsappEvent(event);
             });
-        } else {
-          console.error(
-            "WebSocket or userChannel is not initialized properly."
-          );
         }
       } catch (error) {
         console.error("Error mounting component:", error);
-        toast.error(t("error.websocketInitFailed"));
       }
 
       props.stages.forEach((stage) => {
         hiddenStages.value[stage.id] = false;
         expandedStages.value[stage.id] = false;
-      });
-    });
-    onMounted(async () => {
-      dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
-      document.addEventListener("mouseup", stopScrolling);
-      document.addEventListener("mouseleave", stopScrolling);
-      updateArrowVisibility();
-      startIdleTimer();
-      setupUserActivityListeners();
-
-      try {
-        // Initialize WebSocket connection
-        await initializeWebSocket();
-        // const user_id = 1;
-        // const userRole = "sales";
-        const userRole = Cookies.get("user_role");
-        const user_id = Cookies.get("user_id");
-        let userChannel;
-        if (userRole === "super-admin") {
-          userChannel = userRole;
-        } else {
-          userChannel = `${userRole}-${user_id}`;
-        }
-
-        // Listen to the appropriate channel
-        if (window.Echo && userChannel) {
-          window.Echo.channel(userChannel)
-            .listen(".DealEvent", (event) => {
-              console.log("DealEvent received:", event);
-              handleDealEvent(event);
-            })
-            .listen(".TaskEvent", (event) => {
-              console.log("TaskEvent received:", event);
-              handleTaskEvent(event);
-            })
-            .listen(".CommentEvent", (event) => {
-              console.log("CommentEvent received:", event);
-              handleCommentEvent(event);
-            })
-            .listen(".LogEvent", (event) => {
-              console.log("LogEvent received:", event);
-              handleLogEvent(event);
-            })
-            .listen(".WhatsappEvent", (event) => {
-              console.log("WhatsappEvent received:", event);
-              handleWhatsappEvent(event);
-            });
-        } else {
-          console.error(
-            "WebSocket or userChannel is not initialized properly."
-          );
-        }
-      } catch (error) {
-        console.error("Error mounting component:", error);
-      }
-
-      props.stages.forEach((stage) => {
-        hiddenStages.value[stage.id] = false;
       });
     });
 
@@ -1249,7 +1198,6 @@ export default {
       hiddenStages,
       expandedStages,
       toggleExpandStage,
-
       refreshPage,
       startIdleTimer,
       clearIdleTimer,
