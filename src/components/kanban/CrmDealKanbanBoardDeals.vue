@@ -70,7 +70,7 @@
                     style="font-size: 12px"
                   ></i>
                 </button>
-                <div class="">
+                <div class="w-100 text-center">
                   <span>
                     <i
                       :class="`me-1 fa fa-soild fa-${stage.icon}`"
@@ -93,6 +93,9 @@
                   </span>
                 </div>
                 <button
+                  v-show="
+                    stage.filterable_tags && stage.filterable_tags.length > 0
+                  "
                   class="btn btn-sm h-100 rounded-0 p-0"
                   style=""
                   @click="openFilterStage(stage)"

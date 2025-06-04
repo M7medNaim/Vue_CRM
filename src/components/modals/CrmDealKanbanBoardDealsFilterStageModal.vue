@@ -91,7 +91,7 @@ export default {
   methods: {},
   computed: {
     checkboxes() {
-      if (!this.stage) return [];
+      if (!this.stage || !this.stage.filterable_tags) return [];
       return this.stage.filterable_tags.map((tag) => ({
         value: tag.id,
         label: tag.name,
