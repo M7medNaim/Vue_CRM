@@ -358,22 +358,14 @@ export default {
           const childStages = response.data.data.map((child) => ({
             ...child,
             parent_id: parentId,
-            deals: [],
           }));
           return childStages;
         } else {
-          console.error(
-            "API response did not contain expected data:",
-            response
-          );
-          throw new Error("Invalid API response structure");
+          console.error(response.message);
+          throw new Error(response.message);
         }
       } catch (error) {
-        console.error(
-          "Error fetching child stages for parent",
-          parentId,
-          error
-        );
+        console.error(error.message, parentId, error);
         throw error;
       }
     };
@@ -401,9 +393,7 @@ export default {
           }
         } catch (error) {
           expandedStages.value[parentStage.id] = false;
-          toast.error(
-            t("error.fetchChildStagesFailed", { stageName: parentStage.name })
-          );
+          toast.error(error.message);
         }
       }
     };

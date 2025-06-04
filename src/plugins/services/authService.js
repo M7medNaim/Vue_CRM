@@ -134,7 +134,7 @@ export const getSources = () => axios.get("/sources");
 export const getStages = () => axios.get("/stages");
 // getStagesChildren
 export const getStagesChildren = (parentId) =>
-  axios.get(`/stages/${parentId}/children`);
+  axios.get(`/kanban/deals/${parentId}/children`);
 
 export const getSpecialStages = () => axios.get("/stages/specials");
 
