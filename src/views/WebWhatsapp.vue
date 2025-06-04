@@ -78,6 +78,7 @@
 
 <script>
 import axios from "@/plugins/axios";
+import expressApi from "@/plugins/expressApi";
 import {
   webstart,
   webqrcode,
@@ -144,7 +145,10 @@ export default {
         this.showStatus("Logging out WhatsApp...", "info");
 
         const userId = getUserId();
-        await axios.post(`http://127.0.0.1:3000/stop-client`, { userId });
+        await expressApi.post(
+          `${process.env.VUE_APP_EXPRESS_URL}/stop-client/`,
+          { userId }
+        );
 
         // Reset component state
         this.isConnected = false;
@@ -177,7 +181,7 @@ export default {
         setTimeout(() => {
           this.startQrCodeCheck();
           this.startStatusCheck();
-        }, 2000);
+        }, 5000);
       } catch (error) {
         console.error("Error starting WhatsApp:", error);
         this.showStatus("Failed to start WhatsApp client", "error");
@@ -190,7 +194,7 @@ export default {
         if (!this.isConnected) {
           await this.fetchQrCode();
         }
-      }, 3000);
+      }, 5000);
 
       // Initial QR code fetch
       this.fetchQrCode();
@@ -199,7 +203,7 @@ export default {
     startStatusCheck() {
       this.statusCheckInterval = setInterval(async () => {
         await this.checkWhatsAppStatus();
-      }, 2000);
+      }, 5000);
 
       // Initial status check
       this.checkWhatsAppStatus();
