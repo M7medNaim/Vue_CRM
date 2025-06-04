@@ -75,6 +75,7 @@ export default {
             deal_count: stage.deal_count,
             deals: stage.deals || [],
             filterable_tags: stage.filterable_tags || [],
+            parent_id: stage.parent_id || null,
             has_children: stage.has_children,
           }));
           toast.success(t("success.loadKanban"));

@@ -355,10 +355,7 @@ export default {
         const response = await getStagesChildren(parentId);
 
         if (response.data && response.data.data) {
-          const childStages = response.data.data.map((child) => ({
-            ...child,
-            parent_id: parentId,
-          }));
+          const childStages = response.data.data;
           return childStages;
         } else {
           console.error(response.message);
@@ -451,6 +448,14 @@ export default {
             if (oldStageInDisplay) {
               oldStageInDisplay.deals.unshift(revertedDeal);
               revertedDeal.stage_id = oldStageId;
+            } else {
+              const oldParentStageInDisplay = displayStages.value.find(
+                (s) => s.parent_id === oldStageId
+              );
+              if (oldParentStageInDisplay) {
+                oldParentStageInDisplay.deals.unshift(revertedDeal);
+                revertedDeal.stage_id = oldStageId;
+              }
             }
           }
 
