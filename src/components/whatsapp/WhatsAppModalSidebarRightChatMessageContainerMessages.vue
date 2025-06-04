@@ -8,7 +8,9 @@
         : ''
     }`"
   >
-    <button class="addNote border-0 position-absolute bottom-0 fs-6 rounded-2">
+    <button
+      class="addNote border-0 position-absolute bottom-0 end-0 fs-6 rounded-2"
+    >
       <i class="fa-solid fa-paste"></i>
     </button>
 
@@ -18,29 +20,8 @@
       @open-fullscreen="() => $emit('open-fullscreen', message.fileUrl)"
     />
 
-    <div
-      class="message-text"
-      style="white-space: pre-line"
-      v-if="
-        message.status != 'error' &&
-        !message.isImage &&
-        !message.isVideo &&
-        !message.isAudio &&
-        !message.isDocument
-      "
-    >
-      {{ message.text }}
-    </div>
-    <div
-      class="message-text"
-      style="white-space: pre-line"
-      v-else-if="message.status == 'error'"
-    >
-      {{ $parent.t(message.text) }}
-    </div>
-
     <button
-      class="buttonMenu border-0 bg-transparent position-absolute top-0 fs-6"
+      class="buttonMenu border-0 bg-transparent position-absolute top-0 end-0 fs-6"
       @click.stop="$emit('toggle-menu', index)"
       v-click-outside="$emit('close-menu')"
     >
