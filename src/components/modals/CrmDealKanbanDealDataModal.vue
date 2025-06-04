@@ -82,7 +82,6 @@
             </div>
           </div>
 
-          <!-- Customer Details Form -->
           <div class="row">
             <div class="col-12 col-md-6 border-end">
               <!-- Full Name -->
@@ -354,8 +353,14 @@
                       placeholder="اكتب تعليقك هنا..."
                       class="form-control comment-textarea bg-light text-secondary rounded-0 me-1"
                       rows="1"
-                      style="resize: none"
-                      @input="autoResize"
+                      style="
+                        resize: none;
+                        overflow-y: hidden;
+                        min-height: 30px;
+                        min-width: 50px;
+                        width: 100%;
+                      "
+                      @input="autoResize($event.target)"
                       @keydown.enter="handleEnter"
                     ></textarea>
                     <button
@@ -373,7 +378,7 @@
                     :key="comment.id"
                     class="row mt-2"
                   >
-                    <div class="col-auto pe-0">
+                    <div class="col-1 pe-0">
                       <img
                         src="@/assets/default-user-image.jpg"
                         alt="Seals Image"
@@ -382,7 +387,7 @@
                       />
                       <!-- <span class="ms-2">{{ comment.username }}</span> -->
                     </div>
-                    <div class="col position-relative">
+                    <div class="col-11 position-relative">
                       <div
                         :class="[
                           'rounded-3 p-2',
@@ -391,9 +396,11 @@
                             : 'bg-primary text-white',
                         ]"
                         style="
-                          width: 100%;
                           word-break: break-word;
                           overflow-wrap: break-word;
+                          min-width: 50px !important;
+                          max-width: 100% !important;
+                          width: fit-content !important;
                         "
                       >
                         <h6
@@ -411,15 +418,19 @@
                               resize: none;
                               overflow-y: hidden;
                               min-height: 30px;
-                              width: 100%;
+                              height: fit-content !important;
+                              min-width: 50px;
+                              max-width: 100% !important;
+                              width: fit-content !important;
                               font-size: 14px;
+                              box-sizing: border-box;
+                              display: inline-block;
+                              overflow-x: auto;
+                              width: auto !important;
                             "
                             @input="
-                              (e) => {
-                                e.target.style.height = '30px';
-                                e.target.style.height =
-                                  e.target.scrollHeight + 'px';
-                              }
+                              autoResize($event.target);
+                              autoResizeEditWidth($event.target);
                             "
                           ></textarea>
                           <div class="d-flex justify-content-end gap-2 mt-1">
@@ -440,9 +451,21 @@
                           </div>
                         </div>
                         <div v-else>
-                          <span style="white-space: pre-line">{{
-                            comment.text_body
-                          }}</span>
+                          <span
+                            :ref="`commentText-${comment.id}`"
+                            style="
+                              white-space: pre-line;
+                              min-width: 50px;
+                              word-break: break-word;
+                              overflow-wrap: break-word;
+                              display: inline-block;
+                              box-sizing: border-box;
+                              overflow-x: hidden;
+                              width: auto !important;
+                            "
+                            :style="{ width: getCommentTextWidth(comment.id) }"
+                            >{{ comment.text_body }}</span
+                          >
                         </div>
                         <div
                           class="d-flex justify-content-end align-items-center gap-2 mt-2"
@@ -502,9 +525,7 @@
                             @click="toggleMenu(comment.id)"
                             style="z-index: 2"
                           >
-                            <i
-                              class="fa-solid fa-ellipsis-vertical text-white"
-                            ></i>
+                            <i class="fa-solid fa-ellipsis-vertical text-white"></i>
                           </button> -->
                           <!-- comment menu -->
                           <!-- <div
@@ -689,6 +710,78 @@ export default {
     const stageColors = reactive({});
     const local_logs = ref([]);
     const users = ref([]);
+    const commentInput = ref(null);
+
+    const commentTextWidths = reactive({});
+
+    const resizeDisplayedCommentWidth = (commentId) => {
+      nextTick(() => {
+        const span = document.querySelector(
+          `span[ref="commentText-${commentId}"]`
+        );
+        if (span) {
+          const tempSpan = document.createElement("span");
+          tempSpan.style.visibility = "hidden";
+          tempSpan.style.whiteSpace = "pre-line";
+          const computedStyle = window.getComputedStyle(span);
+          tempSpan.style.font = computedStyle.font;
+          tempSpan.style.padding = computedStyle.padding;
+          tempSpan.style.border = computedStyle.border;
+          tempSpan.style.boxSizing = computedStyle.boxSizing;
+          tempSpan.style.wordBreak = computedStyle.wordBreak;
+          tempSpan.style.overflowWrap = computedStyle.overflowWrap;
+          tempSpan.style.minWidth = computedStyle.minWidth;
+
+          tempSpan.textContent = span.textContent || " ";
+
+          document.body.appendChild(tempSpan);
+
+          const contentWidth = tempSpan.offsetWidth;
+
+          const minWidth = parseFloat(computedStyle.minWidth) || 50;
+
+          commentTextWidths[commentId] = `${Math.max(
+            minWidth,
+            contentWidth + 5
+          )}px`;
+
+          document.body.removeChild(tempSpan);
+        }
+      });
+    };
+
+    const autoResizeEditWidth = (textarea) => {
+      if (!textarea) return;
+
+      const span = document.createElement("span");
+      span.style.visibility = "hidden";
+      span.style.whiteSpace = "pre";
+      const computedStyle = window.getComputedStyle(textarea);
+      span.style.font = computedStyle.font;
+      span.style.padding = computedStyle.padding;
+      span.style.border = computedStyle.border;
+      span.style.boxSizing = computedStyle.boxSizing;
+      span.style.wordBreak = computedStyle.wordBreak;
+      span.style.overflowWrap = computedStyle.overflowWrap;
+      span.style.minWidth = computedStyle.minWidth;
+
+      span.textContent = textarea.value || textarea.placeholder || " ";
+
+      document.body.appendChild(span);
+
+      const contentWidth = span.offsetWidth;
+
+      const minWidth = parseFloat(computedStyle.minWidth) || 50;
+
+      textarea.style.width = Math.max(minWidth, contentWidth + 15) + "px";
+
+      document.body.removeChild(span);
+    };
+
+    const getCommentTextWidth = computed(() => (commentId) => {
+      return commentTextWidths[commentId] || "fit-content";
+    });
+
     const customerData = reactive({
       id: props.deal?.id,
       name: props.deal?.contact.name || "Custome Name",
@@ -1075,6 +1168,26 @@ export default {
         });
       }
     };
+
+    const autoResize = (textarea) => {
+      if (!textarea) return;
+
+      textarea.style.height = "30px";
+      const newHeight = textarea.scrollHeight;
+      const maxRows = 7;
+      const lineHeight = 44;
+      const maxHeight = maxRows * lineHeight;
+      const calculatedHeight = Math.min(newHeight, maxHeight);
+
+      textarea.style.height = calculatedHeight + "px";
+
+      if (newHeight > maxHeight) {
+        textarea.style.overflowY = "auto";
+      } else {
+        textarea.style.overflowY = "hidden";
+      }
+    };
+
     const handleAddComment = async () => {
       try {
         const formData = {
@@ -1084,19 +1197,23 @@ export default {
         console.log(formData);
         const response = await createComment(formData);
         if (response.data) {
-          customerData.comments.push({
+          const newComment = {
             id: response.data.id,
             text_body: customerData.comment,
             created_at: new Date().toISOString(),
             username: response.data.data.user?.name || "No user",
             isAdmin: response.data.data.user?.role === "super-admin",
-          });
+          };
+          customerData.comments.unshift(newComment);
 
           toast.success(t("success.commentAdded"));
           customerData.comment = "";
           nextTick(() => {
             const textarea = document.querySelector(".comment-textarea");
-            if (textarea) textarea.style.height = "30px";
+            if (textarea) {
+              autoResize(textarea);
+            }
+            resizeDisplayedCommentWidth(newComment.id);
           });
         } else {
           toast.error(t("error.addingComment"));
@@ -1110,12 +1227,14 @@ export default {
       if (!event.shiftKey) {
         event.preventDefault();
         handleAddComment();
-        resetTextareaSize(event);
+        resetTextareaSize(event.target);
       }
     };
-    const resetTextareaSize = (event) => {
-      const textarea = event.target;
-      textarea.style.height = "30px";
+    const resetTextareaSize = (textarea) => {
+      if (textarea) {
+        textarea.style.height = "30px";
+        textarea.style.overflowY = "hidden";
+      }
     };
     const handleAddTask = async () => {
       try {
@@ -1171,18 +1290,17 @@ export default {
       (newDeal) => {
         if (newDeal) {
           fetchLogs(newDeal.id);
+          nextTick(() => {
+            if (newDeal.comments) {
+              newDeal.comments.forEach((comment) => {
+                resizeDisplayedCommentWidth(comment.id);
+              });
+            }
+          });
         }
       },
       { immediate: true }
     );
-    const autoResize = (event) => {
-      const textarea = event.target;
-      textarea.style.height = "30px";
-      const newHeight = textarea.scrollHeight;
-      const maxRows = 7;
-      const lineHeight = 22;
-      textarea.style.height = Math.min(newHeight, maxRows * lineHeight) + "px";
-    };
     const activeMenu = ref(null);
     const toggleMenu = (commentId) => {
       activeMenu.value = activeMenu.value === commentId ? null : commentId;
@@ -1200,9 +1318,13 @@ export default {
       nextTick(() => {
         const textarea = document.getElementById(`edit-textarea-${comment.id}`);
         if (textarea) {
-          textarea.style.height = "30px";
-          textarea.style.height = textarea.scrollHeight + "px";
+          autoResize(textarea);
+          autoResizeEditWidth(textarea);
           textarea.focus();
+
+          setTimeout(() => {
+            autoResize(textarea);
+          }, 0);
         }
       });
     };
@@ -1223,6 +1345,9 @@ export default {
           toast.success(t("success.commentUpdated"));
           editingCommentId.value = null;
           editingCommentText.value = "";
+          nextTick(() => {
+            resizeDisplayedCommentWidth(comment.id);
+          });
         } else {
           toast.error(t("error.updatingComment"));
         }
@@ -1253,7 +1378,30 @@ export default {
       fetchStages();
       fetchUsers();
       document.addEventListener("click", handleClickOutside);
+
+      if (commentInput.value) {
+        autoResize(commentInput.value);
+      }
+      nextTick(() => {
+        if (customerData.comments) {
+          customerData.comments.forEach((comment) => {
+            resizeDisplayedCommentWidth(comment.id);
+          });
+        }
+      });
     });
+    watch(
+      () => customerData.comments,
+      (newComments) => {
+        nextTick(() => {
+          newComments.forEach((comment) => {
+            resizeDisplayedCommentWidth(comment.id);
+          });
+        });
+      },
+      { deep: true }
+    );
+
     onBeforeUnmount(() => {
       document.removeEventListener("click", handleClickOutside);
     });
@@ -1328,6 +1476,11 @@ export default {
       sortedComments,
       cancelEditComment,
       users,
+      commentInput,
+      autoResizeEditWidth,
+      resizeDisplayedCommentWidth,
+      getCommentTextWidth,
+      commentTextWidths,
     };
   },
 };
@@ -1375,7 +1528,7 @@ textarea:focus {
   white-space: nowrap;
   transition: all 0.3s ease;
   position: relative;
-  width: 150px;
+  width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
   border-top-left-radius: 5px;
@@ -1564,7 +1717,6 @@ label {
 .adminComment {
   background: linear-gradient(45deg, #e5c086, #f1d65e, #e5c086, #f1d65e);
   color: #000;
-  width: fit-content;
   background-size: 400% 400%;
   animation: adminComment 4s ease infinite;
 }
@@ -1593,6 +1745,31 @@ label {
   padding: 6.5px 10px;
   font-size: 1rem;
   scrollbar-width: thin;
+  min-width: 50px;
+  width: 100% !important;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: hidden;
+  min-height: 30px;
+  overflow-x: hidden;
+}
+
+.col position-relative > div > textarea,
+.col position-relative > div > span {
+  min-width: 50px;
+  box-sizing: border-box;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.col position-relative > div > textarea {
+  display: inline-block;
+  overflow-x: auto;
+}
+
+.col position-relative > div > span {
+  display: inline-block;
+  overflow-x: hidden;
 }
 
 .fixed-action-btn {

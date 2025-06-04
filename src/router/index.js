@@ -17,6 +17,8 @@ import CrmListView from "@/views/CrmListView.vue";
 import BroadcastSettingsView from "@/views/BroadcastSettingsView.vue";
 import StagingSettingView from "@/views/StagingSettingView.vue";
 import WebWhatsapp from "@/views/WebWhatsapp.vue";
+import PatientRegistrationView from "@/views/PatientRegistrationView.vue";
+
 const routes = [
   {
     path: "/",
@@ -139,6 +141,16 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Broadcast Settings",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
+  },
+  {
+    path: "/patient-registration",
+    name: "PatientRegistrationView",
+    component: PatientRegistrationView,
+    meta: {
+      requiresAuth: true,
+      title: "Patient Registration",
     },
     beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },

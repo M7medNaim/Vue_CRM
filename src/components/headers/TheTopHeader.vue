@@ -4,8 +4,6 @@
       <div
         class="col-3 col-md-4 d-flex align-items-center text-white fs-6 pt-1"
       >
-        <!-- v-show="user_role === 'sales'" -->
-
         <img
           class="me-2"
           src="@/assets/new-nokta-logo.png"
@@ -27,23 +25,23 @@
               ref="dropdownMenu"
               class="dropdown-menu-custom"
             >
-              <div class="dropdown-link">
-                <router-link
-                  to="/crm-kanban"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+              <router-link
+                to="/crm-kanban"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <i class="fa-solid fa-chart-column fs-5 me-2"></i>
                   <span>{{ $t("sidebar-nav-item-kanban") }}</span>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
-                  to="/crmlist"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
+                to="/crmlist"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-crmlist')"
@@ -51,15 +49,15 @@
                     <i class="fa-solid fa-table-list fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-crmlist") }}</span>
                   </div>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="permissionStore.hasPermission(PERMISSIONS.USERS)"
-                  to="/users"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="permissionStore.hasPermission(PERMISSIONS.USERS)"
+                to="/users"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-users')"
@@ -67,15 +65,15 @@
                     <i class="fa-solid fa-users fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-users") }}</span>
                   </div>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="permissionStore.hasPermission(PERMISSIONS.CONTACTS)"
-                  to="/contacts"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="permissionStore.hasPermission(PERMISSIONS.CONTACTS)"
+                to="/contacts"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-contacts')"
@@ -83,15 +81,15 @@
                     <i class="fa-regular fa-address-book fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-contacts") }}</span>
                   </div>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)"
-                  to="/documents"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)"
+                to="/documents"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-documents')"
@@ -99,15 +97,15 @@
                     <i class="fa-regular fa-folder-open fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-documents") }}</span>
                   </div>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
-                  to="/dashboard"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="permissionStore.hasPermission(PERMISSIONS.DASHBOARD)"
+                to="/dashboard"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-dashboard')"
@@ -116,17 +114,17 @@
 
                     <span>{{ $t("sidebar-nav-item-dashboard") }}</span>
                   </div>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="
-                    permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
-                  "
-                  to="/general-settings"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+                "
+                to="/general-settings"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-settings')"
@@ -134,17 +132,17 @@
                     <i class="fa-solid fa-cog fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-settings") }}</span>
                   </div>
-                </router-link>
-              </div>
-              <div class="dropdown-link">
-                <router-link
-                  v-if="
-                    permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
-                  "
-                  to="/stage-settings"
-                  class="text-decoration-none text-black mb-2"
-                  @click="closeDropdown"
-                >
+                </div>
+              </router-link>
+              <router-link
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+                "
+                to="/stage-settings"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
                   <div
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-settings')"
@@ -152,51 +150,29 @@
                     <i class="fa-solid fa-sliders fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-settings") }}</span>
                   </div>
-                </router-link>
-              </div>
+                </div>
+              </router-link>
+              <router-link
+                v-if="
+                  permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
+                "
+                to="/patient-registration"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-settings')"
+                  >
+                    <i class="fa-solid fa-sliders fs-5 me-2"></i>
+                    <span>Patient Reg...</span>
+                  </div>
+                </div>
+              </router-link>
             </div>
           </transition>
         </div>
-        <!-- <span>{{ pageTitle }}</span> -->
-        <!-- <router-link
-          v-if="
-            ($route.path === '/general-settings' ||
-              $route.path === '/broadcast-settings') &&
-            permissionStore.hasPermission(PERMISSIONS.ROLES_SETTINGS)
-          "
-          to="/role-settings"
-          class="text-decoration-none ms-3 border-3 border-start border-white"
-        >
-          <span class="text-white px-3">{{
-            $t("header-subnav-item-settings-role")
-          }}</span>
-        </router-link>
-        <router-link
-          v-if="
-            ($route.path === '/role-settings' ||
-              $route.path === '/broadcast-settings') &&
-            permissionStore.hasPermission(PERMISSIONS.GENERAL_SETTINGS)
-          "
-          to="/general-settings"
-          class="text-decoration-none ms-3 border-3 border-start border-white"
-        >
-          <span class="text-white px-3">{{
-            $t("header-subnav-item-settings-general")
-          }}</span>
-        </router-link>
-        <router-link
-          v-if="
-            ($route.path === '/general-settings' ||
-              $route.path === '/role-settings') &&
-            permissionStore.hasPermission(PERMISSIONS.BROADCAST_SETTINGS)
-          "
-          to="/broadcast-settings"
-          class="text-decoration-none ms-3 border-3 border-start border-white"
-        >
-          <span class="text-white px-3">{{
-            $t("header-subnav-item-settings-broadcast")
-          }}</span>
-        </router-link> -->
       </div>
       <div
         class="col-3 col-md-3 d-flex justify-content-end align-items-center g-3 pt-0 mt-0"
@@ -284,7 +260,6 @@
 </template>
 
 <script>
-// import ListLang from "@/components/headers/sub-menu/ListLang.vue";
 import MenuProfile from "@/components/headers/sub-menu/TheTopHeaderDropDownMenuProfile.vue";
 import NotificationsHead from "@/components/headers/sub-menu/TheTopHeaderNotificationsHeader.vue";
 import Cookies from "js-cookie";
