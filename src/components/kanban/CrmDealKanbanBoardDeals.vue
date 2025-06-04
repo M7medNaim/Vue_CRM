@@ -12,19 +12,20 @@
         <template v-for="stage in displayStages" :key="stage.id">
           <div
             v-if="hiddenStages[stage.id]"
-            class="kanban-stage"
+            class="kanban-stage position-relative"
             style="
               width: 30px;
               min-width: 30px;
               margin-right: 10px;
               display: flex;
               flex-direction: column;
-              border-right: 2px dashed #eee;
+              /* border-right: 2px dashed #eee; */
               height: 100%;
               align-items: flex-start;
               justify-content: flex-start;
             "
           >
+            <div class="linePluse"></div>
             <button
               class="btn btn-sm btn-light mt-2 d-flex justify-content-center align-items-center"
               @click.stop="hiddenStages[stage.id] = false"
@@ -1277,6 +1278,15 @@ export default {
   bottom: 0;
   width: 2px;
   height: 97%;
+  background-color: transparent;
+  border-right: 2px dashed #eee;
+}
+.kanban-stage .linePluse {
+  position: absolute;
+  right: 0px;
+  bottom: 0;
+  width: 2px;
+  height: 93%;
   background-color: transparent;
   border-right: 2px dashed #eee;
 }
