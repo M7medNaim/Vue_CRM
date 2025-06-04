@@ -12,19 +12,20 @@
         <template v-for="stage in displayStages" :key="stage.id">
           <div
             v-if="hiddenStages[stage.id]"
-            class="kanban-stage"
+            class="kanban-stage position-relative"
             style="
               width: 30px;
               min-width: 30px;
               margin-right: 10px;
               display: flex;
               flex-direction: column;
-              border-right: 2px dashed #eee;
+              /* border-right: 2px dashed #eee; */
               height: 100%;
               align-items: flex-start;
               justify-content: flex-start;
             "
           >
+            <div class="linePluse"></div>
             <button
               class="btn btn-sm btn-light mt-2 d-flex justify-content-center align-items-center"
               @click.stop="hiddenStages[stage.id] = false"
@@ -225,7 +226,6 @@
     <div
       class="arrowsBoar w-100 position-absolute top-50 end-0"
       style="pointer-events: none"
-      v-if="permissionStore.hasPermission('edit-stage')"
     >
       <div
         v-if="showRight"
@@ -573,21 +573,26 @@ export default {
       scrollInterval = requestAnimationFrame(animate);
     };
 
-    let firstLoad = true;
+    // let firstLoad = true;
     const updateArrowVisibility = () => {
       if (!dealsContainer.value) return;
 
       const { scrollLeft, scrollWidth, clientWidth } = dealsContainer.value;
 
       showLeft.value = scrollLeft > 0;
-
-      if (firstLoad) {
-        showRight.value = true;
-        firstLoad = false;
-      } else {
-        showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
-      }
+      showRight.value = scrollLeft + clientWidth < scrollWidth - 1;
     };
+
+    // Add watcher for displayStages
+    watch(
+      () => displayStages.value,
+      () => {
+        nextTick(() => {
+          updateArrowVisibility();
+        });
+      },
+      { deep: true }
+    );
 
     const stopScrolling = () => {
       if (scrollInterval) {
@@ -832,41 +837,37 @@ export default {
     };
 
     const handleDealContainerScroll = async (event, id) => {
-      if (reachedBottom.value || expandedStages.value[id]) return;
-
+      if (reachedBottom.value) return;
       const scrollTop = event.target.scrollTop;
       const scrollHeight = event.target.scrollHeight;
       const clientHeight = event.target.clientHeight;
-
-      const stage = displayStages.value.find((s) => s.id === id);
-      if (!stage) return;
-
-      if (stage.deals.length >= stage.deal_count) {
+      const stages = ref(props.stages);
+      const stageIndex = stages.value.findIndex((s) => s.id === id);
+      if (
+        stages.value[stageIndex].deals.length ===
+        stages.value[stageIndex].deal_count
+      )
         return;
-      }
-
       if (scrollTop + clientHeight >= scrollHeight - 1) {
         reachedBottom.value = true;
-
-        try {
-          const additional_deals = await fetchAdditionalDealsByStageId(
-            id,
-            10,
-            stage.deals.length,
-            []
-          );
-
-          if (additional_deals.data && additional_deals.data.data.length > 0) {
-            const currentStage = displayStages.value.find((s) => s.id === id);
-            if (currentStage) {
-              currentStage.deals.push(...additional_deals.data.data);
+        fetchAdditionalDealsByStageId(
+          id,
+          10,
+          stages.value[stageIndex].deals.length,
+          []
+        )
+          .then((additional_deals) => {
+            if (additional_deals.data) {
+              if (stageIndex !== -1) {
+                stages.value[stageIndex].deals.push(
+                  ...additional_deals.data.data
+                );
+              }
             }
-          }
-        } catch (error) {
-          toast.error(t("error.fetchDealsFailed"));
-        } finally {
-          reachedBottom.value = false;
-        }
+          })
+          .finally(() => {
+            reachedBottom.value = false;
+          });
       }
     };
 
@@ -1040,24 +1041,37 @@ export default {
     };
 
     onMounted(async () => {
-      dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
-      document.addEventListener("mouseup", stopScrolling);
-      document.addEventListener("mouseleave", stopScrolling);
-      updateArrowVisibility();
+      if (dealsContainer.value) {
+        dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
+        document.addEventListener("mouseup", stopScrolling);
+        document.addEventListener("mouseleave", stopScrolling);
+
+        // Force update arrows visibility after a short delay
+        setTimeout(() => {
+          updateArrowVisibility();
+        }, 500);
+
+        // Add resize observer
+        const resizeObserver = new ResizeObserver(() => {
+          updateArrowVisibility();
+        });
+
+        resizeObserver.observe(dealsContainer.value);
+
+        onUnmounted(() => {
+          resizeObserver.disconnect();
+        });
+      }
+
       startIdleTimer();
       setupUserActivityListeners();
 
       try {
-        // Initialize WebSocket connection
         await initializeWebSocket();
         const userRole = Cookies.get("user_role");
         const user_id = Cookies.get("user_id");
-        let userChannel;
-        if (userRole === "super-admin") {
-          userChannel = userRole;
-        } else {
-          userChannel = `${userRole}-${user_id}`;
-        }
+        let userChannel =
+          userRole === "super-admin" ? userRole : `${userRole}-${user_id}`;
 
         if (window.Echo && userChannel) {
           window.Echo.channel(userChannel)
@@ -1081,14 +1095,9 @@ export default {
               console.log("WhatsappEvent received:", event);
               handleWhatsappEvent(event);
             });
-        } else {
-          console.error(
-            "WebSocket or userChannel is not initialized properly."
-          );
         }
       } catch (error) {
         console.error("Error mounting component:", error);
-        toast.error(t("error.websocketInitFailed"));
       }
 
       props.stages.forEach((stage) => {
@@ -1155,7 +1164,6 @@ export default {
       hiddenStages,
       expandedStages,
       toggleExpandStage,
-
       refreshPage,
       startIdleTimer,
       clearIdleTimer,
@@ -1235,6 +1243,15 @@ export default {
   bottom: 0;
   width: 2px;
   height: 97%;
+  background-color: transparent;
+  border-right: 2px dashed #eee;
+}
+.kanban-stage .linePluse {
+  position: absolute;
+  right: 0px;
+  bottom: 0;
+  width: 2px;
+  height: 93%;
   background-color: transparent;
   border-right: 2px dashed #eee;
 }
