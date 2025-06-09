@@ -207,15 +207,15 @@
                 v-else
                 class="deal-list d-flex flex-column align-items-center justify-content-center w-100 mt-3 bg-dark-subtle"
               >
+                <i class="fa-solid fa-compress fs-merge-icon mb-3"></i>
                 <span class="mb-3 text-white">
-                  لإعادة دمج المراحل إضغط هنا
+                  {{ t("kanban-stage-merge-title") }}
                 </span>
                 <button
                   class="btn btn-primary"
                   @click="toggleExpandStage(stage)"
                 >
-                  <i class="fa-solid fa-compress me-2"></i>
-                  Merge
+                  {{ t("kanban-stage-merge-button") }}
                 </button>
               </div>
             </div>
@@ -1135,6 +1135,7 @@ export default {
     });
 
     return {
+      t,
       displayStages,
       drag,
       getStageHeaderClass,
@@ -1310,6 +1311,9 @@ export default {
   border-bottom-right-radius: 50%;
   left: 0%;
   z-index: 9999;
+}
+.fs-merge-icon {
+  font-size: 5rem;
 }
 @media (min-width: 1000px) and (max-width: 1200px) {
   .kanban-wrapper {

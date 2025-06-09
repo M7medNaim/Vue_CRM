@@ -66,8 +66,10 @@
           data-placement="top"
           :title="tag.name"
         >
-          <i :class="`fa-solid fa-${tag.icon}`"></i>
-          {{ tag.name.length > 10 ? tag.name.slice(0, 10) + "…" : tag.name }}
+          <i :class="`fa-solid fa-${tag.icon} me-1`"></i>
+          <span class="fw-normal">{{
+            tag.name.length > 12 ? tag.name.slice(0, 12) + "…" : tag.name
+          }}</span>
         </span>
       </div>
     </div>
