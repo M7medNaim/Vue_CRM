@@ -18,7 +18,7 @@
             style="padding: 5px"
           >
             <i class="fa-solid fa-bars-staggered fs-6"></i>
-            <span class="fs-6">{{ $t("header-dropdown-main-menu") }}</span>
+            <span class="fs-75">{{ $t("header-dropdown-main-menu") }}</span>
           </div>
           <transition name="dropdown-fade">
             <div
