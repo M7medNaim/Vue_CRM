@@ -205,12 +205,13 @@
               </draggable>
               <div
                 v-else
-                class="deal-list d-flex flex-column align-items-center justify-content-center w-100 mt-3 bg-dark-subtle"
+                class="deal-list w-100 mt-3 d-flex flex-column align-items-center justify-content-center"
+                style="background-color: #ffffff40"
               >
-                <i class="fa-solid fa-compress fs-merge-icon mb-3"></i>
-                <span class="mb-3 text-white">
-                  {{ t("kanban-stage-merge-title") }}
-                </span>
+                <div class="mb-2" style="font-size: 55px">
+                  <i class="fa-solid fa-compress text-white"></i>
+                </div>
+                <p class="mb-3 text-white">{{ t("kanban-stage-merge-title") }}</p>
                 <button
                   class="btn btn-primary"
                   @click="toggleExpandStage(stage)"
