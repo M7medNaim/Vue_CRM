@@ -17,7 +17,7 @@
             @click="showMainMenu"
           >
             <i class="fa-solid fa-bars-staggered fs-5"></i>
-            <span>Main Menu</span>
+            <span>{{ $t("header-dropdown-main-menu") }}</span>
           </div>
           <transition name="dropdown-fade">
             <div
