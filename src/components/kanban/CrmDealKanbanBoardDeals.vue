@@ -211,7 +211,9 @@
                 <div class="mb-2" style="font-size: 55px">
                   <i class="fa-solid fa-compress text-white"></i>
                 </div>
-                <p class="mb-3 text-white">{{ t("kanban-stage-merge-title") }}</p>
+                <p class="mb-3 text-white">
+                  {{ t("kanban-stage-merge-title") }}
+                </p>
                 <button
                   class="btn btn-primary"
                   @click="toggleExpandStage(stage)"
