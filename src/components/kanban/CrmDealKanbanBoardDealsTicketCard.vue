@@ -103,11 +103,11 @@
       <span
         class="badge fw-medium text-white py-1 px-2"
         :style="{
-          backgroundColor: deal.responsible_user?.color_code
-            ? deal.responsible_user.color_code
-            : '#292929',
+          backgroundColor: deal.responsible_user?.id
+            ? getUserColor(deal.responsible_user.id)
+            : '',
           color: getContrastColor(
-            deal.responsible_user?.color_code || '#292929'
+            getUserColor(deal.responsible_user?.id) || '#292929'
           ),
         }"
         >{{ deal.responsible_user?.name }}</span
