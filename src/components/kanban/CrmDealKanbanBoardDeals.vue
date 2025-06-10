@@ -224,17 +224,18 @@
               </draggable>
               <div
                 v-else
-                class="deal-list d-flex flex-column align-items-center justify-content-center w-100 mt-3"
-                style="background-color: #ffffff64"
+                class="deal-list w-100 mt-3 d-flex flex-column align-items-center justify-content-center"
+                style="background-color: #ffffff40"
               >
-                <span class="mb-3 text-white">
-                  لإعادة دمج المراحل إضغط هنا
-                </span>
+                <div class="mb-2" style="font-size: 55px">
+                  <i class="fa-solid fa-compress text-white"></i>
+                </div>
+
+                <p class="mb-3 text-white">لإعادة دمج المراحل إضغط هنا</p>
                 <button
                   class="btn btn-primary"
                   @click="toggleExpandStage(stage)"
                 >
-                  <i class="fa-solid fa-compress me-2"></i>
                   Merge
                 </button>
               </div>
