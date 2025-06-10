@@ -1,5 +1,5 @@
 <template>
-  <div class="top-bar pe-1 position-relative pt-2 me-2">
+  <div class="top-bar pe-1 position-relative pt-1 me-2">
     <div class="row">
       <div
         class="col-3 col-md-4 d-flex align-items-center text-white fs-6 pt-1"
@@ -9,7 +9,7 @@
         <img
           class="me-2"
           src="@/assets/new-nokta-logo.png"
-          style="width: 40px; height: 40px"
+          style="width: 35px; height: 35px"
           alt=""
         />
         <div class="toggleMenuBar position-relative ms-2">
@@ -17,9 +17,10 @@
             ref="menuButton"
             class="btnShowMenu btn text-white btn-menu d-flex justify-content-center align-items-center gap-1"
             @click="showMainMenu"
+            style="padding: 5px"
           >
-            <i class="fa-solid fa-bars-staggered fs-5"></i>
-            <span>Main Menu</span>
+            <i class="fa-solid fa-bars-staggered" style="font-size: 14px"></i>
+            <span style="font-size: 12px">Main Menu</span>
           </div>
           <transition name="dropdown-fade">
             <div
@@ -217,15 +218,15 @@
         </router-link> -->
       </div>
       <div
-        class="col-3 col-md-3 d-flex justify-content-end align-items-center g-3 pt-0 mt-0"
+        class="col-3 col-md-3 d-flex justify-content-end align-items-center pt-0 mt-0"
       >
-        <span class="fs-2 text-white">{{ currentTime }}</span>
+        <span class="fs-4 text-white">{{ currentTime }}</span>
         <button
           class="border-0 bg-transparent position-relative"
           ref="notifiButton"
           @click="toggleMenu('notifications', $refs.notifiButton)"
         >
-          <i class="fa-solid fa-bell fs-4 ms-2 pt-1 text-white"></i>
+          <i class="fa-solid fa-bell fs-6 pt-1 text-white"></i>
           <transition name="fade">
             <notifications-head
               v-if="activeMenu === 'notifications'"
@@ -239,13 +240,11 @@
           <button
             v-if="hasNewChanges"
             class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-2 mt-1 me-2"
-            style="padding: 5px 7px"
+            style="padding: 5px 7px; font-size: 12px"
             @click="refreshPage"
           >
             <i class="fa-solid fa-rotate"></i>
-            <span class="refresh-text" style="font-size: 14px">{{
-              $t("header-refresh-button")
-            }}</span>
+            <span class="refresh-text">{{ $t("header-refresh-button") }}</span>
           </button>
           <ScoureUser />
 
@@ -256,14 +255,14 @@
             >
               <span
                 class=""
-                style="font-size: 14px; padding-top: 4px; padding-bottom: 3px"
+                style="font-size: 12px; padding-top: 4px; padding-bottom: 3px"
                 >{{ nextLanguage.toUpperCase() }}</span
               >
               <span class="dropdown-icon text-secondary flageImage">
                 <img
                   :src="flagIcon"
                   alt="English"
-                  style="width: 26px; height: 16px"
+                  style="width: 23px; height: 13px"
                 />
               </span>
             </button>
@@ -279,11 +278,11 @@
               <div class="userImg">
                 <img
                   :src="userImage || require('@/assets/default-user-image.jpg')"
-                  class="img-fluid user-img rounded-5 me-2"
+                  class="img-fluid user-img rounded-5 me-1"
                   alt="user image"
                 />
               </div>
-              <span class="me-1">{{ name }}</span>
+              <span class="me-1" style="font-size: 14px">{{ name }}</span>
               <i class="fa-solid fa-chevron-down"></i>
 
               <transition name="fade">
@@ -497,10 +496,10 @@ export default {
   height: 60px;
 }
 .user-img {
-  min-height: 40px;
-  min-width: 40px;
-  height: 40px;
-  width: 40px;
+  min-height: 30px;
+  min-width: 30px;
+  height: 30px;
+  width: 30px;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -516,7 +515,7 @@ export default {
   background-color: rgba(128, 128, 128, 0.8) !important;
 }
 .btn-menu {
-  background-color: rgba(128, 128, 128, 0.305) !important;
+  background-color: rgba(128, 128, 128, 0.458) !important;
 }
 .btnLang {
   background-color: hsla(0, 0%, 100%, 0.322) !important;

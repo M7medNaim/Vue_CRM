@@ -8,9 +8,8 @@
             <div class="col-md-auto">
               <button
                 v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
-                class="btn btn-header text-white px-2 py-2 me-2 fs-7 btnAddKanban"
+                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnAddKanban"
                 @click="openCreateDealModal"
-                style="padding: 0.6rem 0.6rem"
               >
                 <span class="textAddKanban">{{
                   t("kanban-button-add-deal")
@@ -21,7 +20,7 @@
                 class="btn btn-header text-white me-2 fs-7 btnKanban"
                 @click="openCrmKanban"
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
-                style="padding: 0.6rem 0.9rem"
+                style="padding: 0.5rem 2rem"
               >
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
@@ -29,7 +28,7 @@
                 class="btn btn-header text-white me-2 fs-7 btnKanban"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
-                style="padding: 0.6rem 0.8rem"
+                style="padding: 0.5rem 2rem"
               >
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
@@ -79,7 +78,8 @@
             >
               <div class="btn-group w-100">
                 <div
-                  class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
+                  class="btn btn-header px-0 px-lg-2 d-flex align-items-center rounded-0 rounded-start"
+                  style="padding-top: 0.4rem; padding-bottom: 0.4rem"
                 >
                   <span
                     class="badge bg-secondary-subtle text-danger fw-bold fs-6"
@@ -90,7 +90,8 @@
                   }}</span>
                 </div>
                 <div
-                  class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
+                  class="btn btn-header px-0 px-lg-2 d-flex align-items-center rounded-0"
+                  style="padding-top: 0.4rem; padding-bottom: 0.4rem"
                 >
                   <span
                     class="badge bg-secondary-subtle text-warning fw-bold fs-6"
@@ -101,7 +102,8 @@
                   }}</span>
                 </div>
                 <div
-                  class="btn btn-header px-0 px-lg-1 d-flex align-items-center"
+                  class="btn btn-header px-0 px-lg-2 d-flex align-items-center rounded-0"
+                  style="padding-top: 0.4rem; padding-bottom: 0.4rem"
                 >
                   <span
                     class="badge bg-secondary-subtle text-info fw-bold fs-6"
@@ -112,7 +114,8 @@
                   }}</span>
                 </div>
                 <div
-                  class="btn btn-header px-1 px-lg-1 d-flex align-items-center"
+                  class="btn btn-header px-1 px-lg-2 d-flex align-items-center"
+                  style="padding-top: 0.4rem; padding-bottom: 0.4rem"
                 >
                   <span
                     class="badge bg-secondary-subtle text-secondary fw-bold fs-6"
@@ -127,7 +130,7 @@
                 <button
                   class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 fs-7 ms-2 whatsappIpad"
                   @click="openWhatsappModal"
-                  style="background-color: #25d365cc; padding: 0.6rem 0.6rem"
+                  style="background-color: #25d365cc; padding: 0.57rem 1.7rem"
                 >
                   <i class="fa-brands fa-whatsapp text-white fs-5"></i>
                   <span class="text-white removeIpad" style="font-size: 14px">{{
@@ -135,7 +138,10 @@
                   }}</span>
                 </button>
               </div>
-              <div class="documents btn btn-header p-2">
+              <div
+                class="documents btn btn-header"
+                style="padding: 0.5rem 1rem"
+              >
                 <!-- v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)" -->
                 <router-link
                   to="/documents"
@@ -159,8 +165,9 @@
               class="col-md-auto d-flex align-items-center gap-2"
             >
               <button
-                class="btn btn-header flex-fill py-2 px-1 btnImport"
+                class="btn btn-header flex-fill btnImport"
                 @click="openImportModal"
+                style="padding: 0.5rem 1.7rem"
               >
                 <span class="fs-7 text-white textImport">{{
                   t("kanban-button-import")
@@ -168,8 +175,9 @@
                 <i class="fa-solid fa-upload ms-1 fs-7 text-white"></i>
               </button>
               <button
-                class="btn btn-header flex-fill py-2 px-1 btnExport"
+                class="btn btn-header flex-fill btnExport"
                 @click="openExportModal"
+                style="padding: 0.5rem 1.7rem"
               >
                 <span class="fs-7 text-white textExport">{{
                   t("kanban-button-export")

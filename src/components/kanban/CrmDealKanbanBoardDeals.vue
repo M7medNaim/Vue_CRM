@@ -53,6 +53,11 @@
                   ? { minWidth: '301px', width: '301px' }
                   : { minWidth: '307px', width: '307px' }
               "
+              :class="{
+                'child-stage': stage.parent_id,
+                'first-child': stage.parent_id && isFirstChildStage(stage),
+                'last-child': stage.parent_id && isLastChildStage(stage),
+              }"
             >
               <div
                 class="stageName p-0 d-flex justify-content-between align-items-center"
@@ -1076,6 +1081,32 @@ export default {
       kanbanStore.setHasNewChanges(true);
     };
 
+    const isFirstChildStage = (stage) => {
+      if (!stage.parent_id) return false;
+      const parentStage = displayStages.value.find(
+        (s) => s.id === stage.parent_id
+      );
+      if (!parentStage) return false;
+
+      const childStages = displayStages.value.filter(
+        (s) => s.parent_id === stage.parent_id
+      );
+      return childStages[0]?.id === stage.id;
+    };
+
+    const isLastChildStage = (stage) => {
+      if (!stage.parent_id) return false;
+      const parentStage = displayStages.value.find(
+        (s) => s.id === stage.parent_id
+      );
+      if (!parentStage) return false;
+
+      const childStages = displayStages.value.filter(
+        (s) => s.parent_id === stage.parent_id
+      );
+      return childStages[childStages.length - 1]?.id === stage.id;
+    };
+
     onMounted(async () => {
       if (dealsContainer.value) {
         dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
@@ -1209,6 +1240,8 @@ export default {
       setIdle,
       disconnectWebSocket,
       reconnectWebSocket,
+      isFirstChildStage,
+      isLastChildStage,
     };
   },
 };
@@ -1273,6 +1306,21 @@ export default {
   /* border-right: 2px dashed #eee; */
   position: relative;
 }
+
+.child-stage {
+  border-bottom: 2px dashed #fff !important;
+  padding: 5px;
+  padding-top: 0;
+}
+
+.child-stage.first-child {
+  border-left: 2px dashed #eee !important;
+}
+
+.child-stage.last-child {
+  border-right: 2px dashed #eee !important;
+}
+
 .stage-column .line {
   position: absolute;
   right: 0px;
