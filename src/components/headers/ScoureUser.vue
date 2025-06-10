@@ -2,7 +2,7 @@
   <div
     class="me-2 pt-1"
     ref="gaugeChart"
-    style="width: 50px; height: 50px"
+    style="width: 40px; height: 40px"
   ></div>
 </template>
 <script>
@@ -11,7 +11,7 @@ import * as echarts from "echarts";
 export default {
   data() {
     return {
-      score: 50,
+      score: 80,
     };
   },
   mounted() {
@@ -43,7 +43,7 @@ export default {
             max: 100,
             axisLine: {
               lineStyle: {
-                width: 5,
+                width: 3,
                 color: [
                   [this.score / 100, scoreColor],
                   [1, "#eee"],
@@ -56,7 +56,7 @@ export default {
               valueAnimation: true,
               formatter: "{value}",
               color: "#fff",
-              fontSize: 12,
+              fontSize: 10,
               offsetCenter: [0, "13%"],
             },
             title: { show: false },

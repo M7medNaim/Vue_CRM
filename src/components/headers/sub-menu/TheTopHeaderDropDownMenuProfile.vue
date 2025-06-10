@@ -186,7 +186,7 @@ export default {
 </script>
 <style scoped>
 .dropdown-menu {
-  top: 40px;
+  top: 35px;
   right: 100%;
   width: 250px !important;
   min-width: 250px !important;
