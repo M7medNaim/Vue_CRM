@@ -1,26 +1,28 @@
 <template>
   <div class="top-bar pe-1 position-relative pt-1 me-2">
-    <div class="row">
-      <div
-        class="col-3 col-md-4 d-flex align-items-center text-white fs-6 pt-1"
-      >
+    <div class="row h-100">
+      <div class="col-4 d-flex align-items-center text-white fs-6 h-100">
         <!-- v-show="user_role === 'sales'" -->
 
         <img
-          class="me-2"
+          class="me-2 rounded-1 p-1 btnHeaderBg h-100"
           src="@/assets/new-nokta-logo.png"
-          style="width: 35px; height: 35px"
+          style="width: 45px"
           alt=""
         />
-        <div class="toggleMenuBar position-relative ms-2">
+        <span
+          class="rounded-1 btnHeaderBg h-100 d-flex justify-content-center align-items-center me-2"
+          style="font-size: 14px; padding: 0 45px"
+          >{{ $route.meta.title || "القائمة الرئيسية" }}</span
+        >
+
+        <div class="toggleMenuBar position-relative h-100">
           <div
             ref="menuButton"
-            class="btnShowMenu btn text-white btn-menu d-flex justify-content-center align-items-center gap-1"
+            class="btnShowMenu px-3 rounded-1 text-white d-flex justify-content-center align-items-center gap-1 btnHeaderBg h-100"
             @click="showMainMenu"
-            style="padding: 5px"
           >
-            <i class="fa-solid fa-bars-staggered" style="font-size: 14px"></i>
-            <span style="font-size: 12px">Main Menu</span>
+            <i :class="currentPageIcon"></i>
           </div>
           <transition name="dropdown-fade">
             <div
@@ -218,15 +220,14 @@
         </router-link> -->
       </div>
       <div
-        class="col-3 col-md-3 d-flex justify-content-end align-items-center pt-0 mt-0"
+        class="col-4 d-flex justify-content-center align-items-center pt-0 mt-0 h-100"
       >
-        <span class="fs-4 text-white">{{ currentTime }}</span>
         <button
-          class="border-0 bg-transparent position-relative"
+          class="border-0 btnHeaderBg position-relative h-100 rounded-1 px-3 me-2"
           ref="notifiButton"
           @click="toggleMenu('notifications', $refs.notifiButton)"
         >
-          <i class="fa-solid fa-bell fs-6 pt-1 text-white"></i>
+          <i class="fa-solid fa-bell fs-5 text-white"></i>
           <transition name="fade">
             <notifications-head
               v-if="activeMenu === 'notifications'"
@@ -234,21 +235,39 @@
             />
           </transition>
         </button>
+        <span
+          class="fs-4 text-white btnHeaderBg h-100 d-flex justify-content-center align-items-center px-4 rounded-1 me-2"
+          >{{ currentTime }}</span
+        >
+        <div
+          class="btnHeaderBg h-100 px-3 text-white d-flex justify-content-center align-items-center rounded-1"
+        >
+          <i class="fa-solid fa-calendar-days"></i>
+        </div>
       </div>
-      <div class="col d-flex justify-content-end align-items-center">
-        <div class="user-info d-flex justify-content-end align-items-center">
+      <div class="col-4 d-flex justify-content-end align-items-center h-100">
+        <div
+          class="user-info d-flex justify-content-end align-items-center h-100"
+        >
           <button
             v-if="hasNewChanges"
-            class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-2 mt-1 me-2"
-            style="padding: 5px 7px; font-size: 12px"
+            class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-1 mt-1 me-2 h-100 px-2"
+            style="font-size: 14px"
             @click="refreshPage"
           >
             <i class="fa-solid fa-rotate"></i>
             <span class="refresh-text">{{ $t("header-refresh-button") }}</span>
           </button>
-          <ScoureUser />
-
-          <div class="lang">
+          <div
+            class="btnHeaderBg h-100 userImg d-flex justify-content-center align-items-center px-2 rounded-1 me-2"
+          >
+            <img
+              :src="userImage || require('@/assets/default-user-image.jpg')"
+              class="img-fluid user-img rounded-5 me-1"
+              alt="user image"
+            />
+          </div>
+          <!-- <div class="lang">
             <button
               class="btnLang border-0 bg-transparent d-flex align-items-center justify-content-center gap-2 text-white position-relative rounded-2 mt-1"
               @click="toggleLanguage"
@@ -266,24 +285,32 @@
                 />
               </span>
             </button>
-          </div>
+          </div> -->
 
-          <div class="profile ps-2">
+          <div
+            class="d-flex justify-content-center align-items-center h-100 btnHeaderBg rounded-1 px-4"
+          >
+            <ScoureUser />
+            <span class="me-1 text-white pt-1" style="font-size: 12px">{{
+              name
+            }}</span>
+          </div>
+          <div class="profile ps-2 h-100">
             <button
               type="button"
-              class="border-0 bg-transparent d-flex justify-content-end align-items-center text-white position-relative p-0"
+              class="border-0 btnHeaderBg d-flex justify-content-end align-items-center text-white position-relative h-100 px-3 rounded-1"
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >
-              <div class="userImg">
+              <!-- <div class="userImg">
                 <img
                   :src="userImage || require('@/assets/default-user-image.jpg')"
                   class="img-fluid user-img rounded-5 me-1"
                   alt="user image"
                 />
-              </div>
-              <span class="me-1" style="font-size: 14px">{{ name }}</span>
-              <i class="fa-solid fa-chevron-down"></i>
+              </div> -->
+              <!-- <span class="me-1" style="font-size: 14px">{{ name }}</span> -->
+              <i class="fa-solid fa-bars"></i>
 
               <transition name="fade">
                 <menu-profile
@@ -449,13 +476,29 @@ export default {
 
     handleClickOutside(event) {
       if (
+        this.activeMenu === "profile" &&
+        this.$refs.profileButton &&
+        !this.$refs.profileButton.contains(event.target)
+      ) {
+        this.activeMenu = null;
+      }
+
+      if (
+        this.activeMenu === "notifications" &&
+        this.$refs.notifiButton &&
+        !this.$refs.notifiButton.contains(event.target)
+      ) {
+        this.activeMenu = null;
+      }
+
+      if (
+        this.showDropdown &&
         this.$refs.dropdownMenu &&
         !this.$refs.dropdownMenu.contains(event.target) &&
         this.$refs.menuButton &&
         !this.$refs.menuButton.contains(event.target)
       ) {
         this.showDropdown = false;
-        document.removeEventListener("mousedown", this.handleClickOutside);
       }
     },
     showMainMenu() {
@@ -477,7 +520,6 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
-    document.removeEventListener("mousedown", this.handleClickOutside);
   },
   computed: {
     nextLanguage() {
@@ -488,10 +530,30 @@ export default {
         ? require("@/assets/flag-usa.png")
         : require("@/assets/Flag_of_Saudi_Arabia.svg");
     },
+    currentPageIcon() {
+      const route = this.$route.path;
+      const icons = {
+        "/crm-kanban": "fa-solid fa-bars",
+        "/crmlist": "fa-solid fa-table-list",
+        "/users": "fa-solid fa-users",
+        "/contacts": "fa-regular fa-address-book",
+        "/documents": "fa-regular fa-folder-open",
+        "/dashboard": "fa-solid fa-chart-pie",
+        "/general-settings": "fa-solid fa-cog",
+        "/stage-settings": "fa-solid fa-sliders",
+        "/patient-registration": "fa-solid fa-user-group",
+        "/broadcast-settings": "fa-solid fa-broadcast-tower",
+      };
+      return icons[route] || "fa-solid fa-bars";
+    },
   },
 };
 </script>
 <style scoped>
+.top-bar {
+  max-height: 5vh !important;
+  height: 5vh !important;
+}
 .logo-img {
   height: 60px;
 }
@@ -562,7 +624,7 @@ export default {
 .dropdown-menu-custom {
   position: absolute;
   top: 45px !important;
-  left: -40px;
+  right: -10px;
   min-width: 230px;
   background: #fff;
   border-radius: 16px;
@@ -666,5 +728,8 @@ export default {
 .menu-anim-icon.fa-bars-staggered {
   transform: rotate(0deg) scale(1);
   opacity: 1;
+}
+.btnHeaderBg {
+  background-color: #919191;
 }
 </style>
