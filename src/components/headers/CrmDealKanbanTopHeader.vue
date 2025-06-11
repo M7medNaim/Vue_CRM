@@ -8,8 +8,9 @@
             <div class="col-md-auto">
               <button
                 v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
-                class="btn btn-header text-white px-3 py-2 me-2 fs-7 btnAddKanban"
+                class="btn btn-header text-white me-2 fs-7 btnAddKanban"
                 @click="openCreateDealModal"
+                style="padding: 0.5rem 1.3rem"
               >
                 <span class="textAddKanban">{{
                   t("kanban-button-add-deal")
@@ -34,12 +35,12 @@
               </button>
               <router-link
                 class="btn btn-header text-white me-2 fs-7 btnKanban"
-                style="padding: 0.6rem 0.4rem"
+                style="padding: 0.6rem 1.2rem"
+                to="/crmlist"
                 v-if="
                   permissionStore.hasPermission(PERMISSIONS.DEALS_LIST) &&
                   user_role == 'sales'
                 "
-                to="/crmlist"
               >
                 {{ t("sidebar-nav-item-crmlist") }}
               </router-link>
@@ -496,7 +497,8 @@ input:focus {
   font-size: 14px;
 }
 .btn-header {
-  background-color: rgba(128, 128, 128, 0.8) !important;
+  /* background-color: rgba(128, 128, 128, 0.8) !important; */
+  background-color: #919191 !important;
 }
 @media (max-width: 1200px) {
   .removeIpad {
@@ -561,5 +563,8 @@ input:focus {
       padding: 9px 10px !important;
     }
   }
+}
+.btnHeaderBg {
+  background-color: #919191;
 }
 </style>

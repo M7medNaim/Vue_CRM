@@ -356,7 +356,7 @@
                       style="
                         resize: none;
                         overflow-y: hidden;
-                        min-height: 30px;
+                        min-height: 38px;
                         min-width: 50px;
                         width: 100%;
                       "
