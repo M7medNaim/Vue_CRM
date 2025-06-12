@@ -132,11 +132,12 @@ export const getSources = () => axios.get("/sources");
 
 // Get All Stages
 export const getStages = () => axios.get("/stages");
+export const getAvailableStages = () => axios.get("/stages/deals");
 // getStagesChildren
 export const getStagesChildren = (parentId) =>
   axios.get(`/kanban/deals/${parentId}/children`);
 
-export const getSpecialStages = () => axios.get("/stages/specials");
+export const getTrashStages = () => axios.get("/stages/trash");
 
 export const getStageTimers = async () => {
   return await axios.get("/settings/stages/timers");

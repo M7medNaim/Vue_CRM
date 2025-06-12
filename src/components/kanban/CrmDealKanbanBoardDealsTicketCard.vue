@@ -33,7 +33,9 @@
       <div
         class="col-12 d-flex justify-content-between align-i tems-center fs-7 mb-1 p-0"
       >
-        <span class="fw-normal text-secondary">{{ deal.phone }}</span>
+        <span class="fw-normal text-secondary">{{
+          deal.phone ?? "************"
+        }}</span>
         <span class="fw-normal text-secondary">
           <i :class="getIcon(deal.source_id)"></i>
         </span>

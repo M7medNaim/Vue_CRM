@@ -542,7 +542,7 @@ export default {
   background-color: hsla(0, 0%, 100%, 0.322) !important;
 }
 .refresh {
-  background-color: white;
+  background-color: #555555;
   animation: bgrefresh 2s ease-in-out infinite;
 }
 .refresh i {
@@ -553,7 +553,7 @@ export default {
     background-color: rgb(235, 191, 14);
   }
   50% {
-    background-color: hsla(0, 0%, 100%, 0.322);
+    background-color: hsla(0, 0%, 44%, 0.322);
   }
   100% {
     background-color: rgb(250, 179, 0);
@@ -691,6 +691,6 @@ export default {
   opacity: 1;
 }
 .btnHeaderBg {
-  background-color: #919191;
+  background-color: #55555551;
 }
 </style>

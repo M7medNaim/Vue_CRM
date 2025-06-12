@@ -549,7 +549,8 @@ export default {
           console.error("No matching deal found for ID:", dealId);
         }
       } catch (error) {
-        toast.error(t("error.fetchDealDataFailed"));
+        console.error("Error fetching deal data:", error);
+        toast.error("something went wrong");
       }
     };
 

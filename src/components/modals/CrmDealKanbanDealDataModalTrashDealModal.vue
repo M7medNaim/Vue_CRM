@@ -105,7 +105,7 @@ import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import {
   createComment,
-  getTrashTags,
+  getTrashStages,
   addTagToDeal,
 } from "@/plugins/services/authService";
 
@@ -137,7 +137,7 @@ export default {
     };
   },
   mounted() {
-    this.getTrashTags();
+    this.getStages();
     const modal = document.getElementById("trashDealModal");
     modal.addEventListener("hidden.bs.modal", () => {
       const modalBackdrop = document.querySelector(".modal-backdrop");
@@ -208,9 +208,9 @@ export default {
       }
     },
 
-    async getTrashTags() {
+    async getStages() {
       try {
-        const response = await getTrashTags();
+        const response = await getTrashStages();
         if (response.status === 200) {
           this.trashTags = response.data?.data;
           if (this.trashTags.length < 1) {
