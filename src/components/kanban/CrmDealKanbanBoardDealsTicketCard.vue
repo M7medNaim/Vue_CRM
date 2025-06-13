@@ -5,7 +5,7 @@
     :style="{
       borderLeft:
         deal.responsible_user && getUserColor(deal.responsible_user.id)
-          ? `4px solid ${getUserColor(deal.responsible_user.id)}`
+          ? `3px solid ${getUserColor(deal.responsible_user.id)}`
           : '',
     }"
   >

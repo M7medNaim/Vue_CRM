@@ -195,7 +195,17 @@
             />
           </transition>
         </button>
+        <button
+          v-if="hasNewChanges"
+          class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-1 mt-1 me-2 h-100 px-2"
+          style="font-size: 14px"
+          @click="refreshPage"
+        >
+          <i class="fa-solid fa-rotate"></i>
+          <span class="refresh-text">{{ $t("header-refresh-button") }}</span>
+        </button>
         <span
+          v-else
           class="fs-4 text-white btnHeaderBg h-100 d-flex justify-content-center align-items-center px-4 rounded-1 me-2"
           >{{ currentTime }}</span
         >
@@ -209,15 +219,6 @@
         <div
           class="user-info d-flex justify-content-end align-items-center h-100"
         >
-          <button
-            v-if="hasNewChanges"
-            class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-1 mt-1 me-2 h-100 px-2"
-            style="font-size: 14px"
-            @click="refreshPage"
-          >
-            <i class="fa-solid fa-rotate"></i>
-            <span class="refresh-text">{{ $t("header-refresh-button") }}</span>
-          </button>
           <div
             class="btnHeaderBg h-100 userImg d-flex justify-content-center align-items-center px-2 rounded-1 me-2"
           >
