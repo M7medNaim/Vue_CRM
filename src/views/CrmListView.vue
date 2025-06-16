@@ -136,7 +136,7 @@
         "
         responsive="true"
         scrollable
-        scrollHeight="calc(90vh - 120px)"
+        scrollHeight="calc(90vh - 110px)"
       >
         <Column
           :selectionMode="

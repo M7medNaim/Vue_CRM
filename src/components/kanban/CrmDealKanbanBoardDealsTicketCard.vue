@@ -31,27 +31,65 @@
 
       <!-- الهاتف والواتساب -->
       <div
-        class="col-12 d-flex justify-content-between align-i tems-center fs-7 mb-1 p-0"
+        class="col-12 d-flex justify-content-between align-items-center fs-7 mb-1 p-0"
       >
-        <span class="fw-normal text-secondary">{{
-          deal.phone ?? "************"
-        }}</span>
+        <span
+          class="fw-normal text-secondary phone-number"
+          @click.stop="copyPhoneNumber"
+          :title="t('click-to-copy')"
+        >
+          {{ deal.phone ?? "************" }}
+          <i class="fa-regular fa-copy ms-1"></i>
+        </span>
         <span class="fw-normal text-secondary">
           <i :class="getIcon(deal.source_id)"></i>
         </span>
       </div>
 
       <!-- النجوم -->
-      <div class="col-12 fs-8 mb-1 p-0">
-        <template v-for="index in 7" :key="index">
-          <i
-            class="fa-solid fa-star"
-            :class="
-              index <= (deal.rating || 0) ? 'text-gold' : 'text-lightgray'
-            "
-          ></i>
-        </template>
+      <div
+        class="col-12 fs-8 mb-1 p-0 d-flex justify-content-between align-items-center"
+      >
+        <div class="">
+          <template v-for="index in 7" :key="index">
+            <i
+              class="fa-solid fa-star"
+              :class="
+                index <= (deal.rating || 0) ? 'text-gold' : 'text-lightgray'
+              "
+            ></i>
+          </template>
+        </div>
+        <div
+          class=""
+          v-if="deal.has_admin_comment"
+          :title="t('kanban-deal-alert-attention')"
+        >
+          <i class="fa-solid fa-comment-dots fs-6 text-warning"></i>
+        </div>
       </div>
+
+      <!-- حالة الإقناع -->
+      <!-- <div class="col-12 persuasion-progress">
+        <div class="d-flex align-items-center gap-1" style="font-size: 12px">
+          <i class="fa-solid fa-bullseye text-secondary"></i>
+          <span class="fw-medium text-secondary">
+            {{ deal.persuasion_status || 85 }}%
+          </span>
+          <div class="progress flex-grow-1" style="height: 6px">
+            <div
+              class="progress-bar rounded-5"
+              :class="getPersuasionColorClass(deal.persuasion_status)"
+              role="progressbar"
+              :style="{ width: `${deal.persuasion_status || 85}%` }"
+              :aria-valuenow="deal.persuasion_status || 85"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
+        </div>
+      </div> -->
+
       <div
         class="d-flex gap-1 align-items-center p-0 flex-wrap"
         v-if="deal.tags && deal.tags.length"
@@ -77,29 +115,35 @@
     </div>
 
     <!-- ملاحظة إدارية -->
-    <div v-if="deal.has_admin_comment" class="col-12 pt-1">
+    <!-- <div v-if="deal.has_admin_comment" class="col-12 pt-1">
       <div class="notes">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <span class="px-2">{{ t("kanban-deal-alert-attention") }}</span>
         <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
-    </div>
+    </div> -->
 
     <!-- التواريخ -->
     <div class="col-12 mt-2 d-flex">
-      <span class="text-success fs-7 pe-1"
+      <!-- <span class="text-success fs-7 pe-1"
         ><i class="fa-regular fa-clock"></i>
         {{ t("kanban-deal-label-createdat") }}:</span
-      >
-      <span class="fs-7"> {{ formatDate(deal.created_at) }}</span>
+      > -->
+      <span class="fs-7 text-secondary"
+        ><i class="fa-regular fa-clock"></i>
+        {{ formatDate(deal.created_at) }} ({{
+          formatDateUpdate(deal.updated_at)
+        }}
+        :تعديل)
+      </span>
     </div>
-    <div class="col-12 d-flex pt-1">
+    <!-- <div class="col-12 d-flex pt-1">
       <span class="text-black-50 fs-7 pe-1"
         ><i class="fa-regular fa-clock"></i>
         {{ t("kanban-deal-label-updatedat") }}:</span
       >
       <span class="fs-7">{{ formatDate(deal.updated_at) }}</span>
-    </div>
+    </div> -->
 
     <div class="col-12 mt-1">
       <span
@@ -120,6 +164,8 @@
 
 <script>
 import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
+
 export default {
   name: "CrmDealKanbanBoardDealsTicketCard",
   props: {
@@ -130,6 +176,7 @@ export default {
   },
   setup(props, { emit }) {
     const { t } = useI18n();
+    const toast = useToast();
 
     const formatDate = (dateString) => {
       if (!dateString) return "";
@@ -141,6 +188,17 @@ export default {
       const year = date.getFullYear();
 
       return `${day}/${month}/${year}`;
+    };
+    const formatDateUpdate = (dateString) => {
+      if (!dateString) return "";
+
+      const date = new Date(dateString);
+
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      // const year = date.getFullYear();
+
+      return `${day}/${month}`;
     };
     const openDealDataCard = () => {
       emit("open-deal-data-card", props.deal.id);
@@ -208,6 +266,21 @@ export default {
       const brightness = (r * 299 + g * 587 + b * 114) / 1000;
       return brightness > 170 ? "#000000" : "#FFFFFF";
     };
+    const copyPhoneNumber = async () => {
+      try {
+        await navigator.clipboard.writeText(props.deal.phone);
+        toast.success(t("phone-copied"));
+      } catch (err) {
+        toast.error(t("copy-failed"));
+      }
+    };
+    const getPersuasionColorClass = (persuasion_status) => {
+      const status = persuasion_status || 85;
+      if (status <= 25) return "bg-danger";
+      if (status <= 50) return "bg-warning";
+      if (status <= 75) return "bg-info";
+      return "bg-success";
+    };
     return {
       t,
       formatDate,
@@ -217,6 +290,9 @@ export default {
       getIcon,
       tagIcon,
       getContrastColor,
+      copyPhoneNumber,
+      formatDateUpdate,
+      getPersuasionColorClass,
     };
   },
   methods: {},
@@ -280,5 +356,38 @@ export default {
 
 .bg-Tages i {
   margin-inline-end: 1px;
+}
+
+.phone-number {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.phone-number:hover {
+  color: #000 !important;
+}
+
+.phone-number i {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.phone-number:hover i {
+  opacity: 1;
+}
+
+.persuasion-progress {
+  padding: 0 4px;
+}
+
+.persuasion-progress .progress {
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.persuasion-progress .progress-bar {
+  transition: width 0.3s ease;
 }
 </style>

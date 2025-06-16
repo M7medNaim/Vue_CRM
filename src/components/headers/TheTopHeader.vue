@@ -1,25 +1,24 @@
 <template>
   <div class="top-bar pe-1 position-relative pt-1 me-2">
-    <div class="row h-100">
-      <div class="col-4 d-flex align-items-center text-white fs-6 h-100">
+    <div class="row">
+      <div class="col-4 d-flex align-items-center text-white fs-6">
         <!-- v-show="user_role === 'sales'" -->
 
         <img
-          class="me-2 rounded-1 p-1 btnHeaderBg h-100"
+          class="me-2 rounded-1 p-1 btnHeaderBg"
           src="@/assets/new-nokta-logo.png"
-          style="width: 45px"
           alt=""
         />
         <span
-          class="rounded-1 btnHeaderBg h-100 d-flex justify-content-center align-items-center me-2"
+          class="rounded-1 btnHeaderBg d-flex justify-content-center align-items-center me-2"
           style="font-size: 14px; padding: 0 45px"
           >{{ $route.meta.title || "القائمة الرئيسية" }}</span
         >
 
-        <div class="toggleMenuBar position-relative h-100">
+        <div class="toggleMenuBar position-relative">
           <div
             ref="menuButton"
-            class="btnShowMenu px-3 rounded-1 text-white d-flex justify-content-center align-items-center gap-1 btnHeaderBg h-100"
+            class="btnShowMenu px-3 rounded-1 text-white d-flex justify-content-center align-items-center gap-1 btnHeaderBg"
             @click="showMainMenu"
           >
             <i :class="currentPageIcon"></i>
@@ -180,10 +179,10 @@
         </div>
       </div>
       <div
-        class="col-4 d-flex justify-content-center align-items-center pt-0 mt-0 h-100"
+        class="col-4 d-flex justify-content-center align-items-center pt-0 mt-0"
       >
         <button
-          class="border-0 btnHeaderBg position-relative h-100 rounded-1 px-3 me-2"
+          class="border-0 btnHeaderBg position-relative rounded-1 px-3 me-2"
           ref="notifiButton"
           @click="toggleMenu('notifications', $refs.notifiButton)"
         >
@@ -206,21 +205,21 @@
         </button>
         <span
           v-else
-          class="fs-4 text-white btnHeaderBg h-100 d-flex justify-content-center align-items-center px-4 rounded-1 me-2"
+          class="fs-4 text-white btnHeaderBg d-flex justify-content-center align-items-center px-4 rounded-1 me-2"
           >{{ currentTime }}</span
         >
         <div
-          class="btnHeaderBg h-100 px-3 text-white d-flex justify-content-center align-items-center rounded-1"
+          class="btnHeaderBg px-3 text-white d-flex justify-content-center align-items-center rounded-1"
         >
           <i class="fa-solid fa-calendar-days"></i>
         </div>
       </div>
-      <div class="col-4 d-flex justify-content-end align-items-center h-100">
+      <div class="col-4 d-flex justify-content-end align-items-center">
         <div
           class="user-info d-flex justify-content-end align-items-center h-100"
         >
           <div
-            class="btnHeaderBg h-100 userImg d-flex justify-content-center align-items-center px-2 rounded-1 me-2"
+            class="btnHeaderBg userImg d-flex justify-content-center align-items-center px-2 rounded-1 me-2"
           >
             <img
               :src="userImage || require('@/assets/default-user-image.jpg')"
@@ -228,49 +227,21 @@
               alt="user image"
             />
           </div>
-          <!-- <div class="lang">
-            <button
-              class="btnLang border-0 bg-transparent d-flex align-items-center justify-content-center gap-2 text-white position-relative rounded-2 mt-1"
-              @click="toggleLanguage"
-            >
-              <span
-                class="fs-75"
-                style="padding-top: 4px; padding-bottom: 3px"
-                >{{ nextLanguage.toUpperCase() }}</span
-              >
-              <span class="dropdown-icon text-secondary flageImage">
-                <img
-                  :src="flagIcon"
-                  alt="English"
-                  style="width: 23px; height: 13px"
-                />
-              </span>
-            </button>
-          </div> -->
-
           <div
-            class="d-flex justify-content-center align-items-center h-100 btnHeaderBg rounded-1 px-4"
+            class="d-flex justify-content-center align-items-center btnHeaderBg rounded-1 px-4"
           >
             <ScoureUser />
             <span class="me-1 text-white pt-1" style="font-size: 12px">{{
               name
             }}</span>
           </div>
-          <div class="profile ps-2 h-100">
+          <div class="profile ps-2">
             <button
               type="button"
-              class="border-0 btnHeaderBg d-flex justify-content-end align-items-center text-white position-relative h-100 px-3 rounded-1"
+              class="border-0 btnHeaderBg d-flex justify-content-end align-items-center text-white position-relative px-3 rounded-1"
               ref="profileButton"
               @click="toggleMenu('profile', $refs.profileButton)"
             >
-              <!-- <div class="userImg">
-                <img
-                  :src="userImage || require('@/assets/default-user-image.jpg')"
-                  class="img-fluid user-img rounded-5 me-1"
-                  alt="user image"
-                />
-              </div> -->
-              <!-- <span class="me-1" style="font-size: 14px">{{ name }}</span> -->
               <i class="fa-solid fa-bars"></i>
 
               <transition name="fade">
@@ -511,8 +482,8 @@ export default {
 </script>
 <style scoped>
 .top-bar {
-  max-height: 5vh !important;
-  height: 5vh !important;
+  max-height: 40px !important;
+  height: 40px !important;
 }
 .logo-img {
   height: 60px;
@@ -692,6 +663,9 @@ export default {
   opacity: 1;
 }
 .btnHeaderBg {
+  height: 38px;
+  display: flex;
+  align-items: center;
   background-color: #55555551;
 }
 </style>
