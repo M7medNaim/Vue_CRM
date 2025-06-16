@@ -77,6 +77,24 @@
               </button>
             </div>
             <button
+              v-if="isConnected"
+              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
+              @click="WhatasppLogout()"
+              style="border: 1px solid #eee !important"
+            >
+              <i class="fa-solid fa-sign-out"></i>
+              Logout
+            </button>
+            <button
+              v-else
+              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
+              @click="handleLoginClick"
+              style="border: 1px solid #eee !important"
+            >
+              <i class="fa-solid fa-sign-in"></i>
+              Login
+            </button>
+            <button
               @click.stop="showList()"
               aria-label="list chat (menu)"
               class="border-0 bg-transparent"
@@ -90,14 +108,6 @@
               aria-label="Close"
             >
               <i class="fa fa-window-restore fs-6 pt-2 ps-1 text-white"></i>
-            </button>
-            <button
-              class="loginWhatsapp border-0 bg-transparent text-white rounded-1"
-              @click="handleLoginClick"
-              style="border: 1px solid #eee !important"
-            >
-              <i class="fa-solid fa-right-to-bracket"></i>
-              Login
             </button>
           </div>
         </div>
@@ -169,6 +179,8 @@ import {
   sendGreetingMessage,
   sendInitMessage,
   sendMessage,
+  checkstatus,
+  weblogout,
 } from "@/plugins/services/authService";
 export default {
   emits: [
@@ -198,6 +210,8 @@ export default {
     return {
       isSearchBarVisible: false,
       showListVisible: false,
+      isConnected: false,
+      statusInterval: null,
       searchQuery: "",
       chatBox_ref: this.$refs.chatBox,
     };
@@ -237,7 +251,39 @@ export default {
       },
     },
   },
+  mounted() {
+    this.statusInterval = setInterval(() => {
+      this.checkWhatsAppStatus();
+    }, 5000);
+  },
+  beforeUnmount() {
+    clearInterval(this.statusInterval);
+  },
   methods: {
+    async checkWhatsAppStatus() {
+      try {
+        const response = await checkstatus();
+        if (response.data.connected) {
+          this.isConnected = true;
+          this.connectedUser = response.data.user;
+        } else {
+          this.isConnected = false;
+        }
+        return response.data;
+      } catch (error) {
+        console.error("Failed to check WhatsApp status:", error);
+        this.isConnected = false;
+        this.connectedUser = null;
+      }
+    },
+    async WhatasppLogout() {
+      const response = await weblogout();
+      console.log(response);
+      if (response.success) {
+        this.isConnected = false;
+        this.handleLoginClick();
+      }
+    },
     async receiveMessage(messageData) {
       if (this.selectedChat) {
         try {

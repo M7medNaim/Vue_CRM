@@ -498,7 +498,7 @@ input:focus {
 }
 .btn-header {
   /* background-color: rgba(128, 128, 128, 0.8) !important; */
-  background-color: #919191b9 !important;
+  background-color: #55555551 !important;
 }
 @media (max-width: 1200px) {
   .removeIpad {

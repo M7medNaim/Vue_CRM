@@ -101,17 +101,7 @@
                   ></i>
                 </button>
                 <button
-                  v-if="
-                    expandedStages[stage.id] &&
-                    [
-                      'tickets',
-                      'reaching out',
-                      'idle',
-                      'خامل',
-                      'بانتظار الرد',
-                      'تذكرة',
-                    ].includes(stage.name.toLowerCase())
-                  "
+                  v-if="expandedStages[stage.id] && stage.has_children"
                   class="btn btn-sm h-100 rounded-0"
                   style="background-color: #cecfce"
                   @click="toggleExpandStage(stage)"
@@ -153,17 +143,7 @@
                   class="d-flex justify-content-end align-items-center gap-1"
                 >
                   <button
-                    v-if="
-                      !stage.parent_id &&
-                      [
-                        'tickets',
-                        'reaching out',
-                        'idle',
-                        'خامل',
-                        'بانتظار الرد',
-                        'تذكرة',
-                      ].includes(stage.name.toLowerCase())
-                    "
+                    v-if="!stage.parent_id && stage.has_children"
                     class="btn btn-sm h-100 rounded-0 p-0"
                     style=""
                     @click="toggleExpandStage(stage)"
@@ -182,6 +162,7 @@
                     ></span>
                   </button>
                   <button
+                    v-if="stage.filterable_tags"
                     class="btn btn-sm h-100 rounded-0 p-0"
                     style=""
                     @click="openFilterStage(stage)"
@@ -235,13 +216,14 @@
                 <div class="mb-2" style="font-size: 55px">
                   <i class="fa-solid fa-compress text-white"></i>
                 </div>
-
-                <p class="mb-3 text-white">لإعادة دمج المراحل إضغط هنا</p>
+                <p class="mb-3 text-white">
+                  {{ t("kanban-stage-merge-title") }}
+                </p>
                 <button
                   class="btn btn-primary"
                   @click="toggleExpandStage(stage)"
                 >
-                  Merge
+                  {{ t("kanban-stage-merge-button") }}
                 </button>
               </div>
             </div>
@@ -381,25 +363,14 @@ export default {
         const response = await getStagesChildren(parentId);
 
         if (response.data && response.data.data) {
-          const childStages = response.data.data.map((child) => ({
-            ...child,
-            parent_id: parentId,
-            deals: [],
-          }));
+          const childStages = response.data.data;
           return childStages;
         } else {
-          console.error(
-            "API response did not contain expected data:",
-            response
-          );
-          throw new Error("Invalid API response structure");
+          console.error(response.message);
+          throw new Error(response.message);
         }
       } catch (error) {
-        console.error(
-          "Error fetching child stages for parent",
-          parentId,
-          error
-        );
+        console.error(error.message, parentId, error);
         throw error;
       }
     };
@@ -427,9 +398,7 @@ export default {
           }
         } catch (error) {
           expandedStages.value[parentStage.id] = false;
-          toast.error(
-            t("error.fetchChildStagesFailed", { stageName: parentStage.name })
-          );
+          toast.error(error.message);
         }
       }
     };
@@ -487,6 +456,14 @@ export default {
             if (oldStageInDisplay) {
               oldStageInDisplay.deals.unshift(revertedDeal);
               revertedDeal.stage_id = oldStageId;
+            } else {
+              const oldParentStageInDisplay = displayStages.value.find(
+                (s) => s.parent_id === oldStageId
+              );
+              if (oldParentStageInDisplay) {
+                oldParentStageInDisplay.deals.unshift(revertedDeal);
+                revertedDeal.stage_id = oldStageId;
+              }
             }
           }
 
@@ -572,7 +549,8 @@ export default {
           console.error("No matching deal found for ID:", dealId);
         }
       } catch (error) {
-        toast.error(t("error.fetchDealDataFailed"));
+        console.error("Error fetching deal data:", error);
+        toast.error("something went wrong");
       }
     };
 
@@ -927,52 +905,63 @@ export default {
       }
     };
 
-    const changeDealStage = async (dealId, newStageId, oldStageId) => {
+    const changeDealStage = async (
+      dealId,
+      newStageId,
+      oldStageId,
+      kanban = 1
+    ) => {
+      const stages = ref(props.stages);
+      const newStage = ref(
+        stages.value.find((stage) => stage.id == newStageId)
+      );
+      const oldStage = ref(
+        stages.value.find((stage) => stage.id == oldStageId)
+      );
+      console.log("newStage", newStage.value);
+      const deal =
+        newStage?.value?.deals.find((d) => d.id == dealId) ??
+        oldStage.value.deals.find((d) => d.id == dealId);
+      console.log("deal", deal);
       try {
-        await updateDealStage(dealId, newStageId);
-        toast.success(t("success.dealMoved"));
-        playSound();
-
-        const oldStageInDisplay = displayStages.value.find(
-          (s) => s.id === oldStageId
-        );
-        const newStageInDisplay = displayStages.value.find(
-          (s) => s.id === newStageId
-        );
-
-        if (oldStageInDisplay) {
-          oldStageInDisplay.deal_count = Math.max(
-            0,
-            oldStageInDisplay.deal_count - 1
-          );
-        }
-        if (newStageInDisplay) {
-          newStageInDisplay.deal_count =
-            (newStageInDisplay.deal_count || 0) + 1;
-        }
-      } catch (error) {
-        const stageAfterMoveInDisplay = displayStages.value.find(
-          (s) => s.id === newStageId
-        );
-        const dealIndexInNewStage = stageAfterMoveInDisplay
-          ? stageAfterMoveInDisplay.deals.findIndex((d) => d.id === dealId)
-          : -1;
-
-        if (stageAfterMoveInDisplay && dealIndexInNewStage !== -1) {
-          const [revertedDeal] = stageAfterMoveInDisplay.deals.splice(
-            dealIndexInNewStage,
-            1
-          );
-
-          const oldStageInDisplay = displayStages.value.find(
-            (s) => s.id === oldStageId
-          );
-          if (oldStageInDisplay) {
-            oldStageInDisplay.deals.unshift(revertedDeal);
-            revertedDeal.stage_id = oldStageId;
+        if (newStageId !== -1) {
+          const response = await updateDealStage(dealId, newStageId);
+          console.log("response", response.status);
+          if (response.status !== 200) {
+            console.error("Error updating deal stage:", response.data.message);
+            toast.error(response.data.message);
+            return;
+          } else {
+            deal.stage_id = newStageId;
+            if (oldStage.value) oldStage.value.deal_count -= 1;
+            if (newStage.value) newStage.value.deal_count += 1;
+            if (!kanban) {
+              oldStage.value.deals.splice(
+                oldStage.value.deals.findIndex((d) => d.id == dealId),
+                1
+              );
+              if (newStage.value) newStage.value.deals.unshift(deal);
+            }
+            toast.success(response.data.message);
+            playSound();
           }
         }
+      } catch (error) {
+        console.error("Error updating deal stage:", error);
 
+        const oldStage = props.stages.find((s) => s.id === oldStageId);
+        if (oldStage) {
+          const currentStage = props.stages.find((s) => s.id === newStageId);
+          if (currentStage) {
+            const dealIndex = currentStage.deals.findIndex(
+              (d) => d.id === deal.id
+            );
+            if (dealIndex !== -1) {
+              const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
+              oldStage.deals.push(removedDeal);
+            }
+          }
+        }
         const oldStageInDisplayForRevertCount = displayStages.value.find(
           (s) => s.id === oldStageId
         );
@@ -1054,27 +1043,6 @@ export default {
           ".LogEvent",
           ".WhatsappEvent"
         );
-        // window.Echo.channel(userChannel)
-        //   .listen(".DealEvent", (event) => {
-        //     console.log("DealEvent received:", event);
-        //     handleDealEvent(event);
-        //   })
-        //   .listen(".TaskEvent", (event) => {
-        //     console.log("TaskEvent received:", event);
-        //     handleTaskEvent(event);
-        //   })
-        //   .listen(".CommentEvent", (event) => {
-        //     console.log("CommentEvent received:", event);
-        //     handleCommentEvent(event);
-        //   })
-        //   .listen(".LogEvent", (event) => {
-        //     console.log("LogEvent received:", event);
-        //     handleLogEvent(event);
-        //   })
-        //   .listen(".WhatsappEvent", (event) => {
-        //     console.log("WhatsappEvent received:", event);
-        //     handleWhatsappEvent(event);
-        //   });
       }
 
       console.log("WebSocket reconnected on user activity");
@@ -1202,6 +1170,7 @@ export default {
     });
 
     return {
+      t,
       displayStages,
       drag,
       getStageHeaderClass,
@@ -1394,6 +1363,9 @@ export default {
   border-bottom-right-radius: 50%;
   left: 0%;
   z-index: 9999;
+}
+.fs-merge-icon {
+  font-size: 5rem;
 }
 @media (min-width: 1000px) and (max-width: 1200px) {
   .kanban-wrapper {

@@ -136,7 +136,11 @@
               </div>
 
               <!-- Phone -->
-              <div class="row mb-3" @dblclick="handleDoubleClick">
+              <div
+                class="row mb-3"
+                @dblclick="handleDoubleClick"
+                v-if="customerData.phone"
+              >
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-phone-volume"></i>
@@ -166,7 +170,7 @@
               <div
                 class="row mb-3"
                 @dblclick="handleDoubleClick"
-                v-if="showPhone2"
+                v-if="showPhone2 && customerData.phone"
               >
                 <div class="col-2">
                   <label class="form-label"
@@ -668,7 +672,6 @@ import TrashDeal from "@/components/modals/CrmDealKanbanDealDataModalTrashDealMo
 import {
   fetchConversationByDealId,
   getSources,
-  getStages,
   createComment,
   updateComments,
   createTask,
@@ -678,6 +681,7 @@ import {
   createConversation,
   getLogsByDealId,
   getUser,
+  getAvailableStages,
 } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 export default {
@@ -786,7 +790,7 @@ export default {
       id: props.deal?.id,
       name: props.deal?.contact.name || "Custome Name",
       nickname: props.deal?.contact.nickname || "Custome Name",
-      phone: props.deal?.contact.phones[0].phone || "+964770028133",
+      phone: props.deal?.contact.phones[0]?.phone || "",
       phone2: props.deal?.contact.phones[1]?.phone || "",
       email: props.deal?.contact.email || "",
       note: props.deal?.note || "",
@@ -836,7 +840,7 @@ export default {
     });
     const fetchStages = async () => {
       try {
-        const response = await getStages();
+        const response = await getAvailableStages();
         stages.value = response.data.data;
       } catch (error) {
         console.error("Error fetching stages:", error);

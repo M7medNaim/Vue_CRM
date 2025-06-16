@@ -5,7 +5,7 @@
     :style="{
       borderLeft:
         deal.responsible_user && getUserColor(deal.responsible_user.id)
-          ? `4px solid ${getUserColor(deal.responsible_user.id)}`
+          ? `3px solid ${getUserColor(deal.responsible_user.id)}`
           : '',
     }"
   >
@@ -38,7 +38,7 @@
           @click.stop="copyPhoneNumber"
           :title="t('click-to-copy')"
         >
-          {{ deal.phone }}
+          {{ deal.phone ?? "************" }}
           <i class="fa-regular fa-copy ms-1"></i>
         </span>
         <span class="fw-normal text-secondary">
@@ -70,7 +70,7 @@
       </div>
 
       <!-- حالة الإقناع -->
-      <div class="col-12 persuasion-progress">
+      <!-- <div class="col-12 persuasion-progress">
         <div class="d-flex align-items-center gap-1" style="font-size: 12px">
           <i class="fa-solid fa-bullseye text-secondary"></i>
           <span class="fw-medium text-secondary">
@@ -88,7 +88,7 @@
             ></div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div
         class="d-flex gap-1 align-items-center p-0 flex-wrap"
@@ -106,8 +106,10 @@
           data-placement="top"
           :title="tag.name"
         >
-          <i :class="`fa-solid fa-${tag.icon}`"></i>
-          {{ tag.name.length > 10 ? tag.name.slice(0, 10) + "…" : tag.name }}
+          <i :class="`fa-solid fa-${tag.icon} me-1`"></i>
+          <span class="fw-normal">{{
+            tag.name.length > 12 ? tag.name.slice(0, 12) + "…" : tag.name
+          }}</span>
         </span>
       </div>
     </div>
@@ -147,10 +149,12 @@
       <span
         class="badge fw-medium text-white py-1 px-2"
         :style="{
-          backgroundColor:
-            deal.responsible_user && getUserColor(deal.responsible_user.id)
-              ? getUserColor(deal.responsible_user.id)
-              : '#292929',
+          backgroundColor: deal.responsible_user?.id
+            ? getUserColor(deal.responsible_user.id)
+            : '',
+          color: getContrastColor(
+            getUserColor(deal.responsible_user?.id) || '#292929'
+          ),
         }"
         >{{ deal.responsible_user?.name }}</span
       >

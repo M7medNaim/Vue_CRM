@@ -1,5 +1,6 @@
 import axios from "@/plugins/axios";
 import Cookies from "js-cookie";
+import expressApi from "@/plugins/expressApi";
 // login
 export const login = (credentials) => {
   return axios.post("/login", credentials);
@@ -131,11 +132,12 @@ export const getSources = () => axios.get("/sources");
 
 // Get All Stages
 export const getStages = () => axios.get("/stages");
+export const getAvailableStages = () => axios.get("/stages/deals");
 // getStagesChildren
 export const getStagesChildren = (parentId) =>
-  axios.get(`/stages/${parentId}/children`);
+  axios.get(`/kanban/deals/${parentId}/children`);
 
-export const getSpecialStages = () => axios.get("/stages/specials");
+export const getTrashStages = () => axios.get("/stages/trash");
 
 export const getStageTimers = async () => {
   return await axios.get("/settings/stages/timers");
@@ -415,4 +417,45 @@ export const updateAnswersByDealId = async (deal_id, formData) => {
 
 export const getTrashTags = async () => {
   return await axios.get("/tags/trash");
+};
+
+export const getUserId = () => {
+  return Cookies.get("user_id") || "default_user";
+};
+
+export const webstart = async () => {
+  const userId = getUserId();
+  return await expressApi.post(
+    `${process.env.VUE_APP_EXPRESS_URL}/start-client`,
+    { userId }
+  );
+};
+
+export const webqrcode = async () => {
+  const userId = getUserId();
+  return await axios.get(`/webwhatsapp/qr/${userId}`);
+  //return await axios.get(`http://127.0.0.1:3000/get-qr/${userId}`);
+};
+
+export const checkstatus = async () => {
+  const userId = getUserId();
+  return await expressApi.get(
+    `${process.env.VUE_APP_EXPRESS_URL}/is-connected/${userId}`
+  );
+};
+
+// Add this new function for logout
+export const weblogout = async () => {
+  const userId = getUserId();
+  return await expressApi.post(
+    `${process.env.VUE_APP_EXPRESS_URL}/stop-client/`,
+    { userId }
+  );
+};
+
+// Add this function to get active clients (for debugging)
+export const getActiveClients = async () => {
+  return await expressApi.get(
+    `${process.env.VUE_APP_EXPRESS_URL}/active-clients`
+  );
 };

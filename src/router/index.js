@@ -16,6 +16,7 @@ import CrmListView from "@/views/CrmListView.vue";
 // import TasksKanban from "@/views/CrmDealTasksView.vue";
 import BroadcastSettingsView from "@/views/BroadcastSettingsView.vue";
 import StagingSettingView from "@/views/StagingSettingView.vue";
+import WebWhatsapp from "@/views/WebWhatsapp.vue";
 import PatientRegistrationView from "@/views/PatientRegistrationView.vue";
 
 const routes = [
@@ -182,6 +183,15 @@ const routes = [
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     redirect: "/crm-kanban",
+  },
+  {
+    path: "/WebWhatsapp",
+    name: "webwhatsapp",
+    component: WebWhatsapp,
+    meta: {
+      requiresAuth: true,
+      title: "Web Whatsapp",
+    },
   },
 ];
 
