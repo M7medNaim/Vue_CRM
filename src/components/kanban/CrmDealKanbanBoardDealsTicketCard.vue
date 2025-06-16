@@ -4,8 +4,8 @@
     @click="openDealDataCard"
     :style="{
       borderLeft:
-        deal.responsible_user && getUserColor(deal.responsible_user.id)
-          ? `3px solid ${getUserColor(deal.responsible_user.id)}`
+        deal.responsible_user && getUserColor(deal.responsible_user?.id)
+          ? `3px solid ${getUserColor(deal.responsible_user?.id)}`
           : '',
     }"
   >
@@ -23,7 +23,10 @@
       <div
         class="col-12 d-flex justify-content-between align-items-center mb-1 p-0"
       >
-        <span class="fw-semibold fs-7">{{ deal.name }}</span>
+        <span class="fw-semibold fs-7">
+          <i class="ms-2 fa-solid fa-circle-user me-1"></i>
+          {{ deal.name }}
+        </span>
         <span class="text-secondary fs-7">
           {{ deal.view_count }} <i class="fa-regular fa-eye"></i>
         </span>
@@ -38,6 +41,9 @@
           @click.stop="copyPhoneNumber"
           :title="t('click-to-copy')"
         >
+          <span
+            ><i class="ms-2 fa-solid fa-phone me-1 opacity-100 text-dark"></i
+          ></span>
           {{ deal.phone ?? "************" }}
           <i class="fa-regular fa-copy ms-1"></i>
         </span>
@@ -51,6 +57,7 @@
         class="col-12 fs-8 mb-1 p-0 d-flex justify-content-between align-items-center"
       >
         <div class="">
+          <span class="ms-2 text-secondary">Rating: </span>
           <template v-for="index in 7" :key="index">
             <i
               class="fa-solid fa-star"
@@ -59,13 +66,6 @@
               "
             ></i>
           </template>
-        </div>
-        <div
-          class=""
-          v-if="deal.has_admin_comment"
-          :title="t('kanban-deal-alert-attention')"
-        >
-          <i class="fa-solid fa-comment-dots fs-6 text-warning"></i>
         </div>
       </div>
 
@@ -125,32 +125,27 @@
 
     <!-- التواريخ -->
     <div class="col-12 mt-2 d-flex">
-      <!-- <span class="text-success fs-7 pe-1"
-        ><i class="fa-regular fa-clock"></i>
-        {{ t("kanban-deal-label-createdat") }}:</span
-      > -->
-      <span class="fs-7 text-secondary"
-        ><i class="fa-regular fa-clock"></i>
-        {{ formatDate(deal.created_at) }} ({{
-          formatDateUpdate(deal.updated_at)
-        }}
-        :تعديل)
-      </span>
-    </div>
-    <!-- <div class="col-12 d-flex pt-1">
-      <span class="text-black-50 fs-7 pe-1"
-        ><i class="fa-regular fa-clock"></i>
-        {{ t("kanban-deal-label-updatedat") }}:</span
+      <span class="text-dark fs-7"
+        ><i class="ms-1 fa-solid fa-square-plus fs-6"></i>
+        {{ t("kanban-deal-label-createdat") }}:{{
+          formatDate(deal.created_at)
+        }}</span
       >
-      <span class="fs-7">{{ formatDate(deal.updated_at) }}</span>
-    </div> -->
-
-    <div class="col-12 mt-1">
+    </div>
+    <div class="col-12 mt-2 d-flex">
+      <span class="text-dark fs-7"
+        ><i class="ms-1 fa-solid fa-square-pen fs-6"></i>
+        {{ t("kanban-deal-label-updatedat") }}:{{
+          formatDate(deal.updated_at)
+        }}</span
+      >
+    </div>
+    <div class="col-12 mt-1" v-if="deal.responsible_user">
       <span
         class="badge fw-medium text-white py-1 px-2"
         :style="{
           backgroundColor: deal.responsible_user?.id
-            ? getUserColor(deal.responsible_user.id)
+            ? getUserColor(deal.responsible_user?.id)
             : '',
           color: getContrastColor(
             getUserColor(deal.responsible_user?.id) || '#292929'
@@ -158,6 +153,14 @@
         }"
         >{{ deal.responsible_user?.name }}</span
       >
+    </div>
+    <div
+      class="mt-1"
+      v-if="deal.has_admin_comment"
+      :title="t('kanban-deal-alert-attention')"
+    >
+      <i class="mx-1 fa-solid fa-comment-dots fs-6 text-warning"></i>
+      <span class="fs-7">Attention Required</span>
     </div>
   </div>
 </template>
@@ -361,10 +364,6 @@ export default {
 .phone-number {
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.phone-number:hover {
-  color: #000 !important;
 }
 
 .phone-number i {
