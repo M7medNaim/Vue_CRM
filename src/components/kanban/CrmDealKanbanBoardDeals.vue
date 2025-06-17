@@ -383,6 +383,18 @@ export default {
         displayStages.value = displayStages.value.filter(
           (stage) => stage.parent_id !== parentStage.id
         );
+        const stageIndex = displayStages.value.findIndex(
+          (s) => s.id === parentStage.id
+        );
+        const parentStageDeals = await fetchAdditionalDealsByStageId(
+          parentStage.id,
+          10,
+          displayStages.value[stageIndex].deals.length,
+          []
+        );
+        if (parentStageDeals.data) {
+          displayStages.value[stageIndex].deals = parentStageDeals.data.data;
+        }
       } else {
         expandedStages.value[parentStage.id] = true;
         try {
@@ -850,11 +862,10 @@ export default {
       const scrollTop = event.target.scrollTop;
       const scrollHeight = event.target.scrollHeight;
       const clientHeight = event.target.clientHeight;
-      const stages = ref(props.stages);
-      const stageIndex = stages.value.findIndex((s) => s.id === id);
+      const stageIndex = displayStages.value.findIndex((s) => s.id === id);
       if (
-        stages.value[stageIndex].deals.length ===
-        stages.value[stageIndex].deal_count
+        displayStages.value[stageIndex].deals.length ===
+        displayStages.value[stageIndex].deal_count
       )
         return;
       if (scrollTop + clientHeight >= scrollHeight - 1) {
@@ -862,13 +873,13 @@ export default {
         fetchAdditionalDealsByStageId(
           id,
           10,
-          stages.value[stageIndex].deals.length,
+          displayStages.value[stageIndex].deals.length,
           []
         )
           .then((additional_deals) => {
             if (additional_deals.data) {
               if (stageIndex !== -1) {
-                stages.value[stageIndex].deals.push(
+                displayStages.value[stageIndex].deals.push(
                   ...additional_deals.data.data
                 );
               }
