@@ -667,5 +667,10 @@ export default {
   display: flex;
   align-items: center;
   background-color: #55555551;
+  transition: 0.5s ease-in-out;
+}
+.btnHeaderBg:hover {
+  background-color: #55555590;
+  transition: 0.5s ease-in-out;
 }
 </style>
