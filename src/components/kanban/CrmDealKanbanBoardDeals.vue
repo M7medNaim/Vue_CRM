@@ -389,7 +389,7 @@ export default {
         const parentStageDeals = await fetchAdditionalDealsByStageId(
           parentStage.id,
           10,
-          displayStages.value[stageIndex].deals.length,
+          0,
           []
         );
         if (parentStageDeals.data) {
