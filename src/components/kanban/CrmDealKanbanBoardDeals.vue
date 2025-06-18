@@ -922,7 +922,7 @@ export default {
       oldStageId,
       kanban = 1
     ) => {
-      const stages = ref(props.stages);
+      const stages = displayStages;
       const newStage = ref(
         stages.value.find((stage) => stage.id == newStageId)
       );
@@ -932,7 +932,7 @@ export default {
       console.log("newStage", newStage.value);
       const deal =
         newStage?.value?.deals.find((d) => d.id == dealId) ??
-        oldStage.value.deals.find((d) => d.id == dealId);
+        oldStage?.value?.deals.find((d) => d.id == dealId);
       console.log("deal", deal);
       try {
         if (newStageId !== -1) {

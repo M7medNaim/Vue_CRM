@@ -39,15 +39,15 @@
             </h4>
             <div class="btn-group mt-2">
               <button
-                v-for="tag in trashTags"
+                v-for="tag in trash_stages"
                 :key="tag.id"
                 class="btn"
-                @click="selectedTag = tag.id"
+                @click="selected_stage_id = tag.id"
                 :style="{
                   backgroundColor:
-                    selectedTag === tag.id ? tag.color_code : 'white',
+                    selected_stage_id === tag.id ? tag.color_code : 'white',
                   color:
-                    selectedTag === tag.id
+                    selected_stage_id === tag.id
                       ? getContrastColor(tag.color_code)
                       : 'gray',
                 }"
@@ -56,7 +56,7 @@
                   :class="`fa-solid fa-${tag.icon}`"
                   :style="{
                     color:
-                      selectedTag === tag.id
+                      selected_stage_id === tag.id
                         ? getContrastColor(tag.color_code)
                         : 'gray',
                   }"
@@ -90,7 +90,7 @@
             class="btn bg-white py-2 px-4"
             style="color: red; font-size: 14px"
             @click="handleTrashDeal"
-            :disabled="!selectedTag || !comment"
+            :disabled="!selected_stage_id || !comment"
           >
             {{ $t("kanban-trash-confin-button") }}
           </button>
@@ -106,7 +106,7 @@ import { useToast } from "vue-toastification";
 import {
   createComment,
   getTrashStages,
-  addTagToDeal,
+  updateDealStage,
 } from "@/plugins/services/authService";
 
 export default {
@@ -132,8 +132,8 @@ export default {
     return {
       showModal2: false,
       comment: "",
-      selectedTag: null,
-      trashTags: [],
+      selected_stage_id: null,
+      trash_stages: [],
     };
   },
   mounted() {
@@ -151,7 +151,7 @@ export default {
     resetModal() {
       this.showModal2 = false;
       this.comment = "";
-      this.selectedTag = null;
+      this.selected_stage_id = null;
     },
     closeTrashDealModal() {
       const trashDealModal = Modal.getInstance(
@@ -168,13 +168,13 @@ export default {
     },
     async handleTrashDeal() {
       try {
-        if (!this.selectedTag || !this.comment) {
+        if (!this.selected_stage_id || !this.comment) {
           this.toast.error(this.t("error.requiredFields"), {
             timeout: 3000,
           });
           return;
         }
-        const selectedTag = this.selectedTag;
+        const selected_stage_id = this.selected_stage_id;
 
         const commentResponse = await createComment({
           text_body: this.comment,
@@ -183,7 +183,7 @@ export default {
         if (commentResponse.data) {
           this.$emit("deal-trashed", {
             dealId: this.dealId,
-            tagId: selectedTag,
+            tagId: selected_stage_id,
           });
         } else {
           this.toast.error(commentResponse.data.message, {
@@ -191,7 +191,7 @@ export default {
           });
         }
         // Update the deal stage
-        const response = await addTagToDeal(this.dealId, [selectedTag]);
+        const response = await updateDealStage(this.dealId, selected_stage_id);
         if (response.status !== 200) {
           this.toast.error(response.data.message, {
             timeout: 3000,
@@ -212,8 +212,8 @@ export default {
       try {
         const response = await getTrashStages();
         if (response.status === 200) {
-          this.trashTags = response.data?.data;
-          if (this.trashTags.length < 1) {
+          this.trash_stages = response.data?.data;
+          if (this.trash_stages.length < 1) {
             this.toast.info(response.data.message, {
               timeout: 3000,
             });
