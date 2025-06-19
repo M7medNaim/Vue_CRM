@@ -274,6 +274,42 @@
                   </select>
                 </div>
               </div>
+              <!-- Deal ticket upload -->
+              <div class="row mb-3">
+                <div class="col-2">
+                  <label class="form-label"
+                    ><i class="fa-solid fa-list"></i>
+                    {{ t("kanban-modal-edit-label-ticket") }}</label
+                  >
+                </div>
+                <div class="col-10">
+                  <input
+                    v-if="!customerData.file"
+                    type="file"
+                    class="form-control"
+                    @change="handleFileUpload"
+                    @dblclick="handleDoubleClick"
+                    :disabled="!isEditMode"
+                  />
+                  <div class="row" v-else>
+                    <div class="col-6">
+                      <button class="btn btn-primary w-100" @click="removeFile">
+                        <i class="fa-solid fa-file"></i>
+                        Remove File
+                      </button>
+                    </div>
+                    <div class="col-6">
+                      <button
+                        class="btn btn-primary w-100"
+                        @click="downloadFile"
+                      >
+                        <i class="fa-solid fa-file"></i>
+                        Download File
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Deal Status -->
               <div class="row mb-3">
                 <div class="col-2">
@@ -809,6 +845,7 @@ export default {
           isPinned: comment.isPinned || false,
         })) || [],
       assigned_to: props.deal?.user_id || "",
+      file: props.deal?.file || null,
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -998,6 +1035,8 @@ export default {
           phones.push(customerData.phone2);
         }
 
+        console.log("file", customerData.ticket);
+
         const formData = {
           name: customerData.name,
           nickname: customerData.nickname || "",
@@ -1006,10 +1045,7 @@ export default {
           note: customerData.note || "",
           rating: customerData.rating || 0,
           user_id: customerData.assigned_to || "",
-          // source_id: customerData.source_id,
-          // stage_id: customerData.stage_id,
-          // tasks: customerData.tasks,
-          // comments: customerData.comments,
+          ticket: customerData.ticket || null,
         };
 
         const response = await updateDeal(props.deal.id, formData);
@@ -1417,6 +1453,17 @@ export default {
         activeMenu.value = null;
       }
     };
+    const handleFileUpload = (event) => {
+      console.log("File upload event start");
+      const file = event.target.files[0];
+      if (file) {
+        console.log("Selected file:", file);
+        customerData.ticket = file;
+        toast.success(t("success.fileUploaded"), {
+          timeout: 3000,
+        });
+      }
+    };
     return {
       stages,
       currentStage,
@@ -1485,6 +1532,7 @@ export default {
       resizeDisplayedCommentWidth,
       getCommentTextWidth,
       commentTextWidths,
+      handleFileUpload,
     };
   },
 };

@@ -112,7 +112,7 @@
         >
           <i :class="`fa-solid fa-${tag.icon} me-1`"></i>
           <span class="fw-normal">{{
-            tag.name.length > 12 ? tag.name.slice(0, 12) + "…" : tag.name
+            tag.name.length > 20 ? tag.name.slice(0, 20) + "…" : tag.name
           }}</span>
         </span>
       </div>
