@@ -284,7 +284,7 @@
                 </div>
                 <div class="col-10">
                   <input
-                    v-if="!customerData.file"
+                    v-if="!customerData.ticket"
                     type="file"
                     class="form-control"
                     @change="handleFileUpload"
@@ -299,13 +299,14 @@
                       </button>
                     </div>
                     <div class="col-6">
-                      <button
+                      <a
                         class="btn btn-primary w-100"
-                        @click="downloadFile"
+                        :href="customerData.ticket"
+                        target="_blank"
                       >
                         <i class="fa-solid fa-file"></i>
                         Download File
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -845,7 +846,7 @@ export default {
           isPinned: comment.isPinned || false,
         })) || [],
       assigned_to: props.deal?.user_id || "",
-      file: props.deal?.file || null,
+      ticket: props.deal?.ticket || null,
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -1307,7 +1308,6 @@ export default {
       return customerData.tasks.filter((task) => task.status === "active");
     });
     const handleStageUpdate = (deal_id, new_stage_id) => {
-      console.log("handleStageUpdate called with:", deal_id, new_stage_id);
       if (!props.deal?.id) {
         toast.error(t("error.dealNotFound"), {
           timeout: 3000,
