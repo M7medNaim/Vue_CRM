@@ -103,11 +103,7 @@
 <script>
 import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
-import {
-  createComment,
-  getTrashStages,
-  updateDealStage,
-} from "@/plugins/services/authService";
+import { createComment, getTrashStages } from "@/plugins/services/authService";
 
 export default {
   name: "CrmDealKanbanDealDataModalTrashDealModal",
@@ -181,25 +177,13 @@ export default {
           deal_id: this.dealId,
         });
         if (commentResponse.data) {
-          this.$emit("deal-trashed", {
-            dealId: this.dealId,
-            tagId: selected_stage_id,
-          });
+          this.$emit("deal-trashed", this.dealId, selected_stage_id);
         } else {
           this.toast.error(commentResponse.data.message, {
             timeout: 3000,
           });
         }
-        // Update the deal stage
-        const response = await updateDealStage(this.dealId, selected_stage_id);
-        if (response.status !== 200) {
-          this.toast.error(response.data.message, {
-            timeout: 3000,
-          });
-          return;
-        } else {
-          this.closeTrashDealModal();
-        }
+        this.closeTrashDealModal();
       } catch (error) {
         console.error("Error updating deal:", error);
         this.toast.error(error.message, {

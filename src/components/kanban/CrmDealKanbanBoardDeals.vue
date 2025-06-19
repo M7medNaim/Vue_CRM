@@ -935,27 +935,25 @@ export default {
         oldStage?.value?.deals.find((d) => d.id == dealId);
       console.log("deal", deal);
       try {
-        if (newStageId !== -1) {
-          const response = await updateDealStage(dealId, newStageId);
-          console.log("response", response.status);
-          if (response.status !== 200) {
-            console.error("Error updating deal stage:", response.data.message);
-            toast.error(response.data.message);
-            return;
-          } else {
-            deal.stage_id = newStageId;
-            if (oldStage.value) oldStage.value.deal_count -= 1;
-            if (newStage.value) newStage.value.deal_count += 1;
-            if (!kanban) {
-              oldStage.value.deals.splice(
-                oldStage.value.deals.findIndex((d) => d.id == dealId),
-                1
-              );
-              if (newStage.value) newStage.value.deals.unshift(deal);
-            }
-            toast.success(response.data.message);
-            playSound();
+        const response = await updateDealStage(dealId, newStageId);
+        console.log("response", response.status);
+        if (response.status !== 200) {
+          console.error("Error updating deal stage:", response.data.message);
+          toast.error(response.data.message);
+          return;
+        } else {
+          deal.stage_id = newStageId;
+          if (oldStage.value) oldStage.value.deal_count -= 1;
+          if (newStage.value) newStage.value.deal_count += 1;
+          if (!kanban) {
+            oldStage.value.deals.splice(
+              oldStage.value.deals.findIndex((d) => d.id == dealId),
+              1
+            );
+            if (newStage.value) newStage.value.deals.unshift(deal);
           }
+          toast.success(response.data.message);
+          playSound();
         }
       } catch (error) {
         console.error("Error updating deal stage:", error);
