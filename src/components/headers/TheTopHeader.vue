@@ -196,7 +196,7 @@
         </button>
         <button
           v-if="hasNewChanges"
-          class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-1 mt-1 me-2 h-100 px-2"
+          class="refresh border-0 d-flex align-items-center gap-2 text-white rounded-1 me-2 h-100 px-2"
           style="font-size: 14px"
           @click="refreshPage"
         >

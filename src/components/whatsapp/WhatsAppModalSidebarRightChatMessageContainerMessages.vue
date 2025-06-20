@@ -9,7 +9,7 @@
     }`"
   >
     <button
-      class="addNote border-0 position-absolute bottom-0 end-0 fs-6 rounded-2"
+      class="addNote border-0 position-absolute bottom-0 start-0 fs-6 rounded-2"
     >
       <i class="fa-solid fa-paste"></i>
     </button>
@@ -21,7 +21,7 @@
     />
 
     <button
-      class="buttonMenu border-0 bg-transparent position-absolute top-0 end-0 fs-6"
+      class="buttonMenu border-0 bg-transparent position-absolute top-0 start-0 fs-6"
       @click="handleMenuClick"
     >
       <i
@@ -254,11 +254,11 @@ export default {
 }
 .right-side .chatBx .msg-frnd .addNote {
   background: #ffffff60;
-  left: -31px;
+  left: -31px !important;
 }
 .right-side .chatBx .msg-me .addNote {
   background: #ffffff60;
-  right: -31px;
+  right: -31px !important;
 }
 
 .addNote i {

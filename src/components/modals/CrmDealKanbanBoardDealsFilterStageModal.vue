@@ -54,10 +54,13 @@
           </button>
           <button
             type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
+            class="btn btn-secondary me-2"
+            @click="resetFilter"
           >
-            Reset Filter
+            Reset
+          </button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            Close
           </button>
         </div>
       </div>
@@ -68,6 +71,8 @@
 <script>
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { Modal } from "bootstrap";
+
 export default {
   name: "CrmDealKanbanBoardDealsFilterStageModal",
   props: {
@@ -88,7 +93,31 @@ export default {
     };
     return { toast, t, getContrastColor };
   },
-  methods: {},
+  methods: {
+    filterStage() {
+      this.$emit("filter-deals", {
+        stageId: this.stage.id,
+        selectedTags: this.selectedCheckboxes,
+      });
+      const modalEl = document.getElementById("filterStage");
+      const modal = Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    },
+    resetFilter() {
+      this.selectedCheckboxes = [];
+      this.$emit("filter-deals", {
+        stageId: this.stage.id,
+        selectedTags: [],
+      });
+      const modalEl = document.getElementById("filterStage");
+      const modal = Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    },
+  },
   computed: {
     checkboxes() {
       if (!this.stage || !this.stage.filterable_tags) return [];
