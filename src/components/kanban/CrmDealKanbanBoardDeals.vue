@@ -188,7 +188,7 @@
               <div class="line"></div>
               <draggable
                 v-if="!expandedStages[stage.id]"
-                v-model="stage.deals"
+                :list="getStageDeals(stage.id)"
                 :group="{ name: 'deals' }"
                 item-key="id"
                 class="deal-list mt-3"
@@ -268,7 +268,10 @@
   <!-- selectedDeal -->
   <div v-if="permissionStore.hasPermission('edit-stage')">
     <!-- <update-stage :stage="selectedStage" @update-stage="handleStageUpdate" /> -->
-    <filter-stage-modal :stage="selectedStage" />
+    <filter-stage-modal
+      :stage="selectedStage"
+      @filter-deals="handleFilterDeals"
+    />
   </div>
 </template>
 
@@ -347,6 +350,7 @@ export default {
     const hiddenStages = ref({});
     const expandedStages = ref({});
     const displayStages = ref([]);
+    const filteredDeals = ref({});
 
     watch(
       () => props.stages,
@@ -1084,6 +1088,36 @@ export default {
       return childStages[childStages.length - 1]?.id === stage.id;
     };
 
+    const handleFilterDeals = async ({ stageId, selectedTags }) => {
+      try {
+        if (!selectedTags || selectedTags.length === 0) {
+          filteredDeals.value[stageId] = null;
+          return;
+        }
+
+        const stage = displayStages.value.find((s) => s.id === stageId);
+        if (stage) {
+          const filtered = stage.deals.filter((deal) => {
+            return (
+              deal.tags &&
+              deal.tags.some((tag) => selectedTags.includes(tag.id))
+            );
+          });
+          filteredDeals.value[stageId] = filtered;
+        }
+      } catch (error) {
+        console.error("Error filtering deals:", error);
+        toast.error(t("error.filterFailed"));
+      }
+    };
+
+    const getStageDeals = computed(() => (stageId) => {
+      const stage = displayStages.value.find((s) => s.id === stageId);
+      if (!stage) return [];
+
+      return filteredDeals.value[stageId] || stage.deals;
+    });
+
     onMounted(async () => {
       if (dealsContainer.value) {
         dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
@@ -1220,6 +1254,8 @@ export default {
       reconnectWebSocket,
       isFirstChildStage,
       isLastChildStage,
+      handleFilterDeals,
+      getStageDeals,
     };
   },
 };

@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <!-- حالة الإقناع -->
+      <!-- persuasion progress  -->
       <!-- <div class="col-12 persuasion-progress">
         <div class="d-flex align-items-center gap-1" style="font-size: 12px">
           <i class="fa-solid fa-bullseye text-secondary"></i>
