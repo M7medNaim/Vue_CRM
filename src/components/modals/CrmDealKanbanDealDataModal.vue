@@ -311,6 +311,89 @@
                   </div>
                 </div>
               </div>
+              <!-- Packages -->
+              <div class="row mb-3" @dblclick="handleDoubleClick">
+                <div class="col-2 pt-2">
+                  <label class="form-label"
+                    ><i class="fa-solid fa-cubes"></i>
+                    {{ t("kanban-modal-edit-label-packages") }}</label
+                  >
+                </div>
+                <div class="col-10">
+                  <div class="" v-if="packages.length > 0">
+                    <div
+                      v-for="(pkg, index) in packages"
+                      :key="index"
+                      class="packages mb-2"
+                    >
+                      <div class="row p-0">
+                        <div class="col-6 p-1 px-1">
+                          <select
+                            class="form-select bg-light"
+                            v-model="pkg.serviceId"
+                            :disabled="!isEditMode"
+                          >
+                            <option value="" disabled>
+                              {{
+                                t("kanban-modal-edit-placeholder-packages-name")
+                              }}
+                            </option>
+                            <option
+                              v-for="service in services"
+                              :key="service.id"
+                              :value="service.id"
+                            >
+                              {{ service.name }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-3 p-1 px-1">
+                          <input
+                            type="number"
+                            class="bg-light text-secondary p-2 w-100"
+                            v-model="pkg.quantity"
+                            :placeholder="
+                              t(
+                                'kanban-modal-edit-placeholder-packages-quantity'
+                              )
+                            "
+                            :readonly="!isEditMode"
+                            min="1"
+                          />
+                        </div>
+                        <div class="col-2 p-1 px-0">
+                          <input
+                            type="number"
+                            class="bg-light text-secondary p-2 w-100"
+                            v-model="pkg.price"
+                            :placeholder="
+                              t('kanban-modal-edit-placeholder-packages-price')
+                            "
+                            :readonly="!isEditMode"
+                            min="0"
+                          />
+                        </div>
+                        <div class="col-1 p-1 px-1">
+                          <button
+                            class="btn btn-secondary"
+                            @click="removePackage(index)"
+                            v-if="isEditMode"
+                          >
+                            x
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-primary mt-2 fs-5 px-3"
+                    @click="addNewPackage"
+                    :disabled="!isEditMode"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
               <!-- Deal Status -->
               <div class="row mb-3">
                 <div class="col-2">
@@ -1094,20 +1177,13 @@ export default {
     const packages = ref([]);
 
     const addNewPackage = () => {
-      try {
-        packages.value.push({
-          serviceSelect: "",
-          serviceInput: "",
-        });
-        toast.success(t("success.addPackage"), {
-          timeout: 3000,
-        });
-      } catch (error) {
-        console.error("Error adding package:", error);
-        toast.error(t("error.addPackage"), {
-          timeout: 3000,
-        });
-      }
+      if (!isEditMode.value) return;
+      packages.value.push({
+        serviceId: "",
+        quantity: "",
+        price: "",
+      });
+      toast.success(t("success.addPackage"), { timeout: 3000 });
     };
 
     const removePackage = (index) => {
