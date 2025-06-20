@@ -262,6 +262,7 @@
     :logs="logs"
     :comments="comments"
     :tasks="tasks"
+    :packages="packages"
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
   />
@@ -296,6 +297,7 @@ import {
   fetchAdditionalDealsByStageId,
   addViewCount,
   getStagesChildren,
+  getAllPackages,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -351,6 +353,7 @@ export default {
     const expandedStages = ref({});
     const displayStages = ref([]);
     const filteredDeals = ref({});
+    const packages = ref([]);
 
     watch(
       () => props.stages,
@@ -361,6 +364,21 @@ export default {
       },
       { immediate: true }
     );
+
+    const fetchPackages = async () => {
+      try {
+        const response = await getAllPackages();
+        if (response.data && response.data.data) {
+          packages.value = response.data.data;
+        } else {
+          console.error(response.message);
+          throw new Error(response.message);
+        }
+      } catch (error) {
+        console.error(error.message);
+        throw error;
+      }
+    };
 
     const fetchChildStages = async (parentId) => {
       try {
@@ -1178,6 +1196,8 @@ export default {
         console.error("Error mounting component:", error);
       }
 
+      fetchPackages();
+
       props.stages.forEach((stage) => {
         hiddenStages.value[stage.id] = false;
         expandedStages.value[stage.id] = false;
@@ -1213,6 +1233,8 @@ export default {
     });
 
     return {
+      fetchPackages,
+      packages,
       t,
       displayStages,
       drag,

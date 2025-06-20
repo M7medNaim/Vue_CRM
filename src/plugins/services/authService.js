@@ -468,3 +468,7 @@ export const getActiveClients = async () => {
     `${process.env.VUE_APP_EXPRESS_URL}/active-clients`
   );
 };
+
+export const getAllPackages = async () => {
+  return await axios.get("/packages");
+};

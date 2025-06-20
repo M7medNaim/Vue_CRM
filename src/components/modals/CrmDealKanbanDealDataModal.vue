@@ -320,9 +320,9 @@
                   >
                 </div>
                 <div class="col-10">
-                  <div class="" v-if="packages.length > 0">
+                  <div class="" v-if="customerData.packages.length > 0">
                     <div
-                      v-for="(pkg, index) in packages"
+                      v-for="(pkg, index) in customerData.packages"
                       :key="index"
                       class="packages mb-2"
                     >
@@ -339,11 +339,11 @@
                               }}
                             </option>
                             <option
-                              v-for="service in services"
-                              :key="service.id"
-                              :value="service.id"
+                              v-for="pkg in local_packages"
+                              :key="pkg.id"
+                              :value="pkg.id"
                             >
-                              {{ service.name }}
+                              {{ pkg.name }}
                             </option>
                           </select>
                         </div>
@@ -365,7 +365,7 @@
                           <input
                             type="number"
                             class="bg-light text-secondary p-2 w-100"
-                            v-model="pkg.price"
+                            v-model="pkg.total_price"
                             :placeholder="
                               t('kanban-modal-edit-placeholder-packages-price')
                             "
@@ -820,6 +820,10 @@ export default {
       type: Array,
       required: true,
     },
+    packages: {
+      type: Array,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const permissionStore = usePermissionStore();
@@ -835,6 +839,7 @@ export default {
     const local_logs = ref([]);
     const users = ref([]);
     const commentInput = ref(null);
+    const local_packages = ref(props.packages || []);
 
     const commentTextWidths = reactive({});
 
@@ -930,6 +935,7 @@ export default {
         })) || [],
       assigned_to: props.deal?.user_id || "",
       ticket: props.deal?.ticket || null,
+      packages: props.deal?.packages || [],
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -1174,11 +1180,9 @@ export default {
       return text;
     };
 
-    const packages = ref([]);
-
     const addNewPackage = () => {
       if (!isEditMode.value) return;
-      packages.value.push({
+      customerData.packages.push({
         serviceId: "",
         quantity: "",
         price: "",
@@ -1188,7 +1192,7 @@ export default {
 
     const removePackage = (index) => {
       try {
-        packages.value.splice(index, 1);
+        customerData.packages.value.splice(index, 1);
         toast.success(t("success.removePackage"), {
           timeout: 3000,
         });
@@ -1561,7 +1565,6 @@ export default {
       showNickName,
       togglePhone2,
       showPhone2,
-      packages,
       addNewPackage,
       removePackage,
       handleTaskCompletion,
@@ -1610,6 +1613,7 @@ export default {
       getCommentTextWidth,
       commentTextWidths,
       handleFileUpload,
+      local_packages,
     };
   },
 };
