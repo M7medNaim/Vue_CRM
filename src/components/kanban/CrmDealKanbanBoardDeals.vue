@@ -387,6 +387,18 @@ export default {
         displayStages.value = displayStages.value.filter(
           (stage) => stage.parent_id !== parentStage.id
         );
+        const stageIndex = displayStages.value.findIndex(
+          (s) => s.id === parentStage.id
+        );
+        const parentStageDeals = await fetchAdditionalDealsByStageId(
+          parentStage.id,
+          10,
+          0,
+          []
+        );
+        if (parentStageDeals.data) {
+          displayStages.value[stageIndex].deals = parentStageDeals.data.data;
+        }
       } else {
         expandedStages.value[parentStage.id] = true;
         try {
@@ -854,11 +866,10 @@ export default {
       const scrollTop = event.target.scrollTop;
       const scrollHeight = event.target.scrollHeight;
       const clientHeight = event.target.clientHeight;
-      const stages = ref(props.stages);
-      const stageIndex = stages.value.findIndex((s) => s.id === id);
+      const stageIndex = displayStages.value.findIndex((s) => s.id === id);
       if (
-        stages.value[stageIndex].deals.length ===
-        stages.value[stageIndex].deal_count
+        displayStages.value[stageIndex].deals.length ===
+        displayStages.value[stageIndex].deal_count
       )
         return;
       if (scrollTop + clientHeight >= scrollHeight - 1) {
@@ -866,13 +877,13 @@ export default {
         fetchAdditionalDealsByStageId(
           id,
           10,
-          stages.value[stageIndex].deals.length,
+          displayStages.value[stageIndex].deals.length,
           []
         )
           .then((additional_deals) => {
             if (additional_deals.data) {
               if (stageIndex !== -1) {
-                stages.value[stageIndex].deals.push(
+                displayStages.value[stageIndex].deals.push(
                   ...additional_deals.data.data
                 );
               }
@@ -915,7 +926,7 @@ export default {
       oldStageId,
       kanban = 1
     ) => {
-      const stages = ref(props.stages);
+      const stages = displayStages;
       const newStage = ref(
         stages.value.find((stage) => stage.id == newStageId)
       );
@@ -925,30 +936,28 @@ export default {
       console.log("newStage", newStage.value);
       const deal =
         newStage?.value?.deals.find((d) => d.id == dealId) ??
-        oldStage.value.deals.find((d) => d.id == dealId);
+        oldStage?.value?.deals.find((d) => d.id == dealId);
       console.log("deal", deal);
       try {
-        if (newStageId !== -1) {
-          const response = await updateDealStage(dealId, newStageId);
-          console.log("response", response.status);
-          if (response.status !== 200) {
-            console.error("Error updating deal stage:", response.data.message);
-            toast.error(response.data.message);
-            return;
-          } else {
-            deal.stage_id = newStageId;
-            if (oldStage.value) oldStage.value.deal_count -= 1;
-            if (newStage.value) newStage.value.deal_count += 1;
-            if (!kanban) {
-              oldStage.value.deals.splice(
-                oldStage.value.deals.findIndex((d) => d.id == dealId),
-                1
-              );
-              if (newStage.value) newStage.value.deals.unshift(deal);
-            }
-            toast.success(response.data.message);
-            playSound();
+        const response = await updateDealStage(dealId, newStageId);
+        console.log("response", response.status);
+        if (response.status !== 200) {
+          console.error("Error updating deal stage:", response.data.message);
+          toast.error(response.data.message);
+          return;
+        } else {
+          deal.stage_id = newStageId;
+          if (oldStage.value) oldStage.value.deal_count -= 1;
+          if (newStage.value) newStage.value.deal_count += 1;
+          if (!kanban) {
+            oldStage.value.deals.splice(
+              oldStage.value.deals.findIndex((d) => d.id == dealId),
+              1
+            );
+            if (newStage.value) newStage.value.deals.unshift(deal);
           }
+          toast.success(response.data.message);
+          playSound();
         }
       } catch (error) {
         console.error("Error updating deal stage:", error);

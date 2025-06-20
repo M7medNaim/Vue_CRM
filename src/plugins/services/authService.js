@@ -355,8 +355,17 @@ export const updateTask = async (id, formData) => {
   return await axios.patch(`/tasks/${id}`, formData);
 };
 // update deal
-export const updateDeal = (dealId, formData) =>
-  axios.put(`/deals/${dealId}`, formData);
+export const updateDeal = (dealId, formData) => {
+  const data = {
+    ...formData,
+    _method: "PUT", // This is to ensure the server recognizes it as an update
+  };
+  return axios.post(`/deals/${dealId}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 export const importDeals = (formData) => {
   return axios.post("/deals/import", formData, {
     headers: {

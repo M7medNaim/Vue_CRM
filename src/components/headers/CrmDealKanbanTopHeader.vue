@@ -8,7 +8,7 @@
             <div class="col-md-auto">
               <button
                 v-if="permissionStore.hasPermission(PERMISSIONS.CREATE_DEAL)"
-                class="btn btn-header text-white me-2 fs-7 btnAddKanban"
+                class="btn text-white me-2 fs-7 btnAddKanban btn-hover"
                 @click="openCreateDealModal"
                 style="padding: 0.5rem 1.3rem"
               >
@@ -18,7 +18,7 @@
                 <span class="iconAddKanban d-none">+</span>
               </button>
               <button
-                class="btn btn-header text-white me-2 fs-7 btnKanban"
+                class="btn text-white me-2 fs-7 btnKanban btn-hover"
                 @click="openCrmKanban"
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_KANBAN)"
                 style="padding: 0.5rem 2rem"
@@ -26,7 +26,7 @@
                 {{ t("header-subnav-item-kanban-crm") }}
               </button>
               <button
-                class="btn btn-header text-white me-2 fs-7 btnKanban"
+                class="btn text-white me-2 fs-7 btnKanban btn-hover"
                 @click="openCrmTasks"
                 v-if="permissionStore.hasPermission(PERMISSIONS.TASKS_KANBAN)"
                 style="padding: 0.5rem 2rem"
@@ -34,7 +34,7 @@
                 {{ t("header-subnav-item-kanban-tasks") }}
               </button>
               <router-link
-                class="btn btn-header text-white me-2 fs-7 btnKanban"
+                class="btn text-white me-2 fs-7 btnKanban btn-hover"
                 style="padding: 0.6rem 1.2rem"
                 to="/crmlist"
                 v-if="
@@ -50,10 +50,10 @@
             <div :class="lgIpadClass" v-if="showSearchInput">
               <div class="input-group px-1">
                 <button
-                  class="btn btn-header btnSearchIpad"
+                  class="btn btn-hover btnSearchIpad text-white"
                   @click="openSearchModalIpad"
                 >
-                  <i class="fa-solid fa-magnifying-glass text-white"></i>
+                  <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
                 <input
                   type="search"
@@ -64,11 +64,11 @@
                   id="dealSearchInput"
                 />
                 <button
-                  class="btn btn-header py-2 btnFilterIpad"
+                  class="btn btn-hover py-2 btnFilterIpad text-white"
                   :title="t('kanban-modal-filter-heading')"
                   @click="openFilterModal"
                 >
-                  <i class="fa-solid fa-filter text-white"></i>
+                  <i class="fa-solid fa-filter"></i>
                 </button>
               </div>
             </div>
@@ -129,24 +129,20 @@
               </div>
               <div class="watsappIcon me-2">
                 <button
-                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 fs-7 ms-2 whatsappIpad"
+                  class="rounded-2 d-flex align-items-center justify-content-center gap-1 border-0 fs-7 ms-2 whatsappIpad btn-whatsapp py-2 px-4"
                   @click="openWhatsappModal"
-                  style="background-color: #25d365cc; padding: 0.57rem 1.7rem"
                 >
-                  <i class="fa-brands fa-whatsapp text-white fs-5"></i>
-                  <span class="text-white removeIpad" style="font-size: 14px">{{
+                  <i class="fa-brands fa-whatsapp fs-5"></i>
+                  <span class="removeIpad" style="font-size: 14px">{{
                     $t("kanban-modal-edit-whatsapp")
                   }}</span>
                 </button>
               </div>
-              <div
-                class="documents btn btn-header"
-                style="padding: 0.5rem 1rem"
-              >
+              <div class="">
                 <!-- v-if="permissionStore.hasPermission(PERMISSIONS.DOCUMENTS)" -->
                 <router-link
                   to="/documents"
-                  class="text-decoration-none text-white"
+                  class="text-decoration-none documents btn btn-hover text-white py-2"
                 >
                   <div
                     class="d-flex align-items-center fs-7 justify-content-center gap-2 documentsIpad"
@@ -166,24 +162,24 @@
               class="col-md-auto d-flex align-items-center gap-2"
             >
               <button
-                class="btn btn-header flex-fill btnImport"
+                class="btn btn-hover flex-fill btnImport text-white"
                 @click="openImportModal"
                 style="padding: 0.5rem 1.7rem"
               >
-                <span class="fs-7 text-white textImport">{{
+                <span class="fs-7 textImport">{{
                   t("kanban-button-import")
                 }}</span>
-                <i class="fa-solid fa-upload ms-1 fs-7 text-white"></i>
+                <i class="fa-solid fa-upload ms-1 fs-7"></i>
               </button>
               <button
-                class="btn btn-header flex-fill btnExport"
+                class="btn btn-hover flex-fill btnExport text-white"
                 @click="openExportModal"
                 style="padding: 0.5rem 1.7rem"
               >
-                <span class="fs-7 text-white textExport">{{
+                <span class="fs-7 textExport">{{
                   t("kanban-button-export")
                 }}</span>
-                <i class="fa-solid fa-download ms-1 fs-7 text-white"></i>
+                <i class="fa-solid fa-download ms-1 fs-7"></i>
               </button>
             </div>
           </div>
@@ -500,11 +496,35 @@ input:focus {
   /* background-color: rgba(128, 128, 128, 0.8) !important; */
   background-color: #55555551 !important;
 }
+.btn-hover {
+  /* background-color: rgba(128, 128, 128, 0.8) !important; */
+  background-color: #55555551 !important;
+}
+.btn-hover:hover {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+}
+.btn-whatsapp {
+  background-color: #25d365cc;
+  transition: 0.3s ease-in-out;
+  color: #ffffff !important;
+}
+.btn-whatsapp:hover {
+  background-color: #ffffff !important;
+  color: #25d365 !important;
+  transition: 0.3s ease-in-out;
+}
 @media (max-width: 1200px) {
   .removeIpad {
     display: none;
   }
   .whatsappIpad {
+    background-color: #25d365cc;
+    padding: 0.35rem 0.7rem !important;
+  }
+  .whatsappIpad:hover {
+    background-color: #ffffff;
+    color: #25d365 !important;
     padding: 0.35rem 0.7rem !important;
   }
   .whatsappIpad i {

@@ -4,8 +4,8 @@
     @click="openDealDataCard"
     :style="{
       borderLeft:
-        deal.responsible_user && getUserColor(deal.responsible_user.id)
-          ? `3px solid ${getUserColor(deal.responsible_user.id)}`
+        deal.responsible_user && getUserColor(deal.responsible_user?.id)
+          ? `3px solid ${getUserColor(deal.responsible_user?.id)}`
           : '',
     }"
   >
@@ -23,9 +23,16 @@
       <div
         class="col-12 d-flex justify-content-between align-items-center mb-1 p-0"
       >
-        <span class="fw-semibold fs-7">{{ deal.name }}</span>
-        <span class="text-secondary fs-7">
-          {{ deal.view_count }} <i class="fa-regular fa-eye"></i>
+        <span class="ms-2 fw-semibold fs-7 d-flex align-items-center">
+          <country-flag-avatar
+            v-if="deal.phone"
+            :phone="deal.phone"
+            style="width: 22px; height: 20px !important"
+          />
+          {{ deal.name.length > 20 ? deal.name.slice(0, 20) + "…" : deal.name }}
+        </span>
+        <span class="text-dark fs-7">
+          {{ deal.view_count }} <i class="fa-solid fa-eye"></i>
         </span>
       </div>
 
@@ -34,14 +41,17 @@
         class="col-12 d-flex justify-content-between align-items-center fs-7 mb-1 p-0"
       >
         <span
-          class="fw-normal text-secondary phone-number"
+          class="fw-normal text-dark phone-number d-flex align-items-center"
           @click.stop="copyPhoneNumber"
           :title="t('click-to-copy')"
         >
-          {{ deal.phone ?? "************" }}
-          <i class="fa-regular fa-copy ms-1"></i>
+          <span class="d-flex align-items-center">
+            <i class="ms-2 fa-solid fa-phone me-1 opacity-100 text-dark"></i>
+            {{ deal.phone ?? "************" }}
+          </span>
+          <i class="fa-solid fa-copy ms-1"></i>
         </span>
-        <span class="fw-normal text-secondary">
+        <span class="fw-normal text-dark">
           <i :class="getIcon(deal.source_id)"></i>
         </span>
       </div>
@@ -51,6 +61,7 @@
         class="col-12 fs-8 mb-1 p-0 d-flex justify-content-between align-items-center"
       >
         <div class="">
+          <span class="ms-2 text-secondary">Rating: </span>
           <template v-for="index in 7" :key="index">
             <i
               class="fa-solid fa-star"
@@ -59,13 +70,6 @@
               "
             ></i>
           </template>
-        </div>
-        <div
-          class=""
-          v-if="deal.has_admin_comment"
-          :title="t('kanban-deal-alert-attention')"
-        >
-          <i class="fa-solid fa-comment-dots fs-6 text-warning"></i>
         </div>
       </div>
 
@@ -108,7 +112,7 @@
         >
           <i :class="`fa-solid fa-${tag.icon} me-1`"></i>
           <span class="fw-normal">{{
-            tag.name.length > 12 ? tag.name.slice(0, 12) + "…" : tag.name
+            tag.name.length > 20 ? tag.name.slice(0, 20) + "…" : tag.name
           }}</span>
         </span>
       </div>
@@ -124,33 +128,22 @@
     </div> -->
 
     <!-- التواريخ -->
-    <div class="col-12 mt-2 d-flex">
-      <!-- <span class="text-success fs-7 pe-1"
-        ><i class="fa-regular fa-clock"></i>
-        {{ t("kanban-deal-label-createdat") }}:</span
-      > -->
-      <span class="fs-7 text-secondary"
-        ><i class="fa-regular fa-clock"></i>
-        {{ formatDate(deal.created_at) }} ({{
-          formatDateUpdate(deal.updated_at)
-        }}
-        :تعديل)
-      </span>
-    </div>
-    <!-- <div class="col-12 d-flex pt-1">
-      <span class="text-black-50 fs-7 pe-1"
-        ><i class="fa-regular fa-clock"></i>
-        {{ t("kanban-deal-label-updatedat") }}:</span
+    <div class="col-12 mt-2 d-flex justify-content-between align-items-center">
+      <span class="text-dark fs-7 bg-secondary-50 rounded px-1"
+        ><i class="ms-1 mt-1 fa-solid fa-square-plus fs-6"></i>
+        {{ formatDate(deal.created_at) }}</span
       >
-      <span class="fs-7">{{ formatDate(deal.updated_at) }}</span>
-    </div> -->
-
-    <div class="col-12 mt-1">
+      <span class="text-dark fs-7 bg-secondary-50 rounded px-1"
+        ><i class="ms-1 mt-1 fa-solid fa-square-pen fs-6"></i>
+        {{ formatDate(deal.updated_at) }}</span
+      >
+    </div>
+    <div class="col-12 mt-1" v-if="deal.responsible_user">
       <span
         class="badge fw-medium text-white py-1 px-2"
         :style="{
           backgroundColor: deal.responsible_user?.id
-            ? getUserColor(deal.responsible_user.id)
+            ? getUserColor(deal.responsible_user?.id)
             : '',
           color: getContrastColor(
             getUserColor(deal.responsible_user?.id) || '#292929'
@@ -159,12 +152,21 @@
         >{{ deal.responsible_user?.name }}</span
       >
     </div>
+    <div
+      class="mt-1"
+      v-if="deal.has_admin_comment"
+      :title="t('kanban-deal-alert-attention')"
+    >
+      <i class="mx-1 fa-solid fa-comment-dots fs-6 text-warning"></i>
+      <span class="fs-7">Attention Required</span>
+    </div>
   </div>
 </template>
 
 <script>
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
+import CountryFlagAvatar from "@/components/whatsapp/WhatsAppModalSidebarLeftCountryFlagAvatar.vue";
 
 export default {
   name: "CrmDealKanbanBoardDealsTicketCard",
@@ -173,6 +175,9 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  components: {
+    CountryFlagAvatar,
   },
   setup(props, { emit }) {
     const { t } = useI18n();
@@ -185,9 +190,11 @@ export default {
 
       const day = String(date.getDate()).padStart(2, "0");
       const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
+      const year = String(date.getFullYear()).slice(2);
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
 
-      return `${day}/${month}/${year}`;
+      return `${day}/${month}/${year} ${hours}:${minutes}`;
     };
     const formatDateUpdate = (dateString) => {
       if (!dateString) return "";
@@ -363,10 +370,6 @@ export default {
   transition: all 0.2s ease;
 }
 
-.phone-number:hover {
-  color: #000 !important;
-}
-
 .phone-number i {
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -389,5 +392,9 @@ export default {
 
 .persuasion-progress .progress-bar {
   transition: width 0.3s ease;
+}
+
+.bg-secondary-50 {
+  background-color: #f3f3f3;
 }
 </style>
