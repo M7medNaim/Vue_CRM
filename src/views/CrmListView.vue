@@ -265,11 +265,11 @@ import {
   showDeal,
   deleteDeals,
   getSources,
-  getStages,
   bulkUpdateDeals,
   bulkDeleteDeals,
   getAllUsers,
   updateDealStage,
+  getAvailableStages,
 } from "@/plugins/services/authService";
 import CrmListViewActionsDealModal from "@/components/modals/CrmListViewActionsDealModal.vue";
 import CrmListViewFilterModal from "@/components/modals/CrmListViewFilterModal.vue";
@@ -735,7 +735,7 @@ const fetchStagesAndSources = async () => {
     if (stages.value.length === 0 || sources.value.length === 0) {
       console.log("Fetching stages and sources...");
       const [stageRes, sourceRes] = await Promise.all([
-        getStages(),
+        getAvailableStages(),
         getSources(),
       ]);
 

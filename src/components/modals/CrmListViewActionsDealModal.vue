@@ -166,7 +166,7 @@
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import {
-  getStages,
+  getAvailableStages,
   getSources,
   getAllUsers,
 } from "@/plugins/services/authService";
@@ -199,7 +199,7 @@ const userOptions = ref([]);
 // Options for dropdowns
 const fetchStages = async () => {
   try {
-    const response = await getStages();
+    const response = await getAvailableStages();
     if (response.status === 200) {
       stageOptions.value = response.data.data.map((stage) => ({
         value: stage.id,
