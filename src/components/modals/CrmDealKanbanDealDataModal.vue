@@ -892,6 +892,8 @@ export default {
     const local_packages = ref(props.packages || []);
 
     const commentTextWidths = reactive({});
+    const originalDataValue = ref({});
+    const dataDealCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
     const resizeDisplayedCommentWidth = (commentId) => {
       nextTick(() => {
@@ -1204,6 +1206,7 @@ export default {
       }
     };
     const closeEditMode = () => {
+      Object.assign(customerData, dataDealCopy(originalDataValue.value));
       isEditMode.value = false;
     };
     const updateRating = (newRating) => {
@@ -1464,6 +1467,7 @@ export default {
               });
             }
           });
+          originalDataValue.value = dataDealCopy(customerData);
         }
       },
       { immediate: true }
@@ -1556,6 +1560,7 @@ export default {
           });
         }
       });
+      originalDataValue.value = dataDealCopy(customerData);
     });
     watch(
       () => customerData.comments,
@@ -1660,6 +1665,8 @@ export default {
       commentTextWidths,
       handleFileUpload,
       local_packages,
+      originalDataValue,
+      dataDealCopy,
     };
   },
 };
