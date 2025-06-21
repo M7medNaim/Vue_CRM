@@ -1038,7 +1038,6 @@ export default {
       try {
         currentStageId.value = stageId;
         const stageIndex = stages.value.findIndex((s) => s.id === stageId);
-        const stageName = stages.value[stageIndex].name;
 
         stages.value.forEach((stage, index) => {
           if (index <= stageIndex) {
@@ -1051,14 +1050,13 @@ export default {
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.status === 200) {
           emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
-          toast.success(`${t("success.stageChanged")} ${stageName}`, {
+          toast.success(response.data.message, {
             timeout: 3000,
           });
         } else {
           throw new Error(response.data.message);
         }
       } catch (error) {
-        console.error("Error changing stage:", error);
         toast.error(error.message, {
           timeout: 3000,
         });

@@ -42,7 +42,7 @@ export default {
           emit("close");
         }
       } catch (error) {
-        toast.error(t("error.closeModal"), {
+        toast.error(error.message, {
           timeout: 3000,
         });
       }
