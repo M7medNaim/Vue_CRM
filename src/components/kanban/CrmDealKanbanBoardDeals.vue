@@ -262,6 +262,7 @@
     :logs="logs"
     :comments="comments"
     :tasks="tasks"
+    :packages="packages"
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
   />
@@ -296,6 +297,7 @@ import {
   fetchAdditionalDealsByStageId,
   addViewCount,
   getStagesChildren,
+  getAllPackages,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -351,6 +353,7 @@ export default {
     const expandedStages = ref({});
     const displayStages = ref([]);
     const filteredDeals = ref({});
+    const packages = ref([]);
 
     watch(
       () => props.stages,
@@ -361,6 +364,21 @@ export default {
       },
       { immediate: true }
     );
+
+    const fetchPackages = async () => {
+      try {
+        const response = await getAllPackages();
+        if (response.data && response.data.data) {
+          packages.value = response.data.data;
+        } else {
+          console.error(response.data.message);
+          throw new Error(response.data.message);
+        }
+      } catch (error) {
+        console.error(error.message);
+        throw error;
+      }
+    };
 
     const fetchChildStages = async (parentId) => {
       try {
@@ -437,7 +455,12 @@ export default {
         }
 
         try {
-          await updateDealStage(deal.id, newStageId);
+          const request = await updateDealStage(deal.id, newStageId);
+          if (request.status !== 200) {
+            console.error("Error updating deal stage:", request.data.message);
+            toast.error(request.data.message);
+            return;
+          }
           const oldStageInDisplay = displayStages.value.find(
             (s) => s.id === oldStageId
           );
@@ -453,6 +476,7 @@ export default {
           if (newStageInDisplayForCount)
             newStageInDisplayForCount.deal_count =
               (newStageInDisplayForCount.deal_count || 0) + 1;
+          playSound();
         } catch (error) {
           const newStageInDisplayToRevert = displayStages.value.find(
             (s) => s.id === newStageId
@@ -498,7 +522,7 @@ export default {
               newStageInDisplayForRevertCount.deal_count - 1
             );
 
-          toast.error(t("error.dealMoveFailed"));
+          toast.error(error.message);
         }
       }
     };
@@ -991,7 +1015,7 @@ export default {
             newStageAfterRevertInDisplay.deal_count - 1
           );
 
-        toast.error(t("error.dealMoveFailed"));
+        toast.error(error.message);
       }
     };
     const refreshPage = () => {
@@ -1178,6 +1202,8 @@ export default {
         console.error("Error mounting component:", error);
       }
 
+      fetchPackages();
+
       props.stages.forEach((stage) => {
         hiddenStages.value[stage.id] = false;
         expandedStages.value[stage.id] = false;
@@ -1213,6 +1239,8 @@ export default {
     });
 
     return {
+      fetchPackages,
+      packages,
       t,
       displayStages,
       drag,

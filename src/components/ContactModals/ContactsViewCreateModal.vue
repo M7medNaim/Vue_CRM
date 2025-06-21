@@ -264,7 +264,7 @@ export default {
         }
         modalInstance.value.show();
       } catch (error) {
-        toast.error(t("error.openModal"), {
+        toast.error(error.message, {
           timeout: 3000,
         });
         console.error("Error opening modal:", error);
@@ -323,11 +323,7 @@ export default {
           emit("contact-updated", response.data.data);
         }
 
-        if (
-          response.data.success ||
-          response.status === 200 ||
-          response.status === 201
-        ) {
+        if (response.status === 200 || response.status === 201) {
           modalInstance.value.hide();
           resetForm();
         }
@@ -335,7 +331,7 @@ export default {
         if (error.response?.data?.errors) {
           errors.value = error.response.data.errors;
         }
-        toast.error(error.response?.data?.message || t("error.saveContact"), {
+        toast.error(error.message || t("error.saveContact"), {
           timeout: 3000,
         });
       } finally {
@@ -356,7 +352,6 @@ export default {
         toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
-        // console.error("Error initializing modal:", error);
       }
     });
     const togglePhone2 = () => {
@@ -372,8 +367,6 @@ export default {
       isSubmitting,
       openModal,
       handleSubmit,
-      // addPhone,
-      // removePhone,
       togglePhone2,
       showPhone2,
       t,

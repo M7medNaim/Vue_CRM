@@ -350,9 +350,9 @@
                   >
                 </div>
                 <div class="col-10">
-                  <div class="" v-if="packages.length > 0">
+                  <div class="" v-if="customerData.packages.length > 0">
                     <div
-                      v-for="(pkg, index) in packages"
+                      v-for="(pkg, index) in customerData.packages"
                       :key="index"
                       class="packages mb-2"
                     >
@@ -364,7 +364,7 @@
                           <select
                             class="form-select py-2"
                             :class="isEditMode ? 'bg-input-edit' : 'bg-input'"
-                            v-model="pkg.serviceId"
+                            v-model="pkg.id"
                             :disabled="!isEditMode"
                             @dblclick="handleDoubleClick"
                           >
@@ -374,11 +374,11 @@
                               }}
                             </option>
                             <option
-                              v-for="service in services"
-                              :key="service.id"
-                              :value="service.id"
+                              v-for="pkg in local_packages"
+                              :key="pkg.id"
+                              :value="pkg.id"
                             >
-                              {{ service.name }}
+                              {{ pkg.name }}
                             </option>
                           </select>
                         </div>
@@ -414,7 +414,7 @@
                               'rounded-2',
                               'form-control',
                             ]"
-                            v-model="pkg.price"
+                            v-model="pkg.total_price"
                             :placeholder="
                               t('kanban-modal-edit-placeholder-packages-price')
                             "
@@ -870,6 +870,10 @@ export default {
       type: Array,
       required: true,
     },
+    packages: {
+      type: Array,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const permissionStore = usePermissionStore();
@@ -885,6 +889,7 @@ export default {
     const local_logs = ref([]);
     const users = ref([]);
     const commentInput = ref(null);
+    const local_packages = ref(props.packages || []);
 
     const commentTextWidths = reactive({});
 
@@ -978,8 +983,9 @@ export default {
             comment.user && comment.user.role === "super-admin" ? true : false,
           isPinned: comment.isPinned || false,
         })) || [],
-      assigned_to: props.deal?.user_id || "",
+      assigned_to: props.deal?.assigned_to_id || "",
       ticket: props.deal?.ticket || null,
+      packages: props.deal?.packages || [],
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -1082,7 +1088,6 @@ export default {
       try {
         currentStageId.value = stageId;
         const stageIndex = stages.value.findIndex((s) => s.id === stageId);
-        const stageName = stages.value[stageIndex].name;
 
         stages.value.forEach((stage, index) => {
           if (index <= stageIndex) {
@@ -1093,19 +1098,16 @@ export default {
         });
 
         const response = await updateDealStage(props.deal.id, stageId);
-        if (response.data) {
+        if (response.status === 200) {
           emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
-          toast.success(`${t("success.stageChanged")} ${stageName}`, {
+          toast.success(response.data.message, {
             timeout: 3000,
           });
         } else {
-          toast.error(t("error.changingStage"), {
-            timeout: 3000,
-          });
+          throw new Error(response.data.message);
         }
       } catch (error) {
-        console.error("Error changing stage:", error);
-        toast.error(t("error.changingStage"), {
+        toast.error(error.message, {
           timeout: 3000,
         });
       }
@@ -1180,6 +1182,7 @@ export default {
           rating: customerData.rating || 0,
           user_id: customerData.assigned_to || "",
           ticket: customerData.ticket || null,
+          packages: customerData.packages || null,
         };
 
         const response = await updateDeal(props.deal.id, formData);
@@ -1224,21 +1227,18 @@ export default {
       return text;
     };
 
-    const packages = ref([]);
-
     const addNewPackage = () => {
       if (!isEditMode.value) return;
-      packages.value.push({
-        serviceId: "",
-        quantity: "",
-        price: "",
+      customerData.packages.push({
+        id: "",
+        quantity: null,
+        total_price: null,
       });
-      toast.success(t("success.addPackage"), { timeout: 3000 });
     };
 
     const removePackage = (index) => {
       try {
-        packages.value.splice(index, 1);
+        customerData.packages.splice(index, 1);
         toast.success(t("success.removePackage"), {
           timeout: 3000,
         });
@@ -1611,7 +1611,6 @@ export default {
       showNickName,
       togglePhone2,
       showPhone2,
-      packages,
       addNewPackage,
       removePackage,
       handleTaskCompletion,
@@ -1660,6 +1659,7 @@ export default {
       getCommentTextWidth,
       commentTextWidths,
       handleFileUpload,
+      local_packages,
     };
   },
 };
