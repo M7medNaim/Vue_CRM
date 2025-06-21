@@ -1561,6 +1561,18 @@ export default {
         }
       });
       originalDataValue.value = dataDealCopy(customerData);
+      const modalElement = document.getElementById("dealDataCard");
+      if (modalElement) {
+        modalElement.__cancelEditHandler = () => {
+          if (isEditMode.value) {
+            closeEditMode();
+          }
+        };
+        modalElement.addEventListener(
+          "hidden.bs.modal",
+          modalElement.__cancelEditHandler
+        );
+      }
     });
     watch(
       () => customerData.comments,
@@ -1576,6 +1588,14 @@ export default {
 
     onBeforeUnmount(() => {
       document.removeEventListener("click", handleClickOutside);
+      const modalElement = document.getElementById("dealDataCard");
+      if (modalElement && modalElement.__cancelEditHandler) {
+        modalElement.removeEventListener(
+          "hidden.bs.modal",
+          modalElement.__cancelEditHandler
+        );
+        delete modalElement.__cancelEditHandler;
+      }
     });
     const handleClickOutside = (e) => {
       if (
