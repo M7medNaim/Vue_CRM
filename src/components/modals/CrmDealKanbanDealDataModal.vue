@@ -97,7 +97,11 @@
                   <div class="input-group">
                     <input
                       type="text"
-                      class="form-control bg-light text-secondary py-2"
+                      :class="[
+                        'form-control',
+                        isEditMode ? 'bg-input-edit' : 'bg-input',
+                        'py-2',
+                      ]"
                       v-model="customerData.name"
                       :placeholder="t('kanban-modal-edit-placeholder-fullname')"
                       :readonly="!isEditMode"
@@ -127,7 +131,11 @@
                 <div class="col-10">
                   <input
                     type="text"
-                    class="form-control bg-light text-secondary py-2"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
                     v-model="customerData.nickName"
                     :placeholder="t('kanban-modal-edit-placeholder-nickname')"
                     :readonly="!isEditMode"
@@ -152,7 +160,11 @@
                   <div class="input-group">
                     <input
                       type="text"
-                      class="form-control bg-light text-secondary py-2"
+                      :class="[
+                        'form-control',
+                        isEditMode ? 'bg-input-edit' : 'bg-input',
+                        'py-2',
+                      ]"
                       v-model="customerData.phone"
                       :placeholder="t('kanban-modal-edit-placeholder-phone')"
                       :readonly="!isEditMode"
@@ -182,7 +194,11 @@
                 <div class="col-10">
                   <input
                     type="text"
-                    class="form-control bg-light text-secondary py-2"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
                     v-model="customerData.phone2"
                     :placeholder="t('kanban-modal-edit-placeholder-phone')"
                     :readonly="!isEditMode"
@@ -202,7 +218,11 @@
                 <div class="col-10">
                   <input
                     type="text"
-                    class="form-control bg-light text-secondary py-2"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
                     v-model="customerData.email"
                     :placeholder="t('kanban-modal-edit-placeholder-email')"
                     :readonly="!isEditMode"
@@ -219,7 +239,10 @@
                 </div>
                 <div class="col-10">
                   <textarea
-                    class="form-control bg-light"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                    ]"
                     rows="4"
                     v-model="customerData.note"
                     :readonly="!isEditMode"
@@ -257,9 +280,13 @@
                 </div>
                 <div class="col-10">
                   <select
-                    class="form-select bg-light text-secondary py-2"
+                    :class="[
+                      'form-select',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
                     v-model="customerData.assigned_to"
-                    :readonly="!isEditMode"
+                    :disabled="!isEditMode"
                   >
                     <option value="" disabled>
                       {{ t("kanban-modal-edit-placeholder-representative") }}
@@ -286,7 +313,10 @@
                   <input
                     v-if="!customerData.ticket"
                     type="file"
-                    class="form-control"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                    ]"
                     @change="handleFileUpload"
                     @dblclick="handleDoubleClick"
                     :disabled="!isEditMode"
@@ -327,11 +357,16 @@
                       class="packages mb-2"
                     >
                       <div class="row p-0">
-                        <div class="col-6 p-1 px-1">
+                        <div
+                          class="col-6 p-1 px-1"
+                          @dblclick="handleDoubleClick"
+                        >
                           <select
-                            class="form-select bg-light"
+                            class="form-select py-2"
+                            :class="isEditMode ? 'bg-input-edit' : 'bg-input'"
                             v-model="pkg.serviceId"
                             :disabled="!isEditMode"
+                            @dblclick="handleDoubleClick"
                           >
                             <option value="" disabled>
                               {{
@@ -350,7 +385,14 @@
                         <div class="col-3 p-1 px-1">
                           <input
                             type="number"
-                            class="bg-light text-secondary p-2 w-100"
+                            :class="[
+                              'bg-input',
+                              isEditMode ? 'bg-input-edit' : 'bg-input',
+                              'p-2',
+                              'w-100',
+                              'rounded-2',
+                              'form-control',
+                            ]"
                             v-model="pkg.quantity"
                             :placeholder="
                               t(
@@ -364,7 +406,14 @@
                         <div class="col-2 p-1 px-0">
                           <input
                             type="number"
-                            class="bg-light text-secondary p-2 w-100"
+                            :class="[
+                              'bg-input',
+                              isEditMode ? 'bg-input-edit' : 'bg-input',
+                              'p-2',
+                              'w-100',
+                              'rounded-2',
+                              'form-control',
+                            ]"
                             v-model="pkg.price"
                             :placeholder="
                               t('kanban-modal-edit-placeholder-packages-price')
@@ -375,7 +424,7 @@
                         </div>
                         <div class="col-1 p-1 px-1">
                           <button
-                            class="btn btn-secondary"
+                            class="btn btn-primary"
                             @click="removePackage(index)"
                             v-if="isEditMode"
                           >
@@ -389,6 +438,7 @@
                     class="btn btn-primary mt-2 fs-5 px-3"
                     @click="addNewPackage"
                     :disabled="!isEditMode"
+                    v-if="isEditMode"
                   >
                     +
                   </button>
@@ -442,7 +492,7 @@
                 <div
                   v-for="log in local_logs"
                   :key="log.id"
-                  class="row bg-light pt-2 text-secondary border border-top"
+                  class="row bg-input pt-2 text-secondary border border-top"
                 >
                   <div class="col-3">
                     <p>{{ new Date(log.created_at).toLocaleString() }}</p>
@@ -475,7 +525,7 @@
                       ref="commentInput"
                       v-model="customerData.comment"
                       placeholder="اكتب تعليقك هنا..."
-                      class="form-control comment-textarea bg-light text-secondary rounded-0 me-1"
+                      class="form-control comment-textarea bg-input text-secondary rounded-0 me-1"
                       rows="1"
                       style="
                         resize: none;
@@ -496,7 +546,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="col-12 mt-2 bg-light showComments py-2 rounded-3">
+                <div class="col-12 mt-2 bg-input showComments py-2 rounded-3">
                   <div
                     v-for="comment in sortedComments"
                     :key="comment.id"
@@ -689,14 +739,14 @@
                     </span>
                     <input
                       type="text"
-                      class="form-control bg-light text-secondary py-2 me-1"
+                      class="form-control bg-input text-secondary py-2 me-1"
                       v-model="customerData.task"
                       :placeholder="t('kanban-modal-edit-tasks-placeholder')"
                       @keyup.enter="handleAddTask"
                     />
                     <input
                       type="date"
-                      class="form-control bg-light text-secondary py-2 me-1"
+                      class="form-control bg-input text-secondary py-2 me-1"
                       v-model="customerData.date"
                       :placeholder="t('modals.selectDate')"
                       @keyup.enter="handleAddTask"
@@ -710,9 +760,9 @@
                     </button>
                   </div>
                 </div>
-                <div class="col-12 mt-2 bg-light p-3 showTasks rounded-3">
+                <div class="col-12 mt-2 bg-input p-3 showTasks rounded-3">
                   <div
-                    class="row bg-light-subtle border-top border-bottom py-1"
+                    class="row bg-input-subtle border-top border-bottom py-1"
                   >
                     <div class="col-5">
                       {{ t("kanban-modal-edit-tasks-table-description") }}
@@ -1940,5 +1990,11 @@ label {
 .comment-menu .dropdown-item:hover {
   background: #f1f1f1;
   border-radius: 4px;
+}
+.bg-input {
+  background-color: #eee !important;
+}
+.bg-input-edit {
+  background-color: #d1d1d1e4 !important;
 }
 </style>
