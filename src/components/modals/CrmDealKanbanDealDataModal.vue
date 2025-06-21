@@ -330,7 +330,7 @@
                         <div class="col-6 p-1 px-1">
                           <select
                             class="form-select bg-light"
-                            v-model="pkg.serviceId"
+                            v-model="pkg.id"
                             :disabled="!isEditMode"
                           >
                             <option value="" disabled>
@@ -933,7 +933,7 @@ export default {
             comment.user && comment.user.role === "super-admin" ? true : false,
           isPinned: comment.isPinned || false,
         })) || [],
-      assigned_to: props.deal?.user_id || "",
+      assigned_to: props.deal?.assigned_to_id || "",
       ticket: props.deal?.ticket || null,
       packages: props.deal?.packages || [],
     });
@@ -1136,6 +1136,7 @@ export default {
           rating: customerData.rating || 0,
           user_id: customerData.assigned_to || "",
           ticket: customerData.ticket || null,
+          packages: customerData.packages || null,
         };
 
         const response = await updateDeal(props.deal.id, formData);
@@ -1183,9 +1184,9 @@ export default {
     const addNewPackage = () => {
       if (!isEditMode.value) return;
       customerData.packages.push({
-        serviceId: "",
-        quantity: "",
-        price: "",
+        id: "",
+        quantity: 0,
+        total_price: 0,
       });
       toast.success(t("success.addPackage"), { timeout: 3000 });
     };
