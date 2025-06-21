@@ -18,14 +18,16 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(
+      new Error(error.response?.data?.message || error.message)
+    );
   }
 );
 
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 404) {
+    if (error.response?.status === 401) {
       console.log("Unauthorized access - redirecting to login");
       Cookies.remove("authToken");
       Cookies.remove("name");
@@ -33,7 +35,9 @@ axiosInstance.interceptors.response.use(
       Cookies.remove("image");
       router.push("/login");
     }
-    return Promise.reject(error);
+    return Promise.reject(
+      new Error(error.response?.data?.message || error.message)
+    );
   }
 );
 

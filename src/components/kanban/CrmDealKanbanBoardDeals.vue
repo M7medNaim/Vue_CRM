@@ -371,8 +371,8 @@ export default {
         if (response.data && response.data.data) {
           packages.value = response.data.data;
         } else {
-          console.error(response.message);
-          throw new Error(response.message);
+          console.error(response.data.message);
+          throw new Error(response.data.message);
         }
       } catch (error) {
         console.error(error.message);
@@ -455,7 +455,12 @@ export default {
         }
 
         try {
-          await updateDealStage(deal.id, newStageId);
+          const request = await updateDealStage(deal.id, newStageId);
+          if (request.status !== 200) {
+            console.error("Error updating deal stage:", request.data.message);
+            toast.error(request.data.message);
+            return;
+          }
           const oldStageInDisplay = displayStages.value.find(
             (s) => s.id === oldStageId
           );
@@ -471,6 +476,7 @@ export default {
           if (newStageInDisplayForCount)
             newStageInDisplayForCount.deal_count =
               (newStageInDisplayForCount.deal_count || 0) + 1;
+          playSound();
         } catch (error) {
           const newStageInDisplayToRevert = displayStages.value.find(
             (s) => s.id === newStageId
@@ -516,7 +522,7 @@ export default {
               newStageInDisplayForRevertCount.deal_count - 1
             );
 
-          toast.error(t("error.dealMoveFailed"));
+          toast.error(error.message);
         }
       }
     };
@@ -1009,7 +1015,7 @@ export default {
             newStageAfterRevertInDisplay.deal_count - 1
           );
 
-        toast.error(t("error.dealMoveFailed"));
+        toast.error(error.message);
       }
     };
     const refreshPage = () => {
