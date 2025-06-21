@@ -1181,15 +1181,14 @@ export default {
       if (!isEditMode.value) return;
       customerData.packages.push({
         id: "",
-        quantity: 0,
-        total_price: 0,
+        quantity: null,
+        total_price: null,
       });
-      toast.success(t("success.addPackage"), { timeout: 3000 });
     };
 
     const removePackage = (index) => {
       try {
-        customerData.packages.value.splice(index, 1);
+        customerData.packages.splice(index, 1);
         toast.success(t("success.removePackage"), {
           timeout: 3000,
         });

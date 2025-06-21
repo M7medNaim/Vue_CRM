@@ -352,7 +352,6 @@ export default {
         toast.error(t("error.closeModal"), {
           timeout: 3000,
         });
-        // console.error("Error initializing modal:", error);
       }
     });
     const togglePhone2 = () => {
@@ -368,8 +367,6 @@ export default {
       isSubmitting,
       openModal,
       handleSubmit,
-      // addPhone,
-      // removePhone,
       togglePhone2,
       showPhone2,
       t,
