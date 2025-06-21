@@ -1049,19 +1049,17 @@ export default {
         });
 
         const response = await updateDealStage(props.deal.id, stageId);
-        if (response.data) {
+        if (response.status === 200) {
           emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
           toast.success(`${t("success.stageChanged")} ${stageName}`, {
             timeout: 3000,
           });
         } else {
-          toast.error(t("error.changingStage"), {
-            timeout: 3000,
-          });
+          throw new Error(response.data.message);
         }
       } catch (error) {
         console.error("Error changing stage:", error);
-        toast.error(t("error.changingStage"), {
+        toast.error(error.message, {
           timeout: 3000,
         });
       }
