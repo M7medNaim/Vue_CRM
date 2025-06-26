@@ -959,8 +959,8 @@ export default {
         const stages = displayStages;
         if (props.viewType == "task" && is_trash) {
           for (const stage of stages.value) {
-            if (stage.value.deals) {
-              stage.value.deals.filter((d) => d.id != dealId);
+            if (stage.deals) {
+              stage.deals.filter((d) => d.id != dealId);
             }
           }
         } else {
