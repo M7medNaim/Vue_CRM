@@ -751,6 +751,13 @@
                       :placeholder="t('modals.selectDate')"
                       @keyup.enter="handleAddTask"
                     />
+                    <input
+                      type="time"
+                      class="form-control bg-input text-secondary py-2 me-1"
+                      v-model="customerData.time"
+                      :placeholder="t('modals.selectTime')"
+                      @keyup.enter="handleAddTask"
+                    />
                     <button
                       class="btn btn-primary py-1 px-4 fixed-action-btn"
                       type="submit"
@@ -764,11 +771,14 @@
                   <div
                     class="row bg-input-subtle border-top border-bottom py-1"
                   >
-                    <div class="col-5">
+                    <div class="col-4">
                       {{ t("kanban-modal-edit-tasks-table-description") }}
                     </div>
-                    <div class="col-5">
+                    <div class="col-3">
                       {{ t("kanban-modal-edit-tasks-table-due-date") }}
+                    </div>
+                    <div class="col-3">
+                      {{ t("kanban-modal-edit-tasks-table-due-time") }}
                     </div>
                     <div class="col-2">
                       {{ t("kanban-modal-edit-tasks-table-status") }}
@@ -781,15 +791,23 @@
                     class="row text-secondary mt-2 align-items-center border-light-subtle pb-2 border-bottom"
                     :class="{ 'delete-animation': task.toDelete }"
                   >
-                    <div class="col-5">
+                    <div class="col-4">
                       {{ task.description }}
                     </div>
-                    <div class="col-5">
+                    <div class="col-3">
                       <input
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
                         v-model="task.duedate"
                         :placeholder="t('modals.selectDate')"
+                      />
+                    </div>
+                    <div class="col-3">
+                      <input
+                        type="time"
+                        class="form-control bg-secondary-subtle text-secondary py-2 me-1"
+                        v-model="task.duetime"
+                        :placeholder="t('modals.selectTime')"
                       />
                     </div>
                     <div class="col-2">
@@ -1411,6 +1429,7 @@ export default {
         const formData = {
           description: customerData.task,
           duedate: customerData.date,
+          duetime: customerData.time,
           deal_id: props.deal?.id,
         };
         console.log(formData);
@@ -1420,11 +1439,13 @@ export default {
             id: response.data.id,
             description: customerData.task,
             duedate: customerData.date,
+            duetime: customerData.time,
             status: "active",
           });
           toast.success(t("success.taskAdded"));
           customerData.task = "";
           customerData.date = "";
+          customerData.time = "";
         } else {
           toast.error(t("error.addingTask"));
         }
