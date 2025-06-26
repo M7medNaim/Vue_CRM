@@ -1457,14 +1457,21 @@ export default {
     const activeTasks = computed(() => {
       return customerData.tasks.filter((task) => task.status === "active");
     });
-    const handleStageUpdate = (deal_id, new_stage_id) => {
+    const handleStageUpdate = (deal_id, new_stage_id, is_trash = false) => {
       if (!props.deal?.id) {
         toast.error(t("error.dealNotFound"), {
           timeout: 3000,
         });
         return;
       }
-      emit("stage-change", deal_id, new_stage_id, props.deal.stage_id, 0);
+      emit(
+        "stage-change",
+        deal_id,
+        new_stage_id,
+        props.deal.stage_id,
+        0,
+        is_trash
+      );
     };
     const fetchLogs = async () => {
       try {
