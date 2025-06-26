@@ -854,6 +854,7 @@ import {
   getAvailableStages,
 } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
+import moveCardSound from "@/assets/move-card.wav";
 export default {
   name: "CrmDealKanbanDealDataModal",
   components: { RatingStars, ViewReport, TrashDeal },
@@ -1086,6 +1087,14 @@ export default {
       hoveredStage.value = null;
     };
 
+    const playSound = () => {
+      const moveSound = new Audio(moveCardSound);
+      moveSound.currentTime = 0;
+      moveSound
+        .play()
+        .catch((error) => console.error("Failed to play sound:", error));
+    };
+
     const changeStage = async (stageId) => {
       try {
         currentStageId.value = stageId;
@@ -1102,6 +1111,7 @@ export default {
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.status === 200) {
           emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
+          playSound();
           toast.success(response.data.message, {
             timeout: 3000,
           });
