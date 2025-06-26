@@ -1004,7 +1004,7 @@ export default {
           const currentStage = props.stages.find((s) => s.id === newStageId);
           if (currentStage) {
             const dealIndex = currentStage.deals.findIndex(
-              (d) => d.id === deal.id
+              (d) => d.id === dealId
             );
             if (dealIndex !== -1) {
               const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
