@@ -958,11 +958,19 @@ export default {
       try {
         const stages = displayStages;
         if (props.viewType == "task" && is_trash) {
+          const response = await updateDealStage(dealId, newStageId);
+          if (response.status !== 200) {
+            console.error("Error updating deal stage:", response.data.message);
+            toast.error(response.data.message);
+            return;
+          }
           for (const stage of stages.value) {
             if (stage.deals) {
-              stage.deals.filter((d) => d.id != dealId);
+              stage.deals = stage.deals.filter((d) => d.id != dealId);
             }
           }
+          displayStages.value = stages.value;
+          toast.success(response.data.message);
         } else {
           const newStage = ref(
             stages.value.find((stage) => stage.id == newStageId)
