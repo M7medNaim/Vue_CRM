@@ -301,46 +301,6 @@
                   </select>
                 </div>
               </div>
-              <!-- Deal ticket upload -->
-              <div class="row mb-3">
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-list"></i>
-                    {{ t("kanban-modal-edit-label-ticket") }}</label
-                  >
-                </div>
-                <div class="col-10">
-                  <input
-                    v-if="!customerData.ticket"
-                    type="file"
-                    :class="[
-                      'form-control',
-                      isEditMode ? 'bg-input-edit' : 'bg-input',
-                    ]"
-                    @change="handleFileUpload"
-                    @dblclick="handleDoubleClick"
-                    :disabled="!isEditMode"
-                  />
-                  <div class="row" v-else>
-                    <div class="col-6">
-                      <button class="btn btn-primary w-100" @click="removeFile">
-                        <i class="fa-solid fa-file"></i>
-                        Remove File
-                      </button>
-                    </div>
-                    <div class="col-6">
-                      <a
-                        class="btn btn-primary w-100"
-                        :href="customerData.ticket"
-                        target="_blank"
-                      >
-                        <i class="fa-solid fa-file"></i>
-                        Download File
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
               <!-- Packages -->
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2 pt-2">
@@ -444,20 +404,215 @@
                   </button>
                 </div>
               </div>
-              <!-- Deal Status -->
+              <!-- Deal ticket upload -->
               <div class="row mb-3">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-cubes"></i>
-                    {{ t("dealStatus") }}</label
+                    ><i class="fa-solid fa-list"></i>
+                    {{ t("kanban-modal-edit-label-ticket") }}</label
                   >
                 </div>
                 <div class="col-10">
-                  <span class="fw-bolder" style="font-size: 14px">{{
-                    currentStage.name
-                  }}</span>
+                  <input
+                    v-if="!customerData.ticket"
+                    type="file"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                    ]"
+                    @change="handleFileUpload"
+                    @dblclick="handleDoubleClick"
+                    :disabled="!isEditMode"
+                  />
+                  <div class="row" v-else>
+                    <div class="col-6">
+                      <button class="btn btn-primary w-100" @click="removeFile">
+                        <i class="fa-solid fa-file"></i>
+                        Remove File
+                      </button>
+                    </div>
+                    <div class="col-6">
+                      <a
+                        class="btn btn-primary w-100"
+                        :href="customerData.ticket"
+                        target="_blank"
+                      >
+                        <i class="fa-solid fa-file"></i>
+                        Download File
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div class="row mb-3">
+                <div class="col-2">
+                  <label class="form-label"
+                    ><i class="fa-solid fa-list"></i>
+                    {{ t("kanban-modal-edit-label-ticket-details") }}</label
+                  >
+                </div>
+                <div class="col-10">
+                  <div class="row p-0 m-0">
+                    <div class="col">
+                      <label for="flight_number" class="form-label">
+                        {{ t("kanban-modal-edit-label-flight-number") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="flight_number"
+                        v-model="customerData.flight_number"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-flight-number')
+                        "
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="arrival_date" class="form-label">
+                        {{ t("kanban-modal-edit-label-arrival-date") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="arrival_date"
+                        v-model="customerData.arrival_date"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-arrival-date')
+                        "
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="departure_date" class="form-label">
+                        {{ t("kanban-modal-edit-label-departure-date") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="departure_date"
+                        v-model="customerData.departure_date"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-departure-date')
+                        "
+                      />
+                    </div>
+                  </div>
+                  <div class="row p-0 m-0">
+                    <div class="col">
+                      <label for="hotel_name" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-name") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="hotel_name"
+                        v-model="hotel_name"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-hotel-name')
+                        "
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="hotel_check_in" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-check-in") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="hotel_check_in"
+                        v-model="hotel_check_in"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-hotel-check-in')
+                        "
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="hotel_check_out" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-check-out") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="hotel_check_out"
+                        v-model="customerData.hotel_check_out"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-hotel-check-out')
+                        "
+                      />
+                    </div>
+                  </div>
+                  <div class="row p-0 m-0">
+                    <div class="col">
+                      <span class="form-label">Transportation</span>
+                      <div class="form-check">
+                        <label for="transportation_true" class="form-label">
+                          {{ t("kanban-modal-edit-label-transportation-true") }}
+                        </label>
+                        <input
+                          type="radio"
+                          name="transportation"
+                          id="transportation"
+                          value="1"
+                          v-model="customerData.transportation"
+                          class="form-check-input"
+                        />
+                        <label for="transportation_true" class="form-label">
+                          {{
+                            t("kanban-modal-edit-label-transportation-false")
+                          }}
+                        </label>
+                        <input
+                          type="radio"
+                          name="transportation"
+                          id="transportation"
+                          value="0"
+                          v-model="customerData.transportation"
+                          class="form-check-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="time" class="form-label">
+                        {{ t("kanban-modal-edit-label-time") }}
+                      </label>
+                      <input
+                        type="time"
+                        name="time"
+                        v-model="customerData.time"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- History -->
               <div class="row">
                 <div class="col-6 pt-2">
                   <h5
