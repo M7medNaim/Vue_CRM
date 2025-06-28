@@ -144,10 +144,38 @@ export default {
       }
       return formData;
     },
+    handleQuestionsModalContextMenu(e) {
+      e.stopPropagation();
+      const closeBtn = document
+        .getElementById("questionsModal")
+        ?.querySelector('[data-bs-dismiss="modal"]');
+      if (closeBtn) {
+        closeBtn.click();
+        e.preventDefault();
+      }
+    },
   },
   mounted() {
     this.fetchQuestions();
     this.toast = useToast();
+    this.$nextTick(() => {
+      const modalEl = document.getElementById("questionsModal");
+      if (modalEl) {
+        modalEl.addEventListener(
+          "contextmenu",
+          this.handleQuestionsModalContextMenu
+        );
+      }
+    });
+  },
+  beforeUnmount() {
+    const modalEl = document.getElementById("questionsModal");
+    if (modalEl) {
+      modalEl.removeEventListener(
+        "contextmenu",
+        this.handleQuestionsModalContextMenu
+      );
+    }
   },
 };
 </script>

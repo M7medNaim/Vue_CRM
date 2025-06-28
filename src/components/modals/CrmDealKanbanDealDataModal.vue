@@ -749,6 +749,7 @@
                       class="form-control bg-input text-secondary py-2 me-1"
                       v-model="customerData.date"
                       :placeholder="t('modals.selectDate')"
+                      @mousedown="dateTaskClick"
                       @keyup.enter="handleAddTask"
                     />
                     <input
@@ -800,6 +801,7 @@
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
                         v-model="task.duedate"
                         :placeholder="t('modals.selectDate')"
+                        @mousedown="dateTaskClick"
                       />
                     </div>
                     <div class="col-3">
@@ -872,6 +874,7 @@ import {
   getAvailableStages,
 } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
+import moveCardSound from "@/assets/move-card.wav";
 export default {
   name: "CrmDealKanbanDealDataModal",
   components: { RatingStars, ViewReport, TrashDeal },
@@ -892,6 +895,14 @@ export default {
       type: Array,
       required: true,
     },
+    stages: {
+      type: Array,
+      required: true,
+    },
+    currentStageId: {
+      type: [Number, String],
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const permissionStore = usePermissionStore();
@@ -899,8 +910,7 @@ export default {
     const { t } = useI18n();
     const toast = useToast();
     const sources = ref([]);
-    const stages = ref([]);
-    const currentStageId = ref(props.deal?.stage_id || "");
+    const allStages = ref(null);
     const isEditMode = ref(false);
     const hoveredStage = ref(null);
     const stageColors = reactive({});
@@ -1035,17 +1045,12 @@ export default {
       const source = sources.value.find((s) => s.id === props.deal?.source_id);
       return source ? source.name : "null";
     });
-    const fetchStages = async () => {
-      try {
-        const response = await getAvailableStages();
-        stages.value = response.data.data;
-      } catch (error) {
-        console.error("Error fetching stages:", error);
-      }
-    };
+    const currentStageIdLocal = ref(props.currentStageId);
     const currentStage = computed(() => {
       return (
-        stages.value.find((s) => s.id === currentStageId.value) || {
+        (props.stages || []).find(
+          (s) => s.id === currentStageIdLocal.value
+        ) || {
           id: "",
           name: "",
           color_code: "#333",
@@ -1104,22 +1109,31 @@ export default {
       hoveredStage.value = null;
     };
 
+    const playSound = () => {
+      const moveSound = new Audio(moveCardSound);
+      moveSound.currentTime = 0;
+      moveSound
+        .play()
+        .catch((error) => console.error("Failed to play sound:", error));
+    };
+
     const changeStage = async (stageId) => {
       try {
-        currentStageId.value = stageId;
-        const stageIndex = stages.value.findIndex((s) => s.id === stageId);
-
-        stages.value.forEach((stage, index) => {
+        currentStageIdLocal.value = stageId;
+        const stageIndex = (props.stages || []).findIndex(
+          (s) => s.id === stageId
+        );
+        (props.stages || []).forEach((stage, index) => {
           if (index <= stageIndex) {
-            stageColors[stage.id] = stages.value[stageIndex].color_code;
+            stageColors[stage.id] = (props.stages || [])[stageIndex].color_code;
           } else {
             stageColors[stage.id] = "";
           }
         });
-
         const response = await updateDealStage(props.deal.id, stageId);
         if (response.status === 200) {
           emit("stage-change", props.deal.id, stageId, props.deal.stage_id, 0);
+          playSound();
           toast.success(response.data.message, {
             timeout: 3000,
           });
@@ -1134,12 +1148,13 @@ export default {
     };
 
     const getStageClasses = (stageId) => {
-      const stageIndex = stages.value.findIndex((s) => s.id === stageId);
+      const stagesArr = props.stages || [];
+      const stageIndex = stagesArr.findIndex((s) => s.id === stageId);
       const hoveredIndex = hoveredStage.value
-        ? stages.value.findIndex((s) => s.id === hoveredStage.value)
+        ? stagesArr.findIndex((s) => s.id === hoveredStage.value)
         : -1;
-      const currentIndex = stages.value.findIndex(
-        (s) => s.id === currentStageId.value
+      const currentIndex = stagesArr.findIndex(
+        (s) => s.id === currentStageIdLocal.value
       );
 
       const classes = { "": true };
@@ -1147,13 +1162,13 @@ export default {
 
       if (hoveredStage.value) {
         if (stageIndex <= hoveredIndex) {
-          backgroundColor = stages.value[hoveredIndex].color_code;
+          backgroundColor = stagesArr[hoveredIndex]?.color_code || "#333";
         } else {
           classes["btn-secondary"] = true;
         }
       } else {
         if (stageIndex <= currentIndex) {
-          backgroundColor = stages.value[currentIndex].color_code;
+          backgroundColor = stagesArr[currentIndex]?.color_code || "#333";
         } else {
           classes["btn-secondary"] = true;
         }
@@ -1574,7 +1589,6 @@ export default {
     };
     onMounted(() => {
       fetchSources();
-      fetchStages();
       fetchUsers();
       document.addEventListener("click", handleClickOutside);
 
@@ -1601,6 +1615,13 @@ export default {
           modalElement.__cancelEditHandler
         );
       }
+      getAvailableStages().then((response) => {
+        if (response.data && response.data.data) {
+          allStages.value = response.data.data;
+        } else {
+          allStages.value = [];
+        }
+      });
     });
     watch(
       () => customerData.comments,
@@ -1644,8 +1665,14 @@ export default {
         });
       }
     };
+    const dateTaskClick = (event) => {
+      event.preventDefault();
+      if (event.target && typeof event.target.showPicker === "function") {
+        event.target.showPicker();
+      }
+    };
     return {
-      stages,
+      allStages,
       currentStage,
       customerData,
       newComment,
@@ -1715,6 +1742,8 @@ export default {
       local_packages,
       originalDataValue,
       dataDealCopy,
+      dateTaskClick,
+      currentStageIdLocal,
     };
   },
 };

@@ -263,6 +263,8 @@
     :comments="comments"
     :tasks="tasks"
     :packages="packages"
+    :stages="allStages"
+    :currentStageId="selectedStageId"
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
   />
@@ -298,6 +300,7 @@ import {
   addViewCount,
   getStagesChildren,
   getAllPackages,
+  getAvailableStages,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -358,6 +361,8 @@ export default {
     const displayStages = ref([]);
     const filteredDeals = ref({});
     const packages = ref([]);
+    const allStages = ref(null);
+    const selectedStageId = ref(null);
 
     watch(
       () => props.stages,
@@ -540,10 +545,19 @@ export default {
 
     const openDealDataCard = async (dealId, currentStageId = null) => {
       try {
+        if (!allStages.value) {
+          const response = await getAvailableStages();
+          if (response.data && response.data.data) {
+            allStages.value = response.data.data;
+          } else {
+            allStages.value = [];
+          }
+        }
         addViewCount(dealId);
         const dealData = await showDeal(dealId);
         if (dealData.data) {
           const deal = dealData.data.data;
+          selectedStageId.value = deal.stage_id;
           const checkStageLoaded = () => {
             if (isTasksView.value) {
               return displayStages.value.find(
@@ -572,23 +586,21 @@ export default {
 
           selectedDeal.value = deal;
           await nextTick();
-          setTimeout(() => {
-            const modalEl = document.getElementById("dealDataCard");
-            const modal = new Modal(modalEl);
-            modal.show();
-            modalEl.addEventListener(
-              "hidden.bs.modal",
-              () => {
-                const backdrop = document.querySelector(".modal-backdrop");
-                if (backdrop) {
-                  backdrop.remove();
-                  document.body.classList.remove("modal-open");
-                  document.body.style.paddingRight = null;
-                }
-              },
-              { once: true }
-            );
-          }, 300);
+          const modalEl = document.getElementById("dealDataCard");
+          const modal = new Modal(modalEl);
+          modal.show();
+          modalEl.addEventListener(
+            "hidden.bs.modal",
+            () => {
+              const backdrop = document.querySelector(".modal-backdrop");
+              if (backdrop) {
+                backdrop.remove();
+                document.body.classList.remove("modal-open");
+                document.body.style.paddingRight = null;
+              }
+            },
+            { once: true }
+          );
         } else {
           console.error("No matching deal found for ID:", dealId);
         }
@@ -1229,6 +1241,13 @@ export default {
         hiddenStages.value[stage.id] = false;
         expandedStages.value[stage.id] = false;
       });
+
+      const response = await getAvailableStages();
+      if (response.data && response.data.data) {
+        allStages.value = response.data.data;
+      } else {
+        allStages.value = [];
+      }
     });
 
     onUnmounted(() => {
@@ -1305,6 +1324,8 @@ export default {
       isLastChildStage,
       handleFilterDeals,
       getStageDeals,
+      allStages,
+      selectedStageId,
     };
   },
 };
