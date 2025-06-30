@@ -113,7 +113,7 @@
                 </div>
                 <div class="col">
                   <label class="form-label" for="nationality"
-                    ><i class="fa-solid fa-user"></i>
+                    ><i class="fa-solid fa-flag"></i>
                     {{ t("kanban-modal-edit-label-nationality") }}
                   </label>
                   <select
@@ -145,7 +145,7 @@
                 </div>
                 <div class="col">
                   <label class="form-label" for="nationality"
-                    ><i class="fa-solid fa-user"></i>
+                    ><i class="fa-solid fa-language"></i>
                     {{ t("kanban-modal-edit-label-prefered-language") }}
                   </label>
                   <select
