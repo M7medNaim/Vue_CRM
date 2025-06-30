@@ -84,51 +84,20 @@
 
           <div class="row">
             <div class="col-12 col-md-6 border-end">
-              <!-- Full Name -->
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-a"></i>
+                    ><i class="fa-solid fa-id-card"></i>
+                    {{ t("kanban-modal-edit-label-profile") }}</label
+                  >
+                </div>
+                <!-- Full Name -->
+                <div class="col">
+                  <label class="form-label" for="name"
+                    ><i class="fa-solid fa-user"></i>
                     {{ t("kanban-modal-edit-label-fullname")
                     }}<span class="text-danger">*</span>
                   </label>
-                </div>
-                <div class="col-10">
-                  <div class="input-group">
-                    <input
-                      type="text"
-                      :class="[
-                        'form-control',
-                        isEditMode ? 'bg-input-edit' : 'bg-input',
-                        'py-2',
-                      ]"
-                      v-model="customerData.name"
-                      :placeholder="t('kanban-modal-edit-placeholder-fullname')"
-                      :readonly="!isEditMode"
-                    />
-                    <button
-                      class="btn btn-primary px-3 fs-5"
-                      @click="toggleNickName"
-                    >
-                      {{ showNickName ? "-" : "+" }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <!-- Nick Name -->
-              <div
-                class="row mb-3"
-                @dblclick="handleDoubleClick"
-                v-if="showNickName"
-              >
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-a"></i>
-                    {{ t("kanban-modal-edit-label-nickname")
-                    }}<span class="text-danger">*</span>
-                  </label>
-                </div>
-                <div class="col-10">
                   <input
                     type="text"
                     :class="[
@@ -136,10 +105,75 @@
                       isEditMode ? 'bg-input-edit' : 'bg-input',
                       'py-2',
                     ]"
-                    v-model="customerData.nickName"
-                    :placeholder="t('kanban-modal-edit-placeholder-nickname')"
+                    v-model="customerData.name"
+                    :placeholder="t('kanban-modal-edit-placeholder-fullname')"
                     :readonly="!isEditMode"
+                    name="name"
                   />
+                </div>
+                <div class="col">
+                  <label class="form-label" for="nationality"
+                    ><i class="fa-solid fa-user"></i>
+                    {{ t("kanban-modal-edit-label-nationality") }}
+                  </label>
+                  <select
+                    :class="[
+                      'form-select',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
+                    v-model="customerData.nationality"
+                    :disabled="!isEditMode"
+                    name="nationality"
+                    @dblclick="handleDoubleClick"
+                  >
+                    <option
+                      :value="null"
+                      disabled
+                      :selected="!customerData.nationality"
+                    >
+                      {{ t("kanban-modal-edit-placeholder-nationality") }}
+                    </option>
+                    <option
+                      v-for="nationality in nationalities"
+                      :key="nationality"
+                      :value="nationality"
+                    >
+                      {{ nationality }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="form-label" for="nationality"
+                    ><i class="fa-solid fa-user"></i>
+                    {{ t("kanban-modal-edit-label-prefered-language") }}
+                  </label>
+                  <select
+                    :class="[
+                      'form-select',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
+                    v-model="customerData.language"
+                    :disabled="!isEditMode"
+                    name="nationality"
+                    @dblclick="handleDoubleClick"
+                  >
+                    <option
+                      value=""
+                      disabled
+                      :selected="!customerData.language"
+                    >
+                      {{ t("kanban-modal-edit-placeholder-prefered-language") }}
+                    </option>
+                    <option
+                      v-for="language in languages"
+                      :key="language"
+                      :value="language"
+                    >
+                      {{ language }}
+                    </option>
+                  </select>
                 </div>
               </div>
 
@@ -211,8 +245,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-envelope"></i>
-                    {{ t("kanban-modal-edit-label-email")
-                    }}<span class="text-danger">*</span>
+                    {{ t("kanban-modal-edit-label-email") }}
                   </label>
                 </div>
                 <div class="col-10">
@@ -434,17 +467,32 @@
                     :disabled="!isEditMode"
                   />
                   <div class="row" v-else>
-                    <div class="col-6">
-                      <button class="btn btn-primary w-100" @click="removeFile">
+                    <div class="col-4">
+                      <button
+                        class="btn btn-primary w-100"
+                        @click="removeFile"
+                        :disabled="!isEditMode"
+                      >
                         <i class="fa-solid fa-file"></i>
                         Remove File
                       </button>
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
                       <a
                         class="btn btn-primary w-100"
                         :href="customerData.ticket"
                         target="_blank"
+                      >
+                        <i class="fa-solid fa-file"></i>
+                        View File
+                      </a>
+                    </div>
+                    <div class="col-4">
+                      <a
+                        class="btn btn-primary w-100"
+                        :href="customerData.ticket"
+                        target="_blank"
+                        download
                       >
                         <i class="fa-solid fa-file"></i>
                         Download File
@@ -1232,6 +1280,37 @@ export default {
       transportation: props.deal?.transportation || 0,
       time: props.deal?.time || "",
     });
+    const nationalities = [
+      "Afghan",
+      "Albanian",
+      "Algerian",
+      "American",
+      "Andorran",
+      "Angolan",
+      "Antiguans",
+      "Argentinean",
+      "Armenian",
+      "Australian",
+      "Austrian",
+      "Azerbaijani",
+      "Bahamian",
+      "Bahraini",
+      "Bangladeshi",
+      "Barbadian",
+      "Barbudans",
+      "Batswana",
+      "Belarusian",
+      "Belgian",
+      "Belizean",
+      "Beninese",
+      "Bhutanese",
+      "Bolivian",
+      "Bosnian and Herzegovinian",
+      "Botswanan",
+      "Brazilian",
+      "British",
+    ];
+    const languages = ["Arabic", "English", "French"];
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
       const [day, month, year] = dateString.split("/");
@@ -1416,6 +1495,12 @@ export default {
     };
     const confirm = async () => {
       try {
+        if (originalDataValue.value.phone && !customerData.phone) {
+          toast.error("Phone is required.", {
+            timeout: 3000,
+          });
+          return;
+        }
         const phones = [customerData.phone];
         if (customerData.phone2) {
           phones.push(customerData.phone2);
@@ -1446,18 +1531,18 @@ export default {
 
         const response = await updateDeal(props.deal.id, formData);
         if (response.data) {
-          toast.success(t("success.saveChanges"), {
+          toast.success(response.data.message, {
             timeout: 3000,
           });
           isEditMode.value = false;
         } else {
-          toast.error(t("error.saveChanges"), {
+          toast.error(response.data.message, {
             timeout: 3000,
           });
         }
       } catch (error) {
         console.error("Error saving changes:", error);
-        toast.error(t("error.saveChanges"), {
+        toast.error(error.message, {
           timeout: 3000,
         });
       }
@@ -1895,6 +1980,12 @@ export default {
         event.target.showPicker();
       }
     };
+    const removeFile = () => {
+      customerData.ticket = null;
+      toast.success(t("success.fileRemoved"), {
+        timeout: 3000,
+      });
+    };
     return {
       allStages,
       currentStage,
@@ -1968,6 +2059,9 @@ export default {
       dataDealCopy,
       dateTaskClick,
       currentStageIdLocal,
+      removeFile,
+      nationalities,
+      languages,
     };
   },
 };
