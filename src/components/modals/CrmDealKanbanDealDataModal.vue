@@ -314,11 +314,11 @@
                     <div
                       v-for="(pkg, index) in customerData.packages"
                       :key="index"
-                      class="packages mb-2"
+                      class="packages mb-2 px-2"
                     >
                       <div class="row p-0">
                         <div
-                          class="col-6 p-1 px-1"
+                          class="col-7 p-1 px-1"
                           @dblclick="handleDoubleClick"
                         >
                           <select
@@ -342,45 +342,51 @@
                             </option>
                           </select>
                         </div>
-                        <div class="col-3 p-1 px-1">
-                          <input
-                            type="number"
-                            :class="[
-                              'bg-input',
-                              isEditMode ? 'bg-input-edit' : 'bg-input',
-                              'p-2',
-                              'w-100',
-                              'rounded-2',
-                              'form-control',
-                            ]"
-                            v-model="pkg.quantity"
-                            :placeholder="
-                              t(
-                                'kanban-modal-edit-placeholder-packages-quantity'
-                              )
-                            "
-                            :readonly="!isEditMode"
-                            min="1"
-                          />
+                        <div class="col-2 p-1 px-1">
+                          <div class="input-group">
+                            <span class="input-group-text">Qty</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.quantity"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-quantity'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="1"
+                            />
+                          </div>
                         </div>
                         <div class="col-2 p-1 px-0">
-                          <input
-                            type="number"
-                            :class="[
-                              'bg-input',
-                              isEditMode ? 'bg-input-edit' : 'bg-input',
-                              'p-2',
-                              'w-100',
-                              'rounded-2',
-                              'form-control',
-                            ]"
-                            v-model="pkg.total_price"
-                            :placeholder="
-                              t('kanban-modal-edit-placeholder-packages-price')
-                            "
-                            :readonly="!isEditMode"
-                            min="0"
-                          />
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.total_price"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-price'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="0"
+                            />
+                          </div>
                         </div>
                         <div class="col-1 p-1 px-1">
                           <button
@@ -393,6 +399,9 @@
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div class="pt-2" v-else-if="!isEditMode">
+                    {{ t("kanban-modal-edit-label-no-packages") }}
                   </div>
                   <button
                     class="btn btn-primary mt-2 fs-5 px-3"
@@ -444,7 +453,11 @@
                   </div>
                 </div>
               </div>
-              <div class="row mb-3">
+              <div
+                class="row mb-3"
+                v-if="customerData.ticket"
+                @dblclick="handleDoubleClick"
+              >
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-list"></i>
@@ -452,8 +465,8 @@
                   >
                 </div>
                 <div class="col-10">
-                  <div class="row p-0 m-0">
-                    <div class="col">
+                  <div class="row p-0 g-2">
+                    <div class="col-4">
                       <label for="flight_number" class="form-label">
                         {{ t("kanban-modal-edit-label-flight-number") }}
                       </label>
@@ -469,14 +482,16 @@
                         :placeholder="
                           t('kanban-modal-edit-placeholder-flight-number')
                         "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
-                    <div class="col">
+                    <div class="col-4">
                       <label for="arrival_date" class="form-label">
                         {{ t("kanban-modal-edit-label-arrival-date") }}
                       </label>
                       <input
-                        type="text"
+                        type="datetime-local"
                         name="arrival_date"
                         v-model="customerData.arrival_date"
                         :class="[
@@ -484,17 +499,16 @@
                           isEditMode ? 'bg-input-edit' : 'bg-input',
                           'py-2',
                         ]"
-                        :placeholder="
-                          t('kanban-modal-edit-placeholder-arrival-date')
-                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
-                    <div class="col">
+                    <div class="col-4">
                       <label for="departure_date" class="form-label">
                         {{ t("kanban-modal-edit-label-departure-date") }}
                       </label>
                       <input
-                        type="text"
+                        type="datetime-local"
                         name="departure_date"
                         v-model="customerData.departure_date"
                         :class="[
@@ -502,14 +516,11 @@
                           isEditMode ? 'bg-input-edit' : 'bg-input',
                           'py-2',
                         ]"
-                        :placeholder="
-                          t('kanban-modal-edit-placeholder-departure-date')
-                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
-                  </div>
-                  <div class="row p-0 m-0">
-                    <div class="col">
+                    <div class="col-4">
                       <label for="hotel_name" class="form-label">
                         {{ t("kanban-modal-edit-label-hotel-name") }}
                       </label>
@@ -525,14 +536,16 @@
                         :placeholder="
                           t('kanban-modal-edit-placeholder-hotel-name')
                         "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
-                    <div class="col">
+                    <div class="col-4">
                       <label for="hotel_check_in" class="form-label">
                         {{ t("kanban-modal-edit-label-hotel-check-in") }}
                       </label>
                       <input
-                        type="text"
+                        type="datetime-local"
                         name="hotel_check_in"
                         v-model="hotel_check_in"
                         :class="[
@@ -540,17 +553,16 @@
                           isEditMode ? 'bg-input-edit' : 'bg-input',
                           'py-2',
                         ]"
-                        :placeholder="
-                          t('kanban-modal-edit-placeholder-hotel-check-in')
-                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
-                    <div class="col">
+                    <div class="col-4">
                       <label for="hotel_check_out" class="form-label">
                         {{ t("kanban-modal-edit-label-hotel-check-out") }}
                       </label>
                       <input
-                        type="text"
+                        type="datetime-local"
                         name="hotel_check_out"
                         v-model="customerData.hotel_check_out"
                         :class="[
@@ -558,48 +570,85 @@
                           isEditMode ? 'bg-input-edit' : 'bg-input',
                           'py-2',
                         ]"
-                        :placeholder="
-                          t('kanban-modal-edit-placeholder-hotel-check-out')
-                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
-                  </div>
-                  <div class="row p-0 m-0">
-                    <div class="col">
-                      <span class="form-label">Transportation</span>
-                      <div class="form-check">
-                        <label for="transportation_true" class="form-label">
-                          {{ t("kanban-modal-edit-label-transportation-true") }}
-                        </label>
-                        <input
-                          type="radio"
-                          name="transportation"
-                          id="transportation"
-                          value="1"
-                          v-model="customerData.transportation"
-                          class="form-check-input"
-                        />
-                        <label for="transportation_true" class="form-label">
-                          {{
-                            t("kanban-modal-edit-label-transportation-false")
-                          }}
-                        </label>
-                        <input
-                          type="radio"
-                          name="transportation"
-                          id="transportation"
-                          value="0"
-                          v-model="customerData.transportation"
-                          class="form-check-input"
-                        />
+                    <div class="col-4">
+                      <label class="form-label">{{
+                        t("kanban-modal-edit-label-transportation")
+                      }}</label>
+                      <div class="form-check mt-1">
+                        <div class="container-fluid">
+                          <label for="transportation_true" class="form-label">
+                            {{
+                              t("kanban-modal-edit-label-transportation-true")
+                            }}
+                          </label>
+                          <input
+                            type="radio"
+                            name="transportation"
+                            id="transportation_true"
+                            value="1"
+                            v-model="customerData.transportation"
+                            class="form-check-input"
+                            @dblclick="handleDoubleClick"
+                            :readonly="!isEditMode"
+                          />
+                        </div>
+                        <div class="container-fluid">
+                          <label for="transportation_false" class="form-label">
+                            {{
+                              t("kanban-modal-edit-label-transportation-false")
+                            }}
+                          </label>
+                          <input
+                            type="radio"
+                            name="transportation"
+                            id="transportation_false"
+                            value="0"
+                            v-model="customerData.transportation"
+                            class="form-check-input"
+                            @dblclick="handleDoubleClick"
+                            :readonly="!isEditMode"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div class="col">
+                    <div class="col-4">
+                      <label for="hotel_gmap_link" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-gmap-link") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="hotel_gmap_link"
+                        v-model="customerData.hotel_gmap_link"
+                        v-show="isEditMode || !customerData.hotel_gmap_link"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-hotel-gmap-link')
+                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                      <a
+                        v-if="!isEditMode && customerData.hotel_gmap_link"
+                        :href="customerData.hotel_gmap_link"
+                        target="_blank"
+                        class="btn btn-primary w-100"
+                        >{{ t("kanban-modal-edit-button-hotel-gmap-link") }}</a
+                      >
+                    </div>
+                    <div class="col-4">
                       <label for="time" class="form-label">
                         {{ t("kanban-modal-edit-label-time") }}
                       </label>
                       <input
-                        type="time"
+                        type="datetime-local"
                         name="time"
                         v-model="customerData.time"
                         :class="[
@@ -607,6 +656,8 @@
                           isEditMode ? 'bg-input-edit' : 'bg-input',
                           'py-2',
                         ]"
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
                       />
                     </div>
                   </div>
@@ -1171,6 +1222,15 @@ export default {
       assigned_to: props.deal?.assigned_to_id || "",
       ticket: props.deal?.ticket || null,
       packages: props.deal?.packages || [],
+      flight_number: props.deal?.flight_number || "",
+      arrival_date: props.deal?.arrival_date || "",
+      departure_date: props.deal?.departure_date || "",
+      hotel_name: props.deal?.hotel_name || "",
+      hotel_check_in: props.deal?.hotel_check_in || "",
+      hotel_check_out: props.deal?.hotel_check_out || "",
+      hotel_gmap_link: props.deal?.hotel_gmap_link || "",
+      transportation: props.deal?.transportation || 0,
+      time: props.deal?.time || "",
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -1373,6 +1433,15 @@ export default {
           user_id: customerData.assigned_to || "",
           ticket: customerData.ticket || null,
           packages: customerData.packages || null,
+          flight_number: customerData.flight_number || "",
+          arrival_date: customerData.arrival_date || "",
+          departure_date: customerData.departure_date || "",
+          hotel_name: customerData.hotel_name || "",
+          hotel_check_in: customerData.hotel_check_in || "",
+          hotel_check_out: customerData.hotel_check_out || "",
+          hotel_gmap_link: customerData.hotel_gmap_link || "",
+          transportation: customerData.transportation || 0,
+          time: customerData.time || "",
         };
 
         const response = await updateDeal(props.deal.id, formData);
@@ -2235,5 +2304,14 @@ label {
 }
 .bg-input-edit {
   background-color: #d1d1d1e4 !important;
+}
+.form-check-input {
+  cursor: pointer;
+  border: 1px solid #333;
+}
+.form-check-input:checked {
+  background-color: var(--bs-dark);
+  border-color: var(--bs-dark-subtle);
+  accent-color: var(--bs-blue);
 }
 </style>
