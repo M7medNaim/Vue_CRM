@@ -26,7 +26,10 @@
             </h5>
           </div>
           <div class="rating">
-            <rating-stars v-model="customerData.rating" />
+            <rating-stars
+              v-model="customerData.rating"
+              :isEditable="isEditMode"
+            />
           </div>
           <div class="source">
             <i class="fa-solid fa-circle-exclamation me-1"></i>
@@ -1248,7 +1251,8 @@ export default {
     const customerData = reactive({
       id: props.deal?.id,
       name: props.deal?.contact.name || "Custome Name",
-      nickname: props.deal?.contact.nickname || "Custome Name",
+      nationality: props.deal?.contact.nationality || null,
+      language: props.deal?.contact.language || null,
       phone: props.deal?.contact.phones[0]?.phone || "",
       phone2: props.deal?.contact.phones[1]?.phone || "",
       email: props.deal?.contact.email || "",
@@ -1358,10 +1362,6 @@ export default {
     const newTask = ref("");
     const taskDate = ref("");
     const rating = ref(0);
-    const showNickName = ref(false);
-    const toggleNickName = () => {
-      showNickName.value = !showNickName.value;
-    };
     const showPhone2 = ref(false);
     const togglePhone2 = () => {
       showPhone2.value = !showPhone2.value;
@@ -1510,7 +1510,8 @@ export default {
 
         const formData = {
           name: customerData.name,
-          nickname: customerData.nickname || "",
+          nationality: customerData.nationality,
+          language: customerData.language,
           phones: phones,
           email: customerData.email || "",
           note: customerData.note || "",
@@ -2002,8 +2003,6 @@ export default {
       rating,
       updateRating,
       truncateText,
-      toggleNickName,
-      showNickName,
       togglePhone2,
       showPhone2,
       addNewPackage,

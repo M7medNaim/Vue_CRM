@@ -36,6 +36,10 @@ export default {
       default: 0,
       required: true,
     },
+    isEditable: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   setup() {
@@ -49,12 +53,15 @@ export default {
   },
   methods: {
     handleHover(index) {
+      if (!this.isEditable) return;
       this.hoveredStar = index;
     },
     handleLeave() {
+      if (!this.isEditable) return;
       this.hoveredStar = 0;
     },
     handleClick(index) {
+      if (!this.isEditable) return;
       this.$emit("update:modelValue", index);
     },
     calculateAmount(stars) {
