@@ -18,6 +18,7 @@ import BroadcastSettingsView from "@/views/BroadcastSettingsView.vue";
 import StagingSettingView from "@/views/StagingSettingView.vue";
 import WebWhatsapp from "@/views/WebWhatsapp.vue";
 import PatientRegistrationView from "@/views/PatientRegistrationView.vue";
+import EmrDealKanbanView from "@/views/EmrDealKanbanView.vue";
 
 const routes = [
   {
@@ -151,6 +152,16 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Patient Registration",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
+  },
+  {
+    path: "/emr-kanban",
+    name: "EmrDealKanbanView",
+    component: EmrDealKanbanView,
+    meta: {
+      requiresAuth: true,
+      title: "EMR Kanban",
     },
     beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },

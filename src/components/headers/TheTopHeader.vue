@@ -40,6 +40,16 @@
                 </div>
               </router-link>
               <router-link
+                to="/emr-kanban"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
+                  <i class="fa-solid fa-calendar-days fs-5 me-2"></i>
+                  <span>EMR Kanban</span>
+                </div>
+              </router-link>
+              <router-link
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
                 to="/crmlist"
                 class="text-decoration-none text-black mb-2"
@@ -474,6 +484,7 @@ export default {
         "/stage-settings": "fa-solid fa-sliders",
         "/patient-registration": "fa-solid fa-user-group",
         "/broadcast-settings": "fa-solid fa-broadcast-tower",
+        "/emr-kanban": "fa-solid fa-calendar-days",
       };
       return icons[route] || "fa-solid fa-bars";
     },

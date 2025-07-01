@@ -101,7 +101,9 @@ export default {
 
     showNewsBar() {
       return (
-        this.$route.path === "/crm-kanban" || this.$route.path === "/crm-tasks"
+        this.$route.path === "/crm-kanban" ||
+        this.$route.path === "/crm-tasks" ||
+        this.$route.path === "/emr-kanban"
       );
     },
 

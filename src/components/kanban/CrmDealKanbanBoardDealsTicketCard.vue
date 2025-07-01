@@ -1,6 +1,9 @@
 <template>
   <div
     class="deal-card position-relative"
+    draggable="true"
+    @dragstart="onDragStart"
+    :data-ticket="JSON.stringify(deal)"
     @click="openDealDataCard"
     :style="{
       borderLeft:
@@ -71,6 +74,15 @@
             ></i>
           </template>
         </div>
+        <span
+          class="deal-card-calendar"
+          draggable="true"
+          :data-ticket="JSON.stringify(deal)"
+          style="cursor: grab"
+          title="اسحب إلى التقويم"
+        >
+          <i class="fa fa-calendar-plus text-primary fs-6"></i>
+        </span>
       </div>
 
       <!-- persuasion progress  -->
@@ -288,6 +300,16 @@ export default {
       if (status <= 75) return "bg-info";
       return "bg-success";
     };
+    const onDragStart = (event) => {
+      event.dataTransfer.setData(
+        "application/json",
+        JSON.stringify({
+          id: props.deal.id,
+          name: props.deal.name,
+          stage_id: props.deal.stage_id,
+        })
+      );
+    };
     return {
       t,
       formatDate,
@@ -300,6 +322,7 @@ export default {
       copyPhoneNumber,
       formatDateUpdate,
       getPersuasionColorClass,
+      onDragStart,
     };
   },
   methods: {},

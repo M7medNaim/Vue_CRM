@@ -259,6 +259,7 @@
   <deal-data-card
     :key="selectedDeal?.id"
     :deal="selectedDeal"
+    v-if="selectedDeal"
     :logs="logs"
     :comments="comments"
     :tasks="tasks"
