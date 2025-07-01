@@ -11,7 +11,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="EditProfileModalLabel">
-            {{ t("modals.editProfile") }}
+            {{ t("header-user-menu-item-profile-modal-title") }}
           </h5>
           <button
             type="button"
@@ -21,9 +21,9 @@
             @click="closeEditProfile"
           ></button>
         </div>
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="submitForm" ref="EditProfileForm">
           <div class="modal-body">
-            <profile-form :name="name" :email="email" />
+            <profile-form :userData="userData" />
           </div>
           <profile-buttons :loading="loading" @close="closeEditProfile" />
         </form>
@@ -38,6 +38,8 @@ import ProfileForm from "@/components/editProfileElements/TheTopHeaderDropDownMe
 import ProfileButtons from "@/components/editProfileElements/TheTopHeaderDropDownMenuProfileEditProfileModalButtonsItems.vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
+import { getUserById, updateUser } from "@/plugins/services/authService";
+import Cookies from "js-cookie";
 export default {
   name: "TheTopHeaderDropDownMenuProfileEditProfileModal",
   components: { ProfileForm, ProfileButtons },
@@ -50,8 +52,6 @@ export default {
     return {
       modalInstance: null,
       loading: false,
-      name: "",
-      email: "",
     };
   },
   methods: {
@@ -89,16 +89,31 @@ export default {
     async submitForm() {
       try {
         this.loading = true;
+        const form = this.$refs.EditProfileForm;
+        const formData = new FormData(form);
+        const name_en = formData.get("name_en");
+        const name_ar = formData.get("name_ar");
+        const email = formData.get("email");
+        const image = formData.get("image");
+
+        const response = await updateUser({
+          name_en,
+          name_ar,
+          email,
+          image,
+        });
+        if (response.status !== 200) {
+          throw new Error(response.data.message);
+        }
         // هنا يتم إضافة المنطق الخاص بحفظ البيانات
-        this.toast.success(this.t("success.updated"), {
+        this.toast.success(response.data.message, {
           timeout: 3000,
           id: "edit-profile-success",
           singleton: true,
         });
         this.closeEditProfile();
       } catch (error) {
-        console.error("Error submitting form:", error);
-        this.toast.error(this.t("error.saveData"), {
+        this.toast.error(error.message, {
           timeout: 3000,
           id: "edit-profile-submit-error",
           singleton: true,
@@ -107,6 +122,25 @@ export default {
         this.loading = false;
       }
     },
+    async fetchUserData() {
+      try {
+        const response = await getUserById(Cookies.get("user_id"));
+        if (response.status !== 200) {
+          throw new Error(response.data.message);
+        }
+        this.userData = response.data.data;
+        console.log("User Data:", this.userData);
+      } catch (error) {
+        this.toast.error(error.message, {
+          timeout: 3000,
+          id: "fetch-user-data-error",
+          singleton: true,
+        });
+      }
+    },
+  },
+  mounted() {
+    this.fetchUserData();
   },
 };
 </script>

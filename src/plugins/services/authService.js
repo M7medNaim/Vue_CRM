@@ -25,6 +25,16 @@ export const getUser = (filters) => {
   });
 };
 
+// Get User by ID
+export const getUserById = (userId) => {
+  const token = Cookies.get("authToken");
+  return axios.get(`/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 // Create New User
 export const createUser = (formData) => {
   return axios.post("/users", formData, {

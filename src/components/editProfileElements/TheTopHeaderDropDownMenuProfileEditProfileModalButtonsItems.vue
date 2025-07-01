@@ -6,7 +6,9 @@
       <span v-if="loading">
         <i class="fas fa-spinner fa-spin"></i> {{ t("modals.editing") }}
       </span>
-      <span v-else>{{ t("buttons.edit") }}</span>
+      <span v-else>{{
+        t("header-user-menu-item-profile-modal-button-confirm")
+      }}</span>
     </button>
 
     <button
