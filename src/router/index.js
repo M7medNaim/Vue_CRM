@@ -19,6 +19,7 @@ import StagingSettingView from "@/views/StagingSettingView.vue";
 import WebWhatsapp from "@/views/WebWhatsapp.vue";
 import PatientRegistrationView from "@/views/PatientRegistrationView.vue";
 import EmrDealKanbanView from "@/views/EmrDealKanbanView.vue";
+import AfterSalesDealKanbanView from "@/views/AfterSalesDealKanbanView.vue";
 
 const routes = [
   {
@@ -74,6 +75,26 @@ const routes = [
       title: "CRM Tasks",
     },
     beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
+  },
+  {
+    path: "/emr-kanban",
+    name: "EmrDealKanbanView",
+    component: EmrDealKanbanView,
+    meta: {
+      requiresAuth: true,
+      title: "EMR Kanban",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
+  },
+  {
+    path: "/after-sales-kanban",
+    name: "AfterSalesDealKanbanView",
+    component: AfterSalesDealKanbanView,
+    meta: {
+      requiresAuth: true,
+      title: "After Sales Kanban",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },
   {
     path: "/users",
@@ -152,16 +173,6 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Patient Registration",
-    },
-    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
-  },
-  {
-    path: "/emr-kanban",
-    name: "EmrDealKanbanView",
-    component: EmrDealKanbanView,
-    meta: {
-      requiresAuth: true,
-      title: "EMR Kanban",
     },
     beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },

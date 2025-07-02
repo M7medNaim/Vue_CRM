@@ -50,6 +50,16 @@
                 </div>
               </router-link>
               <router-link
+                to="/after-sales-kanban"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
+                  <i class="fa-solid fa-calendar-days fs-5 me-2"></i>
+                  <span>After Sales Kanban</span>
+                </div>
+              </router-link>
+              <router-link
                 v-if="permissionStore.hasPermission(PERMISSIONS.DEALS_LIST)"
                 to="/crmlist"
                 class="text-decoration-none text-black mb-2"

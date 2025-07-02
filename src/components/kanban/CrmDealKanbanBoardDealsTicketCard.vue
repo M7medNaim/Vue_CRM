@@ -75,6 +75,7 @@
           </template>
         </div>
         <span
+          v-if="showCalendarDrag"
           class="deal-card-calendar"
           draggable="true"
           :data-ticket="JSON.stringify(deal)"
@@ -186,6 +187,10 @@ export default {
     deal: {
       type: Object,
       required: true,
+    },
+    showCalendarDrag: {
+      type: Boolean,
+      default: false,
     },
   },
   components: {

@@ -204,6 +204,7 @@
                 <template #item="{ element: deal }">
                   <ticket-card
                     :deal="deal"
+                    :showCalendarDrag="isEmrView"
                     @open-deal-data-card="openDealDataCard(deal.id, stage.id)"
                   />
                 </template>
@@ -360,6 +361,7 @@ export default {
     const packages = ref([]);
     const allStages = ref(null);
     const selectedStageId = ref(null);
+    const isEmrView = computed(() => route.path.includes("emr"));
 
     watch(
       () => props.stages,
@@ -1306,6 +1308,7 @@ export default {
       getStageDeals,
       allStages,
       selectedStageId,
+      isEmrView,
     };
   },
 };
