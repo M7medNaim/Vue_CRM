@@ -101,22 +101,22 @@ export default {
           formattedFilters["filters[stage_id]"] = filters.value.stage_id;
         }
         if (filters.value.user_id) {
-          formattedFilters["filters[user_id]"] = filters.value.user_id;
+          formattedFilters["filters[assigned_to_id]"] = filters.value.user_id;
         }
         if (filters.value.created_at_start) {
-          formattedFilters["filters[created_at_start]"] =
+          formattedFilters["filters[created_date_start]"] =
             filters.value.created_at_start;
         }
         if (filters.value.created_at_end) {
-          formattedFilters["filters[created_at_end]"] =
+          formattedFilters["filters[created_date_end]"] =
             filters.value.created_at_end;
         }
         if (filters.value.updated_at_start) {
-          formattedFilters["filters[updated_at_start]"] =
+          formattedFilters["filters[updated_date_start]"] =
             filters.value.updated_at_start;
         }
         if (filters.value.updated_at_end) {
-          formattedFilters["filters[updated_at_end]"] =
+          formattedFilters["filters[updated_date_end]"] =
             filters.value.updated_at_end;
         }
         if (Array.isArray(filters.value.status)) {
@@ -153,111 +153,7 @@ export default {
           stages.value = [];
           return;
         }
-
-        const sortDeals = (deals, sortBy, sortOrder) => {
-          if (!sortBy || !sortOrder) return deals;
-          return [...deals].sort((a, b) => {
-            let aValue = a[sortBy];
-            let bValue = b[sortBy];
-
-            if (sortBy === "created_at" || sortBy === "updated_at") {
-              aValue = new Date(aValue);
-              bValue = new Date(bValue);
-            }
-
-            if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-            if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-            return 0;
-          });
-        };
-
-        const filterDealsByUserAndDate = (
-          deals,
-          userId,
-          createdStart,
-          createdEnd,
-          updatedStart,
-          updatedEnd
-        ) => {
-          const getEndOfDay = (dateStr) => {
-            if (!dateStr) return null;
-            const d = new Date(dateStr);
-            d.setHours(23, 59, 59, 999);
-            return d;
-          };
-
-          return deals.filter((deal) => {
-            const byUser = userId ? deal.user_id == userId : true;
-
-            const createdAt = new Date(deal.created_at);
-            const afterCreatedStart = createdStart
-              ? createdAt >= new Date(createdStart)
-              : true;
-            const beforeCreatedEnd = createdEnd
-              ? createdAt <= getEndOfDay(createdEnd)
-              : true;
-
-            const updatedAt = new Date(deal.updated_at);
-            const afterUpdatedStart = updatedStart
-              ? updatedAt >= new Date(updatedStart)
-              : true;
-            const beforeUpdatedEnd = updatedEnd
-              ? updatedAt <= getEndOfDay(updatedEnd)
-              : true;
-
-            return (
-              byUser &&
-              afterCreatedStart &&
-              beforeCreatedEnd &&
-              afterUpdatedStart &&
-              beforeUpdatedEnd
-            );
-          });
-        };
-
-        if (filters.value.stage_id) {
-          stages.value = response.data.data
-            .filter((stage) => stage.id == filters.value.stage_id)
-            .map((stage) => ({
-              id: stage.id,
-              name: stage.name,
-              description: stage.description || null,
-              color_code: stage.color_code,
-              deal_count: stage.deal_count,
-              deals: sortDeals(
-                filterDealsByUserAndDate(
-                  stage.deals || [],
-                  filters.value.user_id,
-                  filters.value.created_at_start,
-                  filters.value.created_at_end,
-                  filters.value.updated_at_start,
-                  filters.value.updated_at_end
-                ),
-                filters.value.sort_by,
-                filters.value.sort_order
-              ),
-            }));
-        } else {
-          stages.value = response.data.data.map((stage) => ({
-            id: stage.id,
-            name: stage.name,
-            description: stage.description || null,
-            color_code: stage.color_code,
-            deal_count: stage.deal_count,
-            deals: sortDeals(
-              filterDealsByUserAndDate(
-                stage.deals || [],
-                filters.value.user_id,
-                filters.value.created_at_start,
-                filters.value.created_at_end,
-                filters.value.updated_at_start,
-                filters.value.updated_at_end
-              ),
-              filters.value.sort_by,
-              filters.value.sort_order
-            ),
-          }));
-        }
+        stages.value = response.data.data;
 
         toast.success(t("success.applyFilters"), { timeout: 3000 });
       } catch (error) {
