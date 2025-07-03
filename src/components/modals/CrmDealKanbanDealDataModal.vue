@@ -337,18 +337,18 @@
                   </select>
                 </div>
               </div>
-              <!-- Packages -->
+              <!-- Kanban Packages -->
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2 pt-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i>
-                    {{ t("kanban-modal-edit-label-packages") }}</label
+                    {{ t("kanban-modal-edit-label-kanban-packages") }}</label
                   >
                 </div>
                 <div class="col-10">
-                  <div class="" v-if="customerData.packages.length > 0">
+                  <div class="" v-if="customerData.kanban_packages.length > 0">
                     <div
-                      v-for="(pkg, index) in customerData.packages"
+                      v-for="(pkg, index) in customerData.kanban_packages"
                       :key="index"
                       class="packages mb-2 px-2"
                     >
@@ -427,7 +427,7 @@
                         <div class="col-1 p-1 px-1">
                           <button
                             class="btn btn-primary"
-                            @click="removePackage(index)"
+                            @click="removeKanbanPackage(index)"
                             v-if="isEditMode"
                           >
                             x
@@ -439,14 +439,175 @@
                   <div class="pt-2" v-else-if="!isEditMode">
                     {{ t("kanban-modal-edit-label-no-packages") }}
                   </div>
-                  <button
-                    class="btn btn-primary mt-2 fs-5 px-3"
-                    @click="addNewPackage"
-                    :disabled="!isEditMode"
-                    v-if="isEditMode"
+                  <div class="w-100 d-flex mt-2 justify-content-between gap-2">
+                    <button
+                      class="btn btn-primary fs-5 px-3"
+                      @click="addNewKanbanPackage"
+                      :disabled="!isEditMode"
+                      v-if="isEditMode"
+                    >
+                      +
+                    </button>
+                    <div class="input-group">
+                      <span class="input-group-text">{{
+                        t("kanban-modal-edit-label-total-cost")
+                      }}</span>
+                      <input
+                        type="number"
+                        :class="[
+                          'bg-input',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'p-2',
+                          'rounded-right-2',
+                          'form-control',
+                        ]"
+                        v-model="customerData.kanban_total_cost"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-total-cost')
+                        "
+                        :readonly="!isEditMode"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Hospital Packages -->
+              <div class="row mb-3" @dblclick="handleDoubleClick">
+                <div class="col-2 pt-2">
+                  <label class="form-label"
+                    ><i class="fa-solid fa-cubes"></i>
+                    {{ t("kanban-modal-edit-label-hospital-packages") }}</label
                   >
-                    +
-                  </button>
+                </div>
+                <div class="col-10">
+                  <div
+                    class=""
+                    v-if="customerData.hospital_packages.length > 0"
+                  >
+                    <div
+                      v-for="(pkg, index) in customerData.hospital_packages"
+                      :key="index"
+                      class="packages mb-2 px-2"
+                    >
+                      <div class="row p-0">
+                        <div
+                          class="col-7 p-1 px-1"
+                          @dblclick="handleDoubleClick"
+                        >
+                          <select
+                            class="form-select py-2"
+                            :class="isEditMode ? 'bg-input-edit' : 'bg-input'"
+                            v-model="pkg.id"
+                            :disabled="!isEditMode"
+                            @dblclick="handleDoubleClick"
+                          >
+                            <option value="" disabled>
+                              {{
+                                t("kanban-modal-edit-placeholder-packages-name")
+                              }}
+                            </option>
+                            <option
+                              v-for="pkg in local_packages"
+                              :key="pkg.id"
+                              :value="pkg.id"
+                            >
+                              {{ pkg.name }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-2 p-1 px-1">
+                          <div class="input-group">
+                            <span class="input-group-text">Qty</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.quantity"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-quantity'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="1"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-2 p-1 px-0">
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.total_price"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-price'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="0"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-1 p-1 px-1">
+                          <button
+                            class="btn btn-primary"
+                            @click="removeHospitalPackage(index)"
+                            v-if="isEditMode"
+                          >
+                            x
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pt-2" v-else-if="!isEditMode">
+                    {{ t("kanban-modal-edit-label-no-packages") }}
+                  </div>
+                  <div class="w-100 d-flex mt-2 justify-content-between gap-2">
+                    <button
+                      class="btn btn-primary fs-5 px-3"
+                      @click="addNewHospitalPackage"
+                      :disabled="!isEditMode"
+                      v-if="isEditMode"
+                    >
+                      +
+                    </button>
+                    <div class="input-group">
+                      <span class="input-group-text">{{
+                        t("kanban-modal-edit-label-total-cost")
+                      }}</span>
+                      <input
+                        type="number"
+                        :class="[
+                          'bg-input',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'p-2',
+                          'rounded-right-2',
+                          'form-control',
+                        ]"
+                        v-model="customerData.hospital_total_cost"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-total-cost')
+                        "
+                        :readonly="!isEditMode"
+                        min="0"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <!-- Deal ticket upload -->
@@ -1273,7 +1434,8 @@ export default {
         })) || [],
       assigned_to: props.deal?.assigned_to_id || "",
       ticket: props.deal?.ticket || null,
-      packages: props.deal?.packages || [],
+      kanban_packages: props.deal?.kanban_packages || [],
+      hospital_packages: props.deal?.hospital_packages || [],
       flight_number: props.deal?.flight_number || "",
       arrival_date: props.deal?.arrival_date || "",
       departure_date: props.deal?.departure_date || "",
@@ -1283,6 +1445,8 @@ export default {
       hotel_gmap_link: props.deal?.hotel_gmap_link || "",
       transportation: props.deal?.transportation || 0,
       time: props.deal?.time || "",
+      kanban_total_cost: props.deal?.kanban_total_cost || null,
+      hospital_total_cost: props.deal?.hospital_total_cost || null,
     });
     const nationalities_options = {
       afghan: {
@@ -2299,7 +2463,8 @@ export default {
           rating: customerData.rating || 0,
           user_id: customerData.assigned_to || "",
           ticket: customerData.ticket || null,
-          packages: customerData.packages || null,
+          kanban_packages: customerData.kanban_packages || null,
+          hospital_packages: customerData.hospital_packages || null,
           flight_number: customerData.flight_number || "",
           arrival_date: customerData.arrival_date || "",
           departure_date: customerData.departure_date || "",
@@ -2309,6 +2474,8 @@ export default {
           hotel_gmap_link: customerData.hotel_gmap_link || "",
           transportation: customerData.transportation || 0,
           time: customerData.time || "",
+          kanban_total_cost: customerData.kanban_total_cost || null,
+          hospital_total_cost: customerData.hospital_total_cost || null,
         };
 
         const response = await updateDeal(props.deal.id, formData);
@@ -2354,18 +2521,41 @@ export default {
       return text;
     };
 
-    const addNewPackage = () => {
+    const addNewKanbanPackage = () => {
       if (!isEditMode.value) return;
-      customerData.packages.push({
+      customerData.kanban_packages.push({
         id: "",
         quantity: null,
         total_price: null,
       });
     };
 
-    const removePackage = (index) => {
+    const addNewHospitalPackage = () => {
+      if (!isEditMode.value) return;
+      customerData.hospital_packages.push({
+        id: "",
+        quantity: null,
+        total_price: null,
+      });
+    };
+
+    const removeKanbanPackage = (index) => {
       try {
-        customerData.packages.splice(index, 1);
+        customerData.kanban_packages.splice(index, 1);
+        toast.success(t("success.removePackage"), {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error removing package:", error);
+        toast.error(t("error.removePackage"), {
+          timeout: 3000,
+        });
+      }
+    };
+
+    const removeHospitalPackage = (index) => {
+      try {
+        customerData.hospital_packages.splice(index, 1);
         toast.success(t("success.removePackage"), {
           timeout: 3000,
         });
@@ -2786,8 +2976,10 @@ export default {
       truncateText,
       togglePhone2,
       showPhone2,
-      addNewPackage,
-      removePackage,
+      addNewKanbanPackage,
+      addNewHospitalPackage,
+      removeKanbanPackage,
+      removeHospitalPackage,
       handleTaskCompletion,
       handleStageHover,
       handleStageLeave,
