@@ -123,7 +123,7 @@
         :value="rows"
         :paginator="true"
         :rows="rowsPerPage"
-        :rowsPerPageOptions="[10, 25, 50]"
+        :rowsPerPageOptions="[10, 25, 50, 100, 250]"
         :total-records="totalRows"
         :lazy="true"
         :loading="loading"
