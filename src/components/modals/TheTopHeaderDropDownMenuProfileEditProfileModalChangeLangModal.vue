@@ -23,6 +23,9 @@
             <select v-model="selectedLang" class="form-select">
               <option value="en">English</option>
               <option value="ar">العربية</option>
+              <option value="ur">اردو</option>
+              <option value="tr">Türkçe</option>
+              <option value="ru">Русский</option>
             </select>
           </div>
           <div class="modal-footer">
