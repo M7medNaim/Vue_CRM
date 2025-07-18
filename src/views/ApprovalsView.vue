@@ -119,10 +119,16 @@
               >
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn btn-sm btn-success">
+              <button
+                class="btn btn-sm btn-success"
+                @click="handleApprove(slotProps.data.id, 1)"
+              >
                 <i class="fas fa-check"></i>
               </button>
-              <button class="btn btn-sm btn-danger">
+              <button
+                class="btn btn-sm btn-danger"
+                @click="handleApprove(slotProps.data.id, 0)"
+              >
                 <i class="fas fa-xmark"></i>
               </button>
             </div>
@@ -178,12 +184,12 @@ import {
   updateDealStage,
   getAvailableStages,
   getApprovals,
-  // updateApproval,
+  updateApproval,
 } from "@/plugins/services/authService";
 import CrmListViewFilterModal from "@/components/modals/CrmListViewFilterModal.vue";
 import ShowData from "@/components/modals/CrmListViewShowDataModal.vue";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
-// import Swal from "sweetalert2";
+import Swal from "sweetalert2";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
 import Cookies from "js-cookie";
@@ -582,44 +588,29 @@ const changeDealStage = async (dealId, newStageId) => {
   }
 };
 
-// const handleApprove = async (approval) => {
-//   const result = await Swal.fire({
-//     title: t("error.deleteTitle"),
-//     text: t("crmlist-modal-deal-delete-description"),
-//     icon: "warning",
-//     showCancelButton: true,
-//     confirmButtonColor: "#3085d6",
-//     cancelButtonColor: "#d33",
-//     confirmButtonText: t("success.deleteConfirm"),
-//     cancelButtonText: t("error.deleteCancel"),
-//     reverseButtons: true,
-//   });
+const handleApprove = async (id, approval) => {
+  const result = await Swal.fire({
+    title: t("approval-confirmation-title"),
+    text: t("approval-confirmation-description"),
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: t("success.deleteConfirm"),
+    cancelButtonText: t("error.deleteCancel"),
+    reverseButtons: true,
+  });
 
-//   if (result.isConfirmed) {
-//     const response = await deleteDeals([id]);
-//     if (response.status === 204 || response.status === 200) {
-//       fetchData();
-//       toast.success(response.data.message, { timeout: 3000 });
-//     } else {
-//       throw new Error(response.data.message || t("error-default"));
-//     }
-//   }
-// };
-
-// const approvalSubmit = async (id, status) => {
-//   try {
-//     const response = await updateApproval(id, status);
-//     if (response.status === 200) {
-//       toast.success(t("success.approvalUpdated"), { timeout: 3000 });
-//       fetchData();
-//     } else {
-//       toast.error(t("error.approvalUpdateFailed"), { timeout: 3000 });
-//     }
-//   } catch (error) {
-//     console.error("Error updating approval:", error);
-//     toast.error(t("error.approvalUpdateFailed"), { timeout: 3000 });
-//   }
-// };
+  if (result.isConfirmed) {
+    const response = await updateApproval(id, approval);
+    if (response.status === 204 || response.status === 200) {
+      fetchData();
+      toast.success(response.data.message, { timeout: 3000 });
+    } else {
+      throw new Error(response.data.message || t("error-default"));
+    }
+  }
+};
 
 onMounted(async () => {
   await fetchData();
