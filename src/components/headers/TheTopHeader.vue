@@ -495,6 +495,7 @@ export default {
         "/patient-registration": "fa-solid fa-user-group",
         "/broadcast-settings": "fa-solid fa-broadcast-tower",
         "/emr-kanban": "fa-solid fa-calendar-days",
+        "/after-sales-kanban": "fa-solid fa-calendar-days",
       };
       return icons[route] || "fa-solid fa-bars";
     },
