@@ -82,7 +82,7 @@
                     class="sidebar-item d-flex align-items-center"
                     :title="$t('sidebar-nav-item-approvals')"
                   >
-                    <i class="fa-regular fa-address-book fs-5 me-2"></i>
+                    <i class="fa-solid fa-stamp fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-approvals") }}</span>
                   </div>
                 </div>
