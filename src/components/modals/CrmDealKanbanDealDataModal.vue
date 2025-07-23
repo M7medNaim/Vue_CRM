@@ -1043,7 +1043,7 @@
                           </div>
                         </div>
                         <div v-else>
-                          <span
+                          <div
                             :ref="`commentText-${comment.id}`"
                             style="
                               white-space: pre-line;
@@ -1058,7 +1058,6 @@
                             :style="{ width: getCommentTextWidth(comment.id) }"
                             v-html="comment.text_body"
                           />
-                          >
                         </div>
                         <div
                           class="d-flex justify-content-end align-items-center gap-2 mt-2"
