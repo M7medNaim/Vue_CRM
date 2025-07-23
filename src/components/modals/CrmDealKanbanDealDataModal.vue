@@ -1056,7 +1056,8 @@
                               width: auto !important;
                             "
                             :style="{ width: getCommentTextWidth(comment.id) }"
-                            >{{ comment.text_body }}</span
+                            v-html="comment.text_body"
+                          />
                           >
                         </div>
                         <div
