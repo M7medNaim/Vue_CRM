@@ -65,7 +65,7 @@ export default {
       if (searching.value) return;
       try {
         searching.value = true;
-        searchVal.value = searchText.search || "";
+        searchVal.value = searchText || "";
         const response = await getDealsKanban(searchText);
         if (Array.isArray(response.data.data)) {
           stages.value = response.data.data.map((stage) => ({
