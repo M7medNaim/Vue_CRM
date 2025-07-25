@@ -71,18 +71,6 @@
             {{ slotProps.index + 1 + currentPage * rowsPerPage }}
           </template>
         </Column>
-        <Column :header="t('approvals-table-header-currentuser')">
-          <template #body="slotProps">
-            <span>{{
-              slotProps.data.current_user ??
-              t("approvals-table-default-value-currentuser")
-            }}</span>
-          </template>
-        </Column>
-        <Column
-          field="current_stage"
-          :header="t('approvals-table-header-currentstage')"
-        ></Column>
         <Column
           field="requested_by"
           :header="t('approvals-table-header-requesteduser')"
@@ -111,12 +99,6 @@
         <Column :header="t('approvals-table-header-action')">
           <template #body="slotProps">
             <div class="d-flex gap-2">
-              <button
-                class="btn btn-sm btn-primary"
-                @click="handleShowDealModal(slotProps.data.deal_id)"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
               <button
                 v-show="
                   slotProps.data.status === 1 || slotProps.data.status === null
@@ -157,15 +139,6 @@
   </div>
   <!-- @add-deal="addNewDeal" -->
   <show-data :formData="dealData" ref="showDataModal" />
-  <deal-data-card
-    :key="selectedDeal?.id"
-    :deal="selectedDeal"
-    :logs="logs"
-    :comments="comments"
-    :tasks="tasks"
-    @open-whatsapp-modal="openWhatsappModal"
-    @stage-change="changeDealStage"
-  />
 </template>
 <script>
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
@@ -174,7 +147,6 @@ import CountryFlagAvatar from "@/components/whatsapp/WhatsAppModalSidebarLeftCou
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ShowData from "@/components/modals/CrmListViewShowDataModal.vue";
-import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
 import Cookies from "js-cookie";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
@@ -192,14 +164,13 @@ import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
 import { useApprovalStore } from "@/stores/approvalStore";
 
 export default {
-  name: "ApprovalDealReassignmentTable",
+  name: "ApprovalNewDealCreationTable",
   components: {
     DataTable,
     Column,
     CrmKanbanHeader,
     CountryFlagAvatar,
     ShowData,
-    DealDataCard,
   },
   setup() {
     const permissionStore = usePermissionStore();
@@ -207,7 +178,7 @@ export default {
     const toast = useToast();
     const approvalStore = useApprovalStore();
     const approvals = computed(() =>
-      approvalStore.getApprovals("deal_reassign_approval")
+      approvalStore.getApprovals("new_deal_create_approval")
     );
     const searchInput = ref("");
     const rowsPerPage = computed(() => approvalStore.getPerPage);
@@ -236,7 +207,8 @@ export default {
         approvalStore.fetchApprovals(
           searchInput.value,
           currentPage.value,
-          rowsPerPage.value
+          rowsPerPage.value,
+          "new_deal_create_approval"
         );
       } catch (error) {
         console.error("Error fetching data:", error);

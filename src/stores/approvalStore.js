@@ -39,7 +39,7 @@ export const useApprovalStore = defineStore("approval", {
     },
   },
   actions: {
-    async fetchApprovals(search = "", page = 1, perPage = 50) {
+    async fetchApprovals(search = "", page = 1, perPage = 50, type = "") {
       this.search = search;
       this.page = page;
       this.perPage = perPage;
@@ -47,6 +47,7 @@ export const useApprovalStore = defineStore("approval", {
         search: this.search,
         perPage: this.perPage,
         page: this.page,
+        type: type,
       }).then((response) => {
         this.approvals = response.data.data;
         this.total = response.data.meta.total;

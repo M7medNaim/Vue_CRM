@@ -56,28 +56,62 @@
         id="idle_deal_assignment"
         role="tabpanel"
         aria-labelledby="idle_deal_assignment_tab"
-      ></div>
+      >
+        <approval-idle-deal-assign-table />
+      </div>
       <div
         class="tab-pane fade"
         id="new_deal_creation"
         role="tabpanel"
         aria-labelledby="new_deal_creation_tab"
-      ></div>
+      >
+        <approval-new-deal-creation-table />
+      </div>
     </div>
   </div>
+  <deal-data-card
+    :key="selectedDeal?.id"
+    :deal="selectedDeal"
+    :logs="logs"
+    :comments="comments"
+    :tasks="tasks"
+    @open-whatsapp-modal="openWhatsappModal"
+    @stage-change="changeDealStage"
+  />
 </template>
 <script>
 import { useI18n } from "vue-i18n";
 import ApprovalDealReassignmentTable from "@/components/ApprovalDealReassignmentTable.vue";
+import ApprovalIdleDealAssignTable from "@/components/ApprovalIdleDealAssignTable.vue";
+import ApprovalNewDealCreationTable from "@/components/ApprovalNewDealCreationTable.vue";
+import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
+import { useApprovalStore } from "@/stores/approvalStore";
+import { onMounted } from "vue";
 export default {
   name: "ApprovalsView",
   components: {
     ApprovalDealReassignmentTable,
+    ApprovalIdleDealAssignTable,
+    ApprovalNewDealCreationTable,
+    DealDataCard,
   },
   setup() {
     const { t } = useI18n();
+    const approvalStore = useApprovalStore();
+    const fetchApprovals = async () => {
+      try {
+        await approvalStore.fetchApprovals("", 1, 10);
+      } catch (error) {
+        console.error("Error fetching approvals:", error);
+      }
+    };
+
+    onMounted(() => {
+      fetchApprovals();
+    });
     return {
       t,
+      fetchApprovals,
     };
   },
 };

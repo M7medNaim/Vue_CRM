@@ -492,12 +492,17 @@ export const getApprovals = async (params = {}) => {
       sort_by: params.sort_by || "created_at",
       sort_type: params.sort_type || "desc",
       search: params.search || "",
+      type: params.type || "",
       ...params.filters,
     },
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const createApproval = async (phone) => {
+  return await axios.post("/approvals", { phone: phone });
 };
 
 export const updateApproval = async (approvalId, status) => {

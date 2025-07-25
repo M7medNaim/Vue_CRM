@@ -157,15 +157,6 @@
   </div>
   <!-- @add-deal="addNewDeal" -->
   <show-data :formData="dealData" ref="showDataModal" />
-  <deal-data-card
-    :key="selectedDeal?.id"
-    :deal="selectedDeal"
-    :logs="logs"
-    :comments="comments"
-    :tasks="tasks"
-    @open-whatsapp-modal="openWhatsappModal"
-    @stage-change="changeDealStage"
-  />
 </template>
 <script>
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
@@ -174,7 +165,6 @@ import CountryFlagAvatar from "@/components/whatsapp/WhatsAppModalSidebarLeftCou
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ShowData from "@/components/modals/CrmListViewShowDataModal.vue";
-import DealDataCard from "@/components/modals/CrmDealKanbanDealDataModal.vue";
 import Cookies from "js-cookie";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
@@ -199,7 +189,6 @@ export default {
     CrmKanbanHeader,
     CountryFlagAvatar,
     ShowData,
-    DealDataCard,
   },
   setup() {
     const permissionStore = usePermissionStore();
@@ -236,7 +225,8 @@ export default {
         approvalStore.fetchApprovals(
           searchInput.value,
           currentPage.value,
-          rowsPerPage.value
+          rowsPerPage.value,
+          "deal_reassign_approval"
         );
       } catch (error) {
         console.error("Error fetching data:", error);
