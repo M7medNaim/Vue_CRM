@@ -254,7 +254,7 @@
         class="btn text-white position-absolute top-50 start-50 translate-middle bg-primary p-2 z-3 btn-request"
         @click="handleRequestDeal"
       >
-        {{ t("kanban-btn-request-deals") }}
+        {{ t("kanban-btn-request-deal") }}
       </button>
     </div>
   </div>
