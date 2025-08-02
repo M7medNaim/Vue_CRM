@@ -61,7 +61,9 @@
         class="col-12 fs-8 mb-1 p-0 d-flex justify-content-between align-items-center"
       >
         <div class="">
-          <span class="ms-2 text-secondary">Rating: </span>
+          <span class="ms-2 text-secondary"
+            >{{ t("kanban-deal-label-rating") }}:
+          </span>
           <template v-for="index in 7" :key="index">
             <i
               class="fa-solid fa-star"

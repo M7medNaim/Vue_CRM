@@ -638,7 +638,7 @@
                         :disabled="!isEditMode"
                       >
                         <i class="fa-solid fa-file"></i>
-                        Remove File
+                        {{ t("kanban-modal-edit-button-remove-ticket") }}
                       </button>
                     </div>
                     <div class="col-4">
@@ -648,7 +648,7 @@
                         target="_blank"
                       >
                         <i class="fa-solid fa-file"></i>
-                        View File
+                        {{ t("kanban-modal-edit-button-view-ticket") }}
                       </a>
                     </div>
                     <div class="col-4">
@@ -659,7 +659,7 @@
                         download
                       >
                         <i class="fa-solid fa-file"></i>
-                        Download File
+                        {{ t("kanban-modal-edit-button-download-ticket") }}
                       </a>
                     </div>
                   </div>
