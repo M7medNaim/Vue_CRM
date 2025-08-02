@@ -293,6 +293,7 @@ import {
 } from "vue";
 import { useRoute } from "vue-router";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+import { useI18n } from "@/i18n";
 
 export default {
   name: "TheTopHeader",
@@ -319,6 +320,7 @@ export default {
     const user_role = Cookies.get("user_role");
     const loadingStore = useLoadingStore();
     const currentTime = ref("");
+    const { t, locale } = useI18n();
     const updateTime = () => {
       const now = new Date();
 
@@ -390,6 +392,8 @@ export default {
       user_role,
       refreshPage,
       hasNewChanges,
+      t,
+      locale,
     };
   },
   methods: {
