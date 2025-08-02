@@ -51,7 +51,7 @@ const routes = [
     component: HomeView,
     meta: {
       requiresAuth: true,
-      title: "Dashboard",
+      title: "sidebar-nav-item-dashboard",
     },
     beforeEnter: requirePermission(PERMISSIONS.DASHBOARD),
   },
@@ -61,7 +61,7 @@ const routes = [
     component: CrmDealKanbanView,
     meta: {
       requiresAuth: true,
-      title: "CRM Kanban",
+      title: "sidebar-nav-item-kanban",
     },
     beforeEnter: requirePermission(PERMISSIONS.DEALS_KANBAN),
   },
@@ -71,7 +71,7 @@ const routes = [
     component: ApprovalsView,
     meta: {
       requiresAuth: true,
-      title: "Approvals",
+      title: "sidebar-nav-item-approvals",
     },
     // beforeEnter: requirePermission(PERMISSIONS.DEALS_KANBAN),
   },
@@ -91,7 +91,7 @@ const routes = [
     component: UsersView,
     meta: {
       requiresAuth: true,
-      title: "Users",
+      title: "sidebar-nav-item-users",
     },
     beforeEnter: requirePermission(PERMISSIONS.USERS),
   },
@@ -101,7 +101,7 @@ const routes = [
     component: CrmListView,
     meta: {
       requiresAuth: true,
-      title: "CRM List",
+      title: "sidebar-nav-item-crmlist",
     },
     beforeEnter: requirePermission(PERMISSIONS.DEALS_LIST),
   },
@@ -111,7 +111,7 @@ const routes = [
     component: ContactsView,
     meta: {
       requiresAuth: true,
-      title: "Contacts",
+      title: "sidebar-nav-item-contacts",
     },
     beforeEnter: requirePermission(PERMISSIONS.CONTACTS),
   },
@@ -121,7 +121,7 @@ const routes = [
     component: GeneralSettingView,
     meta: {
       requiresAuth: true,
-      title: "General Settings",
+      title: "sidebar-nav-item-settings",
     },
     beforeEnter: requirePermission(PERMISSIONS.GENERAL_SETTINGS),
   },
@@ -171,7 +171,7 @@ const routes = [
     component: DocumentsFolderView,
     meta: {
       requiresAuth: true,
-      title: "Documents Folders",
+      title: "sidebar-nav-item-documents",
     },
     beforeEnter: requirePermission(PERMISSIONS.DOCUMENTS),
   },

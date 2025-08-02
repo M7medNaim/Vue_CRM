@@ -12,7 +12,7 @@
         <span
           class="rounded-1 btnHeaderBg d-flex justify-content-center align-items-center me-2"
           style="font-size: 14px; padding: 0 45px"
-          >{{ $route.meta.title || "القائمة الرئيسية" }}</span
+          >{{ t($route.meta.title) }}</span
         >
 
         <div class="toggleMenuBar position-relative">
