@@ -985,7 +985,7 @@
                           'rounded-3 p-2',
                           comment.isAdmin
                             ? 'adminComment'
-                            : 'bg-primary text-white',
+                            : 'bg-light text-dark',
                         ]"
                         style="
                           word-break: break-word;
