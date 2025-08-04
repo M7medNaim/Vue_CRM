@@ -35,7 +35,7 @@
               v-model="comment"
             ></textarea>
             <h4 class="mt-5">
-              {{ $t("kanban-suggest-user-modal2-choosebutton-heading") }}
+              {{ $t("kanban-suggest-user-modal2-select-heading") }}
             </h4>
             <select
               name="user_id"
@@ -74,7 +74,7 @@
             @click="handleSuggestUserSubmit"
             :disabled="!selected_user_id || !comment"
           >
-            {{ $t("kanban-suggest-user-confin-button") }}
+            {{ $t("kanban-suggest-user-confirm-button") }}
           </button>
         </div>
       </div>
