@@ -158,7 +158,7 @@
       :title="t('kanban-deal-alert-attention')"
     >
       <i class="mx-1 fa-solid fa-comment-dots fs-6 text-warning"></i>
-      <span class="fs-7">Attention Required</span>
+      <span class="fs-7">{{ t("kanban-deal-alert-attention") }}</span>
     </div>
   </div>
 </template>
