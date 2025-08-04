@@ -1245,6 +1245,12 @@
           </div>
         </div>
         <button
+          class="btn ApprovalCustm position-fixed bg-warning py-2 px-3 rounded-3"
+          @click="openSuggestApprovalModal"
+        >
+          <i class="fa-solid fa-user text-white"></i>
+        </button>
+        <button
           class="btn trashCustm position-fixed bg-danger py-2 px-3 rounded-3"
           @click="openTrashDealModal"
         >
@@ -1254,6 +1260,13 @@
     </div>
   </div>
   <view-report ref="questionsModalRef" :deal_id="deal?.id" />
+  <suggest-user-modal
+    ref="suggestUserModalRef"
+    :users="users"
+    :phone="customerData?.phone"
+    :dealId="deal?.id"
+    @deal-suggested="handleDealSuggestion"
+  />
   <trash-deal
     ref="trashDealModalRef"
     :dealId="deal?.id"
@@ -1277,6 +1290,7 @@ import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import TrashDeal from "@/components/modals/CrmDealKanbanDealDataModalTrashDealModal.vue";
+import SuggestUserModal from "@/components/modals/SuggestUserModal.vue";
 import {
   fetchConversationByDealId,
   getSources,
@@ -1295,7 +1309,7 @@ import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import moveCardSound from "@/assets/move-card.wav";
 export default {
   name: "CrmDealKanbanDealDataModal",
-  components: { RatingStars, ViewReport, TrashDeal },
+  components: { RatingStars, ViewReport, TrashDeal, SuggestUserModal },
   props: {
     deal: {
       type: Object,
@@ -2340,6 +2354,35 @@ export default {
         });
       }
     };
+    const openSuggestApprovalModal = () => {
+      if (!props.deal?.id) {
+        toast.error(t("error.dealNotFound"), {
+          timeout: 3000,
+        });
+        return;
+      }
+      try {
+        const openModals = document.querySelectorAll(".modal.show");
+        openModals.forEach((modal) => {
+          const modalInstance = Modal.getInstance(modal);
+          if (modalInstance) {
+            modalInstance.hide();
+          }
+        });
+        const suggestUserModal = new Modal(
+          document.getElementById("suggestUserModal")
+        );
+        suggestUserModal.show();
+        const modalBackdrop = document.createElement("div");
+        modalBackdrop.className = "modal-backdrop fade show";
+        document.body.appendChild(modalBackdrop);
+      } catch (error) {
+        console.error("Error opening suggest user modal:", error);
+        toast.error(t("error.openSuggestUserModal"), {
+          timeout: 3000,
+        });
+      }
+    };
     const handleStageHover = (stageId) => {
       hoveredStage.value = stageId;
     };
@@ -2958,7 +3001,17 @@ export default {
         timeout: 3000,
       });
     };
+    const handleDealSuggestion = () => {
+      if (!props.deal?.id) {
+        toast.error(t("error.dealNotFound"), {
+          timeout: 3000,
+        });
+        return;
+      }
+      emit("suggest-user", props.deal.id);
+    };
     return {
+      handleDealSuggestion,
       allStages,
       currentStage,
       customerData,
@@ -3034,6 +3087,7 @@ export default {
       removeFile,
       nationalities,
       languages,
+      openSuggestApprovalModal,
     };
   },
 };
@@ -3264,6 +3318,11 @@ label {
 }
 .trashCustm {
   right: 2%;
+  bottom: 3%;
+  z-index: 9999;
+}
+.ApprovalCustm {
+  right: 5%;
   bottom: 3%;
   z-index: 9999;
 }

@@ -270,6 +270,7 @@
     :currentStageId="selectedStageId"
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
+    @suggest-user="handleDealSuggestion"
   />
   <!-- selectedDeal -->
   <div v-if="permissionStore.hasPermission('edit-stage')">
@@ -1305,7 +1306,15 @@ export default {
       removeUserActivityListeners();
     });
 
+    const handleDealSuggestion = (deal_id) => {
+      const stage = displayStages.value.find((s) =>
+        s.deals.some((d) => d.id === deal_id)
+      );
+      stage.deals = stage.deals.filter((d) => d.id != deal_id);
+    };
+
     return {
+      handleDealSuggestion,
       fetchPackages,
       packages,
       t,
