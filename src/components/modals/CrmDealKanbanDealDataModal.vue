@@ -1077,18 +1077,15 @@
                                   ? 'text-warning'
                                   : comment.isAdmin
                                   ? ''
-                                  : 'text-white',
+                                  : 'text-dark',
                               ]"
                               style="transform: rotate(-30deg); font-size: 12px"
                             ></i>
                           </button>
                           <button
                             v-if="editingCommentId !== comment.id"
-                            class="btn btn-sm p-0"
+                            class="btn btn-sm p-0 text-dark"
                             @click="editComment(comment)"
-                            :class="[
-                              comment.isAdmin ? 'text-dark' : 'text-white',
-                            ]"
                           >
                             <i
                               class="fa-solid fa-pencil"
@@ -1096,11 +1093,8 @@
                             ></i>
                           </button>
                           <button
-                            class="btn btn-sm p-0"
+                            class="btn btn-sm p-0 text-dark"
                             @click.prevent="copyComment(comment.text_body)"
-                            :class="[
-                              comment.isAdmin ? 'text-dark' : 'text-white',
-                            ]"
                           >
                             <i
                               class="fa-solid fa-copy"
