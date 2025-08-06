@@ -968,9 +968,9 @@
                   <div
                     v-for="comment in sortedComments"
                     :key="comment.id"
-                    class="row mt-2"
+                    class="d-flex align-items-start mt-2 comment-row"
                   >
-                    <div class="col-1 pe-0">
+                    <div class="comment-avatar pe-0">
                       <img
                         src="@/assets/default-user-image.jpg"
                         alt="Seals Image"
@@ -979,7 +979,7 @@
                       />
                       <!-- <span class="ms-2">{{ comment.username }}</span> -->
                     </div>
-                    <div class="col-11 position-relative">
+                    <div class="flex-grow-1 position-relative">
                       <div
                         :class="[
                           'rounded-3 p-2',
@@ -1104,35 +1104,6 @@
                           <span style="font-size: 10px">{{
                             formatDate(comment.created_at)
                           }}</span>
-
-                          <!-- comment menu button -->
-                          <!-- <button
-                            class="btn btn-sm p-0 ms-2"
-                            @click="toggleMenu(comment.id)"
-                            style="z-index: 2"
-                          >
-                            <i class="fa-solid fa-ellipsis-vertical text-white"></i>
-                          </button> -->
-                          <!-- comment menu -->
-                          <!-- <div
-                            v-if="activeMenu === comment.id"
-                            class="comment-menu bg-white border rounded shadow-sm d-flex ms-2"
-                            style="top: 30px; right: 0; z-index: 10"
-                          >
-                            <a
-                              href="#"
-                              class="dropdown-item text-dark"
-                              @click.prevent="copyComment(comment.text_body)"
-                              >Copy</a
-                            >
-                            |
-                            <a
-                              href="#"
-                              class="dropdown-item text-dark"
-                              @click.prevent="editComment(comment)"
-                              >Edit</a
-                            >
-                          </div> -->
                         </div>
                       </div>
                     </div>
@@ -3433,5 +3404,21 @@ label {
   background-color: var(--bs-dark);
   border-color: var(--bs-dark-subtle);
   accent-color: var(--bs-blue);
+.comment-row {
+  gap: 8px;
+}
+.comment-avatar {
+  min-width: 45px;
+  max-width: 45px;
+}
+@media (max-width: 600px) {
+  .comment-row {
+    flex-direction: row !important;
+    align-items: flex-start;
+  }
+  .comment-avatar {
+    min-width: 35px;
+    max-width: 35px;
+  }
 }
 </style>

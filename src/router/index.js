@@ -19,6 +19,8 @@ import StagingSettingView from "@/views/StagingSettingView.vue";
 import WebWhatsapp from "@/views/WebWhatsapp.vue";
 import PatientRegistrationView from "@/views/PatientRegistrationView.vue";
 import ApprovalsView from "@/views/ApprovalsView.vue";
+import EmrDealKanbanView from "@/views/EmrDealKanbanView.vue";
+import AfterSalesDealKanbanView from "@/views/AfterSalesDealKanbanView.vue";
 
 const routes = [
   {
@@ -88,6 +90,26 @@ const routes = [
       titleKey: "header-subnav-item-kanban-tasks",
     },
     beforeEnter: requirePermission(PERMISSIONS.TASKS_KANBAN),
+  },
+  {
+    path: "/emr-kanban",
+    name: "EmrDealKanbanView",
+    component: EmrDealKanbanView,
+    meta: {
+      requiresAuth: true,
+      title: "EMR Kanban",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
+  },
+  {
+    path: "/after-sales-kanban",
+    name: "AfterSalesDealKanbanView",
+    component: AfterSalesDealKanbanView,
+    meta: {
+      requiresAuth: true,
+      title: "After Sales Kanban",
+    },
+    beforeEnter: requirePermission(PERMISSIONS.ROLES_SETTINGS),
   },
   {
     path: "/users",

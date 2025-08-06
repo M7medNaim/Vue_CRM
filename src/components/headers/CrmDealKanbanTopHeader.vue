@@ -508,6 +508,8 @@ input:focus {
   background-color: #25d365cc;
   transition: 0.3s ease-in-out;
   color: #ffffff !important;
+  white-space: nowrap;
+  align-items: center;
 }
 .btn-whatsapp:hover {
   background-color: #ffffff !important;

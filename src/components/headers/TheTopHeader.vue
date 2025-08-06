@@ -47,6 +47,18 @@
                 <div class="dropdown-link">
                   <i class="fa-solid fa-chart-column fs-5 me-2"></i>
                   <span>{{ $t("header-subnav-item-kanban-tasks") }}</span>
+                  <i class="fa-solid fa-calendar-days fs-5 me-2"></i>
+                  <span>EMR Kanban</span>
+                </div>
+              </router-link>
+              <router-link
+                to="/after-sales-kanban"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
+                  <i class="fa-solid fa-calendar-days fs-5 me-2"></i>
+                  <span>After Sales Kanban</span>
                 </div>
               </router-link>
               <router-link
@@ -504,6 +516,8 @@ export default {
         "/stage-settings": "fa-solid fa-sliders",
         "/patient-registration": "fa-solid fa-user-group",
         "/broadcast-settings": "fa-solid fa-broadcast-tower",
+        "/emr-kanban": "fa-solid fa-calendar-days",
+        "/after-sales-kanban": "fa-solid fa-calendar-days",
       };
       return icons[route] || "fa-solid fa-bars";
     },

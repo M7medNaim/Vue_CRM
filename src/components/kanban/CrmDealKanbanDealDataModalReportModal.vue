@@ -9,9 +9,9 @@
     data-bs-backdrop="true"
   >
     <div
-      class="modal-dialog modal-lg modal-dialog-scrollable position-fixed end-0"
+      class="modal-dialog modal-xl modal-dialog-scrollable position-fixed end-0 d-flex justify-content-end"
     >
-      <div class="modal-content ps-3">
+      <div class="modal-content">
         <div class="modal-header border-bottom-0">
           <h6 class="modal-title fw-semibold" id="questionsModalLabel">
             {{ t("kanban-modal-questions-heading") }}
@@ -36,14 +36,16 @@
                 class="btn btn-primary"
                 data-bs-dismiss="modal"
               >
-                {{ t("buttons.submit") }}
+                <i class="fa-solid fa-paper-plane"></i>
+                Submit
               </button>
               <button
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                {{ t("buttons.close") }}
+                <i class="fa-solid fa-xmark"></i>
+                Close
               </button>
             </div>
           </form>
@@ -188,9 +190,11 @@ export default {
 .modal-dialog {
   bottom: -5%;
   width: 100%;
-  height: 80vh;
+  height: 90vh;
 }
-
+.modal-content {
+  width: 85% !important;
+}
 .form-check-input:checked {
   background-color: black !important;
   border-color: black;
