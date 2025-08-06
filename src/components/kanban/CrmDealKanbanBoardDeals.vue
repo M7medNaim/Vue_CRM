@@ -271,6 +271,7 @@
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
     @suggest-user="handleDealSuggestion"
+    @update-deal="updateDeal"
   />
   <!-- selectedDeal -->
   <div v-if="permissionStore.hasPermission('edit-stage')">
@@ -1313,6 +1314,11 @@ export default {
       stage.deals = stage.deals.filter((d) => d.id != deal_id);
     };
 
+    const updateDeal = (data) => {
+      console.log("updateDeal in kanban comp", data);
+      dealUpdateEvent(data, "Deal updated successfully");
+    };
+
     return {
       handleDealSuggestion,
       fetchPackages,
@@ -1364,6 +1370,7 @@ export default {
       selectedStageId,
       allDealsCount,
       handleRequestDeal,
+      updateDeal,
     };
   },
 };

@@ -12,7 +12,7 @@
         <span
           class="rounded-1 btnHeaderBg d-flex justify-content-center align-items-center me-2"
           style="font-size: 14px; padding: 0 45px"
-          >{{ t($route.meta.title) }}</span
+          >{{ $t($route.meta.titleKey || "sidebar-heading") }}</span
         >
 
         <div class="toggleMenuBar position-relative">
@@ -37,6 +37,16 @@
                 <div class="dropdown-link">
                   <i class="fa-solid fa-chart-column fs-5 me-2"></i>
                   <span>{{ $t("sidebar-nav-item-kanban") }}</span>
+                </div>
+              </router-link>
+              <router-link
+                to="/crm-tasks"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
+                  <i class="fa-solid fa-chart-column fs-5 me-2"></i>
+                  <span>{{ $t("header-subnav-item-kanban-tasks") }}</span>
                 </div>
               </router-link>
               <router-link

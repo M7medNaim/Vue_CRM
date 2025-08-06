@@ -2521,6 +2521,7 @@ export default {
             timeout: 3000,
           });
           isEditMode.value = false;
+          emit("update-deal", formData);
         } else {
           toast.error(response.data.message, {
             timeout: 3000,

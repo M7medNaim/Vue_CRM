@@ -52,7 +52,6 @@ import TheNewsBar from "@/components/TheNewsBar.vue";
 import { useLoadingStore } from "@/plugins/loadingStore";
 import { logout, getBackgroundId } from "@/plugins/services/authService";
 import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
-
 export default {
   name: "App",
   components: {
