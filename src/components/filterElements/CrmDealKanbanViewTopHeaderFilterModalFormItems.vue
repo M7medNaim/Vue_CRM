@@ -170,7 +170,6 @@
         <!-- Sorting Section -->
         <div class="row mb-3">
           <div class="col-3">
-
             <span> {{ t("crmlist-modal-filter-label-sort-by") }} </span>
           </div>
           <div class="col-9">
