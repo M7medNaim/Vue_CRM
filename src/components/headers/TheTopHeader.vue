@@ -12,7 +12,7 @@
         <span
           class="rounded-1 btnHeaderBg d-flex justify-content-center align-items-center me-2"
           style="font-size: 14px; padding: 0 45px"
-          >{{ $route.meta.title || "القائمة الرئيسية" }}</span
+          >{{ $t($route.meta.titleKey || "sidebar-heading") }}</span
         >
 
         <div class="toggleMenuBar position-relative">
@@ -40,11 +40,13 @@
                 </div>
               </router-link>
               <router-link
-                to="/emr-kanban"
+                to="/crm-tasks"
                 class="text-decoration-none text-black mb-2"
                 @click="closeDropdown"
               >
                 <div class="dropdown-link">
+                  <i class="fa-solid fa-chart-column fs-5 me-2"></i>
+                  <span>{{ $t("header-subnav-item-kanban-tasks") }}</span>
                   <i class="fa-solid fa-calendar-days fs-5 me-2"></i>
                   <span>EMR Kanban</span>
                 </div>
@@ -88,6 +90,22 @@
                   >
                     <i class="fa-solid fa-users fs-5 me-2"></i>
                     <span>{{ $t("sidebar-nav-item-users") }}</span>
+                  </div>
+                </div>
+              </router-link>
+              <router-link
+                v-if="permissionStore.hasPermission(PERMISSIONS.USERS)"
+                to="/approvals"
+                class="text-decoration-none text-black mb-2"
+                @click="closeDropdown"
+              >
+                <div class="dropdown-link">
+                  <div
+                    class="sidebar-item d-flex align-items-center"
+                    :title="$t('sidebar-nav-item-approvals')"
+                  >
+                    <i class="fa-solid fa-stamp fs-5 me-2"></i>
+                    <span>{{ $t("sidebar-nav-item-approvals") }}</span>
                   </div>
                 </div>
               </router-link>
@@ -297,6 +315,7 @@ import {
 } from "vue";
 import { useRoute } from "vue-router";
 import { usePermissionStore, PERMISSIONS } from "@/stores/permissionStore";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "TheTopHeader",
@@ -323,6 +342,7 @@ export default {
     const user_role = Cookies.get("user_role");
     const loadingStore = useLoadingStore();
     const currentTime = ref("");
+    const { t, locale } = useI18n();
     const updateTime = () => {
       const now = new Date();
 
@@ -394,6 +414,8 @@ export default {
       user_role,
       refreshPage,
       hasNewChanges,
+      t,
+      locale,
     };
   },
   methods: {

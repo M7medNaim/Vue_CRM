@@ -3,7 +3,7 @@
     <!-- <label for="profileImage" class="form-label">الصورة الشخصية</label> -->
     <div class="my-2 text-center">
       <img
-        :src="localImage || require('@/assets/default-user-image.jpg')"
+        :src="localImage"
         class="img-fluid rounded"
         width="100"
         alt="Profile Image"
@@ -17,24 +17,30 @@
     />
   </div>
   <div class="mb-3">
-    <label for="name" class="form-label">{{ t("modals.name") }}</label>
+    <label for="name" class="form-label">{{
+      t("header-user-menu-item-profile-modal-label-name")
+    }}</label>
     <input
       type="text"
       class="form-control"
       placeholder="User Name"
       id="name"
       v-model="localName"
+      readonly
     />
   </div>
 
   <div class="mb-3">
-    <label for="email" class="form-label">{{ t("modals.email") }}</label>
+    <label for="email" class="form-label">{{
+      t("header-user-menu-item-profile-modal-label-email")
+    }}</label>
     <input
       type="email"
       class="form-control"
       placeholder="Email"
       id="email"
       v-model="localEmail"
+      readonly
     />
   </div>
 
@@ -47,27 +53,55 @@
 </template>
 
 <script>
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 export default {
   name: "TheTopHeaderDropDownMenuProfileEditProfileModalFormItems",
-  props: ["name", "email", "image"],
-  setup() {
+  props: {
+    userData: {
+      type: Object,
+      required: true,
+    },
+  },
+  setup(props) {
     const { t } = useI18n();
-    return { t };
+    const localUserData = ref(props.userData);
+    return { t, localUserData };
   },
   data() {
     return {
-      localName: this.name,
-      localEmail: this.email,
-      localImage: this.image,
+      localName: "",
+      localEmail: "",
+      localImage: require("@/assets/default-user-image.jpg"),
     };
   },
   methods: {
     updateImage(event) {
       const file = event.target.files[0];
-      if (file) {
-        this.localImage = URL.createObjectURL(file);
+      if (file?.type?.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.localImage = e.target.result;
+          this.$forceUpdate();
+        };
+        reader.readAsDataURL(file);
       }
+    },
+  },
+  mounted() {
+    // Set initial values from cookies
+    this.localName = this.localUserData?.name;
+    this.localEmail = this.localUserData?.email;
+    this.localImage =
+      this.localUserData?.image || require("@/assets/default-user-image.jpg");
+  },
+  watch: {
+    userData(newVal) {
+      console.log("User Data Updated:", newVal);
+      this.localName = newVal.name;
+      this.localEmail = newVal.email;
+      this.localImage =
+        newVal.image || require("@/assets/default-user-image.jpg");
     },
   },
 };

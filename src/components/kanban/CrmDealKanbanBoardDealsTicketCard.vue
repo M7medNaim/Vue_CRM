@@ -64,7 +64,9 @@
         class="col-12 fs-8 mb-1 p-0 d-flex justify-content-between align-items-center"
       >
         <div class="">
-          <span class="ms-2 text-secondary">Rating: </span>
+          <span class="ms-2 text-secondary"
+            >{{ t("kanban-deal-label-rating") }}:
+          </span>
           <template v-for="index in 7" :key="index">
             <i
               class="fa-solid fa-star"
@@ -109,7 +111,7 @@
 
       <div
         class="d-flex gap-1 align-items-center p-0 flex-wrap"
-        v-if="deal.tags && deal.tags.length"
+        v-if="deal.tags && deal.tags.length && userRole !== 'sales'"
       >
         <span
           v-for="tag in deal.tags"
@@ -155,11 +157,9 @@
       <span
         class="badge fw-medium text-white py-1 px-2"
         :style="{
-          backgroundColor: deal.responsible_user?.id
-            ? getUserColor(deal.responsible_user?.id)
-            : '',
+          backgroundColor: deal.responsible_user?.color_code ?? '#292929',
           color: getContrastColor(
-            getUserColor(deal.responsible_user?.id) || '#292929'
+            deal.responsible_user?.color_code || '#292929'
           ),
         }"
         >{{ deal.responsible_user?.name }}</span
@@ -171,7 +171,7 @@
       :title="t('kanban-deal-alert-attention')"
     >
       <i class="mx-1 fa-solid fa-comment-dots fs-6 text-warning"></i>
-      <span class="fs-7">Attention Required</span>
+      <span class="fs-7">{{ t("kanban-deal-alert-attention") }}</span>
     </div>
   </div>
 </template>
@@ -180,6 +180,7 @@
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import CountryFlagAvatar from "@/components/whatsapp/WhatsAppModalSidebarLeftCountryFlagAvatar.vue";
+import Cookies from "js-cookie";
 
 export default {
   name: "CrmDealKanbanBoardDealsTicketCard",
@@ -197,6 +198,7 @@ export default {
     CountryFlagAvatar,
   },
   setup(props, { emit }) {
+    const userRole = Cookies.get("user_role");
     const { t } = useI18n();
     const toast = useToast();
 
@@ -327,6 +329,7 @@ export default {
       copyPhoneNumber,
       formatDateUpdate,
       getPersuasionColorClass,
+      userRole,
       onDragStart,
     };
   },

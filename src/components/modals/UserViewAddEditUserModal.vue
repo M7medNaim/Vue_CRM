@@ -29,14 +29,27 @@
           <div class="modal-body">
             <div class="mb-3">
               <label for="username" class="form-label">
-                {{ t("users-modal-add-label-fullname") }}
+                {{ t("users-modal-add-label-fullname-en") }}
               </label>
               <input
                 type="text"
                 class="form-control"
                 id="username"
-                :placeholder="t('users-modal-add-placeholder-fullname')"
-                v-model="formData.username"
+                :placeholder="t('users-modal-add-placeholder-fullname-en')"
+                v-model="formData.username_en"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="username" class="form-label">
+                {{ t("users-modal-add-label-fullname-ar") }}
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                :placeholder="t('users-modal-add-placeholder-fullname-ar')"
+                v-model="formData.username_ar"
                 required
               />
             </div>
@@ -248,12 +261,13 @@ export default {
         this.isEditMode = true;
         this.formData = {
           id: user.id,
-          username: user.name,
+          username_en: user.name_en,
+          username_ar: user.name_ar,
           email: user.email,
           role: user.role?.id || user.role,
           reportTo: user.report_to_id,
           phoneNumber: user.phones[0]?.phone,
-          image: null,
+          image: user.image,
           color: user.color_code,
         };
       } else {
@@ -281,9 +295,14 @@ export default {
         this.loading = true;
 
         const formData = new FormData();
-        formData.append("name", this.formData.username);
+        formData.append("name_en", this.formData.username_en);
+        formData.append("name_ar", this.formData.username_ar);
         formData.append("email", this.formData.email);
         formData.append("role", this.formData.role);
+        formData.append(
+          "image",
+          this.formData.image ? this.formData.image : ""
+        );
         formData.append(
           "parent_id",
           this.formData.reportTo?.id || this.formData.reportTo || ""
@@ -303,7 +322,6 @@ export default {
 
         let response;
         if (this.isEditMode) {
-          console.log("fomrData", formData);
           response = await updateUser(this.formData.id, formData);
           this.toast.success(this.t("success.updateUser"), {
             timeout: 3000,
@@ -315,14 +333,21 @@ export default {
           });
         }
 
-        if (response.data) {
+        if (response.status === 200 || response.status === 201) {
           const user = response.data.data || response.data;
           localStorage.setItem(`user_${user.id}_color`, this.formData.color);
+          this.toast.success(response.data.message, {
+            timeout: 3000,
+          });
           this.$emit("user-updated", user);
           setTimeout(() => {
             this.clearForm();
             this.closeModal();
           }, 1000);
+        } else {
+          this.toast.error(response.data.message, {
+            timeout: 3000,
+          });
         }
       } catch (error) {
         this.toast.error(

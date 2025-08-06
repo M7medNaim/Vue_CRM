@@ -26,7 +26,10 @@
             </h5>
           </div>
           <div class="rating">
-            <rating-stars v-model="customerData.rating" />
+            <rating-stars
+              v-model="customerData.rating"
+              :isEditable="isEditMode"
+            />
           </div>
           <div class="source">
             <i class="fa-solid fa-circle-exclamation me-1"></i>
@@ -84,51 +87,20 @@
 
           <div class="row">
             <div class="col-12 col-md-6 border-end">
-              <!-- Full Name -->
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2">
                   <label class="form-label"
-                    ><i class="fa-solid fa-a"></i>
+                    ><i class="fa-solid fa-id-card"></i>
+                    {{ t("kanban-modal-edit-label-profile") }}</label
+                  >
+                </div>
+                <!-- Full Name -->
+                <div class="col">
+                  <label class="form-label" for="name"
+                    ><i class="fa-solid fa-user"></i>
                     {{ t("kanban-modal-edit-label-fullname")
                     }}<span class="text-danger">*</span>
                   </label>
-                </div>
-                <div class="col-10">
-                  <div class="input-group">
-                    <input
-                      type="text"
-                      :class="[
-                        'form-control',
-                        isEditMode ? 'bg-input-edit' : 'bg-input',
-                        'py-2',
-                      ]"
-                      v-model="customerData.name"
-                      :placeholder="t('kanban-modal-edit-placeholder-fullname')"
-                      :readonly="!isEditMode"
-                    />
-                    <button
-                      class="btn btn-primary px-3 fs-5"
-                      @click="toggleNickName"
-                    >
-                      {{ showNickName ? "-" : "+" }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <!-- Nick Name -->
-              <div
-                class="row mb-3"
-                @dblclick="handleDoubleClick"
-                v-if="showNickName"
-              >
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-a"></i>
-                    {{ t("kanban-modal-edit-label-nickname")
-                    }}<span class="text-danger">*</span>
-                  </label>
-                </div>
-                <div class="col-10">
                   <input
                     type="text"
                     :class="[
@@ -136,10 +108,75 @@
                       isEditMode ? 'bg-input-edit' : 'bg-input',
                       'py-2',
                     ]"
-                    v-model="customerData.nickName"
-                    :placeholder="t('kanban-modal-edit-placeholder-nickname')"
+                    v-model="customerData.name"
+                    :placeholder="t('kanban-modal-edit-placeholder-fullname')"
                     :readonly="!isEditMode"
+                    name="name"
                   />
+                </div>
+                <div class="col">
+                  <label class="form-label" for="nationality"
+                    ><i class="fa-solid fa-flag"></i>
+                    {{ t("kanban-modal-edit-label-nationality") }}
+                  </label>
+                  <select
+                    :class="[
+                      'form-select',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
+                    v-model="customerData.nationality"
+                    :disabled="!isEditMode"
+                    name="nationality"
+                    @dblclick="handleDoubleClick"
+                  >
+                    <option
+                      :value="null"
+                      disabled
+                      :selected="!customerData.nationality"
+                    >
+                      {{ t("kanban-modal-edit-placeholder-nationality") }}
+                    </option>
+                    <option
+                      v-for="(value, key) in nationalities"
+                      :key="key"
+                      :value="key"
+                    >
+                      {{ value }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="form-label" for="nationality"
+                    ><i class="fa-solid fa-language"></i>
+                    {{ t("kanban-modal-edit-label-prefered-language") }}
+                  </label>
+                  <select
+                    :class="[
+                      'form-select',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                      'py-2',
+                    ]"
+                    v-model="customerData.language"
+                    :disabled="!isEditMode"
+                    name="nationality"
+                    @dblclick="handleDoubleClick"
+                  >
+                    <option
+                      :value="null"
+                      disabled
+                      :selected="!customerData.language"
+                    >
+                      {{ t("kanban-modal-edit-placeholder-prefered-language") }}
+                    </option>
+                    <option
+                      v-for="(value, key) in languages"
+                      :key="key"
+                      :value="key"
+                    >
+                      {{ value }}
+                    </option>
+                  </select>
                 </div>
               </div>
 
@@ -211,8 +248,7 @@
                 <div class="col-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-envelope"></i>
-                    {{ t("kanban-modal-edit-label-email")
-                    }}<span class="text-danger">*</span>
+                    {{ t("kanban-modal-edit-label-email") }}
                   </label>
                 </div>
                 <div class="col-10">
@@ -301,64 +337,24 @@
                   </select>
                 </div>
               </div>
-              <!-- Deal ticket upload -->
-              <div class="row mb-3">
-                <div class="col-2">
-                  <label class="form-label"
-                    ><i class="fa-solid fa-list"></i>
-                    {{ t("kanban-modal-edit-label-ticket") }}</label
-                  >
-                </div>
-                <div class="col-10">
-                  <input
-                    v-if="!customerData.ticket"
-                    type="file"
-                    :class="[
-                      'form-control',
-                      isEditMode ? 'bg-input-edit' : 'bg-input',
-                    ]"
-                    @change="handleFileUpload"
-                    @dblclick="handleDoubleClick"
-                    :disabled="!isEditMode"
-                  />
-                  <div class="row" v-else>
-                    <div class="col-6">
-                      <button class="btn btn-primary w-100" @click="removeFile">
-                        <i class="fa-solid fa-file"></i>
-                        Remove File
-                      </button>
-                    </div>
-                    <div class="col-6">
-                      <a
-                        class="btn btn-primary w-100"
-                        :href="customerData.ticket"
-                        target="_blank"
-                      >
-                        <i class="fa-solid fa-file"></i>
-                        Download File
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Packages -->
+              <!-- Kanban Packages -->
               <div class="row mb-3" @dblclick="handleDoubleClick">
                 <div class="col-2 pt-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i>
-                    {{ t("kanban-modal-edit-label-packages") }}</label
+                    {{ t("kanban-modal-edit-label-kanban-packages") }}</label
                   >
                 </div>
                 <div class="col-10">
-                  <div class="" v-if="customerData.packages.length > 0">
+                  <div class="" v-if="customerData.kanban_packages.length > 0">
                     <div
-                      v-for="(pkg, index) in customerData.packages"
+                      v-for="(pkg, index) in customerData.kanban_packages"
                       :key="index"
-                      class="packages mb-2"
+                      class="packages mb-2 px-2"
                     >
                       <div class="row p-0">
                         <div
-                          class="col-6 p-1 px-1"
+                          class="col-7 p-1 px-1"
                           @dblclick="handleDoubleClick"
                         >
                           <select
@@ -382,50 +378,56 @@
                             </option>
                           </select>
                         </div>
-                        <div class="col-3 p-1 px-1">
-                          <input
-                            type="number"
-                            :class="[
-                              'bg-input',
-                              isEditMode ? 'bg-input-edit' : 'bg-input',
-                              'p-2',
-                              'w-100',
-                              'rounded-2',
-                              'form-control',
-                            ]"
-                            v-model="pkg.quantity"
-                            :placeholder="
-                              t(
-                                'kanban-modal-edit-placeholder-packages-quantity'
-                              )
-                            "
-                            :readonly="!isEditMode"
-                            min="1"
-                          />
+                        <div class="col-2 p-1 px-1">
+                          <div class="input-group">
+                            <span class="input-group-text">Qty</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.quantity"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-quantity'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="1"
+                            />
+                          </div>
                         </div>
                         <div class="col-2 p-1 px-0">
-                          <input
-                            type="number"
-                            :class="[
-                              'bg-input',
-                              isEditMode ? 'bg-input-edit' : 'bg-input',
-                              'p-2',
-                              'w-100',
-                              'rounded-2',
-                              'form-control',
-                            ]"
-                            v-model="pkg.total_price"
-                            :placeholder="
-                              t('kanban-modal-edit-placeholder-packages-price')
-                            "
-                            :readonly="!isEditMode"
-                            min="0"
-                          />
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.total_price"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-price'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="0"
+                            />
+                          </div>
                         </div>
                         <div class="col-1 p-1 px-1">
                           <button
                             class="btn btn-primary"
-                            @click="removePackage(index)"
+                            @click="removeKanbanPackage(index)"
                             v-if="isEditMode"
                           >
                             x
@@ -434,30 +436,446 @@
                       </div>
                     </div>
                   </div>
-                  <button
-                    class="btn btn-primary mt-2 fs-5 px-3"
-                    @click="addNewPackage"
-                    :disabled="!isEditMode"
-                    v-if="isEditMode"
-                  >
-                    +
-                  </button>
+                  <div class="pt-2" v-else-if="!isEditMode">
+                    {{ t("kanban-modal-edit-label-no-packages") }}
+                  </div>
+                  <div class="w-100 d-flex mt-2 justify-content-between gap-2">
+                    <button
+                      class="btn btn-primary fs-5 px-3"
+                      @click="addNewKanbanPackage"
+                      :disabled="!isEditMode"
+                      v-if="isEditMode"
+                    >
+                      +
+                    </button>
+                    <div class="input-group">
+                      <span class="input-group-text">{{
+                        t("kanban-modal-edit-label-total-cost")
+                      }}</span>
+                      <input
+                        type="number"
+                        :class="[
+                          'bg-input',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'p-2',
+                          'rounded-right-2',
+                          'form-control',
+                        ]"
+                        v-model="customerData.kanban_total_cost"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-total-cost')
+                        "
+                        :readonly="!isEditMode"
+                        min="0"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <!-- Deal Status -->
-              <div class="row mb-3">
-                <div class="col-2">
+              <!-- Hospital Packages -->
+              <div class="row mb-3" @dblclick="handleDoubleClick">
+                <div class="col-2 pt-2">
                   <label class="form-label"
                     ><i class="fa-solid fa-cubes"></i>
-                    {{ t("dealStatus") }}</label
+                    {{ t("kanban-modal-edit-label-hospital-packages") }}</label
                   >
                 </div>
                 <div class="col-10">
-                  <span class="fw-bolder" style="font-size: 14px">{{
-                    currentStage.name
-                  }}</span>
+                  <div
+                    class=""
+                    v-if="customerData.hospital_packages.length > 0"
+                  >
+                    <div
+                      v-for="(pkg, index) in customerData.hospital_packages"
+                      :key="index"
+                      class="packages mb-2 px-2"
+                    >
+                      <div class="row p-0">
+                        <div
+                          class="col-7 p-1 px-1"
+                          @dblclick="handleDoubleClick"
+                        >
+                          <select
+                            class="form-select py-2"
+                            :class="isEditMode ? 'bg-input-edit' : 'bg-input'"
+                            v-model="pkg.id"
+                            :disabled="!isEditMode"
+                            @dblclick="handleDoubleClick"
+                          >
+                            <option value="" disabled>
+                              {{
+                                t("kanban-modal-edit-placeholder-packages-name")
+                              }}
+                            </option>
+                            <option
+                              v-for="pkg in local_packages"
+                              :key="pkg.id"
+                              :value="pkg.id"
+                            >
+                              {{ pkg.name }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-2 p-1 px-1">
+                          <div class="input-group">
+                            <span class="input-group-text">Qty</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.quantity"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-quantity'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="1"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-2 p-1 px-0">
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input
+                              type="number"
+                              :class="[
+                                'bg-input',
+                                isEditMode ? 'bg-input-edit' : 'bg-input',
+                                'p-2',
+                                'rounded-right-2',
+                                'form-control',
+                              ]"
+                              v-model="pkg.total_price"
+                              :placeholder="
+                                t(
+                                  'kanban-modal-edit-placeholder-packages-price'
+                                )
+                              "
+                              :readonly="!isEditMode"
+                              min="0"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-1 p-1 px-1">
+                          <button
+                            class="btn btn-primary"
+                            @click="removeHospitalPackage(index)"
+                            v-if="isEditMode"
+                          >
+                            x
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pt-2" v-else-if="!isEditMode">
+                    {{ t("kanban-modal-edit-label-no-packages") }}
+                  </div>
+                  <div class="w-100 d-flex mt-2 justify-content-between gap-2">
+                    <button
+                      class="btn btn-primary fs-5 px-3"
+                      @click="addNewHospitalPackage"
+                      :disabled="!isEditMode"
+                      v-if="isEditMode"
+                    >
+                      +
+                    </button>
+                    <div class="input-group">
+                      <span class="input-group-text">{{
+                        t("kanban-modal-edit-label-total-cost")
+                      }}</span>
+                      <input
+                        type="number"
+                        :class="[
+                          'bg-input',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'p-2',
+                          'rounded-right-2',
+                          'form-control',
+                        ]"
+                        v-model="customerData.hospital_total_cost"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-total-cost')
+                        "
+                        :readonly="!isEditMode"
+                        min="0"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- Deal ticket upload -->
+              <div class="row mb-3">
+                <div class="col-2">
+                  <label class="form-label"
+                    ><i class="fa-solid fa-list"></i>
+                    {{ t("kanban-modal-edit-label-ticket") }}</label
+                  >
+                </div>
+                <div class="col-10">
+                  <input
+                    v-if="!customerData.ticket"
+                    type="file"
+                    :class="[
+                      'form-control',
+                      isEditMode ? 'bg-input-edit' : 'bg-input',
+                    ]"
+                    @change="handleFileUpload"
+                    @dblclick="handleDoubleClick"
+                    :disabled="!isEditMode"
+                  />
+                  <div class="row" v-else>
+                    <div class="col-4">
+                      <button
+                        class="btn btn-primary w-100"
+                        @click="removeFile"
+                        :disabled="!isEditMode"
+                      >
+                        <i class="fa-solid fa-file"></i>
+                        {{ t("kanban-modal-edit-button-remove-ticket") }}
+                      </button>
+                    </div>
+                    <div class="col-4">
+                      <a
+                        class="btn btn-primary w-100"
+                        :href="customerData.ticket"
+                        target="_blank"
+                      >
+                        <i class="fa-solid fa-file"></i>
+                        {{ t("kanban-modal-edit-button-view-ticket") }}
+                      </a>
+                    </div>
+                    <div class="col-4">
+                      <a
+                        class="btn btn-primary w-100"
+                        :href="customerData.ticket"
+                        target="_blank"
+                        download
+                      >
+                        <i class="fa-solid fa-file"></i>
+                        {{ t("kanban-modal-edit-button-download-ticket") }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="row mb-3"
+                v-if="customerData.ticket"
+                @dblclick="handleDoubleClick"
+              >
+                <div class="col-2">
+                  <label class="form-label"
+                    ><i class="fa-solid fa-list"></i>
+                    {{ t("kanban-modal-edit-label-ticket-details") }}</label
+                  >
+                </div>
+                <div class="col-10">
+                  <div class="row p-0 g-2">
+                    <div class="col-4">
+                      <label for="flight_number" class="form-label">
+                        {{ t("kanban-modal-edit-label-flight-number") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="flight_number"
+                        v-model="customerData.flight_number"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-flight-number')
+                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <label for="arrival_date" class="form-label">
+                        {{ t("kanban-modal-edit-label-arrival-date") }}
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="arrival_date"
+                        v-model="customerData.arrival_date"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <label for="departure_date" class="form-label">
+                        {{ t("kanban-modal-edit-label-departure-date") }}
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="departure_date"
+                        v-model="customerData.departure_date"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <label for="hotel_name" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-name") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="hotel_name"
+                        v-model="hotel_name"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-hotel-name')
+                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <label for="hotel_check_in" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-check-in") }}
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="hotel_check_in"
+                        v-model="hotel_check_in"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <label for="hotel_check_out" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-check-out") }}
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="hotel_check_out"
+                        v-model="customerData.hotel_check_out"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <label class="form-label">{{
+                        t("kanban-modal-edit-label-transportation")
+                      }}</label>
+                      <div class="form-check mt-1">
+                        <div class="container-fluid">
+                          <label for="transportation_true" class="form-label">
+                            {{
+                              t("kanban-modal-edit-label-transportation-true")
+                            }}
+                          </label>
+                          <input
+                            type="radio"
+                            name="transportation"
+                            id="transportation_true"
+                            value="1"
+                            v-model="customerData.transportation"
+                            class="form-check-input"
+                            @dblclick="handleDoubleClick"
+                            :readonly="!isEditMode"
+                          />
+                        </div>
+                        <div class="container-fluid">
+                          <label for="transportation_false" class="form-label">
+                            {{
+                              t("kanban-modal-edit-label-transportation-false")
+                            }}
+                          </label>
+                          <input
+                            type="radio"
+                            name="transportation"
+                            id="transportation_false"
+                            value="0"
+                            v-model="customerData.transportation"
+                            class="form-check-input"
+                            @dblclick="handleDoubleClick"
+                            :readonly="!isEditMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <label for="hotel_gmap_link" class="form-label">
+                        {{ t("kanban-modal-edit-label-hotel-gmap-link") }}
+                      </label>
+                      <input
+                        type="text"
+                        name="hotel_gmap_link"
+                        v-model="customerData.hotel_gmap_link"
+                        v-show="isEditMode || !customerData.hotel_gmap_link"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        :placeholder="
+                          t('kanban-modal-edit-placeholder-hotel-gmap-link')
+                        "
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                      <a
+                        v-if="!isEditMode && customerData.hotel_gmap_link"
+                        :href="customerData.hotel_gmap_link"
+                        target="_blank"
+                        class="btn btn-primary w-100"
+                        >{{ t("kanban-modal-edit-button-hotel-gmap-link") }}</a
+                      >
+                    </div>
+                    <div class="col-4">
+                      <label for="time" class="form-label">
+                        {{ t("kanban-modal-edit-label-time") }}
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="time"
+                        v-model="customerData.time"
+                        :class="[
+                          'form-control',
+                          isEditMode ? 'bg-input-edit' : 'bg-input',
+                          'py-2',
+                        ]"
+                        @dblclick="handleDoubleClick"
+                        :readonly="!isEditMode"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- History -->
               <div class="row">
                 <div class="col-6 pt-2">
                   <h5
@@ -567,7 +985,7 @@
                           'rounded-3 p-2',
                           comment.isAdmin
                             ? 'adminComment'
-                            : 'bg-primary text-white',
+                            : 'bg-light text-dark',
                         ]"
                         style="
                           word-break: break-word;
@@ -625,7 +1043,7 @@
                           </div>
                         </div>
                         <div v-else>
-                          <span
+                          <div
                             :ref="`commentText-${comment.id}`"
                             style="
                               white-space: pre-line;
@@ -638,8 +1056,8 @@
                               width: auto !important;
                             "
                             :style="{ width: getCommentTextWidth(comment.id) }"
-                            >{{ comment.text_body }}</span
-                          >
+                            v-html="comment.text_body"
+                          />
                         </div>
                         <div
                           class="d-flex justify-content-end align-items-center gap-2 mt-2"
@@ -659,18 +1077,15 @@
                                   ? 'text-warning'
                                   : comment.isAdmin
                                   ? ''
-                                  : 'text-white',
+                                  : 'text-dark',
                               ]"
                               style="transform: rotate(-30deg); font-size: 12px"
                             ></i>
                           </button>
                           <button
                             v-if="editingCommentId !== comment.id"
-                            class="btn btn-sm p-0"
+                            class="btn btn-sm p-0 text-dark"
                             @click="editComment(comment)"
-                            :class="[
-                              comment.isAdmin ? 'text-dark' : 'text-white',
-                            ]"
                           >
                             <i
                               class="fa-solid fa-pencil"
@@ -678,11 +1093,8 @@
                             ></i>
                           </button>
                           <button
-                            class="btn btn-sm p-0"
+                            class="btn btn-sm p-0 text-dark"
                             @click.prevent="copyComment(comment.text_body)"
-                            :class="[
-                              comment.isAdmin ? 'text-dark' : 'text-white',
-                            ]"
                           >
                             <i
                               class="fa-solid fa-copy"
@@ -723,6 +1135,13 @@
                       @mousedown="dateTaskClick"
                       @keyup.enter="handleAddTask"
                     />
+                    <input
+                      type="time"
+                      class="form-control bg-input text-secondary py-2 me-1"
+                      v-model="customerData.time"
+                      :placeholder="t('modals.selectTime')"
+                      @keyup.enter="handleAddTask"
+                    />
                     <button
                       class="btn btn-primary py-1 px-4 fixed-action-btn"
                       type="submit"
@@ -736,11 +1155,14 @@
                   <div
                     class="row bg-input-subtle border-top border-bottom py-1"
                   >
-                    <div class="col-5">
+                    <div class="col-4">
                       {{ t("kanban-modal-edit-tasks-table-description") }}
                     </div>
-                    <div class="col-5">
+                    <div class="col-3">
                       {{ t("kanban-modal-edit-tasks-table-due-date") }}
+                    </div>
+                    <div class="col-3">
+                      {{ t("kanban-modal-edit-tasks-table-due-time") }}
                     </div>
                     <div class="col-2">
                       {{ t("kanban-modal-edit-tasks-table-status") }}
@@ -753,16 +1175,24 @@
                     class="row text-secondary mt-2 align-items-center border-light-subtle pb-2 border-bottom"
                     :class="{ 'delete-animation': task.toDelete }"
                   >
-                    <div class="col-5">
+                    <div class="col-4">
                       {{ task.description }}
                     </div>
-                    <div class="col-5">
+                    <div class="col-3">
                       <input
                         type="date"
                         class="form-control bg-secondary-subtle text-secondary py-2 me-1"
                         v-model="task.duedate"
                         :placeholder="t('modals.selectDate')"
                         @mousedown="dateTaskClick"
+                      />
+                    </div>
+                    <div class="col-3">
+                      <input
+                        type="time"
+                        class="form-control bg-secondary-subtle text-secondary py-2 me-1"
+                        v-model="task.duetime"
+                        :placeholder="t('modals.selectTime')"
                       />
                     </div>
                     <div class="col-2">
@@ -780,6 +1210,12 @@
           </div>
         </div>
         <button
+          class="btn ApprovalCustm position-fixed bg-warning py-2 px-3 rounded-3"
+          @click="openSuggestApprovalModal"
+        >
+          <i class="fa-solid fa-user text-white"></i>
+        </button>
+        <button
           class="btn trashCustm position-fixed bg-danger py-2 px-3 rounded-3"
           @click="openTrashDealModal"
         >
@@ -789,6 +1225,13 @@
     </div>
   </div>
   <view-report ref="questionsModalRef" :deal_id="deal?.id" />
+  <suggest-user-modal
+    ref="suggestUserModalRef"
+    :users="users"
+    :phone="customerData?.phone"
+    :dealId="deal?.id"
+    @deal-suggested="handleDealSuggestion"
+  />
   <trash-deal
     ref="trashDealModalRef"
     :dealId="deal?.id"
@@ -812,6 +1255,7 @@ import { Modal } from "bootstrap";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import TrashDeal from "@/components/modals/CrmDealKanbanDealDataModalTrashDealModal.vue";
+import SuggestUserModal from "@/components/modals/SuggestUserModal.vue";
 import {
   fetchConversationByDealId,
   getSources,
@@ -830,7 +1274,7 @@ import { PERMISSIONS, usePermissionStore } from "@/stores/permissionStore";
 import moveCardSound from "@/assets/move-card.wav";
 export default {
   name: "CrmDealKanbanDealDataModal",
-  components: { RatingStars, ViewReport, TrashDeal },
+  components: { RatingStars, ViewReport, TrashDeal, SuggestUserModal },
   props: {
     deal: {
       type: Object,
@@ -860,7 +1304,7 @@ export default {
   setup(props, { emit }) {
     const permissionStore = usePermissionStore();
     const selected_conversation = ref(null);
-    const { t } = useI18n();
+    const { t, locale } = useI18n();
     const toast = useToast();
     const sources = ref([]);
     const allStages = ref(null);
@@ -947,7 +1391,8 @@ export default {
     const customerData = reactive({
       id: props.deal?.id,
       name: props.deal?.contact.name || "Custome Name",
-      nickname: props.deal?.contact.nickname || "Custome Name",
+      nationality: props.deal?.contact.nationality || null,
+      language: props.deal?.contact.language || null,
       phone: props.deal?.contact.phones[0]?.phone || "",
       phone2: props.deal?.contact.phones[1]?.phone || "",
       email: props.deal?.contact.email || "",
@@ -961,14 +1406,838 @@ export default {
           id: comment.id,
           text_body: comment.text_body || "No text",
           created_at: comment.created_at || "No date",
-          username: comment.user.name || "No user",
+          username: comment.user?.name || "No user",
           isAdmin:
             comment.user && comment.user.role === "super-admin" ? true : false,
           isPinned: comment.isPinned || false,
         })) || [],
       assigned_to: props.deal?.assigned_to_id || "",
       ticket: props.deal?.ticket || null,
-      packages: props.deal?.packages || [],
+      kanban_packages: props.deal?.kanban_packages || [],
+      hospital_packages: props.deal?.hospital_packages || [],
+      flight_number: props.deal?.flight_number || "",
+      arrival_date: props.deal?.arrival_date || "",
+      departure_date: props.deal?.departure_date || "",
+      hotel_name: props.deal?.hotel_name || "",
+      hotel_check_in: props.deal?.hotel_check_in || "",
+      hotel_check_out: props.deal?.hotel_check_out || "",
+      hotel_gmap_link: props.deal?.hotel_gmap_link || "",
+      transportation: props.deal?.transportation || 0,
+      time: props.deal?.time || "",
+      kanban_total_cost: props.deal?.kanban_total_cost || null,
+      hospital_total_cost: props.deal?.hospital_total_cost || null,
+    });
+    const nationalities_options = {
+      afghan: {
+        en: "Afghan",
+        ar: "أفغاني",
+      },
+      albanian: {
+        en: "Albanian",
+        ar: "ألباني",
+      },
+      algerian: {
+        en: "Algerian",
+        ar: "جزائري",
+      },
+      american: {
+        en: "American",
+        ar: "أمريكي",
+      },
+      andorran: {
+        en: "Andorran",
+        ar: "أندوري",
+      },
+      angolan: {
+        en: "Angolan",
+        ar: "أنغولي",
+      },
+      antiguans: {
+        en: "Antiguans",
+        ar: "أنتيغوان",
+      },
+      argentinean: {
+        en: "Argentinean",
+        ar: "أرجنتيني",
+      },
+      armenian: {
+        en: "Armenian",
+        ar: "أرميني",
+      },
+      australian: {
+        en: "Australian",
+        ar: "أسترالي",
+      },
+      austrian: {
+        en: "Austrian",
+        ar: "نمساوي",
+      },
+      azerbaijani: {
+        en: "Azerbaijani",
+        ar: "أذربيجاني",
+      },
+      bahamian: {
+        en: "Bahamian",
+        ar: "باهامي",
+      },
+      bahraini: {
+        en: "Bahraini",
+        ar: "بحريني",
+      },
+      bangladeshi: {
+        en: "Bangladeshi",
+        ar: "بنغلاديشي",
+      },
+      barbadian: {
+        en: "Barbadian",
+        ar: "باربادوسي",
+      },
+      barbudans: {
+        en: "Barbudans",
+        ar: "باربودي",
+      },
+      batswana: {
+        en: "Batswana",
+        ar: "بوتسواني",
+      },
+      belarusian: {
+        en: "Belarusian",
+        ar: "بيلاروسي",
+      },
+      belgian: {
+        en: "Belgian",
+        ar: "بلجيكي",
+      },
+      belizean: {
+        en: "Belizean",
+        ar: "بليزي",
+      },
+      beninese: {
+        en: "Beninese",
+        ar: "بنيني",
+      },
+      bhutanese: {
+        en: "Bhutanese",
+        ar: "بوتاني",
+      },
+      bolivian: {
+        en: "Bolivian",
+        ar: "بوليفي",
+      },
+      bosnian: {
+        en: "Bosnian",
+        ar: "بوسني",
+      },
+      botswanan: {
+        en: "Botswanan",
+        ar: "بوتسواني",
+      },
+      brazilian: {
+        en: "Brazilian",
+        ar: "برازيلي",
+      },
+      british: {
+        en: "British",
+        ar: "بريطاني",
+      },
+      bruneian: {
+        en: "Bruneian",
+        ar: "بروناي",
+      },
+      bulgarian: {
+        en: "Bulgarian",
+        ar: "بلغاري",
+      },
+      burkinabe: {
+        en: "Burkinabe",
+        ar: "بوركيني فاسو",
+      },
+      burmese: {
+        en: "Burmese",
+        ar: "ميانماري (بورمي)",
+      },
+      burundian: {
+        en: "Burundian",
+        ar: "بوروندي",
+      },
+      cambodian: {
+        en: "Cambodian",
+        ar: "كمبودي",
+      },
+      cameroonian: {
+        en: "Cameroonian",
+        ar: "كاميروني",
+      },
+      canadian: {
+        en: "Canadian",
+        ar: "كندي",
+      },
+      cape_verdean: {
+        en: "Cape Verdean",
+        ar: "كاب فيردي (الرأس الأخضر)",
+      },
+      central_african: {
+        en: "Central African",
+        ar: "وسط أفريقي (جمهورية أفريقيا الوسطى)",
+      },
+      chadian: {
+        en: "Chadian",
+        ar: "تشادي",
+      },
+      chilean: {
+        en: "Chilean",
+        ar: "شيلي (تشيلي)",
+      },
+      chinese: {
+        en: "Chinese",
+        ar: "صيني (صين)",
+      },
+      colombian: {
+        en: "Colombian",
+        ar: "كولومبي (كولومبيا)",
+      },
+      comoran: {
+        en: "Comoran",
+        ar: "جزر القمر (جزر القمر)",
+      },
+      congolese: {
+        en: "Congolese",
+        ar: "كونغولي (الكونغو)",
+      },
+      costa_rican: {
+        en: "Costa Rican",
+        ar: "كوستاريكي (كوستاريكا)",
+      },
+      croatian: {
+        en: "Croatian",
+        ar: "كرواتي (كرواتيا)",
+      },
+      cuban: {
+        en: "Cuban",
+        ar: "كوبي (كوبا)",
+      },
+      cypriot: {
+        en: "Cypriot",
+        ar: "قبرصي (قبرص)",
+      },
+      czech: {
+        en: "Czech",
+        ar: "تشيكي (جمهورية التشيك)",
+      },
+      danish: {
+        en: "Danish",
+        ar: "دنماركي (الدنمارك)",
+      },
+      djibouti: {
+        en: "Djibouti",
+        ar: "دومينيكي",
+      },
+      dominican: {
+        en: "Dominican",
+        ar: "دومينيكي",
+      },
+      dutch: {
+        en: "Dutch",
+        ar: "هولندي",
+      },
+      east_timorese: {
+        en: "East Timorese",
+        ar: "تيموري شرقي",
+      },
+      ecuadorean: {
+        en: "Ecuadorean",
+        ar: "إكوادوري",
+      },
+      egyptian: {
+        en: "Egyptian",
+        ar: "مصري",
+      },
+      emirati: {
+        en: "Emirati",
+        ar: "إماراتي",
+      },
+      equatorial_guinean: {
+        en: "Equatorial Guinean",
+        ar: "غيني استوائي",
+      },
+      eritrean: {
+        en: "Eritrean",
+        ar: "إريتري",
+      },
+      estonian: {
+        en: "Estonian",
+        ar: "إستوني",
+      },
+      ethiopian: {
+        en: "Ethiopian",
+        ar: "إثيوبي",
+      },
+      fijian: {
+        en: "Fijian",
+        ar: "فيجي",
+      },
+      filipino: {
+        en: "Filipino",
+        ar: "فلبيني",
+      },
+      finnish: {
+        en: "Finnish",
+        ar: "فنلندي",
+      },
+      french: {
+        en: "French",
+        ar: "فرنسي",
+      },
+      gabonese: {
+        en: "Gabonese",
+        ar: "غابوني",
+      },
+      gambian: {
+        en: "Gambian",
+        ar: "غامبي",
+      },
+      georgian: {
+        en: "Georgian",
+        ar: "جورجي",
+      },
+      german: {
+        en: "German",
+        ar: "ألماني",
+      },
+      ghanaian: {
+        en: "Ghanaian",
+        ar: "غاني",
+      },
+      greek: {
+        en: "Greek",
+        ar: "يوناني",
+      },
+      grenadian: {
+        en: "Grenadian",
+        ar: "غرينادي",
+      },
+      guatemalan: {
+        en: "Guatemalan",
+        ar: "غواتيمالي",
+      },
+      guinea_bissauan: {
+        en: "Guinea-Bissauan",
+        ar: "غيني بيساوي",
+      },
+      guinean: {
+        en: "Guinean",
+        ar: "غيني",
+      },
+      guyanese: {
+        en: "Guyanese",
+        ar: "غياني",
+      },
+      haitian: {
+        en: "Haitian",
+        ar: "هايتي",
+      },
+      herzegovinian: {
+        en: "Herzegovinian",
+        ar: "هندوراسي",
+      },
+      honduran: {
+        en: "Honduran",
+        ar: "هندوراسي",
+      },
+      hungarian: {
+        en: "Hungarian",
+        ar: "مجري",
+      },
+      i_kiribati: {
+        en: "I-Kiribati",
+        ar: "آيسلندي",
+      },
+      icelander: {
+        en: "Icelander",
+        ar: "آيسلندي",
+      },
+      indian: {
+        en: "Indian",
+        ar: "هندي",
+      },
+      indonesian: {
+        en: "Indonesian",
+        ar: "إندونيسي",
+      },
+      iranian: {
+        en: "Iranian",
+        ar: "إيراني",
+      },
+      iraqi: {
+        en: "Iraqi",
+        ar: "عراقي",
+      },
+      irish: {
+        en: "Irish",
+        ar: "إيرلندي",
+      },
+      israeli: {
+        en: "Israeli",
+        ar: "إسرائيلي",
+      },
+      italian: {
+        en: "Italian",
+        ar: "إيطالي",
+      },
+      ivorian: {
+        en: "Ivorian",
+        ar: "ساحل العاج",
+      },
+      jamaican: {
+        en: "Jamaican",
+        ar: "جامايكي",
+      },
+      japanese: {
+        en: "Japanese",
+        ar: "ياباني",
+      },
+      jordanian: {
+        en: "Jordanian",
+        ar: "أردني",
+      },
+      kazakhstani: {
+        en: "Kazakhstani",
+        ar: "كازاخستاني",
+      },
+      kenyan: {
+        en: "Kenyan",
+        ar: "كيني",
+      },
+      kittian_and_nevisian: {
+        en: "Kittian and Nevisian",
+        ar: "كيتسي ونيفيسي",
+      },
+      kuwaiti: {
+        en: "Kuwaiti",
+        ar: "كويتي",
+      },
+      kyrgyz: {
+        en: "Kyrgyz",
+        ar: "قيرغيزي",
+      },
+      laotian: {
+        en: "Laotian",
+        ar: "لاوسي",
+      },
+      latvian: {
+        en: "Latvian",
+        ar: "لاتفي",
+      },
+      lebanese: {
+        en: "Lebanese",
+        ar: "لبناني",
+      },
+      liberian: {
+        en: "Liberian",
+        ar: "ليبيري",
+      },
+      libyan: {
+        en: "Libyan",
+        ar: "ليبي",
+      },
+      liechtensteiner: {
+        en: "Liechtensteiner",
+        ar: "ليختنشتايني",
+      },
+      lithuanian: {
+        en: "Lithuanian",
+        ar: "ليتواني",
+      },
+      luxembourger: {
+        en: "Luxembourger",
+        ar: "لوكسمبورغي",
+      },
+      macedonian: {
+        en: "Macedonian",
+        ar: "مقدوني",
+      },
+      malagasy: {
+        en: "Malagasy",
+        ar: "مدغشقري",
+      },
+      malawian: {
+        en: "Malawian",
+        ar: "مالاوي",
+      },
+      malaysian: {
+        en: "Malaysian",
+        ar: "ماليزي",
+      },
+      maldivan: {
+        en: "Maldivan",
+        ar: "مالديفي",
+      },
+      malian: {
+        en: "Malian",
+        ar: "مالي",
+      },
+      maltese: {
+        en: "Maltese",
+        ar: "مالطي",
+      },
+      marshallese: {
+        en: "Marshallese",
+        ar: "مارشالي",
+      },
+      mauritanian: {
+        en: "Mauritanian",
+        ar: "موريتاني",
+      },
+      mauritian: {
+        en: "Mauritian",
+        ar: "موريشي",
+      },
+      mexican: {
+        en: "Mexican",
+        ar: "مكسيكي",
+      },
+      micronesian: {
+        en: "Micronesian",
+        ar: "ميكرونيزي",
+      },
+      moldovan: {
+        en: "Moldovan",
+        ar: "مولدوفي",
+      },
+      monacan: {
+        en: "Monacan",
+        ar: "موناكي",
+      },
+      mongolian: {
+        en: "Mongolian",
+        ar: "منغولي",
+      },
+      moroccan: {
+        en: "Moroccan",
+        ar: "مغربي",
+      },
+      mosotho: {
+        en: "Mosotho",
+        ar: "موزمبيقي",
+      },
+      motswana: {
+        en: "Motswana",
+        ar: "ناميبي",
+      },
+      mozambican: {
+        en: "Mozambican",
+        ar: "موزمبيقي",
+      },
+      namibian: {
+        en: "Namibian",
+        ar: "ناميبي",
+      },
+      nauruan: {
+        en: "Nauruan",
+        ar: "ناورو",
+      },
+      nepalese: {
+        en: "Nepalese",
+        ar: "نيبالي",
+      },
+      new_zealander: {
+        en: "New Zealander",
+        ar: "نيوزيلندي",
+      },
+      nicaraguan: {
+        en: "Nicaraguan",
+        ar: "نيكاراغوي",
+      },
+      nigerian: {
+        en: "Nigerian",
+        ar: "نيجيري",
+      },
+      nigerien: {
+        en: "Nigerien",
+        ar: "نيجري",
+      },
+      north_korean: {
+        en: "North Korean",
+        ar: "كوري شمالي",
+      },
+      northern_irish: {
+        en: "Northern Irish",
+        ar: "إيرلندي شمالي",
+      },
+      norwegian: {
+        en: "Norwegian",
+        ar: "نرويجي",
+      },
+      omani: {
+        en: "Omani",
+        ar: "عماني",
+      },
+      pakistani: {
+        en: "Pakistani",
+        ar: "باكستاني",
+      },
+      palauan: {
+        en: "Palauan",
+        ar: "بالاوي",
+      },
+      palestinian: {
+        en: "Palestinian",
+        ar: "فلسطيني",
+      },
+      panamanian: {
+        en: "Panamanian",
+        ar: "بنمي",
+      },
+      papua_new_guinean: {
+        en: "Papua New Guinean",
+        ar: "بابوا غينيا الجديدة",
+      },
+      paraguayan: {
+        en: "Paraguayan",
+        ar: "باراغواي",
+      },
+      peruvian: {
+        en: "Peruvian",
+        ar: "بيروفي",
+      },
+      polish: {
+        en: "Polish",
+        ar: "بولندي",
+      },
+      portuguese: {
+        en: "Portuguese",
+        ar: "برتغالي",
+      },
+      qatari: {
+        en: "Qatari",
+        ar: "قطري",
+      },
+      romanian: {
+        en: "Romanian",
+        ar: "روماني",
+      },
+      russian: {
+        en: "Russian",
+        ar: "روسي",
+      },
+      rwandan: {
+        en: "Rwandan",
+        ar: "رواندي",
+      },
+      saint_lucian: {
+        en: "Saint Lucian",
+        ar: "سانت لوسي",
+      },
+      salvadoran: {
+        en: "Salvadoran",
+        ar: "سلفادوري",
+      },
+      samoan: {
+        en: "Samoan",
+        ar: "ساموي",
+      },
+      san_marinese: {
+        en: "San Marinese",
+        ar: "سان ماريني",
+      },
+      sao_tomean: {
+        en: "Sao Tomean",
+        ar: "ساو تومي",
+      },
+      saudi: {
+        en: "Saudi",
+        ar: "سعودي",
+      },
+      scottish: {
+        en: "Scottish",
+        ar: "اسكتلندي",
+      },
+      senegalese: {
+        en: "Senegalese",
+        ar: "سنغالي",
+      },
+      serbian: {
+        en: "Serbian",
+        ar: "صربي",
+      },
+      seychellois: {
+        en: "Seychellois",
+        ar: "سيشلي",
+      },
+      sierra_leonean: {
+        en: "Sierra Leonean",
+        ar: "سيراليوني",
+      },
+      singaporean: {
+        en: "Singaporean",
+        ar: "سنغافوري",
+      },
+      slovakian: {
+        en: "Slovakian",
+        ar: "سلوفاكي",
+      },
+      slovenian: {
+        en: "Slovenian",
+        ar: "سلوفيني",
+      },
+      solomon_islander: {
+        en: "Solomon Islander",
+        ar: "جزر سليمان",
+      },
+      somali: {
+        en: "Somali",
+        ar: "صومالي",
+      },
+      south_african: {
+        en: "South African",
+        ar: "جنوب أفريقي",
+      },
+      south_korean: {
+        en: "South Korean",
+        ar: "كوري جنوبي",
+      },
+      spanish: {
+        en: "Spanish",
+        ar: "إسباني",
+      },
+      sri_lankan: {
+        en: "Sri Lankan",
+        ar: "سريلانكي",
+      },
+      sudanese: {
+        en: "Sudanese",
+        ar: "سوداني",
+      },
+      surinamer: {
+        en: "Surinamer",
+        ar: "سورينامي",
+      },
+      swazi: {
+        en: "Swazi",
+        ar: "سوازي",
+      },
+      swedish: {
+        en: "Swedish",
+        ar: "سويدي",
+      },
+      swiss: {
+        en: "Swiss",
+        ar: "سويسري",
+      },
+      syrian: {
+        en: "Syrian",
+        ar: "سوري",
+      },
+      taiwanese: {
+        en: "Taiwanese",
+        ar: "تايواني",
+      },
+      tajik: {
+        en: "Tajik",
+        ar: "طاجيكي",
+      },
+      tanzanian: {
+        en: "Tanzanian",
+        ar: "تنزاني",
+      },
+      thai: {
+        en: "Thai",
+        ar: "تايلاندي",
+      },
+      togolese: {
+        en: "Togolese",
+        ar: "توغولي",
+      },
+      tongan: {
+        en: "Tongan",
+        ar: "تونغي",
+      },
+      trinidadian_or_tobagonian: {
+        en: "Trinidadian or Tobagonian",
+        ar: "ترينيدادي أو توباغوني",
+      },
+      tunisian: {
+        en: "Tunisian",
+        ar: "تونسي",
+      },
+      turkish: {
+        en: "Turkish",
+        ar: "تركي",
+      },
+      tuvaluan: {
+        en: "Tuvaluan",
+        ar: "توفالي",
+      },
+      ugandan: {
+        en: "Ugandan",
+        ar: "أوغندي",
+      },
+      ukrainian: {
+        en: "Ukrainian",
+        ar: "أوكراني",
+      },
+      uruguayan: {
+        en: "Uruguayan",
+        ar: "أوروغواياني",
+      },
+      uzbekistani: {
+        en: "Uzbekistani",
+        ar: "أوزبكستاني",
+      },
+      venezuelan: {
+        en: "Venezuelan",
+        ar: "فنزويلي",
+      },
+      vietnamese: {
+        en: "Vietnamese",
+        ar: "فيتنامي",
+      },
+      welsh: {
+        en: "Welsh",
+        ar: "ويلزي",
+      },
+      yemenite: {
+        en: "Yemenite",
+        ar: "يمني",
+      },
+      zambian: {
+        en: "Zambian",
+        ar: "زامبي",
+      },
+      zimbabwean: {
+        en: "Zimbabwean",
+        ar: "زيمبابوي",
+      },
+    };
+    const nationalities = computed(() => {
+      return Object.fromEntries(
+        Object.entries(nationalities_options).map(([key, value]) => [
+          key,
+          locale.value === "ar" ? value.ar : value.en,
+        ])
+      );
+    });
+    const language_options = {
+      arabic: {
+        en: "Arabic",
+        ar: "العربية",
+      },
+      english: {
+        en: "English",
+        ar: "الإنجليزية",
+      },
+      french: {
+        en: "French",
+        ar: "الفرنسية",
+      },
+    };
+    const languages = computed(() => {
+      return Object.fromEntries(
+        Object.entries(language_options).map(([key, value]) => [
+          key,
+          locale.value === "ar" ? value.ar : value.en,
+        ])
+      );
     });
     const formatDateForInput = (dateString) => {
       if (!dateString) return "";
@@ -1017,10 +2286,6 @@ export default {
     const newTask = ref("");
     const taskDate = ref("");
     const rating = ref(0);
-    const showNickName = ref(false);
-    const toggleNickName = () => {
-      showNickName.value = !showNickName.value;
-    };
     const showPhone2 = ref(false);
     const togglePhone2 = () => {
       showPhone2.value = !showPhone2.value;
@@ -1050,6 +2315,35 @@ export default {
       } catch (error) {
         console.error("Error opening trash modal:", error);
         toast.error(t("error.openTrashModal"), {
+          timeout: 3000,
+        });
+      }
+    };
+    const openSuggestApprovalModal = () => {
+      if (!props.deal?.id) {
+        toast.error(t("error.dealNotFound"), {
+          timeout: 3000,
+        });
+        return;
+      }
+      try {
+        const openModals = document.querySelectorAll(".modal.show");
+        openModals.forEach((modal) => {
+          const modalInstance = Modal.getInstance(modal);
+          if (modalInstance) {
+            modalInstance.hide();
+          }
+        });
+        const suggestUserModal = new Modal(
+          document.getElementById("suggestUserModal")
+        );
+        suggestUserModal.show();
+        const modalBackdrop = document.createElement("div");
+        modalBackdrop.className = "modal-backdrop fade show";
+        document.body.appendChild(modalBackdrop);
+      } catch (error) {
+        console.error("Error opening suggest user modal:", error);
+        toast.error(t("error.openSuggestUserModal"), {
           timeout: 3000,
         });
       }
@@ -1154,6 +2448,12 @@ export default {
     };
     const confirm = async () => {
       try {
+        if (originalDataValue.value.phone && !customerData.phone) {
+          toast.error("Phone is required.", {
+            timeout: 3000,
+          });
+          return;
+        }
         const phones = [customerData.phone];
         if (customerData.phone2) {
           phones.push(customerData.phone2);
@@ -1163,30 +2463,44 @@ export default {
 
         const formData = {
           name: customerData.name,
-          nickname: customerData.nickname || "",
+          nationality: customerData.nationality,
+          language: customerData.language,
           phones: phones,
           email: customerData.email || "",
           note: customerData.note || "",
           rating: customerData.rating || 0,
           user_id: customerData.assigned_to || "",
           ticket: customerData.ticket || null,
-          packages: customerData.packages || null,
+          kanban_packages: customerData.kanban_packages || null,
+          hospital_packages: customerData.hospital_packages || null,
+          flight_number: customerData.flight_number || "",
+          arrival_date: customerData.arrival_date || "",
+          departure_date: customerData.departure_date || "",
+          hotel_name: customerData.hotel_name || "",
+          hotel_check_in: customerData.hotel_check_in || "",
+          hotel_check_out: customerData.hotel_check_out || "",
+          hotel_gmap_link: customerData.hotel_gmap_link || "",
+          transportation: customerData.transportation || 0,
+          time: customerData.time || "",
+          kanban_total_cost: customerData.kanban_total_cost || null,
+          hospital_total_cost: customerData.hospital_total_cost || null,
         };
 
         const response = await updateDeal(props.deal.id, formData);
         if (response.data) {
-          toast.success(t("success.saveChanges"), {
+          toast.success(response.data.message, {
             timeout: 3000,
           });
           isEditMode.value = false;
+          emit("update-deal", formData);
         } else {
-          toast.error(t("error.saveChanges"), {
+          toast.error(response.data.message, {
             timeout: 3000,
           });
         }
       } catch (error) {
         console.error("Error saving changes:", error);
-        toast.error(t("error.saveChanges"), {
+        toast.error(error.message, {
           timeout: 3000,
         });
       }
@@ -1216,18 +2530,41 @@ export default {
       return text;
     };
 
-    const addNewPackage = () => {
+    const addNewKanbanPackage = () => {
       if (!isEditMode.value) return;
-      customerData.packages.push({
+      customerData.kanban_packages.push({
         id: "",
         quantity: null,
         total_price: null,
       });
     };
 
-    const removePackage = (index) => {
+    const addNewHospitalPackage = () => {
+      if (!isEditMode.value) return;
+      customerData.hospital_packages.push({
+        id: "",
+        quantity: null,
+        total_price: null,
+      });
+    };
+
+    const removeKanbanPackage = (index) => {
       try {
-        customerData.packages.splice(index, 1);
+        customerData.kanban_packages.splice(index, 1);
+        toast.success(t("success.removePackage"), {
+          timeout: 3000,
+        });
+      } catch (error) {
+        console.error("Error removing package:", error);
+        toast.error(t("error.removePackage"), {
+          timeout: 3000,
+        });
+      }
+    };
+
+    const removeHospitalPackage = (index) => {
+      try {
+        customerData.hospital_packages.splice(index, 1);
         toast.success(t("success.removePackage"), {
           timeout: 3000,
         });
@@ -1397,6 +2734,7 @@ export default {
         const formData = {
           description: customerData.task,
           duedate: customerData.date,
+          duetime: customerData.time,
           deal_id: props.deal?.id,
         };
         console.log(formData);
@@ -1406,11 +2744,13 @@ export default {
             id: response.data.id,
             description: customerData.task,
             duedate: customerData.date,
+            duetime: customerData.time,
             status: "active",
           });
           toast.success(t("success.taskAdded"));
           customerData.task = "";
           customerData.date = "";
+          customerData.time = "";
         } else {
           toast.error(t("error.addingTask"));
         }
@@ -1422,14 +2762,21 @@ export default {
     const activeTasks = computed(() => {
       return customerData.tasks.filter((task) => task.status === "active");
     });
-    const handleStageUpdate = (deal_id, new_stage_id) => {
+    const handleStageUpdate = (deal_id, new_stage_id, is_trash = false) => {
       if (!props.deal?.id) {
         toast.error(t("error.dealNotFound"), {
           timeout: 3000,
         });
         return;
       }
-      emit("stage-change", deal_id, new_stage_id, props.deal.stage_id, 0);
+      emit(
+        "stage-change",
+        deal_id,
+        new_stage_id,
+        props.deal.stage_id,
+        0,
+        is_trash
+      );
     };
     const fetchLogs = async () => {
       try {
@@ -1614,7 +2961,23 @@ export default {
         event.target.showPicker();
       }
     };
+    const removeFile = () => {
+      customerData.ticket = null;
+      toast.success(t("success.fileRemoved"), {
+        timeout: 3000,
+      });
+    };
+    const handleDealSuggestion = () => {
+      if (!props.deal?.id) {
+        toast.error(t("error.dealNotFound"), {
+          timeout: 3000,
+        });
+        return;
+      }
+      emit("suggest-user", props.deal.id);
+    };
     return {
+      handleDealSuggestion,
       allStages,
       currentStage,
       customerData,
@@ -1630,12 +2993,12 @@ export default {
       rating,
       updateRating,
       truncateText,
-      toggleNickName,
-      showNickName,
       togglePhone2,
       showPhone2,
-      addNewPackage,
-      removePackage,
+      addNewKanbanPackage,
+      addNewHospitalPackage,
+      removeKanbanPackage,
+      removeHospitalPackage,
       handleTaskCompletion,
       handleStageHover,
       handleStageLeave,
@@ -1687,6 +3050,10 @@ export default {
       dataDealCopy,
       dateTaskClick,
       currentStageIdLocal,
+      removeFile,
+      nationalities,
+      languages,
+      openSuggestApprovalModal,
     };
   },
 };
@@ -1920,6 +3287,11 @@ label {
   bottom: 3%;
   z-index: 9999;
 }
+.ApprovalCustm {
+  right: 5%;
+  bottom: 3%;
+  z-index: 9999;
+}
 .adminComment {
   background: linear-gradient(45deg, #e5c086, #f1d65e, #e5c086, #f1d65e);
   color: #000;
@@ -2024,6 +3396,14 @@ label {
 .bg-input-edit {
   background-color: #d1d1d1e4 !important;
 }
+.form-check-input {
+  cursor: pointer;
+  border: 1px solid #333;
+}
+.form-check-input:checked {
+  background-color: var(--bs-dark);
+  border-color: var(--bs-dark-subtle);
+  accent-color: var(--bs-blue);
 .comment-row {
   gap: 8px;
 }

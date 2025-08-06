@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { getUserById } from "@/plugins/services/authService";
+
 export default {
   name: "UserViewActionButtons",
   props: {
@@ -20,8 +22,14 @@ export default {
   },
   emits: ["edit", "remove"],
   methods: {
-    editItem() {
-      this.$emit("edit", this.item);
+    async editItem() {
+      const response = await getUserById(this.item.id);
+      if (response.status !== 200) {
+        this.$emit("error", response.data.message);
+        return;
+      } else {
+        this.$emit("edit", response.data.data);
+      }
     },
     removeItem() {
       this.$emit("remove", this.item.id);

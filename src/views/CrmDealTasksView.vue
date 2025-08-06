@@ -18,6 +18,7 @@
   </div> -->
   <crm-kanban-kanban-board
     :stages="stages"
+    :viewType="'task'"
     defaultColor="#333"
     @open-whatsapp-modal="openWhatsappModal"
     @receive-whatsapp-message="receiveWhatsappMessage"

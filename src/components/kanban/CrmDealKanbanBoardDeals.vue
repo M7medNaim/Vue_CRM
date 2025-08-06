@@ -41,10 +41,6 @@
             </button>
           </div>
           <div v-else class="kanban-stage">
-            <!-- @click="
-                permissionStore.hasPermission('edit-stage') &&
-                  openFilterStage(stage)
-              " -->
             <div
               class="stage-header position-relative"
               :title="stage.name"
@@ -254,6 +250,13 @@
       >
         <i class="fa-solid fa-chevron-left fs-1 p-3"></i>
       </div>
+      <!-- <button
+        v-show="!allDealsCount"
+        class="btn text-white position-absolute top-50 start-50 translate-middle bg-primary p-2 z-3 btn-request"
+        @click="handleRequestDeal"
+      >
+        {{ t("kanban-btn-request-deal") }}
+      </button> -->
     </div>
   </div>
   <!-- :key="selectedDeal?.id" -->
@@ -269,6 +272,8 @@
     :currentStageId="selectedStageId"
     @open-whatsapp-modal="openWhatsappModal"
     @stage-change="changeDealStage"
+    @suggest-user="handleDealSuggestion"
+    @update-deal="updateDeal"
   />
   <!-- selectedDeal -->
   <div v-if="permissionStore.hasPermission('edit-stage')">
@@ -303,6 +308,7 @@ import {
   getStagesChildren,
   getAllPackages,
   getAvailableStages,
+  createApproval,
 } from "@/plugins/services/authService";
 import { useI18n } from "vue-i18n";
 import Cookies from "js-cookie";
@@ -330,6 +336,14 @@ export default {
     defaultColor: {
       type: String,
       default: "#333",
+    },
+    viewType: {
+      type: String,
+      default: "deal",
+    },
+    searchVal: {
+      type: String,
+      default: "",
     },
   },
   setup(props, { emit }) {
@@ -372,6 +386,12 @@ export default {
       },
       { immediate: true }
     );
+
+    const allDealsCount = computed(() => {
+      return displayStages.value.reduce((count, stage) => {
+        return count + (stage.deal_count || 0);
+      }, 0);
+    });
 
     const fetchPackages = async () => {
       try {
@@ -963,40 +983,57 @@ export default {
       dealId,
       newStageId,
       oldStageId,
-      kanban = 1
+      kanban = 1,
+      is_trash = false
     ) => {
-      const stages = displayStages;
-      const newStage = ref(
-        stages.value.find((stage) => stage.id == newStageId)
-      );
-      const oldStage = ref(
-        stages.value.find((stage) => stage.id == oldStageId)
-      );
-      console.log("newStage", newStage.value);
-      const deal =
-        newStage?.value?.deals.find((d) => d.id == dealId) ??
-        oldStage?.value?.deals.find((d) => d.id == dealId);
-      console.log("deal", deal);
       try {
-        const response = await updateDealStage(dealId, newStageId);
-        console.log("response", response.status);
-        if (response.status !== 200) {
-          console.error("Error updating deal stage:", response.data.message);
-          toast.error(response.data.message);
-          return;
-        } else {
-          deal.stage_id = newStageId;
-          if (oldStage.value) oldStage.value.deal_count -= 1;
-          if (newStage.value) newStage.value.deal_count += 1;
-          if (!kanban) {
-            oldStage.value.deals.splice(
-              oldStage.value.deals.findIndex((d) => d.id == dealId),
-              1
-            );
-            if (newStage.value) newStage.value.deals.unshift(deal);
+        const stages = displayStages;
+        if (props.viewType == "task" && is_trash) {
+          const response = await updateDealStage(dealId, newStageId);
+          if (response.status !== 200) {
+            console.error("Error updating deal stage:", response.data.message);
+            toast.error(response.data.message);
+            return;
           }
+          for (const stage of stages.value) {
+            if (stage.deals) {
+              stage.deals = stage.deals.filter((d) => d.id != dealId);
+            }
+          }
+          displayStages.value = stages.value;
           toast.success(response.data.message);
-          playSound();
+        } else {
+          const newStage = ref(
+            stages.value.find((stage) => stage.id == newStageId)
+          );
+          const oldStage = ref(
+            stages.value.find((stage) => stage.id == oldStageId)
+          );
+          console.log("newStage", newStage.value);
+          const deal =
+            newStage?.value?.deals.find((d) => d.id == dealId) ??
+            oldStage?.value?.deals.find((d) => d.id == dealId);
+          console.log("deal", deal);
+          const response = await updateDealStage(dealId, newStageId);
+          console.log("response", response.status);
+          if (response.status !== 200) {
+            console.error("Error updating deal stage:", response.data.message);
+            toast.error(response.data.message);
+            return;
+          } else {
+            deal.stage_id = newStageId;
+            if (oldStage.value) oldStage.value.deal_count -= 1;
+            if (newStage.value) newStage.value.deal_count += 1;
+            if (!kanban) {
+              oldStage.value.deals.splice(
+                oldStage.value.deals.findIndex((d) => d.id == dealId),
+                1
+              );
+              if (newStage.value) newStage.value.deals.unshift(deal);
+            }
+            toast.success(response.data.message);
+            playSound();
+          }
         }
       } catch (error) {
         console.error("Error updating deal stage:", error);
@@ -1006,7 +1043,7 @@ export default {
           const currentStage = props.stages.find((s) => s.id === newStageId);
           if (currentStage) {
             const dealIndex = currentStage.deals.findIndex(
-              (d) => d.id === deal.id
+              (d) => d.id === dealId
             );
             if (dealIndex !== -1) {
               const [removedDeal] = currentStage.deals.splice(dealIndex, 1);
@@ -1157,6 +1194,19 @@ export default {
       return filteredDeals.value[stageId] || stage.deals;
     });
 
+    const handleRequestDeal = async () => {
+      try {
+        const response = await createApproval(props.searchVal);
+        if (response.status === 200 || response.status === 201) {
+          toast.success(response.data.message);
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message);
+      }
+    };
+
     onMounted(async () => {
       if (dealsContainer.value) {
         dealsContainer.value.addEventListener("scroll", updateArrowVisibility);
@@ -1260,7 +1310,20 @@ export default {
       removeUserActivityListeners();
     });
 
+    const handleDealSuggestion = (deal_id) => {
+      const stage = displayStages.value.find((s) =>
+        s.deals.some((d) => d.id === deal_id)
+      );
+      stage.deals = stage.deals.filter((d) => d.id != deal_id);
+    };
+
+    const updateDeal = (data) => {
+      console.log("updateDeal in kanban comp", data);
+      dealUpdateEvent(data, "Deal updated successfully");
+    };
+
     return {
+      handleDealSuggestion,
       fetchPackages,
       packages,
       t,
@@ -1308,6 +1371,9 @@ export default {
       getStageDeals,
       allStages,
       selectedStageId,
+      allDealsCount,
+      handleRequestDeal,
+      updateDeal,
       isEmrView,
     };
   },
@@ -1469,5 +1535,11 @@ export default {
   .kanban-wrapper {
     height: calc(100vh - 130px);
   }
+}
+.btn-request {
+  cursor: pointer;
+  transition: all 0.5s;
+  pointer-events: auto;
+  width: fit-content;
 }
 </style>

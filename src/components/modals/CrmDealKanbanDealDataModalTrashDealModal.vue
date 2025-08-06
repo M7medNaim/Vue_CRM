@@ -177,7 +177,7 @@ export default {
           deal_id: this.dealId,
         });
         if (commentResponse.data) {
-          this.$emit("deal-trashed", this.dealId, selected_stage_id);
+          this.$emit("deal-trashed", this.dealId, selected_stage_id, true);
         } else {
           this.toast.error(commentResponse.data.message, {
             timeout: 3000,
